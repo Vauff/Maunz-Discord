@@ -1,0 +1,8 @@
+/bin
+/.classpath
+/.project
+/.settings
+/maunzdiscord.log
+/maunzdiscord-old.log
+/src/com/vauff/maunzdiscord/core/Passwords.java
+/target/
