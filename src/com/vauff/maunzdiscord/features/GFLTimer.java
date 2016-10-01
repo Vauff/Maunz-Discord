@@ -41,9 +41,10 @@ public class GFLTimer
 				if (!lastMap.equals(map) && !map.equals("") && !Util.getFileContents("lastmap.txt").equals(map))
 				{
 					new MessageBuilder(Main.client).withChannel(Util.mapChannel).withContent("GFL Zombie Escape is now playing: **" + map + "**").build();
-					lastMap = map;
 					FileUtils.writeStringToFile(file, map, "UTF-8");
 				}
+
+				lastMap = map;
 			}
 			catch (SocketTimeoutException e)
 			{
