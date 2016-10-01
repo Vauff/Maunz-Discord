@@ -8,6 +8,10 @@ import java.net.URISyntaxException;
 
 public class Util
 {
+	public static boolean devMode;
+	public static String token;
+	public static String mapChannel;
+	
 	public static String getJarLocation()
 	{
 		try

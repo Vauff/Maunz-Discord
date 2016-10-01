@@ -1,10 +1,10 @@
 #Maunz-Discord
 
-Maunz-Discord is a Discord bot created by me in Java using Discord4J. She is currently only on the GFL ZE discord server. This project is a Discord port of my [IRC bot Maunz](https://github.com/Vauff/Maunz). If you want to help Maunz development feel free to suggest ideas on Trello in the features or if you find any, even bugs in the bugs list :(
+Maunz-Discord is a Discord bot created by me in Java using Discord4J. She is currently only on the GFL ZE discord server. This project is a Discord port of my [IRC bot Maunz](https://github.com/Vauff/Maunz). If you want to help Maunz development feel free to suggest ideas on [Trello](https://trello.com/b/9W7PmTvX/maunz) in the features or if you find any, even bugs in the bugs list :(
 
 #Commands
 
-There are currently no commands in the Discord port of Maunz, they will be coming at a later date.
+*map - Tells you which map GFL ZE is playing outside of the normal #map-tracking channel.
 
 #Dependencies
 

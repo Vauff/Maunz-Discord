@@ -15,7 +15,7 @@ import sx.blah.discord.util.MessageBuilder;
 
 public class GFLTimer
 {
-	private static String lastMap = "";
+	public static String lastMap = "";
 	private static File file = new File(Util.getJarLocation() + "lastmap.txt");
 
 	public static Runnable timer = new Runnable()
@@ -40,14 +40,14 @@ public class GFLTimer
 
 				if (!lastMap.equals(map) && !map.equals("") && !Util.getFileContents("lastmap.txt").equals(map))
 				{
-					new MessageBuilder(Main.client).withChannel("223674490876329984").withContent("GFL Zombie Escape is now playing: **" + map + "**").build();
+					new MessageBuilder(Main.client).withChannel(Util.mapChannel).withContent("GFL Zombie Escape is now playing: **" + map + "**").build();
 					lastMap = map;
 					FileUtils.writeStringToFile(file, map, "UTF-8");
 				}
 			}
 			catch (SocketTimeoutException e)
 			{
-				Main.log.info("Failed to connect to the GFL HLStatsX page, automatically retrying in 1 minute");
+				Main.log.error("Failed to connect to the GFL HLStatsX page, automatically retrying in 1 minute");
 			}
 			catch (Exception e)
 			{

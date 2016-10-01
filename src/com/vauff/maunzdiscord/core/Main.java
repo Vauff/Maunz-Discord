@@ -23,13 +23,27 @@ public class Main
 			File oldLogFile = new File("maunzdiscord-old.log");
 
 			Thread.sleep(3000);
-
 			oldLogFile.delete();
 			logFile.renameTo(oldLogFile);
 			log = LogManager.getLogger(Main.class);
-			log.info("Starting Maunz-Discord v" + version);
-			client = new ClientBuilder().withToken(Passwords.discordToken).login();
-			client.getDispatcher().registerListener(new ReadyEventListener());
+			
+			if (args.length >= 1 && args[0].equals("-dev"))
+			{
+				log.info("Starting Maunz-Discord v" + version + " in dev mode");
+				Util.token = Passwords.discordDevToken;
+				Util.mapChannel = "230778620300361728";
+				Util.devMode = true;
+			}
+			else
+			{
+				log.info("Starting Maunz-Discord v" + version);
+				Util.token = Passwords.discordToken;
+				Util.mapChannel = "223674490876329984";
+				Util.devMode = false;
+			}
+			
+			client = new ClientBuilder().withToken(Util.token).login();
+			client.getDispatcher().registerListener(new MainListener());
 		}
 		catch (Exception e)
 		{
