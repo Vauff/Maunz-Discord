@@ -4,6 +4,8 @@ Maunz-Discord is a Discord bot created by me in Java using Discord4J. She is cur
 
 #Commands
 
+Italic ones cannot be done by everyone and are restricted to just me.
+
 *map - Tells you which map GFL ZE is playing outside of the normal #map-tracking channel.
 
 *ping - Makes Maunz respond to you with pong. Very useful for testing ping to the server!
