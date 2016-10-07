@@ -18,6 +18,9 @@ public class MainListener
 	public MainListener()
 	{
 		commands.add(new Map());
+		commands.add(new Ping());
+		commands.add(new Restart());
+		commands.add(new Stop());
 	}
 
 	@EventSubscriber

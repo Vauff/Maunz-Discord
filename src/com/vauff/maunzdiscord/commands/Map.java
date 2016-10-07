@@ -1,18 +1,23 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.ICommand;
-import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.features.GFLTimer;
+import com.vauff.maunzdiscord.core.Util;
 
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
-import sx.blah.discord.util.MessageBuilder;
 
 public class Map implements ICommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		new MessageBuilder(Main.client).withChannel(event.getMessage().getChannel()).withContent("GFL Zombie Escape is currently playing: **" + GFLTimer.lastMap + "**").build();
+		if (!Util.getFileContents("lastmap.txt").equals(""))
+		{
+			Util.msg(event.getMessage().getChannel(), "GFL Zombie Escape is currently playing: **" + Util.getFileContents("lastmap.txt").replace("_", "\\_") + "**");
+		}
+		else
+		{
+			Util.msg(event.getMessage().getChannel(), "Failed to grab map data, maybe the server is down?");
+		}
 	}
 
 	@Override

@@ -6,12 +6,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.MessageBuilder;
+
 public class Util
 {
 	public static boolean devMode;
 	public static String token;
 	public static String mapChannel;
-	
+
 	public static String getJarLocation()
 	{
 		try
@@ -51,5 +55,41 @@ public class Util
 		reader.close();
 
 		return result;
+	}
+
+	public static boolean hasPermission(IUser user)
+	{
+		if (user.getID().equals("129448521861431296"))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public static void msg(IChannel channel, String message)
+	{
+		try
+		{
+			new MessageBuilder(Main.client).withChannel(channel).withContent(message).build();
+		}
+		catch (Exception e)
+		{
+			Main.log.error(e);
+		}
+	}
+	
+	public static void msg(String channel, String message)
+	{
+		try
+		{
+			new MessageBuilder(Main.client).withChannel(channel).withContent(message).build();
+		}
+		catch (Exception e)
+		{
+			Main.log.error(e);
+		}
 	}
 }

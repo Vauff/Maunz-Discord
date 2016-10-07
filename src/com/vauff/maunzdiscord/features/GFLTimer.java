@@ -11,11 +11,8 @@ import org.jsoup.nodes.Document;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
-import sx.blah.discord.util.MessageBuilder;
-
 public class GFLTimer
 {
-	public static String lastMap = "";
 	private static File file = new File(Util.getJarLocation() + "lastmap.txt");
 
 	public static Runnable timer = new Runnable()
@@ -38,13 +35,12 @@ public class GFLTimer
 					}
 				}
 
-				if (!lastMap.equals(map) && !map.equals("") && !Util.getFileContents("lastmap.txt").equals(map))
+				if (!map.equals("") && !Util.getFileContents("lastmap.txt").equals(map))
 				{
-					new MessageBuilder(Main.client).withChannel(Util.mapChannel).withContent("GFL Zombie Escape is now playing: **" + map + "**").build();
-					FileUtils.writeStringToFile(file, map, "UTF-8");
+					Util.msg(Util.mapChannel, "GFL Zombie Escape is now playing: **" + map.replace("_", "\\_") + "**");
 				}
 
-				lastMap = map;
+				FileUtils.writeStringToFile(file, map, "UTF-8");
 			}
 			catch (SocketTimeoutException e)
 			{
