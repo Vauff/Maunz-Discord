@@ -40,7 +40,14 @@ public class GFLTimer
 					Util.msg(Util.mapChannel, "GFL Zombie Escape is now playing: **" + map.replace("_", "\\_") + "**");
 				}
 
-				FileUtils.writeStringToFile(file, map, "UTF-8");
+				if (map.equals(""))
+				{
+					FileUtils.writeStringToFile(file, " ", "UTF-8");
+				}
+				else
+				{
+					FileUtils.writeStringToFile(file, map, "UTF-8");
+				}
 			}
 			catch (SocketTimeoutException e)
 			{

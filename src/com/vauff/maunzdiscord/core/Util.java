@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.apache.commons.io.FileUtils;
+
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.MessageBuilder;
@@ -45,12 +47,14 @@ public class Util
 	public static String getFileContents(String arg) throws IOException
 	{
 		File file = new File(getJarLocation() + arg);
-		BufferedReader reader = new BufferedReader(new FileReader(file));
 
 		if (!file.exists())
 		{
 			file.createNewFile();
+			FileUtils.writeStringToFile(file, " ", "UTF-8");
 		}
+		
+		BufferedReader reader = new BufferedReader(new FileReader(file));
 		String result = reader.readLine();
 		reader.close();
 
