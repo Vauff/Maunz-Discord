@@ -10,7 +10,7 @@ public class Map implements ICommand<MessageReceivedEvent>
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		if (!Util.getFileContents("lastmap.txt").equals(" "))
+		if (!Util.getFileContents("lastmap.txt").endsWith("_OLD-DATA"))
 		{
 			Util.msg(event.getMessage().getChannel(), "GFL Zombie Escape is currently playing: **" + Util.getFileContents("lastmap.txt").replace("_", "\\_") + "**");
 		}
