@@ -1,5 +1,7 @@
 #Maunz-Discord
 
+[![Version](https://badge.fury.io/gh/Vauff%2FMaunz-Discord.svg)](https://badge.fury.io/gh/Vauff%2FMaunz-Discord) [![Dependencies](https://www.versioneye.com/user/projects/58068becc3e528003890dfb8/badge.svg)](https://www.versioneye.com/user/projects/58068becc3e528003890dfb8)
+
 Maunz-Discord is a Discord bot created by me in Java using Discord4J. She is currently only on the GFL ZE discord server. This project is a Discord port of my [IRC bot Maunz](https://github.com/Vauff/Maunz). If you want to help Maunz development feel free to suggest ideas on [Trello](https://trello.com/b/9W7PmTvX/maunz) in the features or if you find any, even bugs in the bugs list :(
 
 #Commands
