@@ -42,11 +42,11 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [slf4j-api](http://www.slf4j.org/) - 1.7.21
 
-[jsoup](https://jsoup.org/) - 1.9.2
+[jsoup](https://jsoup.org/) - 1.10.1
 
 [Discord4J](https://github.com/austinv11/Discord4J) - 2.6.1
 
-[gson](https://github.com/google/gson) - 2.7
+[gson](https://github.com/google/gson) - 2.8.0
 
 [hamcrest-core](http://hamcrest.org/JavaHamcrest/) - 1.3
 
@@ -56,9 +56,9 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [httpmime](https://hc.apache.org/httpcomponents-client-ga/index.html) - 4.5.2
 
-[jetty-io](http://www.eclipse.org/jetty/) - 9.3.12.v20160915
+[jetty-io](http://www.eclipse.org/jetty/) - 9.3.13.v20161014
 
-[jetty-util](http://www.eclipse.org/jetty/) - 9.3.12.v20160915
+[jetty-util](http://www.eclipse.org/jetty/) - 9.3.13.v20161014
 
 [jflac](http://jflac.sourceforge.net/) - 1.3
 
@@ -78,8 +78,8 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [typetools](https://github.com/jhalterman/typetools) - 0.4.7
 
-[websocket-api](https://www.eclipse.org/jetty/) - 9.3.12.v20160915
+[websocket-api](https://www.eclipse.org/jetty/) - 9.3.13.v20161014
 
-[websocket-client](https://www.eclipse.org/jetty/) - 9.3.12.v20160915
+[websocket-client](https://www.eclipse.org/jetty/) - 9.3.13.v20161014
 
-[websocket-common](https://www.eclipse.org/jetty/) - 9.3.12.v20160915
+[websocket-common](https://www.eclipse.org/jetty/) - 9.3.13.v20161014

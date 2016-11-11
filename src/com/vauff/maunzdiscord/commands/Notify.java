@@ -23,53 +23,60 @@ public class Notify implements ICommand<MessageReceivedEvent>
 		}
 		else
 		{
-			File file = new File(Util.getJarLocation() + fileName);
-
-			if (args[1].equals("list"))
+			if (args[1].equals(""))
 			{
-				if (Util.getFileContents(fileName).equals(" "))
-				{
-					Util.msg(event.getMessage().getChannel(), "You do not have any map notifications set! Use *notify <map> to add or remove one");
-				}
-				else
-				{
-					Util.msg(event.getMessage().getChannel(), "You currently have notifications set for the following maps: **" + Util.getFileContents(fileName).replace(",", " | ") + "**");
-				}
+				Util.msg(event.getMessage().getChannel(), "Please keep to one space between arguments to prevent breakage");
 			}
 			else
 			{
-				if (Util.getFileContents(fileName).contains(args[1]))
-				{
-					Util.msg(event.getMessage().getChannel(), "Removing **" + args[1] + "** from your map notifications!");
+				File file = new File(Util.getJarLocation() + fileName);
 
-					if (!Util.getFileContents(fileName).contains(","))
+				if (args[1].equals("list"))
+				{
+					if (Util.getFileContents(fileName).equals(" "))
 					{
-						FileUtils.writeStringToFile(file, " ", "UTF-8");
+						Util.msg(event.getMessage().getChannel(), "You do not have any map notifications set! Use *notify <map> to add or remove one");
 					}
 					else
 					{
-						if (Util.getFileContents(fileName).contains(args[1] + ","))
-						{
-							FileUtils.writeStringToFile(file, Util.getFileContents(fileName).replace(args[1] + ",", ""), "UTF-8");
-						}
-
-						else if (Util.getFileContents(fileName).contains("," + args[1]))
-						{
-							FileUtils.writeStringToFile(file, Util.getFileContents(fileName).replace("," + args[1], ""), "UTF-8");
-						}
+						Util.msg(event.getMessage().getChannel(), "You currently have notifications set for the following maps: **" + Util.getFileContents(fileName).replace(",", " | ").replace("_", "\\_") + "**");
 					}
 				}
 				else
 				{
-					Util.msg(event.getMessage().getChannel(), "Adding **" + args[1] + "** to your map notifications!");
-
-					if (Util.getFileContents(fileName).equals(" "))
+					if (Util.getFileContents(fileName).contains(args[1]))
 					{
-						FileUtils.writeStringToFile(file, args[1], "UTF-8");
+						Util.msg(event.getMessage().getChannel(), "Removing **" + args[1].replace("_", "\\_") + "** from your map notifications!");
+
+						if (!Util.getFileContents(fileName).contains(","))
+						{
+							FileUtils.writeStringToFile(file, " ", "UTF-8");
+						}
+						else
+						{
+							if (Util.getFileContents(fileName).contains(args[1] + ","))
+							{
+								FileUtils.writeStringToFile(file, Util.getFileContents(fileName).replace(args[1] + ",", ""), "UTF-8");
+							}
+
+							else if (Util.getFileContents(fileName).contains("," + args[1]))
+							{
+								FileUtils.writeStringToFile(file, Util.getFileContents(fileName).replace("," + args[1], ""), "UTF-8");
+							}
+						}
 					}
 					else
 					{
-						FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + args[1], "UTF-8");
+						Util.msg(event.getMessage().getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
+
+						if (Util.getFileContents(fileName).equals(" "))
+						{
+							FileUtils.writeStringToFile(file, args[1], "UTF-8");
+						}
+						else
+						{
+							FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + args[1], "UTF-8");
+						}
 					}
 				}
 			}
