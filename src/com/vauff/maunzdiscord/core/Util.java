@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
 
@@ -59,6 +62,55 @@ public class Util
 		reader.close();
 
 		return result;
+	}
+	
+	public static String getTime()
+	{
+		return getTime(System.currentTimeMillis());
+	}
+
+	public static String getTime(long time)
+	{
+		Date date = new Date(time);
+		SimpleDateFormat sdf = new SimpleDateFormat("EEEE MMMM d'" + getOrdinal(date.getDate()) + "', yyyy, h:mm a z");
+
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return sdf.format(date);
+	}
+	
+	public static String getUptime()
+	{
+		MainListener.uptime.split();
+
+		String[] uptimeraw = MainListener.uptime.toSplitString().split("\\.");
+		int hours = Integer.parseInt(uptimeraw[0].split(":")[0]);
+		int days = (hours / 24) >> 0;
+
+		hours = hours % 24;
+
+		return days + ":" + (hours < 10 ? "0" + hours : hours) + ":" + uptimeraw[0].split(":")[1] + ":" + uptimeraw[0].split(":")[2];
+	}
+	
+	public static String getOrdinal(int n)
+	{
+		if (n >= 11 && n <= 13)
+		{
+			return "th";
+		}
+		else
+		{
+			switch (n % 10)
+			{
+			case 1:
+				return "st";
+			case 2:
+				return "nd";
+			case 3:
+				return "rd";
+			default:
+				return "th";
+			}
+		}
 	}
 
 	public static boolean hasPermission(IUser user)

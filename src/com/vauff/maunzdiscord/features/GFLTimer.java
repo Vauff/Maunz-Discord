@@ -11,6 +11,8 @@ import org.jsoup.nodes.Document;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
+import sx.blah.discord.handle.obj.IUser;
+
 public class GFLTimer
 {
 	private static File file = new File(Util.getJarLocation() + "lastmap.txt");
@@ -35,9 +37,24 @@ public class GFLTimer
 					}
 				}
 
+				map.replace("ze_Paranoid_Rezurrection_v11_9_", "ze_Paranoid_Rezurrection_v11_9_th10").replace("ze_industrial_dejavu_v3_3_3_e2_", "ze_industrial_dejavu_v3_3_3_e2_d");
+
 				if (!map.equals("") && !Util.getFileContents("lastmap.txt").equals(map) && !Util.getFileContents("lastmap.txt").equals(map + "_OLD-DATA"))
 				{
-					Util.msg(Util.mapChannel, "GFL Zombie Escape is now playing: **" + map.replace("_", "\\_") + "**");
+					String mentions = "";
+					File[] directoryListing = new File(Util.getJarLocation() + "map-notification-data/").listFiles();
+
+					for (File dataFile : directoryListing)
+					{
+						if (FileUtils.readFileToString(dataFile, "UTF-8").contains(map))
+						{
+							IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
+							
+							mentions = mentions + user.mention() + " ";
+						}
+					}
+
+					Util.msg(Util.mapChannel, mentions + "GFL Zombie Escape is now playing: **" + map.replace("_", "\\_") + "**");
 				}
 
 				if (map.equals(""))
@@ -55,7 +72,7 @@ public class GFLTimer
 			}
 			catch (Exception e)
 			{
-				Main.log.error(e);
+				Main.log.error("", e);
 			}
 		}
 	};

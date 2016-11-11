@@ -8,6 +8,12 @@ Maunz-Discord is a Discord bot created by me in Java using Discord4J. She is cur
 
 Italic ones cannot be done by everyone and are restricted to just me.
 
+*about - Gives information about Maunz such as version and uptime.
+
+*help \[command] - Links you to the README or gives command help if a command is given. Please note that command specific help defaults to channel syntax by default.
+
+*notify <list/mapname> - Lets you list, add or remove your ZE map notifications.
+
 *map - Tells you which map GFL ZE is playing outside of the normal #map-tracking channel.
 
 *ping - Makes Maunz respond to you with pong. Very useful for testing ping to the server!
@@ -22,17 +28,17 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [Apache Commons Codec](https://commons.apache.org/proper/commons-codec/) - 1.10
 
-[Apache Commons Lang](https://commons.apache.org/proper/commons-lang/) - 3.4
+[Apache Commons Lang](https://commons.apache.org/proper/commons-lang/) - 3.5
 
 [Apache Commons IO](https://commons.apache.org/proper/commons-io/) - 2.5
 
 [Apache Commons Logging](https://commons.apache.org/proper/commons-logging/) - 1.2
 
-[log4j-api](http://logging.apache.org/log4j/2.x/) - 2.6.2
+[log4j-api](http://logging.apache.org/log4j/2.x/) - 2.7
 
-[log4j-core](http://logging.apache.org/log4j/2.x/) - 2.6.2
+[log4j-core](http://logging.apache.org/log4j/2.x/) - 2.7
 
-[log4j-slf4j-impl](https://logging.apache.org/log4j/2.0/log4j-slf4j-impl/index.html) - 2.6.2
+[log4j-slf4j-impl](https://logging.apache.org/log4j/2.0/log4j-slf4j-impl/index.html) - 2.7
 
 [slf4j-api](http://www.slf4j.org/) - 1.7.21
 
@@ -56,7 +62,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [jflac](http://jflac.sourceforge.net/) - 1.3
 
-[jlayer](http://www.javazoom.net/javalayer/javalayer.html) - 1.0.1.4
+[jlayer](http://www.javazoom.net/javalayer/javalayer.html) - 1.0.1-2
 
 [jna](https://github.com/java-native-access/jna) - 4.2.2
 
@@ -64,11 +70,11 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [junit](http://junit.org/junit4/) - 4.12
 
-[mp3spi](http://www.javazoom.net/mp3spi/mp3spi.html) - 1.9.5.4
+[mp3spi](http://www.javazoom.net/mp3spi/mp3spi.html) - 1.9.5-2
 
 [tritonus-dsp](http://www.tritonus.org/) - 0.3.6
 
-[tritonus-share](http://www.tritonus.org/) - 0.3.7.4
+[tritonus-share](http://www.tritonus.org/) - 0.3.7-3
 
 [typetools](https://github.com/jhalterman/typetools) - 0.4.7
 
