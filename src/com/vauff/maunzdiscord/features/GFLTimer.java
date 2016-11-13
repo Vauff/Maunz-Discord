@@ -37,8 +37,11 @@ public class GFLTimer
 					}
 				}
 
-				map = map.replace("ze_Paranoid_Rezurrection_v11_9_", "ze_Paranoid_Rezurrection_v11_9_th10").replace("ze_industrial_dejavu_v3_3_3_e2_", "ze_industrial_dejavu_v3_3_3_e2_d");
-
+				if (map.equals("ze_Paranoid_Rezurrection_v11_9_") || map.equals("ze_industrial_dejavu_v3_3_3_e2_"))
+				{
+					map = map.replace("ze_Paranoid_Rezurrection_v11_9_", "ze_Paranoid_Rezurrection_v11_9_th10").replace("ze_industrial_dejavu_v3_3_3_e2_", "ze_industrial_dejavu_v3_3_3_e2_d");
+				}
+				
 				if (!map.equals("") && !Util.getFileContents("lastmap.txt").equals(map) && !Util.getFileContents("lastmap.txt").equals(map + "_OLD-DATA"))
 				{
 					String mentions = "";
@@ -49,7 +52,7 @@ public class GFLTimer
 						if (FileUtils.readFileToString(dataFile, "UTF-8").contains(map))
 						{
 							IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
-							
+
 							mentions = mentions + user.mention() + " ";
 						}
 					}

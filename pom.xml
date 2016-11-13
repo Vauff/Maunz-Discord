@@ -3,9 +3,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.vauff.maunz-discord</groupId>
 	<artifactId>maunz-discord</artifactId>
-	<version>1.3.1</version>
+	<version>1.3.2</version>
 	<name>Maunz</name>
-	<description>Maunz is an Discord bot created by Vauff</description>
+	<description>Maunz is a Discord bot created by Vauff</description>
 	<url>https://github.com/Vauff/Maunz-Discord</url>
 	<build>
 		<finalName>Maunz</finalName>
