@@ -12,7 +12,7 @@ Italic ones cannot be done by everyone and are restricted to just me.
 
 *help \[command] - Links you to the README or gives command help if a command is given. Please note that command specific help defaults to channel syntax by default.
 
-*notify <list/mapname> - Lets you list, add or remove your ZE map notifications.
+*notify <list/confirm/mapname> - Lets you list, add or remove your ZE map notifications.
 
 *map - Tells you which map GFL ZE is playing outside of the normal #map-tracking channel.
 
@@ -56,9 +56,9 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [httpmime](https://hc.apache.org/httpcomponents-client-ga/index.html) - 4.5.2
 
-[jetty-io](http://www.eclipse.org/jetty/) - 9.3.13.v20161014
+[jetty-io](http://www.eclipse.org/jetty/) - 9.3.14.v20161028
 
-[jetty-util](http://www.eclipse.org/jetty/) - 9.3.13.v20161014
+[jetty-util](http://www.eclipse.org/jetty/) - 9.3.14.v20161028
 
 [jflac](http://jflac.sourceforge.net/) - 1.3
 
@@ -78,8 +78,8 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [typetools](https://github.com/jhalterman/typetools) - 0.4.7
 
-[websocket-api](https://www.eclipse.org/jetty/) - 9.3.13.v20161014
+[websocket-api](https://www.eclipse.org/jetty/) - 9.3.14.v20161028
 
-[websocket-client](https://www.eclipse.org/jetty/) - 9.3.13.v20161014
+[websocket-client](https://www.eclipse.org/jetty/) - 9.3.14.v20161028
 
-[websocket-common](https://www.eclipse.org/jetty/) - 9.3.13.v20161014
+[websocket-common](https://www.eclipse.org/jetty/) - 9.3.14.v20161028

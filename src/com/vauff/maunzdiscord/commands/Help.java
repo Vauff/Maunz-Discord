@@ -37,7 +37,7 @@ public class Help implements ICommand<MessageReceivedEvent>
 			return "Tells you which map GFL ZE is playing outside of the normal #map-tracking channel. **Usage: *map**";
 		case "*notify":
 		case "notify":
-			return "Lets you list, add or remove your ZE map notifications. **Usage: *notify <list/mapname>**";
+			return "Lets you list, add or remove your ZE map notifications. **Usage: *notify <list/confirm/mapname>**";
 		case "*ping":
 		case "ping":
 			return "Makes Maunz respond to you with pong. Very useful for testing ping to the IRC server! **Usage: *ping**";

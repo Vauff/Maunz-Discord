@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.SocketTimeoutException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,6 +17,7 @@ import sx.blah.discord.handle.obj.IUser;
 public class GFLTimer
 {
 	private static File file = new File(Util.getJarLocation() + "lastmap.txt");
+	private static File mapsList = new File(Util.getJarLocation() + "maps.txt");
 
 	public static Runnable timer = new Runnable()
 	{
@@ -37,19 +39,20 @@ public class GFLTimer
 					}
 				}
 
-				if (map.equals("ze_Paranoid_Rezurrection_v11_9_") || map.equals("ze_industrial_dejavu_v3_3_3_e2_"))
+				if (map.equalsIgnoreCase("ze_Paranoid_Rezurrection_v11_9_") || map.equalsIgnoreCase("ze_industrial_dejavu_v3_3_3_e2_"))
 				{
-					map = map.replace("ze_Paranoid_Rezurrection_v11_9_", "ze_Paranoid_Rezurrection_v11_9_th10").replace("ze_industrial_dejavu_v3_3_3_e2_", "ze_industrial_dejavu_v3_3_3_e2_d");
+					map = StringUtils.replaceIgnoreCase(map, "ze_Paranoid_Rezurrection_v11_9_", "ze_Paranoid_Rezurrection_v11_9_th10");
+					map = StringUtils.replaceIgnoreCase(map, "ze_industrial_dejavu_v3_3_3_e2_", "ze_industrial_dejavu_v3_3_3_e2_d");
 				}
-				
-				if (!map.equals("") && !Util.getFileContents("lastmap.txt").equals(map) && !Util.getFileContents("lastmap.txt").equals(map + "_OLD-DATA"))
+
+				if (!map.equals("") && !Util.getFileContents("lastmap.txt").equalsIgnoreCase(map) && !Util.getFileContents("lastmap.txt").equalsIgnoreCase(map + "_OLD-DATA"))
 				{
 					String mentions = "";
 					File[] directoryListing = new File(Util.getJarLocation() + "map-notification-data/").listFiles();
 
 					for (File dataFile : directoryListing)
 					{
-						if (FileUtils.readFileToString(dataFile, "UTF-8").contains(map))
+						if (StringUtils.containsIgnoreCase(FileUtils.readFileToString(dataFile, "UTF-8"), map))
 						{
 							IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
 
@@ -58,6 +61,18 @@ public class GFLTimer
 					}
 
 					Util.msg(Util.mapChannel, mentions + "GFL Zombie Escape is now playing: **" + map.replace("_", "\\_") + "**");
+
+					if (!StringUtils.containsIgnoreCase(Util.getFileContents("maps.txt"), map))
+					{
+						if (Util.getFileContents("maps.txt").equals(" "))
+						{
+							FileUtils.writeStringToFile(mapsList, map, "UTF-8");
+						}
+						else
+						{
+							FileUtils.writeStringToFile(mapsList, Util.getFileContents("maps.txt") + "," + map, "UTF-8");
+						}
+					}
 				}
 
 				if (map.equals(""))
