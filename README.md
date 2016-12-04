@@ -6,13 +6,13 @@ Maunz-Discord is a Discord bot created by me in Java using Discord4J. She is cur
 
 #Commands
 
-Italic ones cannot be done by everyone and are restricted to just me.
+Italic ones cannot be done by everyone and are restricted to just me. [] indicates that the argument is optional, \<> indicates the argument is required.
 
 *about - Gives information about Maunz such as version and uptime.
 
 *help \[command] - Links you to the README or gives command help if a command is given. Please note that command specific help defaults to channel syntax by default.
 
-*notify <list/confirm/mapname> - Lets you list, add or remove your ZE map notifications.
+*notify \<list/confirm/mapname> - Lets you list, add or remove your ZE map notifications.
 
 *map - Tells you which map GFL ZE is playing outside of the normal #map-tracking channel.
 
