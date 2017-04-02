@@ -1,9 +1,14 @@
 package com.vauff.maunzdiscord.commands;
 
+import java.awt.Color;
+
 import com.vauff.maunzdiscord.core.ICommand;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.features.GFLTimer;
 
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
 
 public class Map implements ICommand<MessageReceivedEvent>
 {
@@ -12,7 +17,9 @@ public class Map implements ICommand<MessageReceivedEvent>
 	{
 		if (!Util.getFileContents("lastmap.txt").endsWith("_OLD-DATA"))
 		{
-			Util.msg(event.getMessage().getChannel(), "GFL Zombie Escape is currently playing: **" + Util.getFileContents("lastmap.txt").replace("_", "\\_") + "**");
+			String map = Util.getFileContents("lastmap.txt");
+			EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withTimestamp(GFLTimer.timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Currently Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + GFLTimer.players + "**\nQuick Join: **steam://connect/216.52.148.47:27015**").build();
+			Util.msg(event.getMessage().getChannel(), embed);
 		}
 		else
 		{

@@ -21,18 +21,24 @@ public class MainListener
 	public MainListener()
 	{
 		commands.add(new About());
+		commands.add(new Disable());
+		commands.add(new Enable());
 		commands.add(new Help());
 		commands.add(new Map());
 		commands.add(new Notify());
 		commands.add(new Ping());
 		commands.add(new Restart());
+		commands.add(new Source());
 		commands.add(new Stop());
+		commands.add(new Trello());
 	}
 
 	@EventSubscriber
 	public void onReady(ReadyEvent event)
 	{
 		uptime.start();
+		GFLTimer.timestamp = System.currentTimeMillis();
+		Util.mapChannel = Main.client.getChannelByID(Main.mapChannelID);
 		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(GFLTimer.timer, 0, 60, TimeUnit.SECONDS);
 	}
 
@@ -43,17 +49,22 @@ public class MainListener
 		{
 			String cmdName = event.getMessage().getContent().split(" ")[0];
 
-			for (ICommand<MessageReceivedEvent> cmd : commands)
+			if ((Util.devMode && event.getMessage().getChannel().getID().equals("252537749859598338") || event.getMessage().getChannel().isPrivate()) || (Util.devMode == false && !event.getMessage().getChannel().getID().equals("252537749859598338")))
 			{
-
-				for (String s : cmd.getAliases())
+				for (ICommand<MessageReceivedEvent> cmd : commands)
 				{
-					if (cmdName.equalsIgnoreCase(s))
+					if (Util.isEnabled || cmd instanceof Enable || cmd instanceof Disable)
 					{
-						cmd.exe(event);
+						for (String s : cmd.getAliases())
+						{
+							if (cmdName.equalsIgnoreCase(s))
+							{
+								cmd.exe(event);
+							}
+						}
+
 					}
 				}
-
 			}
 		}
 		catch (Exception e)

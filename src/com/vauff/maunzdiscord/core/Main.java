@@ -12,7 +12,8 @@ import sx.blah.discord.util.DiscordException;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "1.3.3";
+	public static String version = "1.4";
+	public static String mapChannelID = "";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -26,22 +27,22 @@ public class Main
 			oldLogFile.delete();
 			logFile.renameTo(oldLogFile);
 			log = LogManager.getLogger(Main.class);
-			
+
 			if (args.length >= 1 && args[0].equals("-dev"))
 			{
 				log.info("Starting Maunz-Discord v" + version + " in dev mode");
 				Util.token = Passwords.discordDevToken;
-				Util.mapChannel = "230778620300361728";
+				mapChannelID = "252537749859598338";
 				Util.devMode = true;
 			}
 			else
 			{
 				log.info("Starting Maunz-Discord v" + version);
 				Util.token = Passwords.discordToken;
-				Util.mapChannel = "223674490876329984";
+				mapChannelID = "223674490876329984";
 				Util.devMode = false;
 			}
-			
+
 			client = new ClientBuilder().withToken(Util.token).login();
 			client.getDispatcher().registerListener(new MainListener());
 		}

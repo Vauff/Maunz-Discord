@@ -10,16 +10,18 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.MessageBuilder;
 
 public class Util
 {
+	public static boolean isEnabled = true;
 	public static boolean devMode;
 	public static String token;
-	public static String mapChannel;
+	public static IChannel mapChannel;
 
 	public static String getJarLocation()
 	{
@@ -56,14 +58,14 @@ public class Util
 			file.createNewFile();
 			FileUtils.writeStringToFile(file, " ", "UTF-8");
 		}
-		
+
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		String result = reader.readLine();
 		reader.close();
 
 		return result;
 	}
-	
+
 	public static String getTime()
 	{
 		return getTime(System.currentTimeMillis());
@@ -77,7 +79,7 @@ public class Util
 		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return sdf.format(date);
 	}
-	
+
 	public static String getUptime()
 	{
 		MainListener.uptime.split();
@@ -90,7 +92,7 @@ public class Util
 
 		return days + ":" + (hours < 10 ? "0" + hours : hours) + ":" + uptimeraw[0].split(":")[1] + ":" + uptimeraw[0].split(":")[2];
 	}
-	
+
 	public static String getOrdinal(int n)
 	{
 		if (n >= 11 && n <= 13)
@@ -129,19 +131,19 @@ public class Util
 	{
 		try
 		{
-			new MessageBuilder(Main.client).withChannel(channel).withContent(message).build();
+			channel.sendMessage(message);
 		}
 		catch (Exception e)
 		{
 			Main.log.error(e);
 		}
 	}
-	
-	public static void msg(String channel, String message)
+
+	public static void msg(IChannel channel, EmbedObject message)
 	{
 		try
 		{
-			new MessageBuilder(Main.client).withChannel(channel).withContent(message).build();
+			channel.sendMessage("", message, true);
 		}
 		catch (Exception e)
 		{

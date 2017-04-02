@@ -1,7 +1,10 @@
 package com.vauff.maunzdiscord.features;
 
+import java.awt.Color;
 import java.io.File;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,10 +15,14 @@ import org.jsoup.nodes.Document;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 
 public class GFLTimer
 {
+	public static String players = "Error";
+	public static long timestamp = 0;
 	private static File file = new File(Util.getJarLocation() + "lastmap.txt");
 	private static File mapsList = new File(Util.getJarLocation() + "maps.txt");
 
@@ -25,63 +32,92 @@ public class GFLTimer
 		{
 			try
 			{
-				Document doc = Jsoup.connect("https://stats.gflclan.com/hlstats.php?game=csgoze").timeout(10000).get();
-				String html = doc.select("td[class=game-table-cell]").text();
-				String[] htmlSplit = html.split(" ");
-				String map = "";
-
-				for (String m : htmlSplit)
+				if (Util.isEnabled)
 				{
-					if (m.contains("_"))
+					Document mapDoc = Jsoup.connect("https://stats.gflclan.com/hlstats.php?game=csgoze").timeout(10000).get();
+					String mapHtml = mapDoc.select("td[class=game-table-cell]").text();
+					String[] mapHtmlSplit = mapHtml.split(" ");
+					String map = "";
+					Document playersDoc = Jsoup.connect("https://gflclan.com/index.php?app=gflcore&module=servers&controller=information&id=1").timeout(10000).get();
+					String playersHtml = playersDoc.select("li[class=ipsResponsive_hidePhone]").text();
+					String[] playersHtmlSplit = playersHtml.split(" ");
+					players = playersHtmlSplit[2];
+
+					for (String m : mapHtmlSplit)
 					{
-						map = m;
-						break;
-					}
-				}
-
-				if (map.equalsIgnoreCase("ze_Paranoid_Rezurrection_v11_9_") || map.equalsIgnoreCase("ze_industrial_dejavu_v3_3_3_e2_"))
-				{
-					map = StringUtils.replaceIgnoreCase(map, "ze_Paranoid_Rezurrection_v11_9_", "ze_Paranoid_Rezurrection_v11_9_th10");
-					map = StringUtils.replaceIgnoreCase(map, "ze_industrial_dejavu_v3_3_3_e2_", "ze_industrial_dejavu_v3_3_3_e2_d");
-				}
-
-				if (!map.equals("") && !Util.getFileContents("lastmap.txt").equalsIgnoreCase(map) && !Util.getFileContents("lastmap.txt").equalsIgnoreCase(map + "_OLD-DATA"))
-				{
-					String mentions = "";
-					File[] directoryListing = new File(Util.getJarLocation() + "map-notification-data/").listFiles();
-
-					for (File dataFile : directoryListing)
-					{
-						if (StringUtils.containsIgnoreCase(FileUtils.readFileToString(dataFile, "UTF-8"), map))
+						if (m.contains("_"))
 						{
-							IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
-
-							mentions = mentions + user.mention() + " ";
+							map = m;
+							break;
 						}
 					}
 
-					Util.msg(Util.mapChannel, mentions + "GFL Zombie Escape is now playing: **" + map.replace("_", "\\_") + "**");
+					List<String> cutMapNames = Arrays.asList("ze_Paranoid_Rezurrection_v11_9_", "ze_industrial_dejavu_v3_3_3_e2_", "ze_dangerous_waters_in_christma", "ze_destruction_of_exorath_v4_li", "ze_insensible_sr8gm6yj12hs7_rg_", "ze_ffxii_westersand_v7_2_e2_fix");
+					List<String> fixedMapNames = Arrays.asList("ze_Paranoid_Rezurrection_v11_9_th10", "ze_industrial_dejavu_v3_3_3_e2_d", "ze_dangerous_waters_in_christmas_day", "ze_destruction_of_exorath_v4_lite", "ze_insensible_sr8gm6yj12hs7_rg_v7_1", "ze_ffxii_westersand_v7_2_e2_fix3");
+					int iteration = -1;
 
-					if (!StringUtils.containsIgnoreCase(Util.getFileContents("maps.txt"), map))
+					for (String cutMap : cutMapNames)
 					{
-						if (Util.getFileContents("maps.txt").equals(" "))
+						iteration++;
+
+						if (cutMap.equals(map))
 						{
-							FileUtils.writeStringToFile(mapsList, map, "UTF-8");
-						}
-						else
-						{
-							FileUtils.writeStringToFile(mapsList, Util.getFileContents("maps.txt") + "," + map, "UTF-8");
+							map = fixedMapNames.get(iteration);
 						}
 					}
-				}
 
-				if (map.equals(""))
-				{
-					FileUtils.writeStringToFile(file, Util.getFileContents("lastmap.txt") + "_OLD-DATA", "UTF-8");
-				}
-				else
-				{
-					FileUtils.writeStringToFile(file, map, "UTF-8");
+					if (!map.equals("") && !Util.getFileContents("lastmap.txt").equalsIgnoreCase(map) && !Util.getFileContents("lastmap.txt").equalsIgnoreCase(map + "_OLD-DATA"))
+					{
+						timestamp = System.currentTimeMillis();
+						File[] directoryListing = new File(Util.getJarLocation() + "map-notification-data/").listFiles();
+
+						EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withTimestamp(timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/216.52.148.47:27015**").build();
+						Util.msg(Util.mapChannel, embed);
+
+						for (File dataFile : directoryListing)
+						{
+							String[] mapNotifications = FileUtils.readFileToString(dataFile, "UTF-8").split(",");
+
+							for (String mapNotification : mapNotifications)
+							{
+								if (mapNotification.equalsIgnoreCase(map))
+								{
+									try
+									{
+										IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
+										Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+									}
+									catch (NullPointerException e)
+									{
+										// This means that either a bad user ID was
+										// provided by the notification file, or the
+										// users account doesn't exist anymore
+									}
+								}
+							}
+						}
+
+						if (!StringUtils.containsIgnoreCase(Util.getFileContents("maps.txt"), map))
+						{
+							if (Util.getFileContents("maps.txt").equals(" "))
+							{
+								FileUtils.writeStringToFile(mapsList, map, "UTF-8");
+							}
+							else
+							{
+								FileUtils.writeStringToFile(mapsList, Util.getFileContents("maps.txt") + "," + map, "UTF-8");
+							}
+						}
+					}
+
+					if (map.equals(""))
+					{
+						FileUtils.writeStringToFile(file, Util.getFileContents("lastmap.txt") + "_OLD-DATA", "UTF-8");
+					}
+					else
+					{
+						FileUtils.writeStringToFile(file, map, "UTF-8");
+					}
 				}
 			}
 			catch (SocketTimeoutException e)
