@@ -16,7 +16,7 @@ _*enable_ - Enables Maunz.
 
 *help \[command] - Links you to the README or gives command help if a command is given. Please note that command specific help defaults to channel syntax by default.
 
-*notify \<list/confirm/wipe/map> - Lets you list, add or remove your ZE map notifications.
+*notify \<list/confirm/mapname> - Lets you list, add or remove your ZE map notifications.
 
 *map - Tells you which map GFL ZE is playing outside of the normal #map-tracking channel.
 
@@ -94,4 +94,4 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [websocket-client](https://www.eclipse.org/jetty/) - 9.4.3.v20170317
 
-[websocket-common](https://www.eclipse.org/jetty/) - 9.4.3.v20170317
+[websocket-common](https://www.eclipse.org/jetty/) - 9.3.14.v20161028
