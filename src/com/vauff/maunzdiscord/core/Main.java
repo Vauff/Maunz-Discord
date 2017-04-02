@@ -12,7 +12,7 @@ import sx.blah.discord.util.DiscordException;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "1.4.1";
+	public static String version = "1.4.2";
 	public static String mapChannelID = "";
 	public static Logger log;
 
