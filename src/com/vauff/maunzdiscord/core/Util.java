@@ -143,7 +143,7 @@ public class Util
 	{
 		try
 		{
-			channel.sendMessage("", message, true);
+			channel.sendMessage("", message, false);
 		}
 		catch (Exception e)
 		{
