@@ -1,10 +1,10 @@
-#Maunz-Discord
+# Maunz-Discord
 
 [![Version](https://badge.fury.io/gh/Vauff%2FMaunz-Discord.svg)](https://badge.fury.io/gh/Vauff%2FMaunz-Discord) [![Dependencies](https://www.versioneye.com/user/projects/58068becc3e528003890dfb8/badge.svg)](https://www.versioneye.com/user/projects/58068becc3e528003890dfb8)
 
 Maunz-Discord is a Discord bot created by Vauff in Java using Discord4J. She is currently only on the GFL ZE discord server. This project is a Discord port of my [IRC bot Maunz](https://github.com/Vauff/Maunz). If you want to help Maunz development feel free to suggest ideas on [Trello](https://trello.com/b/9W7PmTvX/maunz) in the features or if you find any, even bugs in the bugs list :(
 
-#Commands
+# Commands
 
 Italic ones cannot be done by everyone and are restricted to just me. [] indicates that the argument is optional, \<> indicates the argument is required.
 
@@ -30,7 +30,7 @@ _*stop_ - Stops Maunz.
 
 *trello - Links you to the Trello board of Maunz. Feature requests and bug reports can be made here.
 
-#Dependencies
+# Dependencies
 
 Maunz depends on some java libraries to function, most are Discord4J dependencies, but some are mine that I've added for some features. These can be downloaded manually or automatically with Maven using Maunz's pom.xml. They are with their versions listed below.
 
