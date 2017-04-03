@@ -30,6 +30,8 @@ _*stop_ - Stops Maunz.
 
 *trello - Links you to the Trello board of Maunz. Feature requests and bug reports can be made here.
 
+*isitdown \<hostname> - Tells you if the given website is down or not.
+
 # Dependencies
 
 Maunz depends on some java libraries to function, most are Discord4J dependencies, but some are mine that I've added for some features. These can be downloaded manually or automatically with Maven using Maunz's pom.xml. They are with their versions listed below.

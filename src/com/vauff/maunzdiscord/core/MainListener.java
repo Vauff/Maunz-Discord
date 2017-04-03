@@ -31,6 +31,7 @@ public class MainListener
 		commands.add(new Source());
 		commands.add(new Stop());
 		commands.add(new Trello());
+		commands.add(new IsItDown());
 	}
 
 	@EventSubscriber

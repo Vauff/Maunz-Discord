@@ -59,6 +59,9 @@ public class Help implements ICommand<MessageReceivedEvent>
 		case "*trello":
 		case "trello":
 			return "Links you to the Trello board of Maunz. Feature requests and bug reports can be made here. Usage: *trello";
+		case "*isitdown":
+		case "isitdown":
+			return "Tells you if the given website is down or not. **Usage: *isitdown <hostname>**";
 		default:
 			return "I don't recognize the command " + args[1] + "!";
 		}
