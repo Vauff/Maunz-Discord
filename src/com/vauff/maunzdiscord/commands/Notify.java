@@ -94,7 +94,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 
 					for (String mapNotification : mapNotifications)
 					{
-						if (mapNotification.equals(args[1]))
+						if (mapNotification.equalsIgnoreCase(args[1]))
 						{
 							mapSet = true;
 						}
@@ -102,7 +102,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 					
 					for (String map : maps)
 					{
-						if (map.equals(args[1]))
+						if (map.equalsIgnoreCase(args[1]))
 						{
 							mapExists = true;
 						}

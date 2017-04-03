@@ -60,7 +60,7 @@ public class GFLTimer
 					{
 						iteration++;
 
-						if (cutMap.equals(map))
+						if (cutMap.equalsIgnoreCase(map))
 						{
 							map = fixedMapNames.get(iteration);
 						}
