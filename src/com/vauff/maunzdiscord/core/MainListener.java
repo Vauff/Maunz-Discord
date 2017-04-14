@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +37,13 @@ public class MainListener
 	@EventSubscriber
 	public void onReady(ReadyEvent event)
 	{
+		File folder = new File(Util.getJarLocation() + "map-notification-data/");
+
+		if (!folder.isDirectory())
+		{
+			folder.mkdir();
+		}
+		
 		uptime.start();
 		GFLTimer.timestamp = System.currentTimeMillis();
 		Util.mapChannel = Main.client.getChannelByID(Main.mapChannelID);
