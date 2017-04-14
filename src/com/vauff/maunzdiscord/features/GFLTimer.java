@@ -41,7 +41,11 @@ public class GFLTimer
 					Document playersDoc = Jsoup.connect("https://gflclan.com/index.php?app=gflcore&module=servers&controller=information&id=1").timeout(10000).get();
 					String playersHtml = playersDoc.select("li[class=ipsResponsive_hidePhone]").text();
 					String[] playersHtmlSplit = playersHtml.split(" ");
-					players = playersHtmlSplit[2];
+
+					if (!playersHtmlSplit[2].equals(""))
+					{
+						players = playersHtmlSplit[2];
+					}
 
 					for (String m : mapHtmlSplit)
 					{
@@ -52,8 +56,8 @@ public class GFLTimer
 						}
 					}
 
-					List<String> cutMapNames = Arrays.asList("ze_Paranoid_Rezurrection_v11_9_", "ze_industrial_dejavu_v3_3_3_e2_", "ze_dangerous_waters_in_christma", "ze_destruction_of_exorath_v4_li", "ze_insensible_sr8gm6yj12hs7_rg_", "ze_ffxii_westersand_v7_2_e2_fix");
-					List<String> fixedMapNames = Arrays.asList("ze_Paranoid_Rezurrection_v11_9_th10", "ze_industrial_dejavu_v3_3_3_e2_d", "ze_dangerous_waters_in_christmas_day", "ze_destruction_of_exorath_v4_lite", "ze_insensible_sr8gm6yj12hs7_rg_v7_1", "ze_ffxii_westersand_v7_2_e2_fix3");
+					List<String> cutMapNames = Arrays.asList("ze_paranoid_rezurrection_v11_9_", "ze_industrial_dejavu_v3_3_3_e2_", "ze_dangerous_waters_in_christma", "ze_destruction_of_exorath_v4_li", "ze_insensible_sr8gm6yj12hs7_rg_", "ze_ffxii_westersand_v7_2_e2_fix");
+					List<String> fixedMapNames = Arrays.asList("ze_paranoid_rezurrection_v11_9_ps12", "ze_industrial_dejavu_v3_3_3_e2_d", "ze_dangerous_waters_in_christmas_day", "ze_destruction_of_exorath_v4_lite", "ze_insensible_sr8gm6yj12hs7_rg_v9_3_1", "ze_ffxii_westersand_v7_2_e2_fix3");
 					int iteration = -1;
 
 					for (String cutMap : cutMapNames)
