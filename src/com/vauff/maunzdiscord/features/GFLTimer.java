@@ -73,6 +73,7 @@ public class GFLTimer
 					if (!map.equals("") && !Util.getFileContents("lastmap.txt").equalsIgnoreCase(map) && !Util.getFileContents("lastmap.txt").equalsIgnoreCase(map + "_OLD-DATA"))
 					{
 						timestamp = System.currentTimeMillis();
+						String mentions = "";
 						File[] directoryListing = new File(Util.getJarLocation() + "map-notification-data/").listFiles();
 
 						EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withTimestamp(timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/216.52.148.47:27015**").build();
@@ -89,16 +90,23 @@ public class GFLTimer
 									try
 									{
 										IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
-										Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+										// Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+										mentions = mentions + user.mention() + " ";
 									}
 									catch (NullPointerException e)
 									{
 										// This means that either a bad user ID was
-										// provided by the notification file, or the
-										// users account doesn't exist anymore
+										// provided by the notification file, the
+										// users account doesn't exist anymore, or
+										// they have left the server
 									}
 								}
 							}
+						}
+
+						if (!mentions.equals(""))
+						{
+							Util.msg(Util.mapChannel, mentions);
 						}
 
 						if (!StringUtils.containsIgnoreCase(Util.getFileContents("maps.txt"), map))

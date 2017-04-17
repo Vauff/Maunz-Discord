@@ -6,7 +6,7 @@ Maunz-Discord is a Discord bot created by Vauff in Java using Discord4J. She is 
 
 # Commands
 
-Italic ones cannot be done by everyone and are restricted to just me. [] indicates that the argument is optional, \<> indicates the argument is required.
+Italic ones cannot be done by everyone and are restricted to just Vauff. [] indicates that the argument is optional, \<> indicates the argument is required.
 
 *about - Gives information about Maunz such as version and uptime.
 
@@ -94,4 +94,4 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [websocket-client](https://www.eclipse.org/jetty/) - 9.4.3.v20170317
 
-[websocket-common](https://www.eclipse.org/jetty/) - 9.3.14.v20161028
+[websocket-common](https://www.eclipse.org/jetty/) - 9.4.3.v20170317

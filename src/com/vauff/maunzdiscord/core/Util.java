@@ -117,14 +117,7 @@ public class Util
 
 	public static boolean hasPermission(IUser user)
 	{
-		if (user.getID().equals("129448521861431296"))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return user.getID().equals("129448521861431296");
 	}
 
 	public static void msg(IChannel channel, String message)
