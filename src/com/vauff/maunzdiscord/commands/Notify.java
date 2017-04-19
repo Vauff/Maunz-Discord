@@ -20,6 +20,12 @@ public class Notify implements ICommand<MessageReceivedEvent>
 	{
 		String[] args = event.getMessage().getContent().split(" ");
 		String fileName = "map-notification-data/" + event.getMessage().getAuthor().getID() + ".txt";
+		File file = new File(Util.getJarLocation() + fileName);
+
+		if (FileUtils.readFileToString(file, "UTF-8").contains(System.getProperty("line.separator")))
+		{
+			FileUtils.writeStringToFile(file, FileUtils.readFileToString(file, "UTF-8").replace(System.getProperty("line.separator"), ""), "UTF-8");
+		}
 
 		if (args.length == 1)
 		{
@@ -33,8 +39,6 @@ public class Notify implements ICommand<MessageReceivedEvent>
 			}
 			else
 			{
-				File file = new File(Util.getJarLocation() + fileName);
-
 				if (args[1].equalsIgnoreCase("list"))
 				{
 					if (Util.getFileContents(fileName).equals(" "))
@@ -99,7 +103,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 							mapSet = true;
 						}
 					}
-					
+
 					for (String map : maps)
 					{
 						if (map.equalsIgnoreCase(args[1]))

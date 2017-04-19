@@ -5,7 +5,6 @@ import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -81,10 +80,15 @@ public class GFLTimer
 
 						for (File dataFile : directoryListing)
 						{
+							if (FileUtils.readFileToString(dataFile, "UTF-8").contains(System.getProperty("line.separator")))
+							{
+								FileUtils.writeStringToFile(dataFile, FileUtils.readFileToString(dataFile, "UTF-8").replace(System.getProperty("line.separator"), ""), "UTF-8");
+							}
+
 							IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
-							
+
 							Main.log.debug("Reading " + user.getName() + "'s (" + dataFile.getName().replace(".txt", "") + ") notification data file");
-							
+
 							String[] mapNotifications = FileUtils.readFileToString(dataFile, "UTF-8").split(",");
 
 							for (String mapNotification : mapNotifications)
@@ -92,11 +96,11 @@ public class GFLTimer
 								Main.log.debug("Found " + mapNotification + " in " + user.getName() + "'s (" + dataFile.getName().replace(".txt", "") + ") notification data file");
 								if (mapNotification.equalsIgnoreCase(map))
 								{
-									
+
 									try
 									{
 										Main.log.debug("Matched " + user.getName() + "'s (" + dataFile.getName().replace(".txt", "") + ") notification " + mapNotification + " to the currently played map " + map + ", attempting to PM...");
-										//IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
+										// IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
 										Util.msg(Main.client.getOrCreatePMChannel(user), embed);
 										Main.log.debug("Successfully PM'd " + user.getName() + " (" + dataFile.getName().replace(".txt", "") + ")?");
 									}
