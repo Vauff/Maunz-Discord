@@ -22,9 +22,9 @@ public class Notify implements ICommand<MessageReceivedEvent>
 		String fileName = "map-notification-data/" + event.getMessage().getAuthor().getID() + ".txt";
 		File file = new File(Util.getJarLocation() + fileName);
 
-		if (FileUtils.readFileToString(file, "UTF-8").contains(System.getProperty("line.separator")))
+		if (Util.getFileContents(file).contains(System.getProperty("line.separator")) || Util.getFileContents(file).contains("﻿"))
 		{
-			FileUtils.writeStringToFile(file, FileUtils.readFileToString(file, "UTF-8").replace(System.getProperty("line.separator"), ""), "UTF-8");
+			FileUtils.writeStringToFile(file, Util.getFileContents(file).replace(System.getProperty("line.separator"), "").replace("﻿", ""), "UTF-8");
 		}
 
 		if (args.length == 1)
@@ -135,24 +135,30 @@ public class Notify implements ICommand<MessageReceivedEvent>
 					}
 					else
 					{
-						if (mapExists)
+						if (!args[1].contains("﻿"))
 						{
-							Util.msg(event.getMessage().getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
-
-							if (Util.getFileContents(fileName).equals(" "))
+							if (mapExists)
 							{
-								FileUtils.writeStringToFile(file, args[1], "UTF-8");
+								Util.msg(event.getMessage().getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
+
+								if (Util.getFileContents(fileName).equals(" "))
+								{
+									FileUtils.writeStringToFile(file, args[1], "UTF-8");
+								}
+								else
+								{
+									FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + args[1], "UTF-8");
+								}
 							}
 							else
 							{
-								FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + args[1], "UTF-8");
+								Util.msg(event.getMessage().getChannel(), "The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Type ***notify confirm** to confirm, otherwise ignore this message");
+								confirmationStatus.put(event.getMessage().getAuthor().getID(), args[1]);
 							}
 						}
 						else
 						{
-							Util.msg(event.getMessage().getChannel(), "The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Type ***notify confirm** to confirm, otherwise ignore this message");
-							confirmationStatus.put(event.getMessage().getAuthor().getID(), args[1]);
-
+							Util.msg(event.getMessage().getChannel(), "Do not include invisible characters with your map name!");
 						}
 					}
 				}

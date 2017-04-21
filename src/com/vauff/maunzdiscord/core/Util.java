@@ -1,8 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -10,7 +8,6 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
@@ -59,11 +56,18 @@ public class Util
 			FileUtils.writeStringToFile(file, " ", "UTF-8");
 		}
 
-		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String result = reader.readLine();
-		reader.close();
+		return FileUtils.readFileToString(file, "UTF-8");
+	}
+	
+	public static String getFileContents(File arg) throws IOException
+	{
+		if (!arg.exists())
+		{
+			arg.createNewFile();
+			FileUtils.writeStringToFile(arg, " ", "UTF-8");
+		}
 
-		return result;
+		return FileUtils.readFileToString(arg, "UTF-8");
 	}
 
 	public static String getTime()

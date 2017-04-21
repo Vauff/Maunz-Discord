@@ -80,9 +80,9 @@ public class GFLTimer
 
 						for (File dataFile : directoryListing)
 						{
-							if (FileUtils.readFileToString(dataFile, "UTF-8").contains(System.getProperty("line.separator")))
+							if (Util.getFileContents(dataFile).contains(System.getProperty("line.separator")) || Util.getFileContents(dataFile).contains("﻿"))
 							{
-								FileUtils.writeStringToFile(dataFile, FileUtils.readFileToString(dataFile, "UTF-8").replace(System.getProperty("line.separator"), ""), "UTF-8");
+								FileUtils.writeStringToFile(dataFile, Util.getFileContents(dataFile).replace(System.getProperty("line.separator"), "").replace("﻿", ""), "UTF-8");
 							}
 
 							IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
