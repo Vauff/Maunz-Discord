@@ -85,24 +85,16 @@ public class GFLTimer
 								FileUtils.writeStringToFile(dataFile, Util.getFileContents(dataFile).replace(System.getProperty("line.separator"), "").replace("﻿", ""), "UTF-8");
 							}
 
-							IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
-
-							Main.log.debug("Reading " + user.getName() + "'s (" + dataFile.getName().replace(".txt", "") + ") notification data file");
-
 							String[] mapNotifications = FileUtils.readFileToString(dataFile, "UTF-8").split(",");
 
 							for (String mapNotification : mapNotifications)
 							{
-								Main.log.debug("Found " + mapNotification + " in " + user.getName() + "'s (" + dataFile.getName().replace(".txt", "") + ") notification data file");
 								if (mapNotification.equalsIgnoreCase(map))
 								{
-
 									try
 									{
-										Main.log.debug("Matched " + user.getName() + "'s (" + dataFile.getName().replace(".txt", "") + ") notification " + mapNotification + " to the currently played map " + map + ", attempting to PM...");
-										// IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
+										IUser user = Main.client.getUserByID(Long.parseLong(dataFile.getName().replace(".txt", "")));
 										Util.msg(Main.client.getOrCreatePMChannel(user), embed);
-										Main.log.debug("Successfully PM'd " + user.getName() + " (" + dataFile.getName().replace(".txt", "") + ")?");
 									}
 									catch (NullPointerException e)
 									{

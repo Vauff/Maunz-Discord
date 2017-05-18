@@ -16,7 +16,7 @@ _*enable_ - Enables Maunz.
 
 *help \[command] - Links you to the README or gives command help if a command is given. Please note that command specific help defaults to channel syntax by default.
 
-*notify \<list/confirm/mapname> - Lets you list, add or remove your ZE map notifications.
+*notify \<list/confirm/wipe/mapname> - Lets you list, add or remove your ZE map notifications.
 
 *map - Tells you which map GFL ZE is playing outside of the normal #map-tracking channel.
 
@@ -52,9 +52,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [jsoup](https://jsoup.org/) - 1.10.2
 
-[Discord4J](https://github.com/austinv11/Discord4J) - 2.7.0
-
-[gson](https://github.com/google/gson) - 2.8.0
+[Discord4J](https://github.com/austinv11/Discord4J) - 2.8.1
 
 [hamcrest-core](http://hamcrest.org/JavaHamcrest/) - 1.3
 
@@ -64,13 +62,13 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [httpmime](https://hc.apache.org/httpcomponents-client-ga/index.html) - 4.5.3
 
-[jetty-io](http://www.eclipse.org/jetty/) - 9.4.3.v20170317
+[jetty-io](http://www.eclipse.org/jetty/) - 9.4.5.v20170502
 
-[jetty-util](http://www.eclipse.org/jetty/) - 9.4.3.v20170317
+[jetty-util](http://www.eclipse.org/jetty/) - 9.4.5.v20170502
 
-[jetty-client](http://www.eclipse.org/jetty/) - 9.4.3.v20170317
+[jetty-client](http://www.eclipse.org/jetty/) - 9.4.5.v20170502
 
-[jetty-http](http://www.eclipse.org/jetty/) - 9.4.3.v20170317
+[jetty-http](http://www.eclipse.org/jetty/) - 9.4.5.v20170502
 
 [jflac](http://jflac.sourceforge.net/) - 1.3
 
@@ -88,10 +86,26 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [tritonus-share](http://www.tritonus.org/) - 0.3.7-3
 
-[typetools](https://github.com/jhalterman/typetools) - 0.4.9
+[typetools](https://github.com/jhalterman/typetools) - 0.5.0
 
-[websocket-api](https://www.eclipse.org/jetty/) - 9.4.3.v20170317
+[websocket-api](https://www.eclipse.org/jetty/) - 9.4.5.v20170502
 
-[websocket-client](https://www.eclipse.org/jetty/) - 9.4.3.v20170317
+[websocket-client](https://www.eclipse.org/jetty/) - 9.4.5.v20170502
 
-[websocket-common](https://www.eclipse.org/jetty/) - 9.4.3.v20170317
+[websocket-common](https://www.eclipse.org/jetty/) - 9.4.5.v20170502
+
+[emoji-java](https://github.com/vdurmont/emoji-java) - 3.2.0
+
+[json](https://github.com/stleary/JSON-java) - 20160810
+
+[koloboke-impl-common-jdk8](https://github.com/leventov/Koloboke) - 1.0.0
+
+[koloboke-api-jdk8](https://github.com/leventov/Koloboke) - 1.0.0
+
+[jackson-module-afterburner](https://github.com/FasterXML/jackson-modules-base) - 2.8.8
+
+[jackson-core](https://github.com/FasterXML/jackson-core) - 2.8.8
+
+[jackson-databind](https://github.com/FasterXML/jackson-databind) - 2.8.8
+
+[jackson-annotations](https://github.com/FasterXML/jackson-annotations) - 2.8.8

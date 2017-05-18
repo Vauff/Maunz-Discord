@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public interface ICommand<M extends MessageReceivedEvent>
 {
