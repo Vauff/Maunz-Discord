@@ -3,7 +3,7 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.core.ICommand;
 import com.vauff.maunzdiscord.core.Util;
 
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class Help implements ICommand<MessageReceivedEvent>
 {
@@ -43,7 +43,7 @@ public class Help implements ICommand<MessageReceivedEvent>
 			return "Tells you which map GFL ZE is playing outside of the normal #map-tracking channel. **Usage: *map**";
 		case "*notify":
 		case "notify":
-			return "Lets you list, add or remove your ZE map notifications. **Usage: *notify <list/confirm/wipe/map>**";
+			return "Lets you list, add or remove your ZE map notifications. **Usage: *notify <list/confirm/wipe/mapname>**";
 		case "*ping":
 		case "ping":
 			return "Makes Maunz respond to you with pong. Very useful for testing ping to the IRC server! **Usage: *ping**";

@@ -7,7 +7,7 @@ import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.GFLTimer;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
 public class Map implements ICommand<MessageReceivedEvent>

@@ -12,8 +12,8 @@ import sx.blah.discord.util.DiscordException;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "1.4.5";
-	public static String mapChannelID = "";
+	public static String version = "1.4.10";
+	public static long mapChannelID = 0L;
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -32,14 +32,14 @@ public class Main
 			{
 				log.info("Starting Maunz-Discord v" + version + " in dev mode");
 				Util.token = Passwords.discordDevToken;
-				mapChannelID = "252537749859598338";
+				mapChannelID = 252537749859598338L;
 				Util.devMode = true;
 			}
 			else
 			{
 				log.info("Starting Maunz-Discord v" + version);
 				Util.token = Passwords.discordToken;
-				mapChannelID = "223674490876329984";
+				mapChannelID = 223674490876329984L;
 				Util.devMode = false;
 			}
 

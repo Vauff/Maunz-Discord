@@ -6,7 +6,7 @@ import com.vauff.maunzdiscord.core.ICommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class Restart implements ICommand<MessageReceivedEvent>
 {

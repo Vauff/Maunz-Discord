@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vauff.maunzdiscord.core.ICommand;
 import com.vauff.maunzdiscord.core.Util;
 
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class Notify implements ICommand<MessageReceivedEvent>
 {
@@ -19,11 +19,17 @@ public class Notify implements ICommand<MessageReceivedEvent>
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
 		String[] args = event.getMessage().getContent().split(" ");
-		String fileName = "map-notification-data/" + event.getMessage().getAuthor().getID() + ".txt";
+		String fileName = "map-notification-data/" + event.getMessage().getAuthor().getStringID() + ".txt";
+		File file = new File(Util.getJarLocation() + fileName);
+
+		if (Util.getFileContents(file).contains(System.getProperty("line.separator")) || Util.getFileContents(file).contains("﻿"))
+		{
+			FileUtils.writeStringToFile(file, Util.getFileContents(file).replace(System.getProperty("line.separator"), "").replace("﻿", ""), "UTF-8");
+		}
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getMessage().getChannel(), "You need to specify a map or argument! **Usage: <list/confirm/wipe/map>**");
+			Util.msg(event.getMessage().getChannel(), "You need to specify a map or argument! **Usage: *notify <list/confirm/wipe/mapname>**");
 		}
 		else
 		{
@@ -33,8 +39,6 @@ public class Notify implements ICommand<MessageReceivedEvent>
 			}
 			else
 			{
-				File file = new File(Util.getJarLocation() + fileName);
-
 				if (args[1].equalsIgnoreCase("list"))
 				{
 					if (Util.getFileContents(fileName).equals(" "))
@@ -48,22 +52,22 @@ public class Notify implements ICommand<MessageReceivedEvent>
 				}
 				else if (args[1].equalsIgnoreCase("confirm"))
 				{
-					if (confirmationStatus.containsKey(event.getMessage().getAuthor().getID()) && !confirmationStatus.get(event.getMessage().getAuthor().getID()).equals("wipe"))
+					if (confirmationStatus.containsKey(event.getMessage().getAuthor().getStringID()) && !confirmationStatus.get(event.getMessage().getAuthor().getStringID()).equals("wipe"))
 					{
-						Util.msg(event.getMessage().getChannel(), "Adding **" + confirmationStatus.get(event.getMessage().getAuthor().getID()).replace("_", "\\_") + "** to your map notifications!");
+						Util.msg(event.getMessage().getChannel(), "Adding **" + confirmationStatus.get(event.getMessage().getAuthor().getStringID()).replace("_", "\\_") + "** to your map notifications!");
 
 						if (Util.getFileContents(fileName).equals(" "))
 						{
-							FileUtils.writeStringToFile(file, confirmationStatus.get(event.getMessage().getAuthor().getID()), "UTF-8");
+							FileUtils.writeStringToFile(file, confirmationStatus.get(event.getMessage().getAuthor().getStringID()), "UTF-8");
 						}
 						else
 						{
-							FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + confirmationStatus.get(event.getMessage().getAuthor().getID()), "UTF-8");
+							FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + confirmationStatus.get(event.getMessage().getAuthor().getStringID()), "UTF-8");
 						}
 
-						confirmationStatus.remove(event.getMessage().getAuthor().getID());
+						confirmationStatus.remove(event.getMessage().getAuthor().getStringID());
 					}
-					else if (confirmationStatus.containsKey(event.getMessage().getAuthor().getID()) && confirmationStatus.get(event.getMessage().getAuthor().getID()).equals("wipe"))
+					else if (confirmationStatus.containsKey(event.getMessage().getAuthor().getStringID()) && confirmationStatus.get(event.getMessage().getAuthor().getStringID()).equals("wipe"))
 					{
 						Util.msg(event.getMessage().getChannel(), "Successfully wiped all of your map notifications!");
 						FileUtils.writeStringToFile(file, " ", "UTF-8");
@@ -82,7 +86,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 					else
 					{
 						Util.msg(event.getMessage().getChannel(), "Are you sure you would like to wipe **ALL** of your map notifications? Type ***notify confirm** to confirm, otherwise ignore this message");
-						confirmationStatus.put(event.getMessage().getAuthor().getID(), "wipe");
+						confirmationStatus.put(event.getMessage().getAuthor().getStringID(), "wipe");
 					}
 				}
 				else
@@ -99,7 +103,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 							mapSet = true;
 						}
 					}
-					
+
 					for (String map : maps)
 					{
 						if (map.equalsIgnoreCase(args[1]))
@@ -131,24 +135,30 @@ public class Notify implements ICommand<MessageReceivedEvent>
 					}
 					else
 					{
-						if (mapExists)
+						if (!args[1].contains("﻿"))
 						{
-							Util.msg(event.getMessage().getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
-
-							if (Util.getFileContents(fileName).equals(" "))
+							if (mapExists)
 							{
-								FileUtils.writeStringToFile(file, args[1], "UTF-8");
+								Util.msg(event.getMessage().getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
+
+								if (Util.getFileContents(fileName).equals(" "))
+								{
+									FileUtils.writeStringToFile(file, args[1], "UTF-8");
+								}
+								else
+								{
+									FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + args[1], "UTF-8");
+								}
 							}
 							else
 							{
-								FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + args[1], "UTF-8");
+								Util.msg(event.getMessage().getChannel(), "The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Type ***notify confirm** to confirm, otherwise ignore this message");
+								confirmationStatus.put(event.getMessage().getAuthor().getStringID(), args[1]);
 							}
 						}
 						else
 						{
-							Util.msg(event.getMessage().getChannel(), "The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Type ***notify confirm** to confirm, otherwise ignore this message");
-							confirmationStatus.put(event.getMessage().getAuthor().getID(), args[1]);
-
+							Util.msg(event.getMessage().getChannel(), "Do not include invisible characters with your map name!");
 						}
 					}
 				}

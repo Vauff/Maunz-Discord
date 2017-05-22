@@ -80,6 +80,11 @@ public class GFLTimer
 
 						for (File dataFile : directoryListing)
 						{
+							if (Util.getFileContents(dataFile).contains(System.getProperty("line.separator")) || Util.getFileContents(dataFile).contains("﻿"))
+							{
+								FileUtils.writeStringToFile(dataFile, Util.getFileContents(dataFile).replace(System.getProperty("line.separator"), "").replace("﻿", ""), "UTF-8");
+							}
+
 							String[] mapNotifications = FileUtils.readFileToString(dataFile, "UTF-8").split(",");
 
 							for (String mapNotification : mapNotifications)
@@ -88,11 +93,12 @@ public class GFLTimer
 								{
 									try
 									{
-										IUser user = Main.client.getUserByID(dataFile.getName().replace(".txt", ""));
+										IUser user = Main.client.getUserByID(Long.parseLong(dataFile.getName().replace(".txt", "")));
 										Util.msg(Main.client.getOrCreatePMChannel(user), embed);
 									}
 									catch (NullPointerException e)
 									{
+										Main.log.error("", e);
 										// This means that either a bad user ID was
 										// provided by the notification file, or the
 										// users account doesn't exist anymore

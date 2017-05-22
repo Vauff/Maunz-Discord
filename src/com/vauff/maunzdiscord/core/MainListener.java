@@ -11,7 +11,7 @@ import com.vauff.maunzdiscord.commands.*;
 import com.vauff.maunzdiscord.features.GFLTimer;
 
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 
 public class MainListener
@@ -58,7 +58,7 @@ public class MainListener
 		{
 			String cmdName = event.getMessage().getContent().split(" ")[0];
 
-			if ((Util.devMode && event.getMessage().getChannel().getID().equals("252537749859598338") || event.getMessage().getChannel().isPrivate()) || (Util.devMode == false && !event.getMessage().getChannel().getID().equals("252537749859598338")))
+			if ((Util.devMode && event.getMessage().getChannel().getStringID().equals("252537749859598338") || event.getMessage().getChannel().isPrivate()) || (Util.devMode == false && !event.getMessage().getChannel().getStringID().equals("252537749859598338")))
 			{
 				for (ICommand<MessageReceivedEvent> cmd : commands)
 				{
