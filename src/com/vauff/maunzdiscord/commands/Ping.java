@@ -10,7 +10,7 @@ public class Ping implements ICommand<MessageReceivedEvent>
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		Util.msg(event.getMessage().getChannel(), "Pong!");
+		Util.msg(event.getChannel(), "Pong!");
 	}
 
 	@Override

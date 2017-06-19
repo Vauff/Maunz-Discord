@@ -1,10 +1,12 @@
 package com.vauff.maunzdiscord.core;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
 import com.vauff.maunzdiscord.commands.*;
@@ -12,22 +14,28 @@ import com.vauff.maunzdiscord.features.GFLTimer;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 
 public class MainListener
 {
 	private LinkedList<ICommand<MessageReceivedEvent>> commands = new LinkedList<ICommand<MessageReceivedEvent>>();
 	public static StopWatch uptime = new StopWatch();
+	private static HashMap<String, Boolean> hasReacted = new HashMap<String, Boolean>();
 
 	public MainListener()
 	{
 		commands.add(new About());
+		commands.add(new Benchmark());
+		commands.add(new Changelog());
 		commands.add(new Disable());
 		commands.add(new Enable());
 		commands.add(new Help());
+		commands.add(new IsItDown());
 		commands.add(new Map());
 		commands.add(new Notify());
 		commands.add(new Ping());
+		commands.add(new Players());
 		commands.add(new Restart());
 		commands.add(new Source());
 		commands.add(new Stop());
@@ -43,7 +51,7 @@ public class MainListener
 		{
 			folder.mkdir();
 		}
-		
+
 		uptime.start();
 		GFLTimer.timestamp = System.currentTimeMillis();
 		Util.mapChannel = Main.client.getChannelByID(Main.mapChannelID);
@@ -57,7 +65,7 @@ public class MainListener
 		{
 			String cmdName = event.getMessage().getContent().split(" ")[0];
 
-			if ((Util.devMode && event.getMessage().getChannel().getStringID().equals("252537749859598338") || event.getMessage().getChannel().isPrivate()) || (Util.devMode == false && !event.getMessage().getChannel().getStringID().equals("252537749859598338")))
+			if ((Util.devMode && event.getChannel().getStringID().equals("252537749859598338") || event.getChannel().isPrivate()) || (Util.devMode == false && !event.getChannel().getStringID().equals("252537749859598338")))
 			{
 				for (ICommand<MessageReceivedEvent> cmd : commands)
 				{
@@ -71,6 +79,78 @@ public class MainListener
 							}
 						}
 
+					}
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+	}
+
+	@EventSubscriber
+	public void onReactionAdd(ReactionAddEvent event)
+	{
+		try
+		{
+			String fileName = "map-notification-data/" + event.getUser().getStringID() + ".txt";
+			File file = new File(Util.getJarLocation() + fileName);
+
+			if (event.getMessage().getAuthor().getLongID() == Main.client.getOurUser().getLongID())
+			{
+				if (Notify.confirmationMessages.containsKey(event.getUser().getStringID()))
+				{
+					if (event.getMessage().getStringID().equals(Notify.confirmationMessages.get(event.getUser().getStringID())))
+					{
+						if (event.getReaction().toString().equals("✅") && !hasReacted.containsKey(event.getUser().getStringID()))
+						{
+							hasReacted.put(event.getUser().getStringID(), true);
+							Main.client.getMessageByID(Long.parseLong(Notify.confirmationMessages.get(event.getUser().getStringID()))).delete();
+
+							if (Notify.confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+							{
+								Util.msg(event.getChannel(), ":white_check_mark:  |  Successfully wiped all of your map notifications!");
+								FileUtils.forceDelete(file);
+							}
+							else
+							{
+								Util.msg(event.getChannel(), ":white_check_mark:  |  Adding **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+								
+								if (Util.getFileContents(fileName).equals(" "))
+								{
+									FileUtils.writeStringToFile(file, Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
+								}
+								else
+								{
+									FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
+								}
+							}
+							
+							Notify.confirmationMaps.remove(event.getUser().getStringID());
+							Notify.confirmationMessages.remove(event.getUser().getStringID());
+							Thread.sleep(2000);
+							hasReacted.remove(event.getUser().getStringID());
+						}
+						if (event.getReaction().toString().equals("❌") && !hasReacted.containsKey(event.getUser().getStringID()))
+						{
+							hasReacted.put(event.getUser().getStringID(), true);
+							Main.client.getMessageByID(Long.parseLong(Notify.confirmationMessages.get(event.getUser().getStringID()))).delete();
+
+							if (Notify.confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+							{
+								Util.msg(event.getChannel(), ":x:  |  No problem, I won't wipe all your map notifications");
+							}
+							else
+							{
+								Util.msg(event.getChannel(), ":x:  |  No problem, I won't add **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
+							}
+							
+							Notify.confirmationMaps.remove(event.getUser().getStringID());
+							Notify.confirmationMessages.remove(event.getUser().getStringID());
+							Thread.sleep(2000);
+							hasReacted.remove(event.getUser().getStringID());
+						}
 					}
 				}
 			}

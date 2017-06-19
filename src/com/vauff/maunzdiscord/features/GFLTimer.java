@@ -22,6 +22,7 @@ import sx.blah.discord.util.EmbedBuilder;
 public class GFLTimer
 {
 	public static String players = "Error";
+	public static Document playersDoc;
 	public static long timestamp = 0;
 	private static File file = new File(Util.getJarLocation() + "lastmap.txt");
 	private static File mapsList = new File(Util.getJarLocation() + "maps.txt");
@@ -38,13 +39,13 @@ public class GFLTimer
 					String mapHtml = mapDoc.select("td[class=game-table-cell]").text();
 					String[] mapHtmlSplit = mapHtml.split(" ");
 					String map = "";
-					Document playersDoc = Jsoup.connect("https://gflclan.com/index.php?app=gflcore&module=servers&controller=information&id=1").timeout(10000).get();
+					playersDoc = Jsoup.connect("https://gflclan.com/index.php?app=gflcore&module=servers&controller=information&id=1").timeout(10000).get();
 					String playersHtml = playersDoc.select("li[class=ipsResponsive_hidePhone]").text();
 					String[] playersHtmlSplit = playersHtml.split(" ");
 
 					if (!playersHtmlSplit[2].equals(""))
 					{
-						players = playersHtmlSplit[2];
+						players = playersHtmlSplit[2].replace("65/64", "64/64");
 					}
 
 					for (String m : mapHtmlSplit)

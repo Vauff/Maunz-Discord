@@ -96,6 +96,18 @@ public class Util
 
 		return days + ":" + (hours < 10 ? "0" + hours : hours) + ":" + uptimeraw[0].split(":")[1] + ":" + uptimeraw[0].split(":")[2];
 	}
+	
+	public static String addArgs(String[] args, int startIndex)
+	{
+		String s = "";
+
+		for (int i = startIndex; i < args.length; i++)
+		{
+			s += args[i] + " ";
+		}
+
+		return s.substring(0, s.lastIndexOf(" "));
+	}
 
 	public static String getOrdinal(int n)
 	{

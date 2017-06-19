@@ -10,7 +10,7 @@ public class Trello implements ICommand<MessageReceivedEvent>
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		Util.msg(event.getMessage().getChannel(), "My Trello board is located at https://trello.com/b/9W7PmTvX/maunz");
+		Util.msg(event.getChannel(), "My Trello board is located at https://trello.com/b/9W7PmTvX/maunz");
 	}
 
 	@Override
