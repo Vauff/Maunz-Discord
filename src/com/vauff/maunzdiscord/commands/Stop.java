@@ -19,7 +19,7 @@ public class Stop implements ICommand<MessageReceivedEvent>
 		}
 		else
 		{
-			Util.msg(event.getMessage().getChannel(), "You do not have permission to use that command");
+			Util.msg(event.getChannel(), "You do not have permission to use that command");
 		}
 	}
 

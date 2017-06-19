@@ -9,11 +9,15 @@ import org.apache.commons.lang3.StringUtils;
 import com.vauff.maunzdiscord.core.ICommand;
 import com.vauff.maunzdiscord.core.Util;
 
+import com.vdurmont.emoji.EmojiManager;
+
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IMessage;
 
 public class Notify implements ICommand<MessageReceivedEvent>
 {
-	private static HashMap<String, String> confirmationStatus = new HashMap<String, String>();
+	public static HashMap<String, String> confirmationMaps = new HashMap<String, String>();
+	public static HashMap<String, String> confirmationMessages = new HashMap<String, String>();
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -29,13 +33,13 @@ public class Notify implements ICommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getMessage().getChannel(), "You need to specify a map or argument! **Usage: *notify <list/confirm/wipe/mapname>**");
+			Util.msg(event.getChannel(), "You need to specify an argument! **Usage: *notify <list/wipe/mapname>**");
 		}
 		else
 		{
 			if (args[1].equals(""))
 			{
-				Util.msg(event.getMessage().getChannel(), "Please keep to one space between arguments to prevent breakage");
+				Util.msg(event.getChannel(), "Please keep to one space between arguments to prevent breakage");
 			}
 			else
 			{
@@ -43,50 +47,35 @@ public class Notify implements ICommand<MessageReceivedEvent>
 				{
 					if (Util.getFileContents(fileName).equals(" "))
 					{
-						Util.msg(event.getMessage().getChannel(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
+						Util.msg(event.getChannel(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
 					}
 					else
 					{
-						Util.msg(event.getMessage().getChannel(), "You currently have notifications set for the following maps: **" + Util.getFileContents(fileName).replace(",", " | ").replace("_", "\\_") + "**");
-					}
-				}
-				else if (args[1].equalsIgnoreCase("confirm"))
-				{
-					if (confirmationStatus.containsKey(event.getMessage().getAuthor().getStringID()) && !confirmationStatus.get(event.getMessage().getAuthor().getStringID()).equals("wipe"))
-					{
-						Util.msg(event.getMessage().getChannel(), "Adding **" + confirmationStatus.get(event.getMessage().getAuthor().getStringID()).replace("_", "\\_") + "** to your map notifications!");
-
-						if (Util.getFileContents(fileName).equals(" "))
-						{
-							FileUtils.writeStringToFile(file, confirmationStatus.get(event.getMessage().getAuthor().getStringID()), "UTF-8");
-						}
-						else
-						{
-							FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + confirmationStatus.get(event.getMessage().getAuthor().getStringID()), "UTF-8");
-						}
-
-						confirmationStatus.remove(event.getMessage().getAuthor().getStringID());
-					}
-					else if (confirmationStatus.containsKey(event.getMessage().getAuthor().getStringID()) && confirmationStatus.get(event.getMessage().getAuthor().getStringID()).equals("wipe"))
-					{
-						Util.msg(event.getMessage().getChannel(), "Successfully wiped all of your map notifications!");
-						FileUtils.writeStringToFile(file, " ", "UTF-8");
-					}
-					else
-					{
-						Util.msg(event.getMessage().getChannel(), "You don't have any map notification action to confirm!");
+						Util.msg(event.getChannel(), "You currently have notifications set for the following maps: **" + Util.getFileContents(fileName).replace(",", " | ").replace("_", "\\_") + "**");
 					}
 				}
 				else if (args[1].equalsIgnoreCase("wipe"))
 				{
 					if (Util.getFileContents(fileName).equals(" "))
 					{
-						Util.msg(event.getMessage().getChannel(), "You don't have any map notifications to wipe!");
+						Util.msg(event.getChannel(), "You don't have any map notifications to wipe!");
 					}
 					else
 					{
-						Util.msg(event.getMessage().getChannel(), "Are you sure you would like to wipe **ALL** of your map notifications? Type ***notify confirm** to confirm, otherwise ignore this message");
-						confirmationStatus.put(event.getMessage().getAuthor().getStringID(), "wipe");
+						IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+						m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
+						Thread.sleep(250);
+						m.addReaction(EmojiManager.getForAlias(":x:"));
+						confirmationMaps.put(event.getMessage().getAuthor().getStringID(), "wipe");
+						confirmationMessages.put(event.getMessage().getAuthor().getStringID(), m.getStringID());
+						Thread.sleep(60000);
+
+						if (!m.isDeleted())
+						{
+							m.delete();
+							confirmationMaps.remove(event.getMessage().getAuthor().getStringID());
+							confirmationMessages.remove(event.getMessage().getAuthor().getStringID());
+						}
 					}
 				}
 				else
@@ -114,7 +103,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 
 					if (mapSet)
 					{
-						Util.msg(event.getMessage().getChannel(), "Removing **" + args[1].replace("_", "\\_") + "** from your map notifications!");
+						Util.msg(event.getChannel(), "Removing **" + args[1].replace("_", "\\_") + "** from your map notifications!");
 
 						if (!Util.getFileContents(fileName).contains(","))
 						{
@@ -139,7 +128,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 						{
 							if (mapExists)
 							{
-								Util.msg(event.getMessage().getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
+								Util.msg(event.getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
 
 								if (Util.getFileContents(fileName).equals(" "))
 								{
@@ -152,13 +141,25 @@ public class Notify implements ICommand<MessageReceivedEvent>
 							}
 							else
 							{
-								Util.msg(event.getMessage().getChannel(), "The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Type ***notify confirm** to confirm, otherwise ignore this message");
-								confirmationStatus.put(event.getMessage().getAuthor().getStringID(), args[1]);
+								IMessage m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+								m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
+								Thread.sleep(250);
+								m.addReaction(EmojiManager.getForAlias(":x:"));
+								confirmationMaps.put(event.getMessage().getAuthor().getStringID(), args[1]);
+								confirmationMessages.put(event.getMessage().getAuthor().getStringID(), m.getStringID());
+								Thread.sleep(60000);
+
+								if (!m.isDeleted())
+								{
+									m.delete();
+									confirmationMaps.remove(event.getMessage().getAuthor().getStringID());
+									confirmationMessages.remove(event.getMessage().getAuthor().getStringID());
+								}
 							}
 						}
 						else
 						{
-							Util.msg(event.getMessage().getChannel(), "Do not include invisible characters with your map name!");
+							Util.msg(event.getChannel(), "Do not include invisible characters with your map name!");
 						}
 					}
 				}

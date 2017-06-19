@@ -19,11 +19,11 @@ public class Map implements ICommand<MessageReceivedEvent>
 		{
 			String map = Util.getFileContents("lastmap.txt");
 			EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withTimestamp(GFLTimer.timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Currently Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + GFLTimer.players + "**\nQuick Join: **steam://connect/216.52.148.47:27015**").build();
-			Util.msg(event.getMessage().getChannel(), embed);
+			Util.msg(event.getChannel(), embed);
 		}
 		else
 		{
-			Util.msg(event.getMessage().getChannel(), "Failed to grab map data, maybe the server is down?");
+			Util.msg(event.getChannel(), "Failed to grab map data, maybe the server is down?");
 		}
 	}
 

@@ -10,7 +10,7 @@ public class Source implements ICommand<MessageReceivedEvent>
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		Util.msg(event.getMessage().getChannel(), "My source is available at https://github.com/Vauff/Maunz-Discord");
+		Util.msg(event.getChannel(), "My source is available at https://github.com/Vauff/Maunz-Discord");
 	}
 
 	@Override

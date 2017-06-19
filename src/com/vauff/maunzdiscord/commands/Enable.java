@@ -15,18 +15,18 @@ public class Enable implements ICommand<MessageReceivedEvent>
 		{
 			if (!Util.isEnabled)
 			{
-				Util.msg(event.getMessage().getChannel(), "Maunz is now enabled");
+				Util.msg(event.getChannel(), "Maunz is now enabled");
 				Main.log.info("Maunz is now enabled, messages will be parsed for commands");
 				Util.isEnabled = true;
 			}
 			else
 			{
-				Util.msg(event.getMessage().getChannel(), "You silly, I was already enabled!");
+				Util.msg(event.getChannel(), "You silly, I was already enabled!");
 			}
 		}
 		else
 		{
-			Util.msg(event.getMessage().getChannel(), "You do not have permission to use that command");
+			Util.msg(event.getChannel(), "You do not have permission to use that command");
 		}
 	}
 

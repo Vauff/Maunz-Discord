@@ -15,18 +15,18 @@ public class Disable implements ICommand<MessageReceivedEvent>
 		{
 			if (Util.isEnabled)
 			{
-				Util.msg(event.getMessage().getChannel(), "Maunz is now disabled");
+				Util.msg(event.getChannel(), "Maunz is now disabled");
 				Main.log.info("Maunz is now disabled, messages will no longer be parsed for commands");
 				Util.isEnabled = false;
 			}
 			else
 			{
-				Util.msg(event.getMessage().getChannel(), "You silly, I was already disabled!");
+				Util.msg(event.getChannel(), "You silly, I was already disabled!");
 			}
 		}
 		else
 		{
-			Util.msg(event.getMessage().getChannel(), "You do not have permission to use that command");
+			Util.msg(event.getChannel(), "You do not have permission to use that command");
 		}
 	}
 

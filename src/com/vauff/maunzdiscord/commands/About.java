@@ -15,7 +15,7 @@ public class About implements ICommand<MessageReceivedEvent>
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		Util.msg(event.getMessage().getChannel(), "**About: **Maunz is a Discord bot created by Vauff | **Version: **" + Main.version + " | " + "**Build Date: **" + getBuildDate() + " | " + "**Dev Mode: **" + StringUtils.capitalize(Boolean.toString(Util.devMode)) + " | " + "**Uptime: **" + Util.getUptime());
+		Util.msg(event.getChannel(), "**About: **Maunz is a Discord bot created by Vauff | **Version: **" + Main.version + " | " + "**Build Date: **" + getBuildDate() + " | " + "**Dev Mode: **" + StringUtils.capitalize(Boolean.toString(Util.devMode)) + " | " + "**Uptime: **" + Util.getUptime());
 	}
 
 	private String getBuildDate()
