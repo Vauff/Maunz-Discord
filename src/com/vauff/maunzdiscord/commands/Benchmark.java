@@ -62,6 +62,7 @@ public class Benchmark implements ICommand<MessageReceivedEvent>
 				String singleThread = "N/A";
 				String clockSpeed = "N/A";
 				String tdp = "N/A";
+				String socket = "N/A";
 				String price;
 				String date;
 				String cores;
@@ -105,9 +106,14 @@ public class Benchmark implements ICommand<MessageReceivedEvent>
 						turboSpeed = fullDesc.split("Turbo Speed:</strong> ")[1].split("<")[0];
 					}
 
-					if (fullDesc.contains("Max TDP:</strong> "))
+					if (fullDesc.contains("Typical TDP:</strong> "))
 					{
-						tdp = fullDesc.split("Max TDP:</strong> ")[1].split("<")[0];
+						tdp = fullDesc.split("Typical TDP:</strong> ")[1].split("<")[0];
+					}
+
+					if (fullDesc.contains("Socket:</strong> "))
+					{
+						socket = fullDesc.split("Socket:</strong> ")[1].split("<")[0];
 					}
 
 					if (price.equals("NA"))
@@ -120,7 +126,7 @@ public class Benchmark implements ICommand<MessageReceivedEvent>
 						tdp = "N/A";
 					}
 
-					EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withThumbnail("https://i.imgur.com/iKLrQQN.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Single Thread Score", singleThread, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Cores", cores, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).appendField("Clock Speed", clockSpeed, true).appendField("Turbo Speed", turboSpeed, true).appendField("Max TDP", tdp, true).build();
+					EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withThumbnail("https://i.imgur.com/iKLrQQN.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Single Thread Score", singleThread, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Cores", cores, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).appendField("Clock Speed", clockSpeed, true).appendField("Turbo Speed", turboSpeed, true).appendField("Socket", socket, true).appendField("Typical TDP", tdp, true).build();
 					Util.msg(event.getChannel(), embed);
 				}
 			}
