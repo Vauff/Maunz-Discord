@@ -50,6 +50,8 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [Apache Commons Logging](https://commons.apache.org/proper/commons-logging/) - 1.2
 
+[Apache Commons Compress](https://commons.apache.org/proper/commons-compress/) - 1.14
+
 [log4j-api](http://logging.apache.org/log4j/2.x/) - 2.8.2
 
 [log4j-core](http://logging.apache.org/log4j/2.x/) - 2.8.2
@@ -60,7 +62,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [jsoup](https://jsoup.org/) - 1.10.3
 
-[Discord4J](https://github.com/austinv11/Discord4J) - 2.8.2
+[Discord4J](https://github.com/austinv11/Discord4J) - 2.8.4
 
 [hamcrest-core](http://hamcrest.org/JavaHamcrest/) - 1.3
 
@@ -117,3 +119,5 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 [jackson-databind](https://github.com/FasterXML/jackson-databind) - 2.9.0.pr4
 
 [jackson-annotations](https://github.com/FasterXML/jackson-annotations) - 2.9.0.pr4
+
+[steam-condenser](https://github.com/koraktor/steam-condenser-java) - 1.3.9

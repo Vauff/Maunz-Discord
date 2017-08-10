@@ -1,8 +1,10 @@
 package com.vauff.maunzdiscord.core;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -10,7 +12,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
 import com.vauff.maunzdiscord.commands.*;
-import com.vauff.maunzdiscord.features.GFLTimer;
+import com.vauff.maunzdiscord.features.MapTimer;
+import com.vauff.maunzdiscord.features.StatsTimer;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -45,17 +48,22 @@ public class MainListener
 	@EventSubscriber
 	public void onReady(ReadyEvent event)
 	{
-		File folder = new File(Util.getJarLocation() + "map-notification-data/");
+		List<File> folderList = new ArrayList<File>();
+		
+		folderList.add(new File(Util.getJarLocation() + "services/"));
+		folderList.add(new File(Util.getJarLocation() + "services/map-tracking/"));
 
-		if (!folder.isDirectory())
+		for (File folder : folderList)
 		{
-			folder.mkdir();
+			if (!folder.isDirectory())
+			{
+				folder.mkdir();
+			}
 		}
 
 		uptime.start();
-		GFLTimer.timestamp = System.currentTimeMillis();
-		Util.mapChannel = Main.client.getChannelByID(Main.mapChannelID);
-		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(GFLTimer.timer, 0, 60, TimeUnit.SECONDS);
+		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapTimer.timer, 0, 60, TimeUnit.SECONDS);
+		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 	}
 
 	@EventSubscriber
@@ -65,7 +73,7 @@ public class MainListener
 		{
 			String cmdName = event.getMessage().getContent().split(" ")[0];
 
-			if ((Util.devMode && event.getChannel().getStringID().equals("252537749859598338") || event.getChannel().isPrivate()) || (Util.devMode == false && !event.getChannel().getStringID().equals("252537749859598338")))
+			if ((Util.devMode && event.getChannel().getStringID().equals("252537749859598338") || event.getChannel().getStringID().equals("340273634331459594") || event.getChannel().isPrivate()) || (Util.devMode == false && !event.getChannel().getStringID().equals("252537749859598338")))
 			{
 				for (ICommand<MessageReceivedEvent> cmd : commands)
 				{
@@ -116,7 +124,7 @@ public class MainListener
 							else
 							{
 								Util.msg(event.getChannel(), ":white_check_mark:  |  Adding **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
-								
+
 								if (Util.getFileContents(fileName).equals(" "))
 								{
 									FileUtils.writeStringToFile(file, Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
@@ -126,7 +134,7 @@ public class MainListener
 									FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
 								}
 							}
-							
+
 							Notify.confirmationMaps.remove(event.getUser().getStringID());
 							Notify.confirmationMessages.remove(event.getUser().getStringID());
 							Thread.sleep(2000);
@@ -145,7 +153,7 @@ public class MainListener
 							{
 								Util.msg(event.getChannel(), ":x:  |  No problem, I won't add **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
 							}
-							
+
 							Notify.confirmationMaps.remove(event.getUser().getStringID());
 							Notify.confirmationMessages.remove(event.getUser().getStringID());
 							Thread.sleep(2000);
