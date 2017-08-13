@@ -39,7 +39,15 @@ public class MapTimer
 						String serverInfo = server.toString();
 						long timestamp = 0;
 						String map = serverInfo.split("mapName: ")[1].replace(System.lineSeparator(), "");
-						String players = (serverInfo.split("numberOfPlayers: ")[1].split(" ")[0] + "/" + serverInfo.split("maxPlayers: ")[1].split(" ")[0]).replace(System.lineSeparator(), "");
+						int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
+						int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
+
+						if (currentPlayers > maxPlayers)
+						{
+							currentPlayers = maxPlayers;
+						}
+
+						String players = currentPlayers + "/" + maxPlayers;
 
 						if (!map.equals("") && !json.getString("lastMap").equalsIgnoreCase(map))
 						{
@@ -111,7 +119,7 @@ public class MapTimer
 							json.put("timestamp", timestamp);
 						}
 
-						FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" +  file.getName()), json.toString(2), "UTF-8");
+						FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName()), json.toString(2), "UTF-8");
 					}
 				}
 			}
