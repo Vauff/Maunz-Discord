@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.File;
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils;
 
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
+import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -34,7 +36,17 @@ public class MapTimer
 					{
 						JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + file.getName()));
 						SourceServer server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
-						server.initialize();
+
+						try
+						{
+							server.initialize();
+						}
+						catch (NullPointerException | TimeoutException | SteamCondenserException e)
+						{
+							Main.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
+							continue;
+						}
+						
 						serverList.put(Long.parseLong(file.getName().replace(".json", "")), server);
 						String serverInfo = server.toString();
 						long timestamp = 0;
