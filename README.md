@@ -106,7 +106,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [websocket-common](https://www.eclipse.org/jetty/) - 9.4.6.v20170531
 
-[emoji-java](https://github.com/vdurmont/emoji-java) - 3.2.0
+[emoji-java](https://github.com/vdurmont/emoji-java) - 3.3.0
 
 [json](https://github.com/stleary/JSON-java) - 20170516
 
@@ -114,12 +114,12 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [koloboke-api-jdk8](https://github.com/leventov/Koloboke) - 1.0.0
 
-[jackson-module-afterburner](https://github.com/FasterXML/jackson-modules-base) - 2.9.0.pr4
+[jackson-module-afterburner](https://github.com/FasterXML/jackson-modules-base) - 2.9.0
 
-[jackson-core](https://github.com/FasterXML/jackson-core) - 2.9.0.pr4
+[jackson-core](https://github.com/FasterXML/jackson-core) - 2.9.0
 
-[jackson-databind](https://github.com/FasterXML/jackson-databind) - 2.9.0.pr4
+[jackson-databind](https://github.com/FasterXML/jackson-databind) - 2.9.0
 
-[jackson-annotations](https://github.com/FasterXML/jackson-annotations) - 2.9.0.pr4
+[jackson-annotations](https://github.com/FasterXML/jackson-annotations) - 2.9.0
 
 [steam-condenser](https://github.com/koraktor/steam-condenser-java) - 1.3.9
