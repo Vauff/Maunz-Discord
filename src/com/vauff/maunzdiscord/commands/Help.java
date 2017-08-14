@@ -48,6 +48,8 @@ public class Help implements ICommand<MessageReceivedEvent>
 			return "Makes Maunz respond to you with pong. Very useful for testing ping to the IRC server! **Usage: *ping**";
 		case "players":
 			return "Lists the current players online on the GFL ZE server (in a PM). **Usage: *players**";
+		case "reddit":
+			return "Links you to a subreddit that you provide. **Usage: *reddit <subreddit>**";
 		case "restart":
 			return "Restarts Maunz, only usable by Vauff. **Usage: *restart**";
 		case "source":

@@ -30,6 +30,8 @@ _*enable_ - Enables Maunz.
 
 *players - Lists the current players online on the GFL ZE server (in a PM).
 
+*reddit <subreddit> - Links you to a subreddit that you provide.
+
 _*restart_ - Restarts Maunz.
 
 *source - Links you to the GitHub page of Maunz, you can submit issues/pull requests here.
