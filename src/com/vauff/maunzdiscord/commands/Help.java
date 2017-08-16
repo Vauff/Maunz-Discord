@@ -54,6 +54,8 @@ public class Help implements ICommand<MessageReceivedEvent>
 			return "Restarts Maunz, only usable by Vauff. **Usage: *restart**";
 		case "source":
 			return "Links you to the GitHub page of Maunz, you can submit issues/pull requests here. **Usage: *source**";
+		case "steam":
+			return "Links you to a Steam profile based on a Steam ID. **Usage *steam <steamid>**";
 		case "stop":
 			return "Stops Maunz, only usable by Vauff. **Usage: *stop**";
 		case "trello":

@@ -42,6 +42,7 @@ public class MainListener
 		commands.add(new Reddit());
 		commands.add(new Restart());
 		commands.add(new Source());
+		commands.add(new Steam());
 		commands.add(new Stop());
 		commands.add(new Trello());
 	}

@@ -36,6 +36,8 @@ _*restart_ - Restarts Maunz.
 
 *source - Links you to the GitHub page of Maunz, you can submit issues/pull requests here.
 
+*steam <steamid> - Links you to a Steam profile based on a Steam ID.
+
 _*stop_ - Stops Maunz.
 
 *trello - Links you to the Trello board of Maunz. Feature requests and bug reports can be made here.
