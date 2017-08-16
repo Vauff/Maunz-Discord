@@ -32,14 +32,14 @@ public class Benchmark implements ICommand<MessageReceivedEvent>
 				query = query.replace(" ", "+");
 			}
 
-			Document searchDoc = Jsoup.connect("http://www.passmark.com/search/zoomsearch.php?zoom_query=" + query + "&zoom_cat=5").get();
+			Document searchDoc = Jsoup.connect("https://www.passmark.com/search/zoomsearch.php?zoom_query=" + query + "&zoom_cat=5").get();
 			String searchHtml = searchDoc.select("div[class=result_title]").html();
 			String[] searchHtmlSplit = searchHtml.split(" ");
 			String link = "";
 
 			for (String l : searchHtmlSplit)
 			{
-				if ((l.contains("http://")) && (l.contains("gpu.php") || l.contains("cpu.php")))
+				if ((l.contains("https://")) && (l.contains("gpu.php") || l.contains("cpu.php")))
 				{
 					link = l;
 					break;
