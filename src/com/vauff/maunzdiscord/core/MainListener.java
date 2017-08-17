@@ -2,13 +2,11 @@ package com.vauff.maunzdiscord.core;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
 import com.vauff.maunzdiscord.commands.*;
@@ -22,9 +20,8 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 
 public class MainListener
 {
-	private LinkedList<ICommand<MessageReceivedEvent>> commands = new LinkedList<ICommand<MessageReceivedEvent>>();
+	private LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<AbstractCommand<MessageReceivedEvent>>();
 	public static StopWatch uptime = new StopWatch();
-	private static HashMap<String, Boolean> hasReacted = new HashMap<String, Boolean>();
 
 	public MainListener()
 	{
@@ -77,7 +74,7 @@ public class MainListener
 
 			if ((Util.devMode && event.getChannel().getStringID().equals("252537749859598338") || event.getChannel().getStringID().equals("340273634331459594") || event.getChannel().isPrivate()) || (Util.devMode == false && !event.getChannel().getStringID().equals("252537749859598338")))
 			{
-				for (ICommand<MessageReceivedEvent> cmd : commands)
+				for (AbstractCommand<MessageReceivedEvent> cmd : commands)
 				{
 					if (Util.isEnabled || cmd instanceof Enable || cmd instanceof Disable)
 					{
@@ -104,65 +101,11 @@ public class MainListener
 	{
 		try
 		{
-			String fileName = "map-notification-data/" + event.getUser().getStringID() + ".txt";
-			File file = new File(Util.getJarLocation() + fileName);
-
-			if (event.getMessage().getAuthor().getLongID() == Main.client.getOurUser().getLongID())
+			if (AbstractCommand.AWAITED.containsKey(event.getMessage().getStringID()) && event.getUser().getStringID().equals(AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getUserID()))
 			{
-				if (Notify.confirmationMessages.containsKey(event.getUser().getStringID()))
-				{
-					if (event.getMessage().getStringID().equals(Notify.confirmationMessages.get(event.getUser().getStringID())))
-					{
-						if (event.getReaction().toString().equals("✅") && !hasReacted.containsKey(event.getUser().getStringID()))
-						{
-							hasReacted.put(event.getUser().getStringID(), true);
-							Main.client.getMessageByID(Long.parseLong(Notify.confirmationMessages.get(event.getUser().getStringID()))).delete();
-
-							if (Notify.confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
-							{
-								Util.msg(event.getChannel(), ":white_check_mark:  |  Successfully wiped all of your map notifications!");
-								FileUtils.forceDelete(file);
-							}
-							else
-							{
-								Util.msg(event.getChannel(), ":white_check_mark:  |  Adding **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
-
-								if (Util.getFileContents(fileName).equals(" "))
-								{
-									FileUtils.writeStringToFile(file, Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
-								}
-								else
-								{
-									FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
-								}
-							}
-
-							Notify.confirmationMaps.remove(event.getUser().getStringID());
-							Notify.confirmationMessages.remove(event.getUser().getStringID());
-							Thread.sleep(2000);
-							hasReacted.remove(event.getUser().getStringID());
-						}
-						if (event.getReaction().toString().equals("❌") && !hasReacted.containsKey(event.getUser().getStringID()))
-						{
-							hasReacted.put(event.getUser().getStringID(), true);
-							Main.client.getMessageByID(Long.parseLong(Notify.confirmationMessages.get(event.getUser().getStringID()))).delete();
-
-							if (Notify.confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
-							{
-								Util.msg(event.getChannel(), ":x:  |  No problem, I won't wipe all your map notifications");
-							}
-							else
-							{
-								Util.msg(event.getChannel(), ":x:  |  No problem, I won't add **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
-							}
-
-							Notify.confirmationMaps.remove(event.getUser().getStringID());
-							Notify.confirmationMessages.remove(event.getUser().getStringID());
-							Thread.sleep(2000);
-							hasReacted.remove(event.getUser().getStringID());
-						}
-					}
-				}
+				event.getMessage().delete();
+				AbstractCommand.AWAITED.remove(event.getMessage().getStringID());
+				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getCommand().onReactionAdd(event);
 			}
 		}
 		catch (Exception e)

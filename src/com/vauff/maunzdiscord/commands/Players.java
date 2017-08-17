@@ -4,13 +4,13 @@ import java.io.File;
 
 import org.json.JSONObject;
 
-import com.vauff.maunzdiscord.core.ICommand;
+import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.MapTimer;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
-public class Players implements ICommand<MessageReceivedEvent>
+public class Players extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
