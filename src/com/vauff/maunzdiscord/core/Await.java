@@ -1,11 +1,13 @@
 package com.vauff.maunzdiscord.core;
 
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+
 public class Await
 {
 	private String userID;
-	private AbstractCommand command;
+	private AbstractCommand<? extends MessageReceivedEvent> command;
 	
-	public Await(String uID, AbstractCommand cmd)
+	public Await(String uID, AbstractCommand<? extends MessageReceivedEvent> cmd)
 	{
 		userID = uID;
 		command = cmd;
@@ -16,7 +18,7 @@ public class Await
 		return userID;
 	}
 	
-	public AbstractCommand getCommand()
+	public AbstractCommand<? extends MessageReceivedEvent> getCommand()
 	{
 		return command;
 	}

@@ -2,13 +2,11 @@ package com.vauff.maunzdiscord.core;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
 import com.vauff.maunzdiscord.commands.*;
@@ -24,7 +22,6 @@ public class MainListener
 {
 	private LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<AbstractCommand<MessageReceivedEvent>>();
 	public static StopWatch uptime = new StopWatch();
-	private static HashMap<String, Boolean> hasReacted = new HashMap<String, Boolean>();
 
 	public MainListener()
 	{

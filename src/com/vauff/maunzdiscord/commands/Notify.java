@@ -8,9 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-
 import com.vdurmont.emoji.EmojiManager;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
