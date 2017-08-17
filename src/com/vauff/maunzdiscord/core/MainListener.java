@@ -106,15 +106,7 @@ public class MainListener
 		{
 			if (AbstractCommand.AWAITED.containsKey(event.getMessage().getStringID()) && !event.getUser().getStringID().equals(Main.client.getOurUser().getStringID()))
 			{
-				if (event.getReaction().toString().equals("✅"))
-				{
-					AbstractCommand.AWAITED.get(event.getMessage().getStringID()).confirm(event);
-				}
-				else if (event.getReaction().toString().equals("❌"))
-				{
-					AbstractCommand.AWAITED.get(event.getMessage().getStringID()).deny(event);
-				}
-				
+				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).onReactionAdd(event);
 				AbstractCommand.AWAITED.remove(event.getMessage().getStringID());
 				event.getMessage().delete();
 			}

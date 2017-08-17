@@ -66,7 +66,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					else
 					{
 						IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
-						waitForConfirmation(m.getStringID());
+						waitForReaction(m.getStringID());
 						m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 						Thread.sleep(250);
 						m.addReaction(EmojiManager.getForAlias(":x:"));
@@ -146,7 +146,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							else
 							{
 								IMessage m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
-								waitForConfirmation(m.getStringID());
+								waitForReaction(m.getStringID());
 								m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 								Thread.sleep(250);
 								m.addReaction(EmojiManager.getForAlias(":x:"));
@@ -176,6 +176,12 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	public String[] getAliases()
 	{
 		return new String[] { "*notify" };
+	}
+	
+	@Override
+	public boolean confirmable()
+	{
+		return true;
 	}
 
 	@Override
