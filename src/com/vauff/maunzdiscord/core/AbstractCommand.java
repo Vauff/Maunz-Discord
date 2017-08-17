@@ -7,15 +7,15 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.Reactio
 
 public abstract class AbstractCommand<M extends MessageReceivedEvent>
 {
-	public static final HashMap<String,AbstractCommand> AWAITED = new HashMap<String,AbstractCommand>();
+	public static final HashMap<String,Await> AWAITED = new HashMap<String,Await>();
 	
 	public abstract void exe(M event) throws Exception;
 	
 	public abstract String[] getAliases();
 	
-	public final void waitForReaction(String messageID)
+	public final void waitForReaction(String messageID, String userID)
 	{
-		AWAITED.put(messageID, this);
+		AWAITED.put(messageID, new Await(userID, this));
 	}
 	
 	/**
@@ -33,16 +33,13 @@ public abstract class AbstractCommand<M extends MessageReceivedEvent>
 		{
 			try
 			{
-				if (AWAITED.containsKey(event.getMessage().getStringID()) && !event.getUser().getStringID().equals(Main.client.getOurUser().getStringID()))
+				if (event.getReaction().toString().equals("✅"))
 				{
-					if (event.getReaction().toString().equals("✅"))
-					{
-						confirm(event);
-					}
-					else if (event.getReaction().toString().equals("❌"))
-					{
-						deny(event);
-					}
+					confirm(event);
+				}
+				else if (event.getReaction().toString().equals("❌"))
+				{
+					deny(event);
 				}
 			}
 			catch (Exception e)

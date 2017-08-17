@@ -104,9 +104,9 @@ public class MainListener
 	{
 		try
 		{
-			if (AbstractCommand.AWAITED.containsKey(event.getMessage().getStringID()) && !event.getUser().getStringID().equals(Main.client.getOurUser().getStringID()))
+			if (AbstractCommand.AWAITED.containsKey(event.getMessage().getStringID()) && event.getUser().getStringID().equals(AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getUserID()))
 			{
-				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).onReactionAdd(event);
+				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getCommand().onReactionAdd(event);
 				AbstractCommand.AWAITED.remove(event.getMessage().getStringID());
 				event.getMessage().delete();
 			}
