@@ -1,11 +1,11 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.ICommand;
+import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
-public class Help implements ICommand<MessageReceivedEvent>
+public class Help extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -48,10 +48,14 @@ public class Help implements ICommand<MessageReceivedEvent>
 			return "Makes Maunz respond to you with pong. Very useful for testing ping to the IRC server! **Usage: *ping**";
 		case "players":
 			return "Lists the current players online on the GFL ZE server (in a PM). **Usage: *players**";
+		case "reddit":
+			return "Links you to a subreddit that you provide. **Usage: *reddit <subreddit>**";
 		case "restart":
 			return "Restarts Maunz, only usable by Vauff. **Usage: *restart**";
 		case "source":
 			return "Links you to the GitHub page of Maunz, you can submit issues/pull requests here. **Usage: *source**";
+		case "steam":
+			return "Links you to a Steam profile based on a Steam ID. **Usage *steam <steamid>**";
 		case "stop":
 			return "Stops Maunz, only usable by Vauff. **Usage: *stop**";
 		case "trello":

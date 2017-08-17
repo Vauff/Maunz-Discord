@@ -1,29 +1,41 @@
 package com.vauff.maunzdiscord.commands;
 
 import java.awt.Color;
+import java.io.File;
 
-import com.vauff.maunzdiscord.core.ICommand;
+import org.json.JSONObject;
+
+import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.features.GFLTimer;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
-public class Map implements ICommand<MessageReceivedEvent>
+public class Map extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		if (!Util.getFileContents("lastmap.txt").endsWith("_OLD-DATA"))
+		if (!event.getChannel().isPrivate())
 		{
-			String map = Util.getFileContents("lastmap.txt");
-			EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withTimestamp(GFLTimer.timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Currently Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + GFLTimer.players + "**\nQuick Join: **steam://connect/216.52.148.47:27015**").build();
-			Util.msg(event.getChannel(), embed);
+			String guildID = event.getGuild().getStringID();
+			File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + ".json");
+
+			if (file.exists())
+			{
+				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + ".json"));
+				EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withTimestamp(json.getLong("timestamp")).withThumbnail("https://vauff.me/mapimgs/" + json.getString("lastMap") + ".jpg").withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+				Util.msg(event.getChannel(), embed);
+			}
+			else
+			{
+				Util.msg(event.getChannel(), "The map tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "Failed to grab map data, maybe the server is down?");
+			Util.msg(event.getChannel(), "This command can't be done in a PM, only in a guild with the map tracking service enabled");
 		}
 	}
 

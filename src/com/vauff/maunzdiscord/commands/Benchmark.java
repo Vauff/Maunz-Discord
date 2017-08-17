@@ -9,10 +9,10 @@ import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
-import com.vauff.maunzdiscord.core.ICommand;
+import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 
-public class Benchmark implements ICommand<MessageReceivedEvent>
+public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -32,14 +32,14 @@ public class Benchmark implements ICommand<MessageReceivedEvent>
 				query = query.replace(" ", "+");
 			}
 
-			Document searchDoc = Jsoup.connect("http://www.passmark.com/search/zoomsearch.php?zoom_query=" + query + "&zoom_cat=5").get();
+			Document searchDoc = Jsoup.connect("https://www.passmark.com/search/zoomsearch.php?zoom_query=" + query + "&zoom_cat=5").get();
 			String searchHtml = searchDoc.select("div[class=result_title]").html();
 			String[] searchHtmlSplit = searchHtml.split(" ");
 			String link = "";
 
 			for (String l : searchHtmlSplit)
 			{
-				if ((l.contains("http://")) && (l.contains("gpu.php") || l.contains("cpu.php")))
+				if ((l.contains("https://")) && (l.contains("gpu.php") || l.contains("cpu.php")))
 				{
 					link = l;
 					break;

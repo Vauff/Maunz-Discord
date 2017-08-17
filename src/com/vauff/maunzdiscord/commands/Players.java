@@ -1,37 +1,54 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.ICommand;
+import java.io.File;
+
+import org.json.JSONObject;
+
+import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.features.GFLTimer;
+import com.vauff.maunzdiscord.features.MapTimer;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
-public class Players implements ICommand<MessageReceivedEvent>
+public class Players extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		String playersHtml = GFLTimer.playersDoc.select("span[class=ipsGrid_span4 cGFLInfo]").html();
-		String[] playersHtmlSplit = playersHtml.split(System.lineSeparator());
-		StringBuilder playerList = new StringBuilder();
+		StringBuilder playersList = new StringBuilder();
 
 		if (!event.getChannel().isPrivate())
 		{
-			Util.msg(event.getChannel(), "Sending the GFL ZE online player list to you in a PM!");
-		}
-		
-		playerList.append("```-- Players Online: " + GFLTimer.players + " --" + System.lineSeparator() + System.lineSeparator());
+			String guildID = event.getGuild().getStringID();
+			File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + ".json");
 
-		for (int i = 0; i < playersHtmlSplit.length; i += 3)
-		{
-			if (!playersHtmlSplit[i].equals(""))
+			if (file.exists())
 			{
-				playerList.append("- " + playersHtmlSplit[i] + System.lineSeparator());
+				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + ".json"));
+
+				Util.msg(event.getChannel(), "Sending the online player list to you in a PM!");
+				playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
+
+				for (String player : MapTimer.serverList.get(event.getGuild().getLongID()).getPlayers().keySet())
+				{
+					if (!player.equals(""))
+					{
+						playersList.append("- " + player + System.lineSeparator());
+					}
+				}
+
+				playersList.append("```");
+				Util.msg(event.getAuthor().getOrCreatePMChannel(), playersList.toString());
+			}
+			else
+			{
+				Util.msg(event.getChannel(), "The map tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 			}
 		}
-
-		playerList.append("```");
-		Util.msg(event.getAuthor().getOrCreatePMChannel(), playerList.toString());
+		else
+		{
+			Util.msg(event.getChannel(), "This command can't be done in a PM, only in a guild with the map tracking service enabled");
+		}
 	}
 
 	@Override

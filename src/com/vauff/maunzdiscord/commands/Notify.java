@@ -1,20 +1,23 @@
 package com.vauff.maunzdiscord.commands;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.vauff.maunzdiscord.core.ICommand;
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
 import com.vdurmont.emoji.EmojiManager;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.obj.IMessage;
 
-public class Notify implements ICommand<MessageReceivedEvent>
+public class Notify extends AbstractCommand<MessageReceivedEvent>
 {
 	public static HashMap<String, String> confirmationMaps = new HashMap<String, String>();
 	public static HashMap<String, String> confirmationMessages = new HashMap<String, String>();
@@ -63,6 +66,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 					else
 					{
 						IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+						waitForConfirmation(m.getStringID());
 						m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 						Thread.sleep(250);
 						m.addReaction(EmojiManager.getForAlias(":x:"));
@@ -142,6 +146,7 @@ public class Notify implements ICommand<MessageReceivedEvent>
 							else
 							{
 								IMessage m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+								waitForConfirmation(m.getStringID());
 								m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 								Thread.sleep(250);
 								m.addReaction(EmojiManager.getForAlias(":x:"));
@@ -171,5 +176,64 @@ public class Notify implements ICommand<MessageReceivedEvent>
 	public String[] getAliases()
 	{
 		return new String[] { "*notify" };
+	}
+
+	@Override
+	public void confirm(ReactionAddEvent event) throws IOException, InterruptedException
+	{
+		String fileName = "map-notification-data/" + event.getUser().getStringID() + ".txt";
+		File file = new File(Util.getJarLocation() + fileName);
+
+		if (Notify.confirmationMessages.containsKey(event.getUser().getStringID()))
+		{
+			if (event.getMessage().getStringID().equals(Notify.confirmationMessages.get(event.getUser().getStringID())))
+			{
+				if (Notify.confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+				{
+					FileUtils.forceDelete(file);
+					Util.msg(event.getChannel(), ":white_check_mark:  |  Successfully wiped all of your map notifications!");
+				}
+				else
+				{
+					Util.msg(event.getChannel(), ":white_check_mark:  |  Adding **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+
+					if (Util.getFileContents(fileName).equals(" "))
+					{
+						FileUtils.writeStringToFile(file, Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
+					}
+					else
+					{
+						FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
+					}
+				}
+
+				Notify.confirmationMaps.remove(event.getUser().getStringID());
+				Notify.confirmationMessages.remove(event.getUser().getStringID());
+				Thread.sleep(2000);
+			}
+		}
+	}
+
+	@Override
+	public void deny(ReactionAddEvent event) throws InterruptedException
+	{
+		if (Notify.confirmationMessages.containsKey(event.getUser().getStringID()))
+		{
+			if (event.getMessage().getStringID().equals(Notify.confirmationMessages.get(event.getUser().getStringID())))
+			{
+				if (Notify.confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+				{
+					Util.msg(event.getChannel(), ":x:  |  No problem, I won't wipe all your map notifications");
+				}
+				else
+				{
+					Util.msg(event.getChannel(), ":x:  |  No problem, I won't add **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
+				}
+
+				Notify.confirmationMaps.remove(event.getUser().getStringID());
+				Notify.confirmationMessages.remove(event.getUser().getStringID());
+				Thread.sleep(2000);
+			}
+		}
 	}
 }

@@ -18,7 +18,6 @@ public class Util
 	public static boolean isEnabled = true;
 	public static boolean devMode;
 	public static String token;
-	public static IChannel mapChannel;
 
 	public static String getJarLocation()
 	{
@@ -49,12 +48,6 @@ public class Util
 	public static String getFileContents(String arg) throws IOException
 	{
 		File file = new File(getJarLocation() + arg);
-
-		if (!file.exists())
-		{
-			file.createNewFile();
-			FileUtils.writeStringToFile(file, " ", "UTF-8");
-		}
 
 		return FileUtils.readFileToString(file, "UTF-8");
 	}
