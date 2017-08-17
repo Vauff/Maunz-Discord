@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.ICommand;
+import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -13,7 +13,7 @@ import java.net.Socket;
  * Created by Ramon on 03-Apr-17.
  */
 
-public class IsItDown implements ICommand<MessageReceivedEvent>
+public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception

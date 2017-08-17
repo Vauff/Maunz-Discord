@@ -3,13 +3,13 @@ package com.vauff.maunzdiscord.commands;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import com.vauff.maunzdiscord.core.ICommand;
+import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
-public class Steam implements ICommand<MessageReceivedEvent>
+public class Steam extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
