@@ -20,7 +20,11 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 	{
 		String[] args = event.getMessage().getContent().split(" ");
 
-		if (args.length == 2)
+		if (args.length == 1)
+		{
+			Util.msg(event.getChannel(), "You need to specify an argument! **Usage: *isitdown <hostname>**");
+		}
+		else
 		{
 			boolean isUp;
 			String hostname = args[1].replaceAll("^https?:\\/\\/", "").split("/")[0];
@@ -36,10 +40,6 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 
 			Util.msg(event.getChannel(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + hostname + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
 		}
-		else
-		{
-			Util.msg(event.getChannel(), "You need to specify an argument! **Usage: *isitdown <hostname>**");
-		}
 	}
 
 	@Override
@@ -50,27 +50,27 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 
 	private static boolean pingHost(String host, int port, int timeout)
 	{
-	    Socket socket = new Socket();
-	    
-	    try
-	    {
-	        socket.connect(new InetSocketAddress(host, port), timeout);
-	        return true;
-	    }
-	    catch (IOException e)
-	    {
-	        return false; // Either timeout, unreachable or failed DNS lookup.
-	    }
-	    finally
-	    {
-	        try
-	        {
-	            socket.close();
-	        }
-	        catch (IOException e)
-	        {
-	            e.printStackTrace();
-	        }
-	    }
+		Socket socket = new Socket();
+
+		try
+		{
+			socket.connect(new InetSocketAddress(host, port), timeout);
+			return true;
+		}
+		catch (IOException e)
+		{
+			return false; // Either timeout, unreachable or failed DNS lookup.
+		}
+		finally
+		{
+			try
+			{
+				socket.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }
