@@ -28,6 +28,8 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		{
 		case "about":
 			return "Gives information about Maunz such as version and uptime. **Usage: *about**";
+		case "accinfo":
+			return "Shows information about a Minecraft account. **Usage: *accinfo <accountname>**";
 		case "benchmark":
 			return "Provides complete benchmark information on a GPU or CPU powered by PassMark. **Usage: *benchmark <gpu/cpu>**";
 		case "changelog":
