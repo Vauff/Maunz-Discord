@@ -26,6 +26,7 @@ public class MainListener
 	public MainListener()
 	{
 		commands.add(new About());
+		commands.add(new AccInfo());
 		commands.add(new Benchmark());
 		commands.add(new Changelog());
 		commands.add(new Disable());
