@@ -50,14 +50,27 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 
 	private static boolean pingHost(String host, int port, int timeout)
 	{
-		try (Socket socket = new Socket())
-		{
-			socket.connect(new InetSocketAddress(host, port), timeout);
-			return true;
-		}
-		catch (IOException e)
-		{
-			return false; // Either timeout, unreachable or failed DNS lookup.
-		}
+	    Socket socket = new Socket();
+	    
+	    try
+	    {
+	        socket.connect(new InetSocketAddress(host, port), timeout);
+	        return true;
+	    }
+	    catch (IOException e)
+	    {
+	        return false; // Either timeout, unreachable or failed DNS lookup.
+	    }
+	    finally
+	    {
+	        try
+	        {
+	            socket.close();
+	        }
+	        catch (IOException e)
+	        {
+	            e.printStackTrace();
+	        }
+	    }
 	}
 }
