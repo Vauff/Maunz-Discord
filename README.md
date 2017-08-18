@@ -10,9 +10,9 @@ Italic ones cannot be done by everyone and are restricted to just Vauff. [] indi
 
 *about - Gives information about Maunz such as version and uptime.
 
-*accinfo <username> - Gives you full information about any Minecraft account.
+*accinfo \<username> - Gives you full information about any Minecraft account.
 
-*benchmark <gpu/cpu> - Provides complete benchmark information on a GPU or CPU powered by PassMark.
+*benchmark \<gpu/cpu> - Provides complete benchmark information on a GPU or CPU powered by PassMark.
 
 *changelog [version] - Tells you the changelog of the Maunz version you specify.
 
@@ -20,7 +20,7 @@ _*disable_ - Disables Maunz.
 
 _*enable_ - Enables Maunz.
 
-*help \[command] - Links you to the README or gives command help if a command is given. Please note that command specific help defaults to channel syntax by default.
+*help [command] - Links you to the README or gives command help if a command is given. Please note that command specific help defaults to channel syntax by default.
 
 *isitdown \<hostname> - Tells you if the given website is down or not.
 
@@ -32,13 +32,13 @@ _*enable_ - Enables Maunz.
 
 *players - Lists the current players online on the GFL ZE server (in a PM).
 
-*reddit <subreddit> - Links you to a subreddit that you provide.
+*reddit \<subreddit> - Links you to a subreddit that you provide.
 
 _*restart_ - Restarts Maunz.
 
 *source - Links you to the GitHub page of Maunz, you can submit issues/pull requests here.
 
-*steam <steamid> - Links you to a Steam profile based on a Steam ID.
+*steam \<steamid> - Links you to a Steam profile based on a Steam ID.
 
 _*stop_ - Stops Maunz.
 
