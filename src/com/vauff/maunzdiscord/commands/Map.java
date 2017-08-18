@@ -20,11 +20,11 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 		if (!event.getChannel().isPrivate())
 		{
 			String guildID = event.getGuild().getStringID();
-			File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + ".json");
+			File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + "/serverInfo.json");
 
 			if (file.exists())
 			{
-				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + ".json"));
+				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + "/serverInfo.json"));
 				EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL("https://vauff.me/mapimgs/" + json.getString("lastMap") + ".jpg"))).withTimestamp(json.getLong("timestamp")).withThumbnail("https://vauff.me/mapimgs/" + json.getString("lastMap") + ".jpg").withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 				Util.msg(event.getChannel(), embed);
 			}

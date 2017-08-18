@@ -34,104 +34,110 @@ public class MapTimer
 				{
 					for (File file : new File(Util.getJarLocation() + "services/map-tracking").listFiles())
 					{
-						JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + file.getName()));
-						SourceServer server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
-
-						try
+						if (file.isDirectory())
 						{
-							server.initialize();
-						}
-						catch (NullPointerException | TimeoutException | SteamCondenserException e)
-						{
-							Main.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
-							continue;
-						}
+							JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + file.getName() + "/serverInfo.json"));
+							SourceServer server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
 
-						serverList.put(Long.parseLong(file.getName().replace(".json", "")), server);
-						String serverInfo = server.toString();
-						long timestamp = 0;
-						String map = serverInfo.split("mapName: ")[1].replace(System.lineSeparator(), "");
-						int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
-						int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
-
-						if (currentPlayers > maxPlayers)
-						{
-							currentPlayers = maxPlayers;
-						}
-
-						String players = currentPlayers + "/" + maxPlayers;
-
-						if (!map.equals("") && !json.getString("lastMap").equalsIgnoreCase(map))
-						{
-							timestamp = System.currentTimeMillis();
-
-							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL("https://vauff.me/mapimgs/" + map + ".jpg"))).withTimestamp(timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
-							Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), embed);
-
-							for (int parentInt = 0; parentInt < json.getJSONArray("notifications").length(); parentInt++)
+							try
 							{
-								JSONObject object = json.getJSONArray("notifications").getJSONObject(parentInt);
-								IUser user = null;
+								server.initialize();
+							}
+							catch (NullPointerException | TimeoutException | SteamCondenserException e)
+							{
+								Main.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
+								continue;
+							}
 
-								try
-								{
-									user = Main.client.getUserByID(object.getLong("id"));
-								}
-								catch (NullPointerException e)
-								{
-									Main.log.error("", e);
-									// This means that either a bad user ID was
-									// provided by the notification file, or the
-									// users account doesn't exist anymore
-								}
+							serverList.put(Long.parseLong(file.getName()), server);
+							String serverInfo = server.toString();
+							long timestamp = 0;
+							String map = serverInfo.split("mapName: ")[1].replace(System.lineSeparator(), "");
+							int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
+							int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
 
-								for (int childInt = 0; childInt < object.getJSONArray("notifications").length(); childInt++)
-								{
-									String mapNotification = object.getJSONArray("notifications").getString(childInt);
+							if (currentPlayers > maxPlayers)
+							{
+								currentPlayers = maxPlayers;
+							}
 
-									if (mapNotification.equalsIgnoreCase(map))
+							String players = currentPlayers + "/" + maxPlayers;
+
+							if (!map.equals("") && !json.getString("lastMap").equalsIgnoreCase(map))
+							{
+								timestamp = System.currentTimeMillis();
+
+								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL("https://vauff.me/mapimgs/" + map + ".jpg"))).withTimestamp(timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+								Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), embed);
+
+								for (File notificationFile : new File(Util.getJarLocation() + "services/map-tracking/" + file.getName()).listFiles())
+								{
+									if (!notificationFile.getName().equals("serverInfo.json"))
 									{
-										Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+										JSONObject notificationJson = new JSONObject(Util.getFileContents("services/map-tracking/" + file.getName() + "/" + notificationFile.getName()));
+										IUser user = null;
+
+										try
+										{
+											user = Main.client.getUserByID(Long.parseLong(notificationFile.getName().replace(".json", "")));
+										}
+										catch (NullPointerException e)
+										{
+											Main.log.error("", e);
+											// This means that either a bad user ID was
+											// provided by the notification file, or the
+											// users account doesn't exist anymore
+										}
+
+										for (int i = 0; i < notificationJson.getJSONArray("notifications").length(); i++)
+										{
+											String mapNotification = notificationJson.getJSONArray("notifications").getString(i);
+
+											if (mapNotification.equalsIgnoreCase(map))
+											{
+												Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+											}
+										}
+
 									}
 								}
 
-							}
+								boolean mapFound = false;
 
-							boolean mapFound = false;
-
-							for (int i = 0; i < json.getJSONArray("mapDatabase").length(); i++)
-							{
-								String dbMap = json.getJSONArray("mapDatabase").getString(i);
-
-								if (dbMap.toString().equals(map))
+								for (int i = 0; i < json.getJSONArray("mapDatabase").length(); i++)
 								{
-									mapFound = true;
+									String dbMap = json.getJSONArray("mapDatabase").getString(i);
+
+									if (dbMap.toString().equals(map))
+									{
+										mapFound = true;
+									}
 								}
+
+								if (!mapFound)
+								{
+									json.append("mapDatabase", map);
+								}
+
 							}
 
-							if (!mapFound)
+							if (!map.equals(""))
 							{
-								json.append("mapDatabase", map);
+								json.put("lastMap", map);
 							}
 
-						}
+							if (!players.equals(""))
+							{
+								json.put("players", players);
+							}
 
-						if (!map.equals(""))
-						{
-							json.put("lastMap", map);
-						}
+							if (timestamp != 0)
+							{
+								json.put("timestamp", timestamp);
+							}
 
-						if (!players.equals(""))
-						{
-							json.put("players", players);
+							FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 						}
-
-						if (timestamp != 0)
-						{
-							json.put("timestamp", timestamp);
-						}
-
-						FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName()), json.toString(2), "UTF-8");
 					}
 				}
 			}

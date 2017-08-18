@@ -20,11 +20,11 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 		if (!event.getChannel().isPrivate())
 		{
 			String guildID = event.getGuild().getStringID();
-			File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + ".json");
+			File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + "/serverInfo.json");
 
 			if (file.exists())
 			{
-				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + ".json"));
+				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + "/serverInfo.json"));
 
 				Util.msg(event.getChannel(), "Sending the online player list to you in a PM!");
 				playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
