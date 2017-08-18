@@ -1,8 +1,8 @@
 package com.vauff.maunzdiscord.features;
 
-import java.awt.Color;
 import java.io.File;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.TimeoutException;
 
@@ -65,7 +65,7 @@ public class MapTimer
 						{
 							timestamp = System.currentTimeMillis();
 
-							EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withTimestamp(timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL("https://vauff.me/mapimgs/" + map + ".jpg"))).withTimestamp(timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 							Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), embed);
 
 							for (int parentInt = 0; parentInt < json.getJSONArray("notifications").length(); parentInt++)

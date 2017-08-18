@@ -1,7 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
-import java.awt.Color;
 import java.io.File;
+import java.net.URL;
 
 import org.json.JSONObject;
 
@@ -25,7 +25,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 			if (file.exists())
 			{
 				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + ".json"));
-				EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withTimestamp(json.getLong("timestamp")).withThumbnail("https://vauff.me/mapimgs/" + json.getString("lastMap") + ".jpg").withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+				EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL("https://vauff.me/mapimgs/" + json.getString("lastMap") + ".jpg"))).withTimestamp(json.getLong("timestamp")).withThumbnail("https://vauff.me/mapimgs/" + json.getString("lastMap") + ".jpg").withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 				Util.msg(event.getChannel(), embed);
 			}
 			else
