@@ -1,18 +1,12 @@
 package com.vauff.maunzdiscord.commands;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -69,7 +63,7 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 						uuid = new StringBuilder(uuid).insert(uuid.length() - 12, "-").toString();
 
 						String headURL = "http://cravatar.eu/helmavatar/" + status[1] +"/120";
-						EmbedObject embed = new EmbedBuilder().withColor(averageColorFromURL(new URL(headURL))).withThumbnail(headURL).appendField("Name", status[1], true).withFooterText("Powered by axis.iaero.me").appendField("Account Status", "Premium", true).appendField("Migrated", StringUtils.capitalize(status[2]), true).appendField("UUID", uuid, true).appendField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true).appendField("Raw Skin", "https://minotar.net/skin/" + status[1], true).build();
+						EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(headURL))).withThumbnail(headURL).appendField("Name", status[1], true).withFooterText("Powered by axis.iaero.me").appendField("Account Status", "Premium", true).appendField("Migrated", StringUtils.capitalize(status[2]), true).appendField("UUID", uuid, true).appendField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true).appendField("Raw Skin", "https://minotar.net/skin/" + status[1], true).build();
 						Util.msg(event.getChannel(), embed);
 					}
 				}
@@ -81,39 +75,6 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 		}
 	}
 
-	private Color averageColorFromURL(URL url)
-	{
-		BufferedImage image = null;
-		
-		try
-		{
-			image = ImageIO.read(url);
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-		}
-
-		final int pixels = image.getWidth() * image.getHeight();
-		int red = 0;
-		int green = 0;
-		int blue = 0;
-		
-		for (int x = 0; x < image.getWidth(); x++)
-		{
-			for (int y = 0; y < image.getHeight(); y++)
-			{
-				Color pixel = new Color(image.getRGB(x, y));
-				
-				red += pixel.getRed();
-				green += pixel.getGreen();
-				blue += pixel.getBlue();
-			}
-		}
-		
-		return new Color(red / pixels, green / pixels, blue / pixels);
-	}
-	
 	@Override
 	public String[] getAliases()
 	{

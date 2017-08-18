@@ -1,11 +1,16 @@
 package com.vauff.maunzdiscord.core;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 
@@ -151,5 +156,38 @@ public class Util
 		{
 			Main.log.error(e);
 		}
+	}
+	
+	public static Color averageColorFromURL(URL url)
+	{
+		BufferedImage image = null;
+		
+		try
+		{
+			image = ImageIO.read(url);
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+
+		final int pixels = image.getWidth() * image.getHeight();
+		int red = 0;
+		int green = 0;
+		int blue = 0;
+		
+		for (int x = 0; x < image.getWidth(); x++)
+		{
+			for (int y = 0; y < image.getHeight(); y++)
+			{
+				Color pixel = new Color(image.getRGB(x, y));
+				
+				red += pixel.getRed();
+				green += pixel.getGreen();
+				blue += pixel.getBlue();
+			}
+		}
+		
+		return new Color(red / pixels, green / pixels, blue / pixels);
 	}
 }
