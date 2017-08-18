@@ -20,10 +20,18 @@ import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
+/**
+ * A timer to send notifications of maps currently being played on given servers
+ */
 public class MapTimer
 {
+	/** The servers to check */
 	public static HashMap<Long, SourceServer> serverList = new HashMap<Long, SourceServer>();
 
+	/**
+	 * Checks the servers in {@link MapTimer#serverList} for new maps being played and sends them to a channel
+	 * as well as notifying users that set up a notification for that map
+	 */
 	public static Runnable timer = new Runnable()
 	{
 		public void run()

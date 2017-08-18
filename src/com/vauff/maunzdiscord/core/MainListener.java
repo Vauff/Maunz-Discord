@@ -20,9 +20,14 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 
 public class MainListener
 {
+	/** Holds all commands */
 	private LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<AbstractCommand<MessageReceivedEvent>>();
+	/** A watch to keep track of the uptime of the bot */
 	public static StopWatch uptime = new StopWatch();
 
+	/**
+	 * Sets up all commands
+	 */
 	public MainListener()
 	{
 		commands.add(new About());

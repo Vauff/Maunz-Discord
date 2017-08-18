@@ -22,6 +22,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		}
 	}
 
+	/**
+	 * Returns a help string corresponding to the command prefix at index 1 in the given array
+	 * @param args The string array containing the command prefix of which to get the help string
+	 * @return The help string corresponding to the command prefix
+	 */
 	public String cmdHelp(String[] args)
 	{
 		switch (args[1].toLowerCase().replace("*", ""))
