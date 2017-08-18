@@ -56,7 +56,7 @@ public class Util
 
 		return FileUtils.readFileToString(file, "UTF-8");
 	}
-	
+
 	public static String getFileContents(File arg) throws IOException
 	{
 		if (!arg.exists())
@@ -94,7 +94,7 @@ public class Util
 
 		return days + ":" + (hours < 10 ? "0" + hours : hours) + ":" + uptimeraw[0].split(":")[1] + ":" + uptimeraw[0].split(":")[2];
 	}
-	
+
 	public static String addArgs(String[] args, int startIndex)
 	{
 		String s = "";
@@ -157,37 +157,37 @@ public class Util
 			Main.log.error(e);
 		}
 	}
-	
+
 	public static Color averageColorFromURL(URL url)
 	{
 		BufferedImage image = null;
-		
+
 		try
 		{
 			image = ImageIO.read(url);
 		}
 		catch (Exception e)
 		{
-			Main.log.error("", e);
+			return new Color(0, 154, 255);
 		}
 
 		final int pixels = image.getWidth() * image.getHeight();
 		int red = 0;
 		int green = 0;
 		int blue = 0;
-		
+
 		for (int x = 0; x < image.getWidth(); x++)
 		{
 			for (int y = 0; y < image.getHeight(); y++)
 			{
 				Color pixel = new Color(image.getRGB(x, y));
-				
+
 				red += pixel.getRed();
 				green += pixel.getGreen();
 				blue += pixel.getBlue();
 			}
 		}
-		
+
 		return new Color(red / pixels, green / pixels, blue / pixels);
 	}
 }

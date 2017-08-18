@@ -46,7 +46,7 @@ public class MapTimer
 							Main.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
 							continue;
 						}
-						
+
 						serverList.put(Long.parseLong(file.getName().replace(".json", "")), server);
 						String serverInfo = server.toString();
 						long timestamp = 0;
