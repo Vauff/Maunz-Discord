@@ -74,21 +74,15 @@ public class Util
 
 		return FileUtils.readFileToString(file, "UTF-8");
 	}
-	
+
 	/**
-	 * Gets the contents of a file as a string. If the file doesn't exist, this method will create it
+	 * Gets the contents of a file as a string
 	 * @param arg The path of the file
 	 * @return The content of the file
 	 * @throws IOException If {@link FileUtils#readFileToString(File)} throws an IOException
 	 */
 	public static String getFileContents(File arg) throws IOException
 	{
-		if (!arg.exists())
-		{
-			arg.createNewFile();
-			FileUtils.writeStringToFile(arg, " ", "UTF-8");
-		}
-
 		return FileUtils.readFileToString(arg, "UTF-8");
 	}
 
@@ -137,7 +131,7 @@ public class Util
 
 		return days + ":" + (hours < 10 ? "0" + hours : hours) + ":" + uptimeraw[0].split(":")[1] + ":" + uptimeraw[0].split(":")[2];
 	}
-	
+
 	/**
 	 * Concatenates a string array from a given start index and leavs out the part after the last space
 	 * @param args The array to concatenate
@@ -226,7 +220,7 @@ public class Util
 			Main.log.error(e);
 		}
 	}
-	
+
 	/**
 	 * Gets the average color from the picture found at a URL
 	 * @param url The URL leading to the picture
