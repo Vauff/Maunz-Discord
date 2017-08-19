@@ -25,11 +25,11 @@ import sx.blah.discord.util.EmbedBuilder;
  */
 public class MapTimer
 {
-	/** The servers to check */
+	/** Holds extended information about servers (for instance online players) */
 	public static HashMap<Long, SourceServer> serverList = new HashMap<Long, SourceServer>();
 
 	/**
-	 * Checks the servers in {@link MapTimer#serverList} for new maps being played and sends them to a channel
+	 * Checks the servers in {@link Util#getJarLocation()}/services/map-tracking for new maps being played and sends them to a channel
 	 * as well as notifying users that set up a notification for that map
 	 */
 	public static Runnable timer = new Runnable()
