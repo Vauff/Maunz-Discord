@@ -144,6 +144,7 @@ public class MapTimer
 								json.put("timestamp", timestamp);
 							}
 
+							json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());
 							FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 						}
 					}
