@@ -48,6 +48,14 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 		return new String[] { "*isitdown" };
 	}
 
+	/**
+	 * Pings a host at a specific port. The ping will be deemed unsuccessful if the socket couldn't connect
+	 * to the host within the given timeframe
+	 * @param host The host to ping
+	 * @param port The port to ping the host at
+	 * @param timeout The timeout in milliseconds after which the ping will be deemed unsuccessful
+	 * @return true if the connection was successful, false otherwise (aka the socket could not connect to the host/port after timeout amount of milliseconds
+	 */
 	private static boolean pingHost(String host, int port, int timeout)
 	{
 		Socket socket = new Socket();
