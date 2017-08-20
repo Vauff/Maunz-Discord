@@ -12,7 +12,7 @@ import sx.blah.discord.util.DiscordException;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "2.0";
+	public static String version = "2.0-pre1";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
