@@ -6,7 +6,7 @@ Maunz is a Discord bot created by Vauff written in Java using the Discord4J libr
 
 # Commands
 
-Italic ones cannot be done by everyone and are restricted to just Vauff. [] indicates that the argument is optional, \<> indicates the argument is required.
+Italic ones are permission restricted commands to either just Vauff or guild administrators. [] indicates that the argument is optional, \<> indicates the argument is required.
 
 *about - Gives information about Maunz such as version and uptime.
 
@@ -24,17 +24,19 @@ _*enable_ - Enables Maunz.
 
 *isitdown \<hostname> - Tells you if the given website is down or not.
 
-*map - Tells you which map GFL ZE is playing outside of the normal #map-tracking channel.
+*map - Tells you which map a server is playing outside of its standard map tracking channel.
 
-*notify \<list/wipe/mapname> - Lets you list, add or remove your ZE map notifications.
+*notify \<list/wipe/mapname> - Lets you list, add or remove your server map notifications.
 
 *ping - Makes Maunz respond to you with pong. Very useful for testing ping to the server!
 
-*players - Lists the current players online on the GFL ZE server (in a PM).
+*players - Lists the current players online on a server (in a PM).
 
 *reddit \<subreddit> - Links you to a subreddit that you provide.
 
 _*restart_ - Restarts Maunz.
+
+_*services_ - Opens an interface for enabling specific services on a guild.
 
 *source - Links you to the GitHub page of Maunz, you can submit issues/pull requests here.
 
