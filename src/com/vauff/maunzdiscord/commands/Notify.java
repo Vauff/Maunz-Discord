@@ -134,6 +134,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					{
 						Util.msg(event.getChannel(), "Removing **" + args[1].replace("_", "\\_") + "** from your map notifications!");
 						json.getJSONArray("notifications").remove(index);
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
 					else
 					{
