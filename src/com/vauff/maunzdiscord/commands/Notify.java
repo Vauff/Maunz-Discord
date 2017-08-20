@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+
 import com.vdurmont.emoji.EmojiManager;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -24,12 +27,18 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
 		String[] args = event.getMessage().getContent().split(" ");
-		String fileName = "map-notification-data/" + event.getMessage().getAuthor().getStringID() + ".txt";
-		File file = new File(Util.getJarLocation() + fileName);
+		String guildID = event.getGuild().getStringID();
+		File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + "/" + event.getAuthor().getStringID() + ".json");
+		JSONObject json = null;
 
-		if (Util.getFileContents(file).contains(System.getProperty("line.separator")) || Util.getFileContents(file).contains("﻿"))
+		if (file.exists())
 		{
-			FileUtils.writeStringToFile(file, Util.getFileContents(file).replace(System.getProperty("line.separator"), "").replace("﻿", ""), "UTF-8");
+			json = new JSONObject(Util.getFileContents(file));
+
+			if (Util.getFileContents(file).contains("﻿"))
+			{
+				FileUtils.writeStringToFile(file, Util.getFileContents(file).replace("﻿", ""), "UTF-8");
+			}
 		}
 
 		if (args.length == 1)
@@ -46,18 +55,27 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 			{
 				if (args[1].equalsIgnoreCase("list"))
 				{
-					if (Util.getFileContents(fileName).equals(" "))
+					if (!file.exists())
 					{
 						Util.msg(event.getChannel(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
 					}
 					else
 					{
-						Util.msg(event.getChannel(), "You currently have notifications set for the following maps: **" + Util.getFileContents(fileName).replace(",", " | ").replace("_", "\\_") + "**");
+						StringBuilder mapsBuilder = new StringBuilder();
+
+						for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+						{
+							mapsBuilder = mapsBuilder.append(json.getJSONArray("notifications").getString(i) + " | ");
+						}
+
+						String maps = mapsBuilder.toString().substring(0, mapsBuilder.toString().length() - 3);
+
+						Util.msg(event.getChannel(), "You currently have notifications set for the following maps: **" + maps.toString().replace("_", "\\_") + "**");
 					}
 				}
 				else if (args[1].equalsIgnoreCase("wipe"))
 				{
-					if (Util.getFileContents(fileName).equals(" "))
+					if (!file.exists())
 					{
 						Util.msg(event.getChannel(), "You don't have any map notifications to wipe!");
 					}
@@ -82,21 +100,30 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					String[] mapNotifications = Util.getFileContents(fileName).split(",");
 					boolean mapSet = false;
-					String[] maps = Util.getFileContents("maps.txt").split(",");
 					boolean mapExists = false;
+					int index = 0;
+					JSONObject serverInfoJson = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + "/serverInfo.json"));
 
-					for (String mapNotification : mapNotifications)
+					if (file.exists())
 					{
-						if (mapNotification.equalsIgnoreCase(args[1]))
+						for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
 						{
-							mapSet = true;
+							String mapNotification = json.getJSONArray("notifications").getString(i);
+
+							if (mapNotification.equalsIgnoreCase(args[1]))
+							{
+								mapSet = true;
+								index = i;
+							}
+
 						}
 					}
 
-					for (String map : maps)
+					for (int i = 0; i < serverInfoJson.getJSONArray("mapDatabase").length(); i++)
 					{
+						String map = serverInfoJson.getJSONArray("mapDatabase").getString(i);
+
 						if (map.equalsIgnoreCase(args[1]))
 						{
 							mapExists = true;
@@ -106,23 +133,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					if (mapSet)
 					{
 						Util.msg(event.getChannel(), "Removing **" + args[1].replace("_", "\\_") + "** from your map notifications!");
-
-						if (!Util.getFileContents(fileName).contains(","))
-						{
-							FileUtils.writeStringToFile(file, " ", "UTF-8");
-						}
-						else
-						{
-							if (StringUtils.containsIgnoreCase(Util.getFileContents(fileName), args[1] + ","))
-							{
-								FileUtils.writeStringToFile(file, StringUtils.replaceIgnoreCase(Util.getFileContents(fileName), args[1] + ",", ""), "UTF-8");
-							}
-
-							else if (StringUtils.containsIgnoreCase(Util.getFileContents(fileName), "," + args[1]))
-							{
-								FileUtils.writeStringToFile(file, StringUtils.replaceIgnoreCase(Util.getFileContents(fileName), "," + args[1], ""), "UTF-8");
-							}
-						}
+						json.getJSONArray("notifications").remove(index);
 					}
 					else
 					{
@@ -132,13 +143,20 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							{
 								Util.msg(event.getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
 
-								if (Util.getFileContents(fileName).equals(" "))
+								if (file.exists())
 								{
-									FileUtils.writeStringToFile(file, args[1], "UTF-8");
+									json = new JSONObject(Util.getFileContents(file));
+									json.getJSONArray("notifications").put(args[1]);
+									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 								}
 								else
 								{
-									FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + args[1], "UTF-8");
+									file.createNewFile();
+									json = new JSONObject();
+									json = json.put("lastName", event.getAuthor().getName());
+									json = json.put("notifications", new JSONArray());
+									json.getJSONArray("notifications").put(args[1]);
+									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 								}
 							}
 							else
@@ -175,7 +193,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	{
 		return new String[] { "*notify" };
 	}
-	
+
 	@Override
 	public boolean confirmable()
 	{
@@ -185,8 +203,10 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void confirm(ReactionAddEvent event) throws IOException, InterruptedException
 	{
-		String fileName = "map-notification-data/" + event.getUser().getStringID() + ".txt";
+		String guildID = event.getGuild().getStringID();
+		String fileName = "services/map-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
 		File file = new File(Util.getJarLocation() + fileName);
+		JSONObject json = null;
 
 		if (Notify.confirmationMessages.containsKey(event.getUser().getStringID()))
 		{
@@ -201,13 +221,20 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 				{
 					Util.msg(event.getChannel(), ":white_check_mark:  |  Adding **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
 
-					if (Util.getFileContents(fileName).equals(" "))
+					if (file.exists())
 					{
-						FileUtils.writeStringToFile(file, Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
+						json = new JSONObject(Util.getFileContents(file));
+						json.getJSONArray("notifications").put(Notify.confirmationMaps.get(event.getUser().getStringID()));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
 					else
 					{
-						FileUtils.writeStringToFile(file, Util.getFileContents(fileName) + "," + Notify.confirmationMaps.get(event.getUser().getStringID()), "UTF-8");
+						file.createNewFile();
+						json = new JSONObject();
+						json = json.put("lastName", event.getUser().getName());
+						json = json.put("notifications", new JSONArray());
+						json.getJSONArray("notifications").put(Notify.confirmationMaps.get(event.getUser().getStringID()));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
 				}
 

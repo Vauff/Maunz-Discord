@@ -110,8 +110,8 @@ public class MainListener
 			if (AbstractCommand.AWAITED.containsKey(event.getMessage().getStringID()) && event.getUser().getStringID().equals(AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getUserID()))
 			{
 				event.getMessage().delete();
-				AbstractCommand.AWAITED.remove(event.getMessage().getStringID());
 				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getCommand().onReactionAdd(event);
+				AbstractCommand.AWAITED.remove(event.getMessage().getStringID());
 			}
 		}
 		catch (Exception e)
