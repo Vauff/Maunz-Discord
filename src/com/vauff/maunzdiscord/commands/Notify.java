@@ -133,6 +133,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					if (mapSet)
 					{
 						Util.msg(event.getChannel(), "Removing **" + args[1].replace("_", "\\_") + "** from your map notifications!");
+						json.put("lastName", event.getAuthor().getName());
 						json.getJSONArray("notifications").remove(index);
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
@@ -147,6 +148,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								if (file.exists())
 								{
 									json = new JSONObject(Util.getFileContents(file));
+									json.put("lastName", event.getAuthor().getName());
 									json.getJSONArray("notifications").put(args[1]);
 									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 								}
@@ -154,8 +156,8 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								{
 									file.createNewFile();
 									json = new JSONObject();
-									json = json.put("lastName", event.getAuthor().getName());
-									json = json.put("notifications", new JSONArray());
+									json.put("lastName", event.getAuthor().getName());
+									json.put("notifications", new JSONArray());
 									json.getJSONArray("notifications").put(args[1]);
 									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 								}
@@ -225,6 +227,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					if (file.exists())
 					{
 						json = new JSONObject(Util.getFileContents(file));
+						json.put("lastName", event.getUser().getName());
 						json.getJSONArray("notifications").put(Notify.confirmationMaps.get(event.getUser().getStringID()));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
@@ -232,8 +235,8 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					{
 						file.createNewFile();
 						json = new JSONObject();
-						json = json.put("lastName", event.getUser().getName());
-						json = json.put("notifications", new JSONArray());
+						json.put("lastName", event.getUser().getName());
+						json.put("notifications", new JSONArray());
 						json.getJSONArray("notifications").put(Notify.confirmationMaps.get(event.getUser().getStringID()));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
