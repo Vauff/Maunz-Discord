@@ -103,7 +103,17 @@ public class MapTimer
 
 											if (mapNotification.equalsIgnoreCase(map))
 											{
-												Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+												try
+												{
+													Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+												}
+												catch (NullPointerException e)
+												{
+													Main.log.error("", e);
+													// This means that the provided user has
+													// left the guild, due to API limits bots
+													// can't PM someone with no shared guilds
+												}
 											}
 										}
 
