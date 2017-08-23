@@ -5,6 +5,8 @@ import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.vauff.maunzdiscord.features.CsgoUpdateBot;
+
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
@@ -12,8 +14,7 @@ import sx.blah.discord.util.DiscordException;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "1.5.1";
-	public static long mapChannelID = 0L;
+	public static String version = "2.0";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -32,23 +33,33 @@ public class Main
 			{
 				log.info("Starting Maunz-Discord v" + version + " in dev mode");
 				Util.token = Passwords.discordDevToken;
-				mapChannelID = 252537749859598338L;
 				Util.devMode = true;
 			}
 			else
 			{
 				log.info("Starting Maunz-Discord v" + version);
 				Util.token = Passwords.discordToken;
-				mapChannelID = 223674490876329984L;
 				Util.devMode = false;
 			}
 
 			client = new ClientBuilder().withToken(Util.token).login();
 			client.getDispatcher().registerListener(new MainListener());
+
+			CsgoUpdateBot bot = new CsgoUpdateBot();
+			bot.connect("irc.freenode.net");
+			
+			if (Util.devMode)
+			{
+				bot.joinChannel("#maunztesting");
+			}
+			else
+			{
+				bot.joinChannel("#steamdb-announce");
+			}
 		}
 		catch (Exception e)
 		{
-			log.error(e);
+			log.error("", e);
 		}
 	}
 }
