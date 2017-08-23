@@ -129,3 +129,5 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 [jackson-annotations](https://github.com/FasterXML/jackson-annotations) - 2.9.0
 
 [steam-condenser](https://github.com/koraktor/steam-condenser-java) - 1.3.9
+
+[pircbot](http://www.jibble.org/pircbot.php) - 1.5.0

@@ -58,6 +58,7 @@ public class MainListener
 		
 		folderList.add(new File(Util.getJarLocation() + "services/"));
 		folderList.add(new File(Util.getJarLocation() + "services/map-tracking/"));
+		folderList.add(new File(Util.getJarLocation() + "services/csgo-updates/"));
 
 		for (File folder : folderList)
 		{

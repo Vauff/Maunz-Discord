@@ -5,6 +5,8 @@ import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.vauff.maunzdiscord.features.CsgoUpdateBot;
+
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
@@ -12,7 +14,7 @@ import sx.blah.discord.util.DiscordException;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "2.0-pre3";
+	public static String version = "2.0";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -42,6 +44,18 @@ public class Main
 
 			client = new ClientBuilder().withToken(Util.token).login();
 			client.getDispatcher().registerListener(new MainListener());
+
+			CsgoUpdateBot bot = new CsgoUpdateBot();
+			bot.connect("irc.freenode.net");
+			
+			if (Util.devMode)
+			{
+				bot.joinChannel("#maunztesting");
+			}
+			else
+			{
+				bot.joinChannel("#steamdb-announce");
+			}
 		}
 		catch (Exception e)
 		{
