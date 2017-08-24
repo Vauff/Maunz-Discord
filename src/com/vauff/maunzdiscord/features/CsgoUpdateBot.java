@@ -19,7 +19,8 @@ import com.vauff.maunzdiscord.core.Util;
 public class CsgoUpdateBot extends PircBot
 {
 	private static String lastChangelistNumber = "";
-	
+	public static String listeningNick;
+
 	public CsgoUpdateBot()
 	{
 		if (Util.devMode)
@@ -36,17 +37,6 @@ public class CsgoUpdateBot extends PircBot
 	{
 		try
 		{
-			String listeningNick;
-
-			if (Util.devMode)
-			{
-				listeningNick = "Vauff";
-			}
-			else
-			{
-				listeningNick = "SteamDB";
-			}
-
 			if (sender.equals(listeningNick) && Util.isEnabled)
 			{
 				if (message.contains("https://steamdb.info/changelist/"))
@@ -126,7 +116,7 @@ public class CsgoUpdateBot extends PircBot
 							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 						}
 					}
-					else if (html.replaceAll("\\d", "").contains("branches/.rc/buildid") || html.replaceAll("\\d", "").contains("branches/..rc/buildid") || html.replaceAll("\\d", "").contains("branches/...rc/buildid"))
+					else if (html.replaceAll("\\d", "").contains("branches/.-rc/buildid") || html.replaceAll("\\d", "").contains("branches/..-rc/buildid") || html.replaceAll("\\d", "").contains("branches/...-rc/buildid"))
 					{
 						if (!htmlRaw.contains("octicon octicon-diff-removed"))
 						{

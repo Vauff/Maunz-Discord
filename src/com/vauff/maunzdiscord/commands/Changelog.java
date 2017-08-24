@@ -47,25 +47,23 @@ public class Changelog extends AbstractCommand<MessageReceivedEvent>
 					changelog.append("-- Maunz v" + args[1] + " --");
 				}
 			}
-			
+
 			changelog.append(System.lineSeparator() + System.lineSeparator());
 
-			html = doc.select("div[class=\"markdown-body\"]").html();
-			split = html.split("li>");
+			html = doc.select("div[class=\"markdown-body\"]").html().replace("<strong>", "").replace("</strong>", "").replace("<ul>", "").replace("</ul>", "").replace("<li>", "").replace("</li>", "");
+			split = html.split(System.lineSeparator());
 
 			for (int i = 1; i < split.length; i++)
 			{
-				if (i % 2 == 0)
+				if (!split[i].replace(" ", "").equals(""))
 				{
-					continue;
+					changelog.append("- " + split[i] + System.lineSeparator());
 				}
-
-				changelog.append("- " + split[i].substring(0, split[i].length() - 2) + System.lineSeparator());
 			}
 
 			changelog.append("```");
 			Util.msg(event.getChannel(), changelog.toString());
-			Util.msg(event.getChannel(), "GitHub link: " + link);
+			Util.msg(event.getChannel(), "GitHub link: " + "<" + link + ">");
 		}
 		catch (HttpStatusException e)
 		{

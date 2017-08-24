@@ -34,12 +34,14 @@ public class Main
 				log.info("Starting Maunz-Discord v" + version + " in dev mode");
 				Util.token = Passwords.discordDevToken;
 				Util.devMode = true;
+				CsgoUpdateBot.listeningNick = "Vauff";
 			}
 			else
 			{
 				log.info("Starting Maunz-Discord v" + version);
 				Util.token = Passwords.discordToken;
 				Util.devMode = false;
+				CsgoUpdateBot.listeningNick = "SteamDB";
 			}
 
 			client = new ClientBuilder().withToken(Util.token).login();
