@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.time.StopWatch;
 
 import com.vauff.maunzdiscord.commands.*;
+import com.vauff.maunzdiscord.features.UptimeTimer;
 import com.vauff.maunzdiscord.features.MapTimer;
 import com.vauff.maunzdiscord.features.StatsTimer;
 
@@ -70,6 +71,7 @@ public class MainListener
 
 		uptime.start();
 		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapTimer.timer, 0, 60, TimeUnit.SECONDS);
+		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(UptimeTimer.timer, 60, 60, TimeUnit.SECONDS);
 		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 	}
 

@@ -14,7 +14,8 @@ import sx.blah.discord.util.DiscordException;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "2.0.1";
+	public static CsgoUpdateBot bot;
+	public static String version = "2.0.2";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -47,7 +48,7 @@ public class Main
 			client = new ClientBuilder().withToken(Util.token).login();
 			client.getDispatcher().registerListener(new MainListener());
 
-			CsgoUpdateBot bot = new CsgoUpdateBot();
+			bot = new CsgoUpdateBot();
 			bot.connect("irc.freenode.net");
 			
 			if (Util.devMode)

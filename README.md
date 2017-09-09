@@ -60,11 +60,11 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [Apache Commons Compress](https://commons.apache.org/proper/commons-compress/) - 1.14
 
-[log4j-api](http://logging.apache.org/log4j/2.x/) - 2.8.2
+[log4j-api](http://logging.apache.org/log4j/2.x/) - 2.9.0
 
-[log4j-core](http://logging.apache.org/log4j/2.x/) - 2.8.2
+[log4j-core](http://logging.apache.org/log4j/2.x/) - 2.9.0
 
-[log4j-slf4j-impl](https://logging.apache.org/log4j/2.0/log4j-slf4j-impl/index.html) - 2.8.2
+[log4j-slf4j-impl](https://logging.apache.org/log4j/2.0/log4j-slf4j-impl/index.html) - 2.9.0
 
 [slf4j-api](http://www.slf4j.org/) - 1.7.25
 
