@@ -15,7 +15,7 @@ public class Main
 {
 	public static IDiscordClient client;
 	public static CsgoUpdateBot bot;
-	public static String version = "2.0.2";
+	public static String version = "2.0.3";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException

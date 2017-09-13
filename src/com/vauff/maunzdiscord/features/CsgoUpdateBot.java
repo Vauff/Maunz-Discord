@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.features;
 import java.io.File;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.net.SocketTimeoutException;
 
 import org.jibble.pircbot.Colors;
 import org.jibble.pircbot.PircBot;
@@ -60,7 +61,7 @@ public class CsgoUpdateBot extends PircBot
 							doc = Jsoup.connect("https://steamdb.info/app/730/history").userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36").get();
 							tryStatus = false;
 						}
-						catch (HttpStatusException | ConnectException | UnknownHostException e)
+						catch (HttpStatusException | ConnectException | UnknownHostException | SocketTimeoutException e)
 						{
 							if (attempts < 19)
 							{
@@ -152,7 +153,11 @@ public class CsgoUpdateBot extends PircBot
 						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
-							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+
+							if (json.getBoolean("nonImportantUpdates"))
+							{
+								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+							}
 						}
 					}
 				}
