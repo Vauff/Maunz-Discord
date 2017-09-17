@@ -70,7 +70,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [jsoup](https://jsoup.org/) - 1.10.3
 
-[Discord4J](https://github.com/austinv11/Discord4J) - 2.8.4
+[Discord4J](https://github.com/austinv11/Discord4J) - 2.9
 
 [hamcrest-core](http://hamcrest.org/JavaHamcrest/) - 1.3
 

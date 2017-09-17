@@ -9,6 +9,8 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.io.FileUtils;
 
 import org.json.JSONObject;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
 
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
@@ -63,6 +65,7 @@ public class MapTimer
 							String map = serverInfo.split("mapName: ")[1].replace(System.lineSeparator(), "");
 							int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
 							int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
+							String url = "https://vauff.me/mapimgs/" + map + ".jpg";
 
 							if (currentPlayers > maxPlayers)
 							{
@@ -75,7 +78,19 @@ public class MapTimer
 							{
 								timestamp = System.currentTimeMillis();
 
-								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL("https://vauff.me/mapimgs/" + map + ".jpg"))).withTimestamp(timestamp).withThumbnail("https://vauff.me/mapimgs/" + map + ".jpg").withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+								try
+								{
+									Jsoup.connect(url).get();
+								}
+								catch (HttpStatusException e)
+								{
+									url = "https://image.gametracker.com/images/maps/160x120/csgo/" + map + ".jpg";
+								}
+								catch (Exception e)
+								{
+								}
+
+								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 								Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), embed);
 
 								for (File notificationFile : new File(Util.getJarLocation() + "services/map-tracking/" + file.getName()).listFiles())
