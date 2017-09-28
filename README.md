@@ -76,7 +76,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [httpclient](https://hc.apache.org/httpcomponents-client-ga/) - 4.5.3
 
-[httpcore](https://hc.apache.org/httpcomponents-core-ga/) - 4.4.6
+[httpcore](https://hc.apache.org/httpcomponents-core-ga/) - 4.4.7
 
 [httpmime](https://hc.apache.org/httpcomponents-client-ga/index.html) - 4.5.3
 
@@ -92,7 +92,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [jlayer](http://www.javazoom.net/javalayer/javalayer.html) - 1.0.1-2
 
-[jna](https://github.com/java-native-access/jna) - 4.4.0
+[jna](https://github.com/java-native-access/jna) - 4.5.0
 
 [jorbis](http://www.jcraft.com/jorbis/) - 0.0.17
 

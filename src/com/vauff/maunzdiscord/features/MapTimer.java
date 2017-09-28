@@ -9,8 +9,6 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.io.FileUtils;
 
 import org.json.JSONObject;
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
 
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
@@ -62,10 +60,9 @@ public class MapTimer
 							serverList.put(Long.parseLong(file.getName()), server);
 							String serverInfo = server.toString();
 							long timestamp = 0;
-							String map = serverInfo.split("mapName: ")[1].replace(System.lineSeparator(), "");
+							String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace(System.lineSeparator(), "");
 							int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
 							int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
-							String url = "https://vauff.me/mapimgs/" + map + ".jpg";
 
 							if (currentPlayers > maxPlayers)
 							{
@@ -78,19 +75,7 @@ public class MapTimer
 							{
 								timestamp = System.currentTimeMillis();
 
-								try
-								{
-									Jsoup.connect(url).get();
-								}
-								catch (HttpStatusException e)
-								{
-									url = "https://image.gametracker.com/images/maps/160x120/csgo/" + map + ".jpg";
-								}
-								catch (Exception e)
-								{
-								}
-
-								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL("http://158.69.59.239/mapimgs/" + map + ".jpg"))).withTimestamp(timestamp).withThumbnail("http://158.69.59.239/mapimgs/" + map + ".jpg").withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 								Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), embed);
 
 								for (File notificationFile : new File(Util.getJarLocation() + "services/map-tracking/" + file.getName()).listFiles())

@@ -237,29 +237,29 @@ public class Util
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.91 Safari/537.36");
 			image = ImageIO.read(connection.getInputStream());
+
+			final int pixels = image.getWidth() * image.getHeight();
+			int red = 0;
+			int green = 0;
+			int blue = 0;
+
+			for (int x = 0; x < image.getWidth(); x++)
+			{
+				for (int y = 0; y < image.getHeight(); y++)
+				{
+					Color pixel = new Color(image.getRGB(x, y));
+
+					red += pixel.getRed();
+					green += pixel.getGreen();
+					blue += pixel.getBlue();
+				}
+			}
+
+			return new Color(red / pixels, green / pixels, blue / pixels);
 		}
 		catch (Exception e)
 		{
 			return new Color(0, 154, 255);
 		}
-
-		final int pixels = image.getWidth() * image.getHeight();
-		int red = 0;
-		int green = 0;
-		int blue = 0;
-
-		for (int x = 0; x < image.getWidth(); x++)
-		{
-			for (int y = 0; y < image.getHeight(); y++)
-			{
-				Color pixel = new Color(image.getRGB(x, y));
-
-				red += pixel.getRed();
-				green += pixel.getGreen();
-				blue += pixel.getBlue();
-			}
-		}
-
-		return new Color(red / pixels, green / pixels, blue / pixels);
 	}
 }
