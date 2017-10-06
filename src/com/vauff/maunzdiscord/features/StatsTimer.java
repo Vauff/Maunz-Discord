@@ -2,8 +2,6 @@ package com.vauff.maunzdiscord.features;
 
 import com.vauff.maunzdiscord.core.Main;
 
-import sx.blah.discord.handle.obj.IGuild;
-
 /**
  * Holds a timer to set the playing text in Discord
  */
@@ -16,14 +14,7 @@ public class StatsTimer
 		{
 			try
 			{
-				int users = 0;
-				
-				for (IGuild guild : Main.client.getGuilds())
-				{
-					users = users + guild.getTotalMemberCount();
-				}
-				
-				Main.client.changePlayingText(Main.client.getGuilds().size() + " guilds, " + users + " users");
+				Main.client.changePlayingText(Main.client.getGuilds().size() + " guilds");
 			}
 			catch (Exception e)
 			{

@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.FileUtils;
@@ -26,7 +27,7 @@ import sx.blah.discord.util.EmbedBuilder;
 public class MapTimer
 {
 	/** Holds extended information about servers (for instance online players) */
-	public static HashMap<Long, SourceServer> serverList = new HashMap<Long, SourceServer>();
+	public static HashMap<Long, Set<String>> serverPlayers = new HashMap<Long, Set<String>>();
 
 	/**
 	 * Checks the servers in {@link Util#getJarLocation()}/services/map-tracking for new maps being played and sends them to a channel
@@ -57,7 +58,7 @@ public class MapTimer
 								continue;
 							}
 
-							serverList.put(Long.parseLong(file.getName()), server);
+							serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
 							String serverInfo = server.toString();
 							long timestamp = 0;
 							String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace(System.lineSeparator(), "");
@@ -156,6 +157,7 @@ public class MapTimer
 
 							json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());
 							FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+							server.disconnect();
 						}
 					}
 				}

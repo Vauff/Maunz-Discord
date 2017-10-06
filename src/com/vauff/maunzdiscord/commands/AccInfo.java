@@ -34,23 +34,23 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 
 				if (args[1].contains("#") || args[1].contains("&"))
 				{
-					Util.msg(event.getChannel(), "The Minecraft account name " + args[1] + " must be alphanumerical or contain an underscore.");
+					Util.msg(event.getChannel(), "The Minecraft account name **" + args[1] + "** must be alphanumerical or contain an underscore.");
 				}
 				else
 				{
 					if (statusRaw.equalsIgnoreCase("unknown username"))
 					{
-						Util.msg(event.getChannel(), "The Minecraft account name " + args[1] + " is free and does not belong to any account!");
+						Util.msg(event.getChannel(), "The Minecraft account name **" + args[1] + "** is free and does not belong to any account!");
 					}
 
 					else if (statusRaw.equalsIgnoreCase("Username must be 16 characters or less."))
 					{
-						Util.msg(event.getChannel(), "The Minecraft account name " + args[1] + " must be 16 characters or less.");
+						Util.msg(event.getChannel(), "The Minecraft account name **" + args[1] + "** must be 16 characters or less.");
 					}
 
 					else if (statusRaw.equalsIgnoreCase("Username must be alphanumerical (or contain '_')."))
 					{
-						Util.msg(event.getChannel(), "The Minecraft account name " + args[1] + " must be alphanumerical or contain an underscore.");
+						Util.msg(event.getChannel(), "The Minecraft account name **" + args[1] + "** must be alphanumerical or contain an underscore.");
 					}
 
 					else if (statusRaw.contains(","))

@@ -60,17 +60,17 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [Apache Commons Compress](https://commons.apache.org/proper/commons-compress/) - 1.14
 
-[log4j-api](http://logging.apache.org/log4j/2.x/) - 2.9.0
+[log4j-api](http://logging.apache.org/log4j/2.x/) - 2.9.1
 
-[log4j-core](http://logging.apache.org/log4j/2.x/) - 2.9.0
+[log4j-core](http://logging.apache.org/log4j/2.x/) - 2.9.1
 
-[log4j-slf4j-impl](https://logging.apache.org/log4j/2.0/log4j-slf4j-impl/index.html) - 2.9.0
+[log4j-slf4j-impl](https://logging.apache.org/log4j/2.0/log4j-slf4j-impl/index.html) - 2.9.1
 
 [slf4j-api](http://www.slf4j.org/) - 1.7.25
 
 [jsoup](https://jsoup.org/) - 1.10.3
 
-[Discord4J](https://github.com/austinv11/Discord4J) - 2.9
+[Discord4J](https://github.com/austinv11/Discord4J) - 2.9.1
 
 [hamcrest-core](http://hamcrest.org/JavaHamcrest/) - 1.3
 
@@ -80,13 +80,13 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [httpmime](https://hc.apache.org/httpcomponents-client-ga/index.html) - 4.5.3
 
-[jetty-io](http://www.eclipse.org/jetty/) - 9.4.6.v20170531
+[jetty-io](http://www.eclipse.org/jetty/) - 9.4.7.v20170914
 
-[jetty-util](http://www.eclipse.org/jetty/) - 9.4.6.v20170531
+[jetty-util](http://www.eclipse.org/jetty/) - 9.4.7.v20170914
 
-[jetty-client](http://www.eclipse.org/jetty/) - 9.4.6.v20170531
+[jetty-client](http://www.eclipse.org/jetty/) - 9.4.7.v20170914
 
-[jetty-http](http://www.eclipse.org/jetty/) - 9.4.6.v20170531
+[jetty-http](http://www.eclipse.org/jetty/) - 9.4.7.v20170914
 
 [jflac](http://jflac.sourceforge.net/) - 1.3
 
@@ -106,11 +106,11 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [typetools](https://github.com/jhalterman/typetools) - 0.5.0
 
-[websocket-api](https://www.eclipse.org/jetty/) - 9.4.6.v20170531
+[websocket-api](https://www.eclipse.org/jetty/) - 9.4.7.v20170914
 
-[websocket-client](https://www.eclipse.org/jetty/) - 9.4.6.v20170531
+[websocket-client](https://www.eclipse.org/jetty/) - 9.4.7.v20170914
 
-[websocket-common](https://www.eclipse.org/jetty/) - 9.4.6.v20170531
+[websocket-common](https://www.eclipse.org/jetty/) - 9.4.7.v20170914
 
 [emoji-java](https://github.com/vdurmont/emoji-java) - 3.3.0
 

@@ -29,7 +29,7 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 				Util.msg(event.getChannel(), "Sending the online player list to you in a PM!");
 				playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
 
-				for (String player : MapTimer.serverList.get(event.getGuild().getLongID()).getPlayers().keySet())
+				for (String player : MapTimer.serverPlayers.get(event.getGuild().getLongID()))
 				{
 					if (!player.equals(""))
 					{
