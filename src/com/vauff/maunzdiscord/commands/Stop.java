@@ -14,6 +14,7 @@ public class Stop extends AbstractCommand<MessageReceivedEvent>
 		if (Util.hasPermission(event.getMessage().getAuthor()))
 		{
 			Main.log.info("Maunz is stopping...");
+			Main.bot.disconnect();
 			Main.client.logout();
 			System.exit(0);
 		}
