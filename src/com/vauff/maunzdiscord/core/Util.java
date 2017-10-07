@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -33,6 +36,8 @@ public class Util
 	public static boolean devMode;
 	/** The Discord API token of the bot, gets set in {@link Main#main(String[])} */
 	public static String token;
+
+	public static Connection sqlCon;
 
 	/**
 	 * @return The path at which the running jar file is located.
@@ -175,6 +180,18 @@ public class Util
 			default:
 				return "th";
 			}
+		}
+	}
+
+	public static void sqlConnect() throws Exception
+	{
+		try
+		{
+			sqlCon = DriverManager.getConnection("jdbc:mysql://158.69.59.239:3306/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", "Vauff", Passwords.database);
+		}
+		catch (SQLException e)
+		{
+			Main.log.error(e.getMessage(), e);
 		}
 	}
 
