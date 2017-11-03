@@ -26,19 +26,33 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 			{
 				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + "/serverInfo.json"));
 
-				Util.msg(event.getChannel(), "Sending the online player list to you in a PM!");
-				playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
-
-				for (String player : MapTimer.serverPlayers.get(event.getGuild().getLongID()))
+				if (json.getBoolean("enabled"))
 				{
-					if (!player.equals(""))
+					if (!(json.getInt("downtimeTimer") >= 3))
 					{
-						playersList.append("- " + player + System.lineSeparator());
+						Util.msg(event.getChannel(), "Sending the online player list to you in a PM!");
+						playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
+
+						for (String player : MapTimer.serverPlayers.get(event.getGuild().getLongID()))
+						{
+							if (!player.equals(""))
+							{
+								playersList.append("- " + player + System.lineSeparator());
+							}
+						}
+
+						playersList.append("```");
+						Util.msg(event.getAuthor().getOrCreatePMChannel(), playersList.toString());
+					}
+					else
+					{
+						Util.msg(event.getChannel(), "The server currently appears to be offline");
 					}
 				}
-
-				playersList.append("```");
-				Util.msg(event.getAuthor().getOrCreatePMChannel(), playersList.toString());
+				else
+				{
+					Util.msg(event.getChannel(), "The map tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+				}
 			}
 			else
 			{

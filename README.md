@@ -90,7 +90,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [jflac](http://jflac.sourceforge.net/) - 1.3
 
-[jlayer](http://www.javazoom.net/javalayer/javalayer.html) - 1.0.1-2
+[jlayer](http://www.javazoom.net/javalayer/javalayer.html) - 1.0.1.4
 
 [jna](https://github.com/java-native-access/jna) - 4.5.0
 
@@ -98,11 +98,11 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [junit](http://junit.org/junit4/) - 4.12
 
-[mp3spi](http://www.javazoom.net/mp3spi/mp3spi.html) - 1.9.5-2
+[mp3spi](http://www.javazoom.net/mp3spi/mp3spi.html) - 1.9.5.4
 
 [tritonus-dsp](http://www.tritonus.org/) - 0.3.6
 
-[tritonus-share](http://www.tritonus.org/) - 0.3.7-3
+[tritonus-share](http://www.tritonus.org/) - 0.3.7.4
 
 [typetools](https://github.com/jhalterman/typetools) - 0.5.0
 
@@ -112,7 +112,7 @@ Maunz depends on some java libraries to function, most are Discord4J dependencie
 
 [websocket-common](https://www.eclipse.org/jetty/) - 9.4.7.v20170914
 
-[emoji-java](https://github.com/vdurmont/emoji-java) - 3.3.0
+[emoji-java](https://github.com/vdurmont/emoji-java) - 4.0.0
 
 [json](https://github.com/stleary/JSON-java) - 20170516
 
