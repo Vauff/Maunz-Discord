@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.URL;
 
 import org.json.JSONObject;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
@@ -30,7 +32,21 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (!(json.getInt("downtimeTimer") >= 3))
 					{
-						EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL("http://158.69.59.239/mapimgs/" + json.getString("lastMap") + ".jpg"))).withTimestamp(json.getLong("timestamp")).withThumbnail("http://158.69.59.239/mapimgs/" + json.getString("lastMap") + ".jpg").withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+						String url = "http://158.69.59.239/mapimgs/" + json.getString("lastMap") + ".jpg";
+
+						try
+						{
+							Jsoup.connect(url).get();
+						}
+						catch (HttpStatusException e)
+						{
+							url = "https://image.gametracker.com/images/maps/160x120/csgo/" + json.getString("lastMap") + ".jpg";
+						}
+						catch (Exception e)
+						{
+						}
+
+						EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(json.getLong("timestamp")).withThumbnail(url).withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 						Util.msg(event.getChannel(), embed);
 					}
 					else
