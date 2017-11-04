@@ -56,11 +56,11 @@ public abstract class AbstractCommand<M extends MessageReceivedEvent>
 		{
 			try
 			{
-				if (event.getReaction().toString().equals("✅"))
+				if (event.getReaction().getEmoji().toString().equals("✅"))
 				{
 					confirm(event);
 				}
-				else if (event.getReaction().toString().equals("❌"))
+				else if (event.getReaction().getEmoji().toString().equals("❌"))
 				{
 					deny(event);
 				}

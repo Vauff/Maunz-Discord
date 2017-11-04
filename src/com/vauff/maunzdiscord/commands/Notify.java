@@ -3,6 +3,8 @@ package com.vauff.maunzdiscord.commands;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 
@@ -95,14 +97,16 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								m.addReaction(EmojiManager.getForAlias(":x:"));
 								confirmationMaps.put(event.getMessage().getAuthor().getStringID(), "wipe");
 								confirmationMessages.put(event.getMessage().getAuthor().getStringID(), m.getStringID());
-								Thread.sleep(60000);
 
-								if (!m.isDeleted())
+								Executors.newScheduledThreadPool(1).schedule(() ->
 								{
-									m.delete();
-									confirmationMaps.remove(event.getMessage().getAuthor().getStringID());
-									confirmationMessages.remove(event.getMessage().getAuthor().getStringID());
-								}
+									if (!m.isDeleted())
+									{
+										m.delete();
+										confirmationMaps.remove(event.getMessage().getAuthor().getStringID());
+										confirmationMessages.remove(event.getMessage().getAuthor().getStringID());
+									}
+								}, 60, TimeUnit.SECONDS);
 							}
 						}
 						else
@@ -177,14 +181,16 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										m.addReaction(EmojiManager.getForAlias(":x:"));
 										confirmationMaps.put(event.getMessage().getAuthor().getStringID(), args[1]);
 										confirmationMessages.put(event.getMessage().getAuthor().getStringID(), m.getStringID());
-										Thread.sleep(60000);
 
-										if (!m.isDeleted())
+										Executors.newScheduledThreadPool(1).schedule(() ->
 										{
-											m.delete();
-											confirmationMaps.remove(event.getMessage().getAuthor().getStringID());
-											confirmationMessages.remove(event.getMessage().getAuthor().getStringID());
-										}
+											if (!m.isDeleted())
+											{
+												m.delete();
+												confirmationMaps.remove(event.getMessage().getAuthor().getStringID());
+												confirmationMessages.remove(event.getMessage().getAuthor().getStringID());
+											}
+										}, 60, TimeUnit.SECONDS);
 									}
 								}
 								else
