@@ -10,7 +10,14 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		Util.msg(event.getChannel(), "This feature has not been implemented yet, please contact Vauff directly for enabling a service");
+		if (Util.hasPermission(event.getMessage().getAuthor(), event.getGuild()))
+		{
+			Util.msg(event.getChannel(), "This feature has not been implemented yet, please contact Vauff directly for enabling a service");
+		}
+		else
+		{
+			Util.msg(event.getChannel(), "You do not have permission to use that command");
+		}
 	}
 
 	@Override

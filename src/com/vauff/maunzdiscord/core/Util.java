@@ -17,7 +17,9 @@ import org.apache.commons.io.FileUtils;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
 
 /**
  * A class holding several static utility methods
@@ -186,6 +188,31 @@ public class Util
 	public static boolean hasPermission(IUser user)
 	{
 		return user.getLongID() == 129448521861431296L;
+	}
+
+	/**
+	 * Checks if the client ID of a user is equal to the client ID of Vauff or the user is administrator in the supplied guild
+	 * @param user The user to check
+	 * @param guild The guild to check for permissions in
+	 * @return true if the client IDs match and the given user is Vauff or the user is a guild administrator, false otherwise
+	 */
+	public static boolean hasPermission(IUser user, IGuild guild)
+	{
+		if (user.getLongID() == 129448521861431296L)
+		{
+			return true;
+		}
+		else
+		{
+			if (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 	}
 
 	/**
