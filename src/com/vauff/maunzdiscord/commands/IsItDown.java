@@ -27,18 +27,29 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 		else
 		{
 			boolean isUp;
-			String hostname = args[1].replaceAll("^https?:\\/\\/", "").split("/")[0];
+			String responseHostname = args[1].replaceAll("^https?:\\/\\/", "").split("/")[0];
+			String hostname;
 
-			if (args[1].startsWith("https"))
+			if (args[1].replaceAll("^https?:\\/\\/", "").contains(":"))
 			{
-				isUp = pingHost(hostname, 443, 4000);
+				hostname = args[1].replaceAll("^https?:\\/\\/", "").split("/")[0].split(":")[0];
+				isUp = pingHost(hostname, Integer.parseInt(args[1].replaceAll("^https?:\\/\\/", "").split("/")[0].split(":")[1]));
 			}
 			else
 			{
-				isUp = pingHost(hostname, 80, 4000);
+				hostname = args[1].replaceAll("^https?:\\/\\/", "").split("/")[0];
+
+				if (args[1].startsWith("https"))
+				{
+					isUp = pingHost(hostname, 443);
+				}
+				else
+				{
+					isUp = pingHost(hostname, 80);
+				}
 			}
 
-			Util.msg(event.getChannel(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + hostname + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
+			Util.msg(event.getChannel(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + responseHostname + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
 		}
 	}
 
@@ -56,13 +67,13 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 	 * @param timeout The timeout in milliseconds after which the ping will be deemed unsuccessful
 	 * @return true if the connection was successful, false otherwise (aka the socket could not connect to the host/port after timeout amount of milliseconds
 	 */
-	private static boolean pingHost(String host, int port, int timeout)
+	private static boolean pingHost(String host, int port)
 	{
 		Socket socket = new Socket();
 
 		try
 		{
-			socket.connect(new InetSocketAddress(host, port), timeout);
+			socket.connect(new InetSocketAddress(host, port), 4000);
 			return true;
 		}
 		catch (IOException e)
