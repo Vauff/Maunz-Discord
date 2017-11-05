@@ -43,6 +43,7 @@ public class MainListener
 		commands.add(new Notify());
 		commands.add(new Ping());
 		commands.add(new Players());
+		commands.add(new Quote());
 		commands.add(new Reddit());
 		commands.add(new Restart());
 		commands.add(new Say());
