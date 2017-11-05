@@ -20,7 +20,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "You can view the quotes site here: https://vauff.me/quotes/");
+			Util.msg(event.getChannel(), "You can view the quotes site here: http://158.69.59.239/quotes/");
 		}
 		else
 		{
@@ -54,15 +54,21 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 
 					if (page >= 1 && page <= (int) Math.ceil(secondRs.getDouble("id") / 10))
 					{
-						Util.msg(event.getChannel(), "--- **Page** " + page + "/" + (int) Math.ceil(secondRs.getDouble("id") / 10) + "** ---");
+						StringBuilder list = new StringBuilder();
+
+						list.append("```" + System.lineSeparator());
+						Util.msg(event.getChannel(), "--- **Page " + page + "/" + (int) Math.ceil(secondRs.getDouble("id") / 10) + "** ---");
 
 						while (rs.next())
 						{
 							if (rs.getInt("approved") == 1)
 							{
-								Util.msg(event.getChannel(), rs.getInt("id") + " - " + rs.getString("title"));
+								list.append(rs.getInt("id") + " - " + rs.getString("title") + System.lineSeparator());
 							}
 						}
+
+						list.append("```");
+						Util.msg(event.getChannel(), list.toString());
 					}
 					else
 					{
@@ -70,9 +76,8 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 					}
 
 					Util.sqlCon.abort(command ->
-							{
-							}
-					);
+					{
+					});
 				}
 				else
 				{
@@ -83,7 +88,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 			case "view":
 				if (args.length == 2)
 				{
-					Util.msg(event.getChannel(), "You need to give me a quote ID!");
+					Util.msg(event.getChannel(), "You need to give me a quote ID! **Usage: *quote view <quoteid>**");
 				}
 				else
 				{
@@ -102,21 +107,32 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 							if (rs.getInt("approved") == 1)
 							{
 								int lines = 0;
+								boolean cut = false;
+								StringBuilder quote = new StringBuilder();
 
-								Util.msg(event.getChannel(), "**ID:** " + rs.getString("id") + " - **Title:** " + rs.getString("title") + " - **Submitter:** " + rs.getString("submitter") + " - **Date:** " + Util.getTime(rs.getLong("time") * 1000));
+								quote.append("```" + System.lineSeparator());
+								Util.msg(event.getChannel(), "**ID:** " + rs.getString("id") + " **Title:** " + rs.getString("title") + " **Submitter:** " + rs.getString("submitter") + " **Date:** " + Util.getTime(rs.getLong("time") * 1000));
 
 								for (String s : rs.getString("quote").split("\n"))
 								{
 									if (lines < 10)
 									{
 										lines++;
-										Util.msg(event.getChannel(), s);
+										quote.append(s + System.lineSeparator());
 									}
 									else
 									{
-										Util.msg(event.getChannel(), "The rest of this quote is too long for IRC. Please see the full quote at https://vauff.me/quotes/viewquote.php?id=" + args[2]);
+										cut = true;
 										break;
 									}
+								}
+								
+								quote.append("```");
+								Util.msg(event.getChannel(), quote.toString());
+
+								if (cut)
+								{
+									Util.msg(event.getChannel(), "The rest of this quote is too long for Discord. Please see the full quote at http://158.69.59.239/quotes/viewquote.php?id=" + args[2]);
 								}
 							}
 							else
@@ -128,9 +144,8 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						rs.close();
 						pst.close();
 						Util.sqlCon.abort(command ->
-								{
-								}
-						);
+						{
+						});
 					}
 					else
 					{
@@ -140,11 +155,11 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 
 				break;
 			case "add":
-				Util.msg(event.getChannel(), "You can submit new quotes here: https://vauff.me/quotes/addquote.php");
+				Util.msg(event.getChannel(), "You can submit new quotes here: http://158.69.59.239/quotes/addquote.php");
 
 				break;
 			default:
-				Util.msg(event.getChannel(), "The argument " + args[1] + " was not recognized! Please see *help quote for arguments that can be used");
+				Util.msg(event.getChannel(), "The argument **" + args[1] + "** was not recognized! **Usage: *quote <view/list/add> <quoteid>/[page]**");
 
 				break;
 			}
@@ -154,6 +169,6 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[]{"*quote"};
+		return new String[] { "*quote" };
 	}
 }

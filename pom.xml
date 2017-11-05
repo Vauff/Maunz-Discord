@@ -194,7 +194,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>6.0.5</version>
+			<version>8.0.8-dmr</version>
 		</dependency>
 	</dependencies>
 	<version>2.1</version>

@@ -55,6 +55,8 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 			return "Makes Maunz respond to you with pong. Very useful for testing ping to the IRC server! **Usage: *ping**";
 		case "players":
 			return "Lists the current players online on a server (in a PM). **Usage: *players**";
+		case "quote":
+			return "Allows you to view chat quotes. **Usage: *quote <view/list/add> <quoteid>/[page]**";
 		case "reddit":
 			return "Links you to a subreddit that you provide. **Usage: *reddit <subreddit>**";
 		case "restart":

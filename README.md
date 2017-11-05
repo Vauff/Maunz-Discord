@@ -32,6 +32,8 @@ _*enable_ - Enables Maunz.
 
 *players - Lists the current players online on a server (in a PM).
 
+*quote <view/list/add> <quoteid>/[page] - Allows you to view chat quotes.
+
 *reddit \<subreddit> - Links you to a subreddit that you provide.
 
 _*restart_ - Restarts Maunz.
