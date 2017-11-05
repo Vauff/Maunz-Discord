@@ -59,7 +59,7 @@ public class Util
 		}
 		catch (URISyntaxException e)
 		{
-			Main.log.error(e);
+			Main.log.error("", e);
 
 			return null;
 		}
@@ -222,14 +222,7 @@ public class Util
 	 */
 	public static void msg(IChannel channel, String message)
 	{
-		try
-		{
-			channel.sendMessage(message);
-		}
-		catch (Exception e)
-		{
-			Main.log.error(e);
-		}
+		channel.sendMessage(message);
 	}
 
 	/**
@@ -239,14 +232,7 @@ public class Util
 	 */
 	public static void msg(IChannel channel, EmbedObject message)
 	{
-		try
-		{
-			channel.sendMessage("", message, false);
-		}
-		catch (Exception e)
-		{
-			Main.log.error(e);
-		}
+		channel.sendMessage("", message, false);
 	}
 
 	/**

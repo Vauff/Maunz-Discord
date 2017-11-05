@@ -36,6 +36,8 @@ _*enable_ - Enables Maunz.
 
 _*restart_ - Restarts Maunz.
 
+_*say [channel] <message>_ - Makes Maunz say whatever you want her to!
+
 _*services_ - Opens an interface for enabling specific services on a guild.
 
 *source - Links you to the GitHub page of Maunz, you can submit issues/pull requests here.

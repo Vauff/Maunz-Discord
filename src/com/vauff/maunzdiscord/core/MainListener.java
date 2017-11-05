@@ -45,6 +45,7 @@ public class MainListener
 		commands.add(new Players());
 		commands.add(new Reddit());
 		commands.add(new Restart());
+		commands.add(new Say());
 		commands.add(new Services());
 		commands.add(new Source());
 		commands.add(new Steam());

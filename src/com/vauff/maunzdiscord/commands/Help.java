@@ -59,6 +59,8 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 			return "Links you to a subreddit that you provide. **Usage: *reddit <subreddit>**";
 		case "restart":
 			return "Restarts Maunz, only usable by Vauff. **Usage: *restart**";
+		case "say":
+			return "Makes Maunz say whatever you want her to! **Usage: *say [channel] <message>**";
 		case "services":
 			return "Opens an interface for enabling specific services on a guild. only usable by guild administrators. **Usage: *services**";
 		case "source":
