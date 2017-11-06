@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -174,7 +175,29 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 									}
 									else
 									{
-										IMessage m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+										String mapSuggestion = "";
+										IMessage m;
+
+										for (int i = 0; i < serverInfoJson.getJSONArray("mapDatabase").length(); i++)
+										{
+											String map = serverInfoJson.getJSONArray("mapDatabase").getString(i);
+
+											if (StringUtils.containsIgnoreCase(map, args[1]))
+											{
+												mapSuggestion = map;
+												break;
+											}
+										}
+
+										if (mapSuggestion.equals(""))
+										{
+											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+										}
+										else
+										{
+											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion + "**?), are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+										}
+										
 										waitForReaction(m.getStringID(), event.getMessage().getAuthor().getStringID());
 										m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 										Thread.sleep(250);
