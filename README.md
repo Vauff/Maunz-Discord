@@ -28,7 +28,7 @@ _*enable_ - Enables Maunz.
 
 *notify \<list/wipe/mapname> - Lets you list, add or remove your server map notifications.
 
-*ping - Makes Maunz respond to you with pong. Very useful for testing ping to the server!
+*ping - Makes Maunz respond to you with pong. Very useful for testing your connection!
 
 *players - Lists the current players online on a server (in a PM).
 
@@ -49,3 +49,20 @@ _*services_ - Opens an interface for enabling specific services on a guild.
 _*stop_ - Stops Maunz.
 
 *trello - Links you to the Trello board of Maunz. Feature requests and bug reports can be made here.
+
+# Creating a Fork
+
+For the most part, the bot should be ready to go with a simple clone and compile in a Maven supported environment. However, you will need to create a file called Passwords.java in the com.vauff.maunzdiscord.core package with the following template.
+
+```java
+package com.vauff.maunzdiscord.core;
+
+public class Passwords
+{
+	public static final String discordToken = "";
+	public static final String discordDevToken = "";
+	public static final String database = "";
+}
+```
+
+In discordToken you need to input the token for a bot user you've created at the [Discord API page](https://discordapp.com/developers/applications/me). discordDevToken can be left blank as long as you aren't going to use the dev mode feature, and database can be left blank if you aren't going to use the *quote command.

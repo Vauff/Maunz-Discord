@@ -52,7 +52,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		case "notify":
 			return "Lets you list, add or remove your server map notifications. **Usage: *notify <list/wipe/mapname>**";
 		case "ping":
-			return "Makes Maunz respond to you with pong. Very useful for testing ping to the IRC server! **Usage: *ping**";
+			return "Makes Maunz respond to you with pong. Very useful for testing your connection! **Usage: *ping**";
 		case "players":
 			return "Lists the current players online on a server (in a PM). **Usage: *players**";
 		case "quote":
