@@ -23,8 +23,8 @@ import sx.blah.discord.handle.obj.IMessage;
 
 public class Notify extends AbstractCommand<MessageReceivedEvent>
 {
-	public static HashMap<String, String> confirmationMaps = new HashMap<String, String>();
-	public static HashMap<String, String> confirmationMessages = new HashMap<String, String>();
+	private static HashMap<String, String> confirmationMaps = new HashMap<String, String>();
+	private static HashMap<String, String> confirmationMessages = new HashMap<String, String>();
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -256,24 +256,24 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 		File file = new File(Util.getJarLocation() + fileName);
 		JSONObject json = null;
 
-		if (Notify.confirmationMessages.containsKey(event.getUser().getStringID()))
+		if (confirmationMessages.containsKey(event.getUser().getStringID()))
 		{
-			if (event.getMessage().getStringID().equals(Notify.confirmationMessages.get(event.getUser().getStringID())))
+			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())))
 			{
-				if (Notify.confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+				if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
 				{
 					FileUtils.forceDelete(file);
 					Util.msg(event.getChannel(), ":white_check_mark:  |  Successfully wiped all of your map notifications!");
 				}
 				else
 				{
-					Util.msg(event.getChannel(), ":white_check_mark:  |  Adding **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+					Util.msg(event.getChannel(), ":white_check_mark:  |  Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
 
 					if (file.exists())
 					{
 						json = new JSONObject(Util.getFileContents(file));
 						json.put("lastName", event.getUser().getName());
-						json.getJSONArray("notifications").put(Notify.confirmationMaps.get(event.getUser().getStringID()));
+						json.getJSONArray("notifications").put(confirmationMaps.get(event.getUser().getStringID()));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
 					else
@@ -282,13 +282,13 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						json = new JSONObject();
 						json.put("lastName", event.getUser().getName());
 						json.put("notifications", new JSONArray());
-						json.getJSONArray("notifications").put(Notify.confirmationMaps.get(event.getUser().getStringID()));
+						json.getJSONArray("notifications").put(confirmationMaps.get(event.getUser().getStringID()));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
 				}
 
-				Notify.confirmationMaps.remove(event.getUser().getStringID());
-				Notify.confirmationMessages.remove(event.getUser().getStringID());
+				confirmationMaps.remove(event.getUser().getStringID());
+				confirmationMessages.remove(event.getUser().getStringID());
 				Thread.sleep(2000);
 			}
 		}
@@ -297,21 +297,21 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void deny(ReactionAddEvent event) throws InterruptedException
 	{
-		if (Notify.confirmationMessages.containsKey(event.getUser().getStringID()))
+		if (confirmationMessages.containsKey(event.getUser().getStringID()))
 		{
-			if (event.getMessage().getStringID().equals(Notify.confirmationMessages.get(event.getUser().getStringID())))
+			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())))
 			{
-				if (Notify.confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+				if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
 				{
 					Util.msg(event.getChannel(), ":x:  |  No problem, I won't wipe all your map notifications");
 				}
 				else
 				{
-					Util.msg(event.getChannel(), ":x:  |  No problem, I won't add **" + Notify.confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
+					Util.msg(event.getChannel(), ":x:  |  No problem, I won't add **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
 				}
 
-				Notify.confirmationMaps.remove(event.getUser().getStringID());
-				Notify.confirmationMessages.remove(event.getUser().getStringID());
+				confirmationMaps.remove(event.getUser().getStringID());
+				confirmationMessages.remove(event.getUser().getStringID());
 				Thread.sleep(2000);
 			}
 		}
