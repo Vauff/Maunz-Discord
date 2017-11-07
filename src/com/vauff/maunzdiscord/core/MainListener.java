@@ -11,6 +11,7 @@ import org.apache.commons.lang3.time.StopWatch;
 
 import com.vauff.maunzdiscord.commands.*;
 import com.vauff.maunzdiscord.features.UptimeTimer;
+import com.vauff.maunzdiscord.features.Intelligence;
 import com.vauff.maunzdiscord.features.MapTimer;
 import com.vauff.maunzdiscord.features.StatsTimer;
 
@@ -38,6 +39,7 @@ public class MainListener
 		commands.add(new Disable());
 		commands.add(new Enable());
 		commands.add(new Help());
+		commands.add(new Intelligence());
 		commands.add(new IsItDown());
 		commands.add(new Map());
 		commands.add(new Notify());

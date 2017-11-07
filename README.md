@@ -62,7 +62,8 @@ public class Passwords
 	public static final String discordToken = "";
 	public static final String discordDevToken = "";
 	public static final String database = "";
+	public static final String cleverBotAPIKey = "";
 }
 ```
 
-In discordToken you need to input the token for a bot user you've created at the [Discord API page](https://discordapp.com/developers/applications/me). discordDevToken can be left blank as long as you aren't going to use the dev mode feature, and database can be left blank if you aren't going to use the *quote command.
+In discordToken you need to input the token for a bot user you've created at the [Discord API page](https://discordapp.com/developers/applications/me). discordDevToken can be left blank as long as you aren't going to use the dev mode feature, database can be left blank if you aren't going to use the *quote command, and cleverBotAPIKey can be left blank if you're not going to use intelligence.
