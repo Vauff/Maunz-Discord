@@ -18,9 +18,12 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 
+import com.vdurmont.emoji.EmojiManager;
+
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
@@ -290,6 +293,20 @@ public class Util
 		catch (Exception e)
 		{
 			return new Color(0, 154, 255);
+		}
+	}
+
+	public static void addNumberedReactions(IMessage m, int i) throws Exception
+	{
+		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+
+		for (int j = 0; j < 10; j++)
+		{
+			if (i > j)
+			{
+				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
+				Thread.sleep(250);
+			}
 		}
 	}
 }

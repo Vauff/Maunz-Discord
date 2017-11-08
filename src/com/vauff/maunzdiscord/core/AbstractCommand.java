@@ -50,7 +50,7 @@ public abstract class AbstractCommand<M extends MessageReceivedEvent>
 	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(String, String)}
 	 * @param event The event holding information about the added reaction
 	 */
-	public void onReactionAdd(ReactionAddEvent event)
+	public void onReactionAdd(ReactionAddEvent event) throws Exception
 	{
 		if (confirmable())
 		{
