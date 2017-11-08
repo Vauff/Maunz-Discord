@@ -3,7 +3,9 @@ package com.vauff.maunzdiscord.features;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -17,6 +19,7 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
+import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
 
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -77,7 +80,23 @@ public class MapTimer
 									continue;
 								}
 
-								serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
+								try
+								{
+									serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
+								}
+								catch (NullPointerException e)
+								{
+									HashMap<String, SteamPlayer> players = server.getPlayers();
+									Set<String> keySet = new HashSet<String>();;
+
+									for (SteamPlayer player : new ArrayList<SteamPlayer>(players.values()))
+									{
+										keySet.add(player.getName());
+									}
+									
+									serverPlayers.put(Long.parseLong(file.getName()), keySet);
+								}
+
 								String serverInfo = server.toString();
 								long timestamp = 0;
 								String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace(System.lineSeparator(), "");
@@ -95,7 +114,7 @@ public class MapTimer
 								if (!map.equals("") && !json.getString("lastMap").equalsIgnoreCase(map))
 								{
 									timestamp = System.currentTimeMillis();
-									
+
 									try
 									{
 										Jsoup.connect(url).get();
