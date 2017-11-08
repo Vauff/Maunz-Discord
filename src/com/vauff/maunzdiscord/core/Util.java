@@ -242,7 +242,14 @@ public class Util
 	 */
 	public static void msg(IChannel channel, String message)
 	{
-		channel.sendMessage(message);
+		try
+		{
+			channel.sendMessage(message);
+		}
+		catch (Exception e)
+		{
+			Main.log.error(e);
+		}
 	}
 
 	/**
@@ -252,7 +259,14 @@ public class Util
 	 */
 	public static void msg(IChannel channel, EmbedObject message)
 	{
-		channel.sendMessage("", message, false);
+		try
+		{
+			channel.sendMessage("", message, false);
+		}
+		catch (Exception e)
+		{
+			Main.log.error(e);
+		}
 	}
 
 	/**
