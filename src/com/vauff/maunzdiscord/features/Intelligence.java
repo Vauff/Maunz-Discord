@@ -69,9 +69,7 @@ public class Intelligence extends AbstractCommand<MessageReceivedEvent>
 			}
 
 			chatSession = session.getSession();
-			String response = event.getMessage().getAuthor().mention() + " " + chatSession.think(Util.addArgs(message, 1));
-
-			Util.msg(event.getChannel(), response);
+			Util.msg(event.getChannel(), event.getMessage().getAuthor().mention() + " " + chatSession.think(Util.addArgs(message, 1).replaceAll("\\<\\@[0-9]+\\>", "")));
 		}
 		catch (Exception e)
 		{
