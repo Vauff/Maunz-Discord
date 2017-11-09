@@ -59,6 +59,10 @@ public class Say extends AbstractCommand<MessageReceivedEvent>
 					Util.msg(event.getChannel(), "I need a message to send! **Usage: *say [channel] <message>**");
 				}
 			}
+			else
+			{
+				Util.msg(event.getChannel(), "You do not have permission to use that command");
+			}
 		}
 		else
 		{
