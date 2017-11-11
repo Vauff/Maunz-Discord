@@ -90,7 +90,11 @@ public class CsgoUpdateBot extends PircBot
 						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
-							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+
+							if (json.getBoolean("enabled"))
+							{
+								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+							}
 						}
 					}
 					else if (html.contains("branches/dpr/buildid"))
@@ -102,7 +106,11 @@ public class CsgoUpdateBot extends PircBot
 						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
-							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+
+							if (json.getBoolean("enabled"))
+							{
+								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+							}
 						}
 					}
 					else if (html.replaceAll("\\d", "").contains("branches/./buildid") || html.replaceAll("\\d", "").contains("branches/../buildid") || html.replaceAll("\\d", "").contains("branches/.../buildid"))
@@ -114,7 +122,11 @@ public class CsgoUpdateBot extends PircBot
 						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
-							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+
+							if (json.getBoolean("enabled"))
+							{
+								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+							}
 						}
 					}
 					else if (html.replaceAll("\\d", "").contains("branches/.-rc/buildid") || html.replaceAll("\\d", "").contains("branches/..-rc/buildid") || html.replaceAll("\\d", "").contains("branches/...-rc/buildid"))
@@ -128,7 +140,11 @@ public class CsgoUpdateBot extends PircBot
 							for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
 							{
 								JSONObject json = new JSONObject(Util.getFileContents(file));
-								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+
+								if (json.getBoolean("enabled"))
+								{
+									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+								}
 							}
 						}
 						else
@@ -140,7 +156,11 @@ public class CsgoUpdateBot extends PircBot
 							for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
 							{
 								JSONObject json = new JSONObject(Util.getFileContents(file));
-								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+
+								if (json.getBoolean("enabled"))
+								{
+									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+								}
 							}
 						}
 					}
@@ -154,7 +174,7 @@ public class CsgoUpdateBot extends PircBot
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
-							if (json.getBoolean("nonImportantUpdates"))
+							if (json.getBoolean("nonImportantUpdates") && json.getBoolean("enabled"))
 							{
 								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 							}
@@ -169,7 +189,11 @@ public class CsgoUpdateBot extends PircBot
 					for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
 					{
 						JSONObject json = new JSONObject(Util.getFileContents(file));
-						Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+
+						if (json.getBoolean("enabled"))
+						{
+							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+						}
 					}
 				}
 			}

@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -15,9 +18,14 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 
+import com.vdurmont.emoji.EmojiManager;
+
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
 
 /**
  * A class holding several static utility methods
@@ -33,6 +41,8 @@ public class Util
 	public static boolean devMode;
 	/** The Discord API token of the bot, gets set in {@link Main#main(String[])} */
 	public static String token;
+
+	public static Connection sqlCon;
 
 	/**
 	 * @return The path at which the running jar file is located.
@@ -57,7 +67,7 @@ public class Util
 		}
 		catch (URISyntaxException e)
 		{
-			Main.log.error(e);
+			Main.log.error("", e);
 
 			return null;
 		}
@@ -178,6 +188,18 @@ public class Util
 		}
 	}
 
+	public static void sqlConnect() throws Exception
+	{
+		try
+		{
+			sqlCon = DriverManager.getConnection("jdbc:mysql://158.69.59.239:3306/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", "Vauff", Passwords.database);
+		}
+		catch (SQLException e)
+		{
+			Main.log.error(e.getMessage(), e);
+		}
+	}
+
 	/**
 	 * Checks if the client ID of a user is equal to the client ID of Vauff
 	 * @param user The user to check
@@ -186,6 +208,31 @@ public class Util
 	public static boolean hasPermission(IUser user)
 	{
 		return user.getLongID() == 129448521861431296L;
+	}
+
+	/**
+	 * Checks if the client ID of a user is equal to the client ID of Vauff or the user is administrator in the supplied guild
+	 * @param user The user to check
+	 * @param guild The guild to check for permissions in
+	 * @return true if the client IDs match and the given user is Vauff or the user is a guild administrator, false otherwise
+	 */
+	public static boolean hasPermission(IUser user, IGuild guild)
+	{
+		if (user.getLongID() == 129448521861431296L)
+		{
+			return true;
+		}
+		else
+		{
+			if (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 	}
 
 	/**
@@ -260,6 +307,20 @@ public class Util
 		catch (Exception e)
 		{
 			return new Color(0, 154, 255);
+		}
+	}
+
+	public static void addNumberedReactions(IMessage m, int i) throws Exception
+	{
+		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+
+		for (int j = 0; j < 10; j++)
+		{
+			if (i > j)
+			{
+				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
+				Thread.sleep(250);
+			}
 		}
 	}
 }

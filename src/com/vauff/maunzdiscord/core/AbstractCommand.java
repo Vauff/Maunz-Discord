@@ -50,17 +50,17 @@ public abstract class AbstractCommand<M extends MessageReceivedEvent>
 	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(String, String)}
 	 * @param event The event holding information about the added reaction
 	 */
-	public void onReactionAdd(ReactionAddEvent event)
+	public void onReactionAdd(ReactionAddEvent event) throws Exception
 	{
 		if (confirmable())
 		{
 			try
 			{
-				if (event.getReaction().toString().equals("✅"))
+				if (event.getReaction().getEmoji().toString().equals("✅"))
 				{
 					confirm(event);
 				}
-				else if (event.getReaction().toString().equals("❌"))
+				else if (event.getReaction().getEmoji().toString().equals("❌"))
 				{
 					deny(event);
 				}
