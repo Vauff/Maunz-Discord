@@ -195,9 +195,9 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										}
 										else
 										{
-											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion + "**?), are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion + "** instead?), are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
 										}
-										
+
 										waitForReaction(m.getStringID(), event.getMessage().getAuthor().getStringID());
 										m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 										Thread.sleep(250);

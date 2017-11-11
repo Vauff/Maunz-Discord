@@ -25,6 +25,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 		if (Util.hasPermission(event.getMessage().getAuthor(), event.getGuild()))
 		{
 			IMessage m = event.getChannel().sendMessage(":desktop:  |  **Services Menu:**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Add New Service" + System.lineSeparator() + "**`[2]`**  |  Edit Existing Service");
+
 			waitForReaction(m.getStringID(), event.getMessage().getAuthor().getStringID());
 			states.put(event.getMessage().getAuthor().getStringID(), "main");
 			menuMessages.put(event.getMessage().getAuthor().getStringID(), m.getStringID());
@@ -69,6 +70,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
 					{
 						IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service:**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Map Tracking" + System.lineSeparator() + "**`[2]`**  |  CS:GO Update Notifications");
+
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "add");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
@@ -88,6 +90,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
 						boolean guildHasService = false;
+						List<String> services = new ArrayList<String>();
 
 						for (String fileLocation : fileLocationList)
 						{
@@ -97,17 +100,61 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (file.exists() || file2.exists())
 							{
 								guildHasService = true;
-								break;
+								services.add(fileLocation.split("services/")[1].replace("/", ""));
 							}
 						}
 
 						if (guildHasService)
 						{
+							String message = ":pencil:  |  **Edit Existing Service:**" + System.lineSeparator();
+							String state = "edit";
+
+							for (int i = 0; i < services.size(); i++)
+							{
+								if (services.get(i).equals("map-tracking"))
+								{
+									message = message + System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  Map Tracking";
+									state = state + ",map-tracking." + (i + 1);
+								}
+								if (services.get(i).equals("csgo-updates"))
+								{
+									message = message + System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  CS:GO Update Notifications";
+									state = state + ",csgo-updates." + (i + 1);
+								}
+							}
+
+							IMessage m = event.getChannel().sendMessage(message);
+
+							waitForReaction(m.getStringID(), event.getUser().getStringID());
+							states.put(event.getUser().getStringID(), state);
+							menuMessages.put(event.getUser().getStringID(), m.getStringID());
+							Util.addNumberedReactions(m, services.size());
+
+							Executors.newScheduledThreadPool(1).schedule(() ->
+							{
+								if (!m.isDeleted())
+								{
+									m.delete();
+									states.remove(event.getUser().getStringID());
+									menuMessages.remove(event.getUser().getStringID());
+								}
+							}, 120, TimeUnit.SECONDS);
 						}
 						else
 						{
 							Util.msg(event.getChannel(), "There are currently no services in this guild to edit!");
 						}
+					}
+				}
+
+				if (states.get(event.getUser().getStringID()).equals("add"))
+				{
+					if (event.getReaction().getEmoji().toString().equals("1⃣"))
+					{
+					}
+
+					if (event.getReaction().getEmoji().toString().equals("2⃣"))
+					{
 					}
 				}
 			}
