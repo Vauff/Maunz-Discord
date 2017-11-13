@@ -286,6 +286,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					states.put(event.getAuthor().getStringID(), "csgoupdatesadd.1");
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
@@ -295,6 +296,8 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							states.remove(event.getAuthor().getStringID());
 							menuMessages.remove(event.getAuthor().getStringID());
 						}
+						
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}
 			}

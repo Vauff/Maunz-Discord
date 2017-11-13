@@ -3,29 +3,30 @@ package com.vauff.maunzdiscord.core;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 /**
- * Holds information about message that needs a reaction to continue further execution
+ * Holds information about a message that needs a reaction/reply to continue further execution
  */
 public class Await
 {
-	private String userID;
+	private String id;
 	private AbstractCommand<? extends MessageReceivedEvent> command;
+	private boolean dontRemove = false;
 	
 	/**
-	 * @param uID The user who triggered the message
+	 * @param anID An ID of a user who triggered the message or a message to be removed later on
 	 * @param cmd The command with which to continue execution upon adding a reaction
 	 */
-	public Await(String uID, AbstractCommand<? extends MessageReceivedEvent> cmd)
+	public Await(String anID, AbstractCommand<? extends MessageReceivedEvent> cmd)
 	{
-		userID = uID;
+		id = anID;
 		command = cmd;
 	}
 	
 	/**
-	 * @return The user who triggered the message
+	 * @return The ID of the user who triggered the message or of the message to be removed later on
 	 */
 	public String getID()
 	{
-		return userID;
+		return id;
 	}
 	
 	/**
@@ -34,5 +35,21 @@ public class Await
 	public AbstractCommand<? extends MessageReceivedEvent> getCommand()
 	{
 		return command;
+	}
+	
+	/**
+	 * Set this instance to not be removed from {@link AbstractCommand#AWAITED}
+	 */
+	public void dontRemove()
+	{
+		dontRemove = true;
+	}
+	
+	/**
+	 * @return true if this instance should be removed from {@link AbstractCommand#AWAITED}, false otherwise
+	 */
+	public boolean shouldRemove()
+	{
+		return !dontRemove;
 	}
 }
