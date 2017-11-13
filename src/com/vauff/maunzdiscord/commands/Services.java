@@ -297,7 +297,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							menuMessages.remove(event.getAuthor().getStringID());
 						}
 						
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of line 287
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}
 			}
