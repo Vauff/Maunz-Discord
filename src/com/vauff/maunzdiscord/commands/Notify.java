@@ -92,20 +92,20 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							else
 							{
 								IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
-								waitForReaction(m.getStringID(), event.getMessage().getAuthor().getStringID());
+								waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 								m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 								Thread.sleep(250);
 								m.addReaction(EmojiManager.getForAlias(":x:"));
-								confirmationMaps.put(event.getMessage().getAuthor().getStringID(), "wipe");
-								confirmationMessages.put(event.getMessage().getAuthor().getStringID(), m.getStringID());
+								confirmationMaps.put(event.getAuthor().getStringID(), "wipe");
+								confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 
 								Executors.newScheduledThreadPool(1).schedule(() ->
 								{
 									if (!m.isDeleted())
 									{
 										m.delete();
-										confirmationMaps.remove(event.getMessage().getAuthor().getStringID());
-										confirmationMessages.remove(event.getMessage().getAuthor().getStringID());
+										confirmationMaps.remove(event.getAuthor().getStringID());
+										confirmationMessages.remove(event.getAuthor().getStringID());
 									}
 								}, 60, TimeUnit.SECONDS);
 							}
@@ -198,20 +198,20 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion + "** instead?), are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
 										}
 
-										waitForReaction(m.getStringID(), event.getMessage().getAuthor().getStringID());
+										waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 										m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 										Thread.sleep(250);
 										m.addReaction(EmojiManager.getForAlias(":x:"));
-										confirmationMaps.put(event.getMessage().getAuthor().getStringID(), args[1]);
-										confirmationMessages.put(event.getMessage().getAuthor().getStringID(), m.getStringID());
+										confirmationMaps.put(event.getAuthor().getStringID(), args[1]);
+										confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 
 										Executors.newScheduledThreadPool(1).schedule(() ->
 										{
 											if (!m.isDeleted())
 											{
 												m.delete();
-												confirmationMaps.remove(event.getMessage().getAuthor().getStringID());
-												confirmationMessages.remove(event.getMessage().getAuthor().getStringID());
+												confirmationMaps.remove(event.getAuthor().getStringID());
+												confirmationMessages.remove(event.getAuthor().getStringID());
 											}
 										}, 60, TimeUnit.SECONDS);
 									}

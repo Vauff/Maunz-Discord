@@ -23,7 +23,7 @@ public class Await
 	/**
 	 * @return The user who triggered the message
 	 */
-	public String getUserID()
+	public String getID()
 	{
 		return userID;
 	}

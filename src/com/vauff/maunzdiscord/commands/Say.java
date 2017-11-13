@@ -17,7 +17,7 @@ public class Say extends AbstractCommand<MessageReceivedEvent>
 
 		if (!event.getChannel().isPrivate())
 		{
-			if (Util.hasPermission(event.getMessage().getAuthor(), event.getGuild()))
+			if (Util.hasPermission(event.getAuthor(), event.getGuild()))
 			{
 				if (args.length != 1)
 				{

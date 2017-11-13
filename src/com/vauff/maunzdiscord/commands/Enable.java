@@ -11,7 +11,7 @@ public class Enable extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		if (Util.hasPermission(event.getMessage().getAuthor()))
+		if (Util.hasPermission(event.getAuthor()))
 		{
 			if (!Util.isEnabled)
 			{
