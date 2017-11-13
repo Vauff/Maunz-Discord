@@ -108,7 +108,11 @@ public class MainListener
 			{
 				Main.client.getMessageByID(Long.parseLong(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getID())).delete();
 				AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getCommand().onMessageReceived(event);
-				AbstractCommand.AWAITED.remove(event.getAuthor().getStringID());
+				
+				if(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).shouldRemove())
+				{
+					AbstractCommand.AWAITED.remove(event.getAuthor().getStringID());
+				}
 			}
 		}
 		catch (Exception e)
