@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,10 +9,15 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
+import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.obj.IMessage;
@@ -126,7 +132,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					if (event.getReaction().getEmoji().toString().equals("2⃣"))
+					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
 						if (guildHasService)
 						{
@@ -192,12 +198,11 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					if (service.equals("map-tracking"))
 					{
-						IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the servers IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+						IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send map tracking updates in");
 
 						waitForReply(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "maptrackingadd.1");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addNumberedReactions(m, 1);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -229,6 +234,26 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}, 120, TimeUnit.SECONDS);
 					}
 				}
+
+				else if (states.get(event.getUser().getStringID()).startsWith("csgoupdatesadd.2"))
+				{
+					String[] statesSplit = states.get(event.getUser().getStringID()).split(",");
+					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
+					JSONObject json = new JSONObject();
+					boolean nonImportantUpdates = false;
+
+					if (event.getReaction().getEmoji().toString().equals("1⃣"))
+					{
+						nonImportantUpdates = true;
+					}
+
+					file.createNewFile();
+					json.put("enabled", true);
+					json.put("updateNotificationChannelID", Long.parseLong(statesSplit[1]));
+					json.put("nonImportantUpdates", nonImportantUpdates);
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					Util.msg(event.getChannel(), "Successfully added the CS:GO Update Notifications service!");
+				}
 			}
 		}
 	}
@@ -240,7 +265,60 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 		{
 			if (states.get(event.getAuthor().getStringID()).equals("maptrackingadd.1"))
 			{
+				String message = event.getMessage().getContent().replaceAll("[^\\d]", "");
 
+				try
+				{
+					if (!Main.client.getChannelByID(Long.parseLong(message)).getGuild().equals(event.getGuild()))
+					{
+						message = "";
+					}
+
+				}
+				catch (NullPointerException | NumberFormatException e)
+				{
+					message = "";
+				}
+
+				if (!message.equals(""))
+				{
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the servers IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+
+					waitForReply(m.getStringID(), event.getAuthor().getStringID());
+					states.put(event.getAuthor().getStringID(), "maptrackingadd.2," + message);
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+					}, 120, TimeUnit.SECONDS);
+				}
+				else
+				{
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
+
+					waitForReply(m.getStringID(), event.getAuthor().getStringID());
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
+					}, 120, TimeUnit.SECONDS);
+				}
 			}
 
 			else if (states.get(event.getAuthor().getStringID()).equals("csgoupdatesadd.1"))
@@ -265,7 +343,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "Would you like to send notifications for non-important updates? (SteamDB updates that don't really mean anything)" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Yes" + System.lineSeparator() + "**`[2]`**  |  No");
 
 					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-					states.put(event.getAuthor().getStringID(), "csgoupdatesadd.1," + message);
+					states.put(event.getAuthor().getStringID(), "csgoupdatesadd.2," + message);
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
 					Util.addNumberedReactions(m, 2);
 
@@ -284,7 +362,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
-					states.put(event.getAuthor().getStringID(), "csgoupdatesadd.1");
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
 					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
@@ -296,7 +373,73 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							states.remove(event.getAuthor().getStringID());
 							menuMessages.remove(event.getAuthor().getStringID());
 						}
-						
+
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
+					}, 120, TimeUnit.SECONDS);
+				}
+			}
+
+			else if (states.get(event.getAuthor().getStringID()).startsWith("maptrackingadd.2"))
+			{
+				String[] statesSplit = states.get(event.getAuthor().getStringID()).split(",");
+				boolean serverOnline = true;
+				String message = event.getMessage().getContent();
+				String ip = "";
+				int port = 0;
+
+				try
+				{
+					ip = message.split(":")[0];
+					port = Integer.parseInt(message.split(":")[1]);
+					SourceServer server = new SourceServer(InetAddress.getByName(ip), port);
+					
+					server.initialize();
+					server.disconnect();
+
+				}
+				catch (Exception e)
+				{
+					serverOnline = false;
+				}
+
+				if (serverOnline)
+				{
+					File folder = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/");
+					File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					JSONObject json = new JSONObject();
+
+					folder.mkdir();
+					file.createNewFile();
+					json.put("mapDatabase", new JSONArray());
+					json.put("mapTrackingChannelID", Long.parseLong(statesSplit[1]));
+					json.put("downtimeTimer", 0);
+					json.put("players", "0/0");
+					json.put("lastGuildName", event.getGuild().getName());
+					json.put("lastMap", "N/A");
+					json.put("serverIP", ip);
+					json.put("serverPort", port);
+					json.put("enabled", true);
+					json.put("timestamp", 1);
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					Util.msg(event.getChannel(), "Successfully added the Map Tracking service!");
+				}
+				else
+				{
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the servers IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+
+					waitForReply(m.getStringID(), event.getAuthor().getStringID());
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+
 						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}

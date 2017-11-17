@@ -72,7 +72,7 @@ public class MapTimer
 
 									if (json.getInt("downtimeTimer") == 4320)
 									{
-										Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), "The server has now been offline for 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+										Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										json.put("enabled", false);
 									}
 

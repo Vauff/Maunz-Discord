@@ -92,12 +92,13 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							else
 							{
 								IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+								
 								waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+								confirmationMaps.put(event.getAuthor().getStringID(), "wipe");
+								confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 								m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 								Thread.sleep(250);
 								m.addReaction(EmojiManager.getForAlias(":x:"));
-								confirmationMaps.put(event.getAuthor().getStringID(), "wipe");
-								confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 
 								Executors.newScheduledThreadPool(1).schedule(() ->
 								{
@@ -199,11 +200,11 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										}
 
 										waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+										confirmationMaps.put(event.getAuthor().getStringID(), args[1]);
+										confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 										m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 										Thread.sleep(250);
 										m.addReaction(EmojiManager.getForAlias(":x:"));
-										confirmationMaps.put(event.getAuthor().getStringID(), args[1]);
-										confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 
 										Executors.newScheduledThreadPool(1).schedule(() ->
 										{

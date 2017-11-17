@@ -30,19 +30,26 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (!(json.getInt("downtimeTimer") >= 3))
 					{
-						Util.msg(event.getChannel(), "Sending the online player list to you in a PM!");
-						playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
-
-						for (String player : MapTimer.serverPlayers.get(event.getGuild().getLongID()))
+						if (MapTimer.serverPlayers.containsKey(event.getGuild().getLongID()))
 						{
-							if (!player.equals(""))
-							{
-								playersList.append("- " + player + System.lineSeparator());
-							}
-						}
+							Util.msg(event.getChannel(), "Sending the online player list to you in a PM!");
+							playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
 
-						playersList.append("```");
-						Util.msg(event.getAuthor().getOrCreatePMChannel(), playersList.toString());
+							for (String player : MapTimer.serverPlayers.get(event.getGuild().getLongID()))
+							{
+								if (!player.equals(""))
+								{
+									playersList.append("- " + player + System.lineSeparator());
+								}
+							}
+
+							playersList.append("```");
+							Util.msg(event.getAuthor().getOrCreatePMChannel(), playersList.toString());
+						}
+						else
+						{
+							Util.msg(event.getChannel(), "There doesn't appear to be any player info cached yet (was the bot just started or the service just added?), please wait a moment before trying again");
+						}
 					}
 					else
 					{
