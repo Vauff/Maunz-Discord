@@ -60,7 +60,7 @@ public class MainListener
 	public void onReady(ReadyEvent event)
 	{
 		List<File> folderList = new ArrayList<File>();
-		
+
 		folderList.add(new File(Util.getJarLocation() + "services/"));
 		folderList.add(new File(Util.getJarLocation() + "services/map-tracking/"));
 		folderList.add(new File(Util.getJarLocation() + "services/csgo-updates/"));
@@ -103,16 +103,23 @@ public class MainListener
 					}
 				}
 			}
-			
-			if (AbstractCommand.AWAITED.containsKey(event.getAuthor().getStringID()) && event.getChannel().equals(Main.client.getMessageByID(Long.parseLong(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getID())).getChannel()))
+
+			try
 			{
-				Main.client.getMessageByID(Long.parseLong(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getID())).delete();
-				AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getCommand().onMessageReceived(event);
-				
-				if(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).shouldRemove())
+				if (AbstractCommand.AWAITED.containsKey(event.getAuthor().getStringID()) && event.getChannel().equals(Main.client.getMessageByID(Long.parseLong(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getID())).getChannel()))
 				{
-					AbstractCommand.AWAITED.remove(event.getAuthor().getStringID());
+					Main.client.getMessageByID(Long.parseLong(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getID())).delete();
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getCommand().onMessageReceived(event);
+
+					if (AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).shouldRemove())
+					{
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID());
+					}
 				}
+			}
+			catch (NullPointerException e)
+			{
+				// This means that the message ID in AbstractCommand#AWAITED for the given user ID has already been deleted, we can safely just stop executing
 			}
 		}
 		catch (Exception e)
