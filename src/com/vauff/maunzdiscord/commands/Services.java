@@ -98,15 +98,15 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!services.contains("map-tracking"))
 							{
 								i++;
-								message = message + System.lineSeparator() + "**`[" + (i) + "]`**  |  Map Tracking";
-								state = state + ",map-tracking." + (i);
+								message += System.lineSeparator() + "**`[" + (i) + "]`**  |  Map Tracking";
+								state += ",map-tracking." + (i);
 							}
 
 							if (!services.contains("csgo-updates"))
 							{
 								i++;
-								message = message + System.lineSeparator() + "**`[" + (i) + "]`**  |  CS:GO Update Notifications";
-								state = state + ",csgo-updates." + (i);
+								message += System.lineSeparator() + "**`[" + (i) + "]`**  |  CS:GO Update Notifications";
+								state += ",csgo-updates." + (i);
 							}
 
 							IMessage m = event.getChannel().sendMessage(message);
@@ -114,7 +114,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							waitForReaction(m.getStringID(), event.getUser().getStringID());
 							states.put(event.getUser().getStringID(), state);
 							menuMessages.put(event.getUser().getStringID(), m.getStringID());
-							Util.addNumberedReactions(m, 2 - services.size());
+							Util.addNumberedReactions(m, i);
 
 							Executors.newScheduledThreadPool(1).schedule(() ->
 							{
@@ -143,14 +143,14 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							{
 								if (services.get(i).equals("map-tracking"))
 								{
-									message = message + System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  Map Tracking";
-									state = state + ",map-tracking." + (i + 1);
+									message += System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  Map Tracking";
+									state += ",map-tracking." + (i + 1);
 								}
 
 								if (services.get(i).equals("csgo-updates"))
 								{
-									message = message + System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  CS:GO Update Notifications";
-									state = state + ",csgo-updates." + (i + 1);
+									message += System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  CS:GO Update Notifications";
+									state += ",csgo-updates." + (i + 1);
 								}
 							}
 
@@ -282,7 +282,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (!message.equals(""))
 				{
-					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the servers IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					states.put(event.getAuthor().getStringID(), "maptrackingadd.2," + message);
@@ -425,7 +425,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the servers IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
