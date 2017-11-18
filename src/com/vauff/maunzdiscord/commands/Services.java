@@ -114,7 +114,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							waitForReaction(m.getStringID(), event.getUser().getStringID());
 							states.put(event.getUser().getStringID(), state);
 							menuMessages.put(event.getUser().getStringID(), m.getStringID());
-							Util.addNumberedReactions(m, 2);
+							Util.addNumberedReactions(m, 2 - services.size());
 
 							Executors.newScheduledThreadPool(1).schedule(() ->
 							{
