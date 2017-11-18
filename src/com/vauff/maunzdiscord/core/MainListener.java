@@ -75,7 +75,7 @@ public class MainListener
 
 		uptime.start();
 		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapTimer.timer, 0, 60, TimeUnit.SECONDS);
-		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(UptimeTimer.timer, 60, 60, TimeUnit.SECONDS);
+		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(UptimeTimer.timer, 600, 60, TimeUnit.SECONDS);
 		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 	}
 
