@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,6 +20,7 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
 import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
+
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.obj.IMessage;
@@ -68,7 +71,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 		{
 			if (event.getMessage().getStringID().equals(menuMessages.get(event.getUser().getStringID())))
 			{
-
 				if (states.get(event.getUser().getStringID()).equals("main"))
 				{
 					List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "services/map-tracking/", Util.getJarLocation() + "services/csgo-updates/"));
@@ -222,6 +224,79 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						waitForReply(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesadd.1");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+
+						Executors.newScheduledThreadPool(1).schedule(() ->
+						{
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
+					}
+				}
+
+				else if (states.get(event.getUser().getStringID()).startsWith("edit,"))
+				{
+					String service = "";
+
+					if (event.getReaction().getEmoji().toString().equals("1⃣") && states.get(event.getUser().getStringID()).contains("1"))
+					{
+						if (states.get(event.getUser().getStringID()).contains("map-tracking.1"))
+						{
+							service = "map-tracking";
+						}
+
+						else if (states.get(event.getUser().getStringID()).contains("csgo-updates.1"))
+						{
+							service = "csgo-updates";
+						}
+					}
+
+					else if (event.getReaction().getEmoji().toString().equals("2⃣") && states.get(event.getUser().getStringID()).contains("2"))
+					{
+						if (states.get(event.getUser().getStringID()).contains("map-tracking.2"))
+						{
+							service = "map-tracking";
+						}
+
+						else if (states.get(event.getUser().getStringID()).contains("csgo-updates.2"))
+						{
+							service = "csgo-updates";
+						}
+					}
+
+					if (service.equals("map-tracking"))
+					{
+						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json")));
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+
+						waitForReaction(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "maptrackingedit");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+						Util.addNumberedReactions(m, 3);
+
+						Executors.newScheduledThreadPool(1).schedule(() ->
+						{
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
+					}
+
+					else if (service.equals("csgo-updates"))
+					{
+						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json")));
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+
+						waitForReaction(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "csgoupdatesedit");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+						Util.addNumberedReactions(m, 3);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -392,7 +467,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					ip = message.split(":")[0];
 					port = Integer.parseInt(message.split(":")[1]);
 					SourceServer server = new SourceServer(InetAddress.getByName(ip), port);
-					
+
 					server.initialize();
 					server.disconnect();
 
