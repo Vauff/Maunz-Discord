@@ -59,6 +59,23 @@ public class MapTimer
 								try
 								{
 									server.initialize();
+
+									try
+									{
+										serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
+									}
+									catch (NullPointerException e)
+									{
+										HashMap<String, SteamPlayer> players = server.getPlayers();
+										Set<String> keySet = new HashSet<String>();
+
+										for (SteamPlayer player : new ArrayList<SteamPlayer>(players.values()))
+										{
+											keySet.add(player.getName());
+										}
+
+										serverPlayers.put(Long.parseLong(file.getName()), keySet);
+									}
 								}
 								catch (NullPointerException | TimeoutException | SteamCondenserException e)
 								{
@@ -78,23 +95,6 @@ public class MapTimer
 
 									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 									continue;
-								}
-
-								try
-								{
-									serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
-								}
-								catch (NullPointerException e)
-								{
-									HashMap<String, SteamPlayer> players = server.getPlayers();
-									Set<String> keySet = new HashSet<String>();;
-
-									for (SteamPlayer player : new ArrayList<SteamPlayer>(players.values()))
-									{
-										keySet.add(player.getName());
-									}
-									
-									serverPlayers.put(Long.parseLong(file.getName()), keySet);
 								}
 
 								String serverInfo = server.toString();

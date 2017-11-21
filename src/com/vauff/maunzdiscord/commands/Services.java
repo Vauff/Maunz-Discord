@@ -237,6 +237,26 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					}
 				}
 
+				else if (states.get(event.getUser().getStringID()).startsWith("csgoupdatesadd.2"))
+				{
+					String[] statesSplit = states.get(event.getUser().getStringID()).split(",");
+					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
+					JSONObject json = new JSONObject();
+					boolean nonImportantUpdates = false;
+
+					if (event.getReaction().getEmoji().toString().equals("1⃣"))
+					{
+						nonImportantUpdates = true;
+					}
+
+					file.createNewFile();
+					json.put("enabled", true);
+					json.put("updateNotificationChannelID", Long.parseLong(statesSplit[1]));
+					json.put("nonImportantUpdates", nonImportantUpdates);
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					Util.msg(event.getChannel(), "Successfully added the CS:GO Update Notifications service!");
+				}
+
 				else if (states.get(event.getUser().getStringID()).startsWith("edit,"))
 				{
 					String service = "";
@@ -308,26 +328,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
-				}
-
-				else if (states.get(event.getUser().getStringID()).startsWith("csgoupdatesadd.2"))
-				{
-					String[] statesSplit = states.get(event.getUser().getStringID()).split(",");
-					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
-					JSONObject json = new JSONObject();
-					boolean nonImportantUpdates = false;
-
-					if (event.getReaction().getEmoji().toString().equals("1⃣"))
-					{
-						nonImportantUpdates = true;
-					}
-
-					file.createNewFile();
-					json.put("enabled", true);
-					json.put("updateNotificationChannelID", Long.parseLong(statesSplit[1]));
-					json.put("nonImportantUpdates", nonImportantUpdates);
-					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					Util.msg(event.getChannel(), "Successfully added the CS:GO Update Notifications service!");
 				}
 			}
 		}
