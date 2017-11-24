@@ -310,7 +310,7 @@ public class Util
 		}
 	}
 
-	public static void addNumberedReactions(IMessage m, int i) throws Exception
+	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
 	{
 		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
@@ -321,6 +321,11 @@ public class Util
 				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
 				Thread.sleep(250);
 			}
+		}
+
+		if (cancellable)
+		{
+			m.addReaction(EmojiManager.getForAlias(":x:"));
 		}
 	}
 }
