@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
 			<artifactId>websocket-client</artifactId>
-			<version>9.3.22.v20171030</version>
+			<version>9.4.7.v20170914</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -139,7 +139,7 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-io</artifactId>
-			<version>9.3.22.v20171030</version>
+			<version>9.4.7.v20170914</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

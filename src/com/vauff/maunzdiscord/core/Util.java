@@ -310,7 +310,7 @@ public class Util
 		}
 	}
 
-	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
+	public static void addReactions(IMessage m, boolean cancellable, int i) throws Exception
 	{
 		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 

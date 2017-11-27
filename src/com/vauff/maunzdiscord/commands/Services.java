@@ -40,7 +40,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 			waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 			states.put(event.getAuthor().getStringID(), "main");
 			menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-			Util.addNumberedReactions(m, true, 2);
+			Util.addReactions(m, true, 2);
 
 			Executors.newScheduledThreadPool(1).schedule(() ->
 			{
@@ -122,7 +122,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							waitForReaction(m.getStringID(), event.getUser().getStringID());
 							states.put(event.getUser().getStringID(), state);
 							menuMessages.put(event.getUser().getStringID(), m.getStringID());
-							Util.addNumberedReactions(m, true, i);
+							Util.addReactions(m, true, i);
 
 							Executors.newScheduledThreadPool(1).schedule(() ->
 							{
@@ -167,7 +167,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							waitForReaction(m.getStringID(), event.getUser().getStringID());
 							states.put(event.getUser().getStringID(), state);
 							menuMessages.put(event.getUser().getStringID(), m.getStringID());
-							Util.addNumberedReactions(m, true, services.size());
+							Util.addReactions(m, true, services.size());
 
 							Executors.newScheduledThreadPool(1).schedule(() ->
 							{
@@ -301,7 +301,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "maptrackingedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addNumberedReactions(m, true, 3);
+						Util.addReactions(m, true, 3);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -322,7 +322,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addNumberedReactions(m, true, 3);
+						Util.addReactions(m, true, 3);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -336,7 +336,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					}
 				}
 
-				else if (states.get(event.getUser().getStringID()).startsWith("maptrackingedit"))
+				else if (states.get(event.getUser().getStringID()).equals("maptrackingedit"))
 				{
 					File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
@@ -345,35 +345,65 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					{
 						json.put("enabled", !json.getBoolean("enabled"));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+
+						waitForReaction(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "maptrackingedit");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+						Util.addReactions(m, true, 3);
+
+						Executors.newScheduledThreadPool(1).schedule(() ->
+						{
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+
+						waitForReply(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "maptrackingedit.1");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+
+						Executors.newScheduledThreadPool(1).schedule(() ->
+						{
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("3⃣"))
 					{
-					}
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
 
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+						waitForReply(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "maptrackingedit.2");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
 
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					states.put(event.getUser().getStringID(), "maptrackingedit");
-					menuMessages.put(event.getUser().getStringID(), m.getStringID());
-					Util.addNumberedReactions(m, true, 3);
-
-					Executors.newScheduledThreadPool(1).schedule(() ->
-					{
-						if (!m.isDeleted())
+						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
-							m.delete();
-							states.remove(event.getUser().getStringID());
-							menuMessages.remove(event.getUser().getStringID());
-						}
-					}, 120, TimeUnit.SECONDS);
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
+					}
 				}
 
-				else if (states.get(event.getUser().getStringID()).startsWith("csgoupdatesedit"))
+				else if (states.get(event.getUser().getStringID()).equals("csgoupdatesedit"))
 				{
 					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
@@ -382,34 +412,66 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					{
 						json.put("enabled", !json.getBoolean("enabled"));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+
+						waitForReaction(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "csgoupdatesedit");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+						Util.addReactions(m, true, 3);
+
+						Executors.newScheduledThreadPool(1).schedule(() ->
+						{
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
 						json.put("nonImportantUpdates", !json.getBoolean("nonImportantUpdates"));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+
+						waitForReaction(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "csgoupdatesedit");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+						Util.addReactions(m, true, 3);
+
+						Executors.newScheduledThreadPool(1).schedule(() ->
+						{
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("3⃣"))
 					{
-					}
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
 
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+						waitForReply(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "csgoupdatesedit.1");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
 
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					states.put(event.getUser().getStringID(), "csgoupdatesedit");
-					menuMessages.put(event.getUser().getStringID(), m.getStringID());
-					Util.addNumberedReactions(m, true, 3);
-
-					Executors.newScheduledThreadPool(1).schedule(() ->
-					{
-						if (!m.isDeleted())
+						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
-							m.delete();
-							states.remove(event.getUser().getStringID());
-							menuMessages.remove(event.getUser().getStringID());
-						}
-					}, 120, TimeUnit.SECONDS);
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
+					}
 				}
 			}
 		}
@@ -458,65 +520,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
-
-					waitForReply(m.getStringID(), event.getAuthor().getStringID());
-					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
-
-					Executors.newScheduledThreadPool(1).schedule(() ->
-					{
-						if (!m.isDeleted())
-						{
-							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
-						}
-
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
-					}, 120, TimeUnit.SECONDS);
-				}
-			}
-
-			else if (states.get(event.getAuthor().getStringID()).equals("csgoupdatesadd.1"))
-			{
-				String message = event.getMessage().getContent().replaceAll("[^\\d]", "");
-
-				try
-				{
-					if (!Main.client.getChannelByID(Long.parseLong(message)).getGuild().equals(event.getGuild()))
-					{
-						message = "";
-					}
-
-				}
-				catch (NullPointerException | NumberFormatException e)
-				{
-					message = "";
-				}
-
-				if (!message.equals(""))
-				{
-					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "Would you like to send notifications for non-important updates? (SteamDB updates that don't really mean anything)" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Yes" + System.lineSeparator() + "**`[2]`**  |  No");
-
-					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-					states.put(event.getAuthor().getStringID(), "csgoupdatesadd.2," + message);
-					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					Util.addNumberedReactions(m, true, 2);
-
-					Executors.newScheduledThreadPool(1).schedule(() ->
-					{
-						if (!m.isDeleted())
-						{
-							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
-						}
-					}, 120, TimeUnit.SECONDS);
-				}
-				else
-				{
-					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send map tracking updates in");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
@@ -583,6 +587,261 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				else
 				{
 					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+
+					waitForReply(m.getStringID(), event.getAuthor().getStringID());
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
+					}, 120, TimeUnit.SECONDS);
+				}
+			}
+
+			else if (states.get(event.getAuthor().getStringID()).equals("csgoupdatesadd.1"))
+			{
+				String message = event.getMessage().getContent().replaceAll("[^\\d]", "");
+
+				try
+				{
+					if (!Main.client.getChannelByID(Long.parseLong(message)).getGuild().equals(event.getGuild()))
+					{
+						message = "";
+					}
+
+				}
+				catch (NullPointerException | NumberFormatException e)
+				{
+					message = "";
+				}
+
+				if (!message.equals(""))
+				{
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "Would you like to send notifications for non-important updates? (SteamDB updates that don't really mean anything)" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Yes" + System.lineSeparator() + "**`[2]`**  |  No");
+
+					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+					states.put(event.getAuthor().getStringID(), "csgoupdatesadd.2," + message);
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					Util.addReactions(m, true, 2);
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+					}, 120, TimeUnit.SECONDS);
+				}
+				else
+				{
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
+
+					waitForReply(m.getStringID(), event.getAuthor().getStringID());
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
+					}, 120, TimeUnit.SECONDS);
+				}
+			}
+
+			else if (states.get(event.getAuthor().getStringID()).equals("csgoupdatesedit.1"))
+			{
+				String message = event.getMessage().getContent().replaceAll("[^\\d]", "");
+
+				try
+				{
+					if (!Main.client.getChannelByID(Long.parseLong(message)).getGuild().equals(event.getGuild()))
+					{
+						message = "";
+					}
+
+				}
+				catch (NullPointerException | NumberFormatException e)
+				{
+					message = "";
+				}
+
+				if (!message.equals(""))
+				{
+					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
+					JSONObject json = new JSONObject(Util.getFileContents(file));
+
+					json.put("updateNotificationChannelID", Long.parseLong(message));
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+
+					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+					states.put(event.getAuthor().getStringID(), "csgoupdatesedit");
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					Util.addReactions(m, true, 3);
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+					}, 120, TimeUnit.SECONDS);
+				}
+				else
+				{
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
+
+					waitForReply(m.getStringID(), event.getAuthor().getStringID());
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
+					}, 120, TimeUnit.SECONDS);
+				}
+			}
+
+			else if (states.get(event.getAuthor().getStringID()).equals("maptrackingedit.1"))
+			{
+				boolean serverOnline = true;
+				String message = event.getMessage().getContent();
+				String ip = "";
+				int port = 0;
+
+				try
+				{
+					ip = message.split(":")[0];
+					port = Integer.parseInt(message.split(":")[1]);
+					SourceServer server = new SourceServer(InetAddress.getByName(ip), port);
+
+					server.initialize();
+					server.disconnect();
+				}
+				catch (Exception e)
+				{
+					serverOnline = false;
+				}
+
+				if (serverOnline)
+				{
+					File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					JSONObject json = new JSONObject(Util.getFileContents(file));
+
+					json.put("serverIP", ip);
+					json.put("serverPort", port);
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+
+					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+					states.put(event.getAuthor().getStringID(), "maptrackingedit");
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					Util.addReactions(m, true, 3);
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+					}, 120, TimeUnit.SECONDS);
+				}
+				else
+				{
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+
+					waitForReply(m.getStringID(), event.getAuthor().getStringID());
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+
+						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
+					}, 120, TimeUnit.SECONDS);
+				}
+			}
+
+			else if (states.get(event.getAuthor().getStringID()).equals("maptrackingedit.2"))
+			{
+				String message = event.getMessage().getContent().replaceAll("[^\\d]", "");
+
+				try
+				{
+					if (!Main.client.getChannelByID(Long.parseLong(message)).getGuild().equals(event.getGuild()))
+					{
+						message = "";
+					}
+
+				}
+				catch (NullPointerException | NumberFormatException e)
+				{
+					message = "";
+				}
+
+				if (!message.equals(""))
+				{
+					File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					JSONObject json = new JSONObject(Util.getFileContents(file));
+
+					json.put("mapTrackingChannelID", Long.parseLong(message));
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+
+					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+					states.put(event.getAuthor().getStringID(), "maptrackingedit");
+					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+					Util.addReactions(m, true, 3);
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getAuthor().getStringID());
+							menuMessages.remove(event.getAuthor().getStringID());
+						}
+					}, 120, TimeUnit.SECONDS);
+				}
+				else
+				{
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send map tracking updates in");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
