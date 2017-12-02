@@ -79,7 +79,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				else if (states.get(event.getUser().getStringID()).equals("main"))
 				{
-					List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "services/map-tracking/", Util.getJarLocation() + "services/csgo-updates/"));
+					List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "services/server-tracking/", Util.getJarLocation() + "services/csgo-updates/"));
 					List<String> services = new ArrayList<String>();
 					boolean guildHasService = false;
 
@@ -103,11 +103,11 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							String state = "add";
 							int i = 0;
 
-							if (!services.contains("map-tracking"))
+							if (!services.contains("server-tracking"))
 							{
 								i++;
-								message += System.lineSeparator() + "**`[" + (i) + "]`**  |  Map Tracking";
-								state += ",map-tracking." + (i);
+								message += System.lineSeparator() + "**`[" + (i) + "]`**  |  Server Tracking";
+								state += ",server-tracking." + (i);
 							}
 
 							if (!services.contains("csgo-updates"))
@@ -149,10 +149,10 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 							for (int i = 0; i < services.size(); i++)
 							{
-								if (services.get(i).equals("map-tracking"))
+								if (services.get(i).equals("server-tracking"))
 								{
-									message += System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  Map Tracking";
-									state += ",map-tracking." + (i + 1);
+									message += System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  Server Tracking";
+									state += ",server-tracking." + (i + 1);
 								}
 
 								else if (services.get(i).equals("csgo-updates"))
@@ -194,10 +194,10 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 							for (int i = 0; i < services.size(); i++)
 							{
-								if (services.get(i).equals("map-tracking"))
+								if (services.get(i).equals("server-tracking"))
 								{
-									message += System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  Map Tracking";
-									state += ",map-tracking." + (i + 1);
+									message += System.lineSeparator() + "**`[" + (i + 1) + "]`**  |  Server Tracking";
+									state += ",server-tracking." + (i + 1);
 								}
 
 								if (services.get(i).equals("csgo-updates"))
@@ -249,12 +249,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					if (service.equals("map-tracking"))
+					if (service.equals("server-tracking"))
 					{
-						IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send map tracking updates in");
+						IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send server tracking updates in");
 
 						waitForReply(m.getStringID(), event.getUser().getStringID());
-						states.put(event.getUser().getStringID(), "maptrackingadd.1");
+						states.put(event.getUser().getStringID(), "servertrackingadd.1");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
@@ -314,9 +314,9 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					if (event.getReaction().getEmoji().toString().equals("1⃣") && states.get(event.getUser().getStringID()).contains("1"))
 					{
-						if (states.get(event.getUser().getStringID()).contains("map-tracking.1"))
+						if (states.get(event.getUser().getStringID()).contains("server-tracking.1"))
 						{
-							service = "map-tracking";
+							service = "server-tracking";
 						}
 
 						else if (states.get(event.getUser().getStringID()).contains("csgo-updates.1"))
@@ -327,9 +327,9 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣") && states.get(event.getUser().getStringID()).contains("2"))
 					{
-						if (states.get(event.getUser().getStringID()).contains("map-tracking.2"))
+						if (states.get(event.getUser().getStringID()).contains("server-tracking.2"))
 						{
-							service = "map-tracking";
+							service = "server-tracking";
 						}
 
 						else if (states.get(event.getUser().getStringID()).contains("csgo-updates.2"))
@@ -338,13 +338,13 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					if (service.equals("map-tracking"))
+					if (service.equals("server-tracking"))
 					{
-						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json")));
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json")));
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
-						states.put(event.getUser().getStringID(), "maptrackingedit");
+						states.put(event.getUser().getStringID(), "servertrackingedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
 						Util.addReactions(m, true, 3);
 
@@ -381,9 +381,9 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					}
 				}
 
-				else if (states.get(event.getUser().getStringID()).equals("maptrackingedit"))
+				else if (states.get(event.getUser().getStringID()).equals("servertrackingedit"))
 				{
-					File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
@@ -391,10 +391,10 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						json.put("enabled", !json.getBoolean("enabled"));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
-						states.put(event.getUser().getStringID(), "maptrackingedit");
+						states.put(event.getUser().getStringID(), "servertrackingedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
 						Util.addReactions(m, true, 3);
 
@@ -411,10 +411,10 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
 
 						waitForReply(m.getStringID(), event.getUser().getStringID());
-						states.put(event.getUser().getStringID(), "maptrackingedit.1");
+						states.put(event.getUser().getStringID(), "servertrackingedit.1");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
@@ -430,10 +430,10 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					else if (event.getReaction().getEmoji().toString().equals("3⃣"))
 					{
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send server tracking updates in");
 
 						waitForReply(m.getStringID(), event.getUser().getStringID());
-						states.put(event.getUser().getStringID(), "maptrackingedit.2");
+						states.put(event.getUser().getStringID(), "servertrackingedit.2");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
@@ -525,9 +525,9 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					if (event.getReaction().getEmoji().toString().equals("1⃣") && states.get(event.getUser().getStringID()).contains("1"))
 					{
-						if (states.get(event.getUser().getStringID()).contains("map-tracking.1"))
+						if (states.get(event.getUser().getStringID()).contains("server-tracking.1"))
 						{
-							service = "map-tracking";
+							service = "server-tracking";
 						}
 
 						else if (states.get(event.getUser().getStringID()).contains("csgo-updates.1"))
@@ -538,9 +538,9 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣") && states.get(event.getUser().getStringID()).contains("2"))
 					{
-						if (states.get(event.getUser().getStringID()).contains("map-tracking.2"))
+						if (states.get(event.getUser().getStringID()).contains("server-tracking.2"))
 						{
-							service = "map-tracking";
+							service = "server-tracking";
 						}
 
 						else if (states.get(event.getUser().getStringID()).contains("csgo-updates.2"))
@@ -549,12 +549,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					if (service.equals("map-tracking"))
+					if (service.equals("server-tracking"))
 					{
-						IMessage m = event.getChannel().sendMessage(":x:  |  **Delete Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Are you sure you would like to delete this service?" + System.lineSeparator() + System.lineSeparator() + "**WARNING:** This will delete your service data **permanently**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Yes, delete the service permanently" + System.lineSeparator() + "**`[2]`**  |  No, keep the service");
+						IMessage m = event.getChannel().sendMessage(":x:  |  **Delete Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "Are you sure you would like to delete this service?" + System.lineSeparator() + System.lineSeparator() + "**WARNING:** This will delete your service data **permanently**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Yes, delete the service permanently" + System.lineSeparator() + "**`[2]`**  |  No, keep the service");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
-						states.put(event.getUser().getStringID(), "maptrackingdelete");
+						states.put(event.getUser().getStringID(), "servertrackingdelete");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
 						Util.addReactions(m, false, 2);
 
@@ -590,21 +590,21 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					}
 				}
 
-				else if (states.get(event.getUser().getStringID()).equals("maptrackingdelete"))
+				else if (states.get(event.getUser().getStringID()).equals("servertrackingdelete"))
 				{
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
 					{
-						File folder = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/");
-						File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+						File folder = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/");
+						File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 
 						file.delete();
 						folder.delete();
-						Util.msg(event.getChannel(), "Successfully deleted the map tracking service!");
+						Util.msg(event.getChannel(), "Successfully deleted the server tracking service!");
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
-						Util.msg(event.getChannel(), "No problem, I won't delete the map tracking service");
+						Util.msg(event.getChannel(), "No problem, I won't delete the server tracking service");
 					}
 				}
 
@@ -632,7 +632,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 	{
 		if (menuMessages.containsKey(event.getAuthor().getStringID()))
 		{
-			if (states.get(event.getAuthor().getStringID()).equals("maptrackingadd.1"))
+			if (states.get(event.getAuthor().getStringID()).equals("servertrackingadd.1"))
 			{
 				String message = event.getMessage().getContent().replaceAll("[^\\d]", "");
 
@@ -650,10 +650,10 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (!message.equals(""))
 				{
-					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
-					states.put(event.getAuthor().getStringID(), "maptrackingadd.2," + message);
+					states.put(event.getAuthor().getStringID(), "servertrackingadd.2," + message);
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
 					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
@@ -669,7 +669,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send map tracking updates in");
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send server tracking updates in");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
@@ -689,7 +689,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				}
 			}
 
-			else if (states.get(event.getAuthor().getStringID()).startsWith("maptrackingadd.2"))
+			else if (states.get(event.getAuthor().getStringID()).startsWith("servertrackingadd.2"))
 			{
 				String[] statesSplit = states.get(event.getAuthor().getStringID()).split(",");
 				boolean serverOnline = true;
@@ -713,14 +713,14 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (serverOnline)
 				{
-					File folder = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/");
-					File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					File folder = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/");
+					File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject();
 
 					folder.mkdir();
 					file.createNewFile();
 					json.put("mapDatabase", new JSONArray());
-					json.put("mapTrackingChannelID", Long.parseLong(statesSplit[1]));
+					json.put("serverTrackingChannelID", Long.parseLong(statesSplit[1]));
 					json.put("downtimeTimer", 0);
 					json.put("players", "0/0");
 					json.put("lastGuildName", event.getGuild().getName());
@@ -730,11 +730,11 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					json.put("enabled", true);
 					json.put("timestamp", 1);
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					Util.msg(event.getChannel(), "Successfully added the Map Tracking service!");
+					Util.msg(event.getChannel(), "Successfully added the Server Tracking service!");
 				}
 				else
 				{
-					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
@@ -874,7 +874,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				}
 			}
 
-			else if (states.get(event.getAuthor().getStringID()).equals("maptrackingedit.1"))
+			else if (states.get(event.getAuthor().getStringID()).equals("servertrackingedit.1"))
 			{
 				boolean serverOnline = true;
 				String message = event.getMessage().getContent();
@@ -897,17 +897,17 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (serverOnline)
 				{
-					File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
 					json.put("serverIP", ip);
 					json.put("serverPort", port);
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-					states.put(event.getAuthor().getStringID(), "maptrackingedit");
+					states.put(event.getAuthor().getStringID(), "servertrackingedit");
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
 					Util.addReactions(m, true, 3);
 
@@ -923,7 +923,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "The bot was unable to make a connection to a source engine server running on that IP and port" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
@@ -943,7 +943,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				}
 			}
 
-			else if (states.get(event.getAuthor().getStringID()).equals("maptrackingedit.2"))
+			else if (states.get(event.getAuthor().getStringID()).equals("servertrackingedit.2"))
 			{
 				String message = event.getMessage().getContent().replaceAll("[^\\d]", "");
 
@@ -962,16 +962,16 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (!message.equals(""))
 				{
-					File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
-					json.put("mapTrackingChannelID", Long.parseLong(message));
+					json.put("serverTrackingChannelID", Long.parseLong(message));
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Map Tracking Channel: " + "<#" + json.getLong("mapTrackingChannelID") + ">");
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-					states.put(event.getAuthor().getStringID(), "maptrackingedit");
+					states.put(event.getAuthor().getStringID(), "servertrackingedit");
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
 					Util.addReactions(m, true, 3);
 
@@ -987,7 +987,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Map Tracking**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send map tracking updates in");
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "The given channel either didn't exist or was in another guild" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send server tracking updates in");
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());

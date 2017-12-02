@@ -22,11 +22,11 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 		if (!event.getChannel().isPrivate())
 		{
 			String guildID = event.getGuild().getStringID();
-			File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + "/serverInfo.json");
+			File file = new File(Util.getJarLocation() + "services/server-tracking/" + guildID + "/serverInfo.json");
 
 			if (file.exists())
 			{
-				JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + guildID + "/serverInfo.json"));
+				JSONObject json = new JSONObject(Util.getFileContents("services/server-tracking/" + guildID + "/serverInfo.json"));
 
 				if (json.getBoolean("enabled"))
 				{
@@ -56,17 +56,17 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					Util.msg(event.getChannel(), "The map tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+					Util.msg(event.getChannel(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 				}
 			}
 			else
 			{
-				Util.msg(event.getChannel(), "The map tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+				Util.msg(event.getChannel(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "This command can't be done in a PM, only in a guild with the map tracking service enabled");
+			Util.msg(event.getChannel(), "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 		}
 	}
 

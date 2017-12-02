@@ -31,8 +31,8 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	{
 		String[] args = event.getMessage().getContent().split(" ");
 		String guildID = event.getGuild().getStringID();
-		File file = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + "/" + event.getAuthor().getStringID() + ".json");
-		File serverInfoFile = new File(Util.getJarLocation() + "services/map-tracking/" + guildID + "/serverInfo.json");
+		File file = new File(Util.getJarLocation() + "services/server-tracking/" + guildID + "/" + event.getAuthor().getStringID() + ".json");
+		File serverInfoFile = new File(Util.getJarLocation() + "services/server-tracking/" + guildID + "/serverInfo.json");
 		JSONObject json = null;
 
 		if (serverInfoFile.exists())
@@ -228,12 +228,12 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 			}
 			else
 			{
-				Util.msg(event.getChannel(), "The map tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+				Util.msg(event.getChannel(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "The map tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+			Util.msg(event.getChannel(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 		}
 	}
 
@@ -253,7 +253,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	public void confirm(ReactionAddEvent event) throws IOException, InterruptedException
 	{
 		String guildID = event.getGuild().getStringID();
-		String fileName = "services/map-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
+		String fileName = "services/server-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
 		File file = new File(Util.getJarLocation() + fileName);
 		JSONObject json = null;
 

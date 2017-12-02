@@ -12,7 +12,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import com.vauff.maunzdiscord.commands.*;
 import com.vauff.maunzdiscord.features.UptimeTimer;
 import com.vauff.maunzdiscord.features.Intelligence;
-import com.vauff.maunzdiscord.features.MapTimer;
+import com.vauff.maunzdiscord.features.ServerTimer;
 import com.vauff.maunzdiscord.features.StatsTimer;
 
 import sx.blah.discord.api.events.EventSubscriber;
@@ -66,7 +66,7 @@ public class MainListener
 		List<File> folderList = new ArrayList<File>();
 
 		folderList.add(new File(Util.getJarLocation() + "services/"));
-		folderList.add(new File(Util.getJarLocation() + "services/map-tracking/"));
+		folderList.add(new File(Util.getJarLocation() + "services/server-tracking/"));
 		folderList.add(new File(Util.getJarLocation() + "services/csgo-updates/"));
 
 		for (File folder : folderList)
@@ -78,7 +78,7 @@ public class MainListener
 		}
 
 		uptime.start();
-		Executors.newScheduledThreadPool(1).scheduleAtFixedRate(MapTimer.timer, 0, 60, TimeUnit.SECONDS);
+		Executors.newScheduledThreadPool(1).scheduleAtFixedRate(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(UptimeTimer.timer, 600, 60, TimeUnit.SECONDS);
 		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 	}

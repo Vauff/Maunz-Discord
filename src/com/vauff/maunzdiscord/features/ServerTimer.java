@@ -29,7 +29,7 @@ import sx.blah.discord.util.EmbedBuilder;
 /**
  * A timer to send notifications of maps currently being played on given servers
  */
-public class MapTimer
+public class ServerTimer
 {
 	/**
 	 * Holds extended information about servers (for instance online players)
@@ -48,11 +48,11 @@ public class MapTimer
 			{
 				if (Util.isEnabled)
 				{
-					for (File file : new File(Util.getJarLocation() + "services/map-tracking").listFiles())
+					for (File file : new File(Util.getJarLocation() + "services/server-tracking").listFiles())
 					{
 						if (file.isDirectory())
 						{
-							JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + file.getName() + "/serverInfo.json"));
+							JSONObject json = new JSONObject(Util.getFileContents("services/server-tracking/" + file.getName() + "/serverInfo.json"));
 
 							if (json.getBoolean("enabled"))
 							{
@@ -86,16 +86,16 @@ public class MapTimer
 
 									if (json.getInt("downtimeTimer") == 3)
 									{
-										Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), "The server has gone offline");
+										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has gone offline");
 									}
 
 									if (json.getInt("downtimeTimer") == 4320)
 									{
-										Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										json.put("enabled", false);
 									}
 
-									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 									continue;
 								}
 
@@ -130,13 +130,13 @@ public class MapTimer
 									}
 
 									EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
-									Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), embed);
+									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), embed);
 
-									for (File notificationFile : new File(Util.getJarLocation() + "services/map-tracking/" + file.getName()).listFiles())
+									for (File notificationFile : new File(Util.getJarLocation() + "services/server-tracking/" + file.getName()).listFiles())
 									{
 										if (!notificationFile.getName().equals("serverInfo.json"))
 										{
-											JSONObject notificationJson = new JSONObject(Util.getFileContents("services/map-tracking/" + file.getName() + "/" + notificationFile.getName()));
+											JSONObject notificationJson = new JSONObject(Util.getFileContents("services/server-tracking/" + file.getName() + "/" + notificationFile.getName()));
 											IUser user = null;
 
 											try
@@ -210,7 +210,7 @@ public class MapTimer
 
 								json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());
 								json.put("downtimeTimer", 0);
-								FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+								FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 								server.disconnect();
 							}
 						}
