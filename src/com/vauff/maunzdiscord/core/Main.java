@@ -50,7 +50,7 @@ public class Main
 
 			bot = new CsgoUpdateBot();
 			bot.connect("irc.freenode.net");
-			
+
 			if (Util.devMode)
 			{
 				bot.joinChannel("#maunztesting");

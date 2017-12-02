@@ -24,6 +24,7 @@ public class About extends AbstractCommand<MessageReceivedEvent>
 
 	/**
 	 * Gets the time at which the JAR-File got built
+	 *
 	 * @return The time in the format as defined by {@link Util#getTime()}
 	 */
 	private String getBuildDate()

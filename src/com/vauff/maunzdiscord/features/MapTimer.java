@@ -31,7 +31,9 @@ import sx.blah.discord.util.EmbedBuilder;
  */
 public class MapTimer
 {
-	/** Holds extended information about servers (for instance online players) */
+	/**
+	 * Holds extended information about servers (for instance online players)
+	 */
 	public static HashMap<Long, Set<String>> serverPlayers = new HashMap<Long, Set<String>>();
 
 	/**

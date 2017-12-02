@@ -596,7 +596,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					{
 						File folder = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/");
 						File file = new File(Util.getJarLocation() + "services/map-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
-						
+
 						file.delete();
 						folder.delete();
 						Util.msg(event.getChannel(), "Successfully deleted the map tracking service!");
@@ -613,11 +613,11 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
 					{
 						File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
-						
+
 						file.delete();
 						Util.msg(event.getChannel(), "Successfully deleted the CS:GO updates service!");
 					}
-					
+
 					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
 						Util.msg(event.getChannel(), "No problem, I won't delete the CS:GO updates service");

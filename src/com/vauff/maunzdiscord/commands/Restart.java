@@ -25,7 +25,7 @@ public class Restart extends AbstractCommand<MessageReceivedEvent>
 			{
 				command.add("-dev");
 			}
-			
+
 			Main.log.info("Maunz is restarting...");
 			new ProcessBuilder(command).start();
 			Main.bot.disconnect();

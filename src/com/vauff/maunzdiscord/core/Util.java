@@ -32,14 +32,18 @@ import sx.blah.discord.handle.obj.Permissions;
  */
 public class Util
 {
-	/** true if the bot is enabled, false otherwise */
+	/**
+	 * true if the bot is enabled, false otherwise
+	 */
 	public static boolean isEnabled = true;
 	/**
-	 *  true if the bot is in development mode, false otherwise.
-	 *  Used to determine the Discord API token and handle differences in the live and dev version
+	 * true if the bot is in development mode, false otherwise.
+	 * Used to determine the Discord API token and handle differences in the live and dev version
 	 */
 	public static boolean devMode;
-	/** The Discord API token of the bot, gets set in {@link Main#main(String[])} */
+	/**
+	 * The Discord API token of the bot, gets set in {@link Main#main(String[])}
+	 */
 	public static String token;
 
 	public static Connection sqlCon;
@@ -75,6 +79,7 @@ public class Util
 
 	/**
 	 * Gets the contents of a file as a string
+	 *
 	 * @param arg The path of the file, relative to {@link Util#getJarLocation()}
 	 * @return The content of the file
 	 * @throws IOException If {@link FileUtils#readFileToString(File)} throws an IOException
@@ -88,6 +93,7 @@ public class Util
 
 	/**
 	 * Gets the contents of a file as a string
+	 *
 	 * @param arg The path of the file
 	 * @return The content of the file
 	 * @throws IOException If {@link FileUtils#readFileToString(File)} throws an IOException
@@ -99,9 +105,10 @@ public class Util
 
 	/**
 	 * Formats the current time into a string
+	 *
 	 * @return The current time as a String in the format
-	 * 				EEEE MMMM d'st/nd/rd/th', yyyy, h:mm a z
-	 * 			as defined in {@link SimpleDateFormat}
+	 * EEEE MMMM d'st/nd/rd/th', yyyy, h:mm a z
+	 * as defined in {@link SimpleDateFormat}
 	 */
 	public static String getTime()
 	{
@@ -110,10 +117,11 @@ public class Util
 
 	/**
 	 * Formats the given time into a string
+	 *
 	 * @param The time in milliseconds to format as a string
 	 * @return The given time as a String in the format
-	 * 				EEEE MMMM d'st/nd/rd/th', yyyy, h:mm a z
-	 * 			as defined in {@link SimpleDateFormat}
+	 * EEEE MMMM d'st/nd/rd/th', yyyy, h:mm a z
+	 * as defined in {@link SimpleDateFormat}
 	 */
 	public static String getTime(long time)
 	{
@@ -126,9 +134,10 @@ public class Util
 
 	/**
 	 * Formats the uptime of the bot as a string
+	 *
 	 * @return The uptime of the bot formatted as
-	 * 				days:hours:minutes:seconds
-	 * 			with a leading zero if one of the time values is a single digit
+	 * days:hours:minutes:seconds
+	 * with a leading zero if one of the time values is a single digit
 	 */
 	public static String getUptime()
 	{
@@ -145,7 +154,8 @@ public class Util
 
 	/**
 	 * Concatenates a string array from a given start index and leavs out the part after the last space
-	 * @param args The array to concatenate
+	 *
+	 * @param args       The array to concatenate
 	 * @param startIndex The index to start concatenating the array
 	 * @return The concatenated array with the part after the last space left out
 	 */
@@ -163,6 +173,7 @@ public class Util
 
 	/**
 	 * Gets the ordinal of a number
+	 *
 	 * @param n The number
 	 * @return st for 1, 21, 31 etc; nd for 2, 22, 32, etc; rd for 3, 23, 33, etc; th for everything else
 	 */
@@ -176,14 +187,14 @@ public class Util
 		{
 			switch (n % 10)
 			{
-			case 1:
-				return "st";
-			case 2:
-				return "nd";
-			case 3:
-				return "rd";
-			default:
-				return "th";
+				case 1:
+					return "st";
+				case 2:
+					return "nd";
+				case 3:
+					return "rd";
+				default:
+					return "th";
 			}
 		}
 	}
@@ -202,6 +213,7 @@ public class Util
 
 	/**
 	 * Checks if the client ID of a user is equal to the client ID of Vauff
+	 *
 	 * @param user The user to check
 	 * @return true if the client IDs match and the given user is Vauff, false otherwise
 	 */
@@ -212,7 +224,8 @@ public class Util
 
 	/**
 	 * Checks if the client ID of a user is equal to the client ID of Vauff or the user is administrator in the supplied guild
-	 * @param user The user to check
+	 *
+	 * @param user  The user to check
 	 * @param guild The guild to check for permissions in
 	 * @return true if the client IDs match and the given user is Vauff or the user is a guild administrator, false otherwise
 	 */
@@ -237,6 +250,7 @@ public class Util
 
 	/**
 	 * Sends a message to a channel
+	 *
 	 * @param channel The channel
 	 * @param message The message
 	 */
@@ -254,6 +268,7 @@ public class Util
 
 	/**
 	 * Sends an embed to a channel
+	 *
 	 * @param channel The channel
 	 * @param message The embed
 	 */
@@ -271,9 +286,10 @@ public class Util
 
 	/**
 	 * Gets the average color from the picture found at a URL
+	 *
 	 * @param url The URL leading to the picture
 	 * @return The average color of the picture.
-	 * 			If the URL does not contain a picture an RGB color value of 0, 154, 255 will be returned
+	 * If the URL does not contain a picture an RGB color value of 0, 154, 255 will be returned
 	 */
 	public static Color averageColorFromURL(URL url)
 	{
