@@ -101,9 +101,9 @@ public class ServerTimer
 
 								String serverInfo = server.toString();
 								long timestamp = 0;
-								String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace(System.lineSeparator(), "");
-								int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
-								int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
+								String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace("\n", "");
+								int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace("\n", ""));
+								int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace("\n", ""));
 								String url = "http://158.69.59.239/mapimgs/" + map + ".jpg";
 
 								if (currentPlayers > maxPlayers)
