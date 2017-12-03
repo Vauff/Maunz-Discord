@@ -32,22 +32,29 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (!(json.getInt("downtimeTimer") >= 3))
 					{
-						String url = "http://158.69.59.239/mapimgs/" + json.getString("lastMap") + ".jpg";
+						if (!json.getString("lastMap").equals("N/A"))
+						{
+							String url = "http://158.69.59.239/mapimgs/" + json.getString("lastMap") + ".jpg";
 
-						try
-						{
-							Jsoup.connect(url).get();
-						}
-						catch (HttpStatusException e)
-						{
-							url = "https://image.gametracker.com/images/maps/160x120/csgo/" + json.getString("lastMap") + ".jpg";
-						}
-						catch (Exception e)
-						{
-						}
+							try
+							{
+								Jsoup.connect(url).get();
+							}
+							catch (HttpStatusException e)
+							{
+								url = "https://image.gametracker.com/images/maps/160x120/csgo/" + json.getString("lastMap") + ".jpg";
+							}
+							catch (Exception e)
+							{
+							}
 
-						EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(json.getLong("timestamp")).withThumbnail(url).withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
-						Util.msg(event.getChannel(), embed);
+							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(json.getLong("timestamp")).withThumbnail(url).withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+							Util.msg(event.getChannel(), embed);
+						}
+						else
+						{
+							Util.msg(event.getChannel(), "There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again");
+						}
 					}
 					else
 					{
