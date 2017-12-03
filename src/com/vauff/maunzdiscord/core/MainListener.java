@@ -90,21 +90,18 @@ public class MainListener
 		{
 			String cmdName = event.getMessage().getContent().split(" ")[0];
 
-			if ((Util.devMode && event.getChannel().getStringID().equals("252537749859598338") || event.getChannel().getStringID().equals("340273634331459594") || event.getChannel().isPrivate()) || (Util.devMode == false && !event.getChannel().getStringID().equals("252537749859598338")))
+			for (AbstractCommand<MessageReceivedEvent> cmd : commands)
 			{
-				for (AbstractCommand<MessageReceivedEvent> cmd : commands)
+				if (Util.isEnabled || cmd instanceof Enable || cmd instanceof Disable)
 				{
-					if (Util.isEnabled || cmd instanceof Enable || cmd instanceof Disable)
+					for (String s : cmd.getAliases())
 					{
-						for (String s : cmd.getAliases())
+						if (cmdName.equalsIgnoreCase(s))
 						{
-							if (cmdName.equalsIgnoreCase(s))
-							{
-								cmd.exe(event);
-							}
+							cmd.exe(event);
 						}
-
 					}
+
 				}
 			}
 
