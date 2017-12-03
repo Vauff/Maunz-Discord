@@ -290,9 +290,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				else if (states.get(event.getUser().getStringID()).startsWith("csgoupdatesadd.2"))
 				{
-					String[] statesSplit = states.get(event.getUser().getStringID()).split(",");
-					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
-					JSONObject json = new JSONObject();
 					boolean nonImportantUpdates = false;
 
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
@@ -300,10 +297,41 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						nonImportantUpdates = true;
 					}
 
+					IMessage m = event.getChannel().sendMessage(":heavy_plus_sign:  |  **Add New Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "Would you like to send notifications for early warnings? (SteamDB updates that might indicate an imminent CS:GO update)" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Yes" + System.lineSeparator() + "**`[2]`**  |  No");
+
+					waitForReaction(m.getStringID(), event.getUser().getStringID());
+					states.put(event.getUser().getStringID(), "csgoupdatesadd.3," + states.get(event.getUser().getStringID()).split(",")[1] + "," + nonImportantUpdates);
+					menuMessages.put(event.getUser().getStringID(), m.getStringID());
+					Util.addReactions(m, true, 2);
+
+					Executors.newScheduledThreadPool(1).schedule(() ->
+					{
+						if (!m.isDeleted())
+						{
+							m.delete();
+							states.remove(event.getUser().getStringID());
+							menuMessages.remove(event.getUser().getStringID());
+						}
+					}, 120, TimeUnit.SECONDS);
+				}
+
+				else if (states.get(event.getUser().getStringID()).startsWith("csgoupdatesadd.3"))
+				{
+					String[] statesSplit = states.get(event.getUser().getStringID()).split(",");
+					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
+					JSONObject json = new JSONObject();
+					boolean earlyWarnings = false;
+
+					if (event.getReaction().getEmoji().toString().equals("1⃣"))
+					{
+						earlyWarnings = true;
+					}
+
 					file.createNewFile();
 					json.put("enabled", true);
 					json.put("updateNotificationChannelID", Long.parseLong(statesSplit[1]));
-					json.put("nonImportantUpdates", nonImportantUpdates);
+					json.put("nonImportantUpdates", Boolean.valueOf(statesSplit[2]));
+					json.put("earlyWarnings", earlyWarnings);
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					Util.msg(event.getChannel(), "Successfully added the CS:GO Update Notifications service!");
 				}
@@ -362,7 +390,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					else if (service.equals("csgo-updates"))
 					{
 						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json")));
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**" + System.lineSeparator() + "**`[4]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesedit");
@@ -458,7 +486,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						json.put("enabled", !json.getBoolean("enabled"));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**" + System.lineSeparator() + "**`[4]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesedit");
@@ -481,7 +509,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						json.put("nonImportantUpdates", !json.getBoolean("nonImportantUpdates"));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**" + System.lineSeparator() + "**`[4]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesedit");
@@ -500,6 +528,29 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("3⃣"))
+					{
+						json.put("earlyWarnings", !json.getBoolean("earlyWarnings"));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**" + System.lineSeparator() + "**`[4]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+
+						waitForReaction(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "csgoupdatesedit");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+						Util.addReactions(m, true, 3);
+
+						Executors.newScheduledThreadPool(1).schedule(() ->
+						{
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
+					}
+
+					else if (event.getReaction().getEmoji().toString().equals("4️4⃣"))
 					{
 						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send update notifications in");
 
@@ -835,7 +886,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					json.put("updateNotificationChannelID", Long.parseLong(message));
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**" + System.lineSeparator() + "**`[4]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
 
 					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 					states.put(event.getAuthor().getStringID(), "csgoupdatesedit");
