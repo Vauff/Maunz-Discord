@@ -20,6 +20,8 @@ import org.apache.commons.io.FileUtils;
 
 import com.vdurmont.emoji.EmojiManager;
 
+import org.json.JSONObject;
+
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -203,7 +205,9 @@ public class Util
 	{
 		try
 		{
-			sqlCon = DriverManager.getConnection("jdbc:mysql://158.69.59.239:3306/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", "Vauff", Passwords.database);
+			JSONObject json = new JSONObject(Util.getFileContents("config.json"));
+
+			sqlCon = DriverManager.getConnection("jdbc:mysql://158.69.59.239:3306/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", "Vauff", json.getString("databasePassword"));
 		}
 		catch (SQLException e)
 		{

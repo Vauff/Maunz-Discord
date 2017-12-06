@@ -15,6 +15,8 @@ import com.vauff.maunzdiscord.features.Intelligence;
 import com.vauff.maunzdiscord.features.ServerTimer;
 import com.vauff.maunzdiscord.features.StatsTimer;
 
+import org.json.JSONObject;
+
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
@@ -36,28 +38,53 @@ public class MainListener
 	 */
 	public MainListener()
 	{
-		commands.add(new About());
-		commands.add(new AccInfo());
-		commands.add(new Benchmark());
-		commands.add(new Changelog());
-		commands.add(new Disable());
-		commands.add(new Enable());
-		commands.add(new Help());
-		commands.add(new Intelligence());
-		commands.add(new IsItDown());
-		commands.add(new Map());
-		commands.add(new Notify());
-		commands.add(new Ping());
-		commands.add(new Players());
-		commands.add(new Quote());
-		commands.add(new Reddit());
-		commands.add(new Restart());
-		commands.add(new Say());
-		commands.add(new Services());
-		commands.add(new Source());
-		commands.add(new Steam());
-		commands.add(new Stop());
-		commands.add(new Trello());
+		try
+		{
+			JSONObject json = new JSONObject(Util.getFileContents("config.json"));
+
+			commands.add(new About());
+			commands.add(new AccInfo());
+			commands.add(new Benchmark());
+			commands.add(new Changelog());
+			commands.add(new Disable());
+			commands.add(new Enable());
+			commands.add(new Help());
+			commands.add(new IsItDown());
+			commands.add(new Map());
+			commands.add(new Notify());
+			commands.add(new Ping());
+			commands.add(new Players());
+			commands.add(new Reddit());
+			commands.add(new Restart());
+			commands.add(new Say());
+			commands.add(new Services());
+			commands.add(new Source());
+			commands.add(new Steam());
+			commands.add(new Stop());
+			commands.add(new Trello());
+
+			if (!json.getString("databasePassword").equals(""))
+			{
+				commands.add(new Quote());
+			}
+			else
+			{
+				Main.log.warn("The quote command is disabled due to databasePassword not being supplied in the config.json");
+			}
+
+			if (!json.getString("cleverbotAPIKey").equals(""))
+			{
+				commands.add(new Intelligence());
+			}
+			else
+			{
+				Main.log.warn("Maunz intelligence is disabled due to cleverbotAPIKey not being supplied in the config.json");
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
 	}
 
 	@EventSubscriber
