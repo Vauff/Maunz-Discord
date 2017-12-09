@@ -99,6 +99,11 @@ public class ServerTimer
 									continue;
 								}
 
+								if (json.getInt("downtimeTimer") >= 3)
+								{
+									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has come back online");
+								}
+
 								String serverInfo = server.toString();
 								long timestamp = 0;
 								String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace("\n", "");
