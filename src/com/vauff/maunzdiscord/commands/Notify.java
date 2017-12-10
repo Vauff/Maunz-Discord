@@ -1,7 +1,6 @@
 package com.vauff.maunzdiscord.commands;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +23,7 @@ import sx.blah.discord.handle.obj.IMessage;
 public class Notify extends AbstractCommand<MessageReceivedEvent>
 {
 	private static HashMap<String, String> confirmationMaps = new HashMap<String, String>();
+	private static HashMap<String, String> confirmationSuggestionMaps = new HashMap<String, String>();
 	private static HashMap<String, String> confirmationMessages = new HashMap<String, String>();
 
 	@Override
@@ -91,7 +91,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+								IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 
 								waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 								confirmationMaps.put(event.getAuthor().getStringID(), "wipe");
@@ -108,7 +108,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										confirmationMaps.remove(event.getAuthor().getStringID());
 										confirmationMessages.remove(event.getAuthor().getStringID());
 									}
-								}, 60, TimeUnit.SECONDS);
+								}, 120, TimeUnit.SECONDS);
 							}
 						}
 						else
@@ -192,19 +192,23 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 										if (mapSuggestion.equals(""))
 										{
-											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+											confirmationMaps.put(event.getAuthor().getStringID(), args[1]);
+											confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
+											m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
+											Thread.sleep(250);
+											m.addReaction(EmojiManager.getForAlias(":x:"));
 										}
 										else
 										{
-											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel. This message will auto expire in 1 minute if you do not respond");
+											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to add" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + args[1].replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
+											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+											confirmationMaps.put(event.getAuthor().getStringID(), args[1]);
+											confirmationSuggestionMaps.put(event.getAuthor().getStringID(), mapSuggestion);
+											confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
+											Util.addReactions(m, true, 2);
 										}
-
-										waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-										confirmationMaps.put(event.getAuthor().getStringID(), args[1]);
-										confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
-										m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
-										Thread.sleep(250);
-										m.addReaction(EmojiManager.getForAlias(":x:"));
 
 										Executors.newScheduledThreadPool(1).schedule(() ->
 										{
@@ -214,7 +218,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 												confirmationMaps.remove(event.getAuthor().getStringID());
 												confirmationMessages.remove(event.getAuthor().getStringID());
 											}
-										}, 60, TimeUnit.SECONDS);
+										}, 120, TimeUnit.SECONDS);
 									}
 								}
 								else
@@ -244,31 +248,70 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	}
 
 	@Override
-	public boolean confirmable()
+	public void onReactionAdd(ReactionAddEvent event) throws Exception
 	{
-		return true;
-	}
-
-	@Override
-	public void confirm(ReactionAddEvent event) throws IOException, InterruptedException
-	{
-		String guildID = event.getGuild().getStringID();
-		String fileName = "services/server-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
-		File file = new File(Util.getJarLocation() + fileName);
-		JSONObject json = null;
-
 		if (confirmationMessages.containsKey(event.getUser().getStringID()))
 		{
 			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())))
 			{
-				if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+				String guildID = event.getGuild().getStringID();
+				String fileName = "services/server-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
+				File file = new File(Util.getJarLocation() + fileName);
+				JSONObject json = null;
+
+				if (event.getReaction().getEmoji().toString().equals("✅"))
 				{
-					FileUtils.forceDelete(file);
-					Util.msg(event.getChannel(), ":white_check_mark:  |  Successfully wiped all of your map notifications!");
+					if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+					{
+						FileUtils.forceDelete(file);
+						Util.msg(event.getChannel(), "Successfully wiped all of your map notifications!");
+					}
+					else
+					{
+						Util.msg(event.getChannel(), "Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+
+						if (file.exists())
+						{
+							json = new JSONObject(Util.getFileContents(file));
+							json.put("lastName", event.getUser().getName());
+							json.getJSONArray("notifications").put(confirmationMaps.get(event.getUser().getStringID()));
+							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+						}
+						else
+						{
+							file.createNewFile();
+							json = new JSONObject();
+							json.put("lastName", event.getUser().getName());
+							json.put("notifications", new JSONArray());
+							json.getJSONArray("notifications").put(confirmationMaps.get(event.getUser().getStringID()));
+							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+						}
+					}
+
+					confirmationMaps.remove(event.getUser().getStringID());
+					confirmationMessages.remove(event.getUser().getStringID());
+					Thread.sleep(2000);
 				}
-				else
+
+				else if (event.getReaction().getEmoji().toString().equals("❌"))
 				{
-					Util.msg(event.getChannel(), ":white_check_mark:  |  Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+					if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+					{
+						Util.msg(event.getChannel(), "No problem, I won't wipe all your map notifications");
+					}
+					else
+					{
+						Util.msg(event.getChannel(), "No problem, I won't add **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
+					}
+
+					confirmationMaps.remove(event.getUser().getStringID());
+					confirmationMessages.remove(event.getUser().getStringID());
+					Thread.sleep(2000);
+				}
+
+				else if (event.getReaction().getEmoji().toString().equals("1⃣"))
+				{
+					Util.msg(event.getChannel(), "Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
 
 					if (file.exists())
 					{
@@ -288,32 +331,51 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					}
 				}
 
-				confirmationMaps.remove(event.getUser().getStringID());
-				confirmationMessages.remove(event.getUser().getStringID());
-				Thread.sleep(2000);
-			}
-		}
-	}
-
-	@Override
-	public void deny(ReactionAddEvent event) throws InterruptedException
-	{
-		if (confirmationMessages.containsKey(event.getUser().getStringID()))
-		{
-			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())))
-			{
-				if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
+				else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 				{
-					Util.msg(event.getChannel(), ":x:  |  No problem, I won't wipe all your map notifications");
-				}
-				else
-				{
-					Util.msg(event.getChannel(), ":x:  |  No problem, I won't add **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
-				}
+					boolean mapSet = false;
 
-				confirmationMaps.remove(event.getUser().getStringID());
-				confirmationMessages.remove(event.getUser().getStringID());
-				Thread.sleep(2000);
+					if (file.exists())
+					{
+						json = new JSONObject(Util.getFileContents(file));
+
+						for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+						{
+							String mapNotification = json.getJSONArray("notifications").getString(i);
+
+							if (mapNotification.equalsIgnoreCase(confirmationSuggestionMaps.get(event.getUser().getStringID())))
+							{
+								mapSet = true;
+							}
+						}
+					}
+
+					if (!mapSet)
+					{
+						Util.msg(event.getChannel(), "Adding **" + confirmationSuggestionMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+
+						if (file.exists())
+						{
+							json = new JSONObject(Util.getFileContents(file));
+							json.put("lastName", event.getUser().getName());
+							json.getJSONArray("notifications").put(confirmationSuggestionMaps.get(event.getUser().getStringID()));
+							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+						}
+						else
+						{
+							file.createNewFile();
+							json = new JSONObject();
+							json.put("lastName", event.getUser().getName());
+							json.put("notifications", new JSONArray());
+							json.getJSONArray("notifications").put(confirmationSuggestionMaps.get(event.getUser().getStringID()));
+							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+						}
+					}
+					else
+					{
+						Util.msg(event.getChannel(), "You already have this map added to your map notifications!");
+					}
+				}
 			}
 		}
 	}

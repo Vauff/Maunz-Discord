@@ -68,24 +68,6 @@ public abstract class AbstractCommand<M extends MessageReceivedEvent>
 	 */
 	public void onReactionAdd(ReactionAddEvent event) throws Exception
 	{
-		if (confirmable())
-		{
-			try
-			{
-				if (event.getReaction().getEmoji().toString().equals("✅"))
-				{
-					confirm(event);
-				}
-				else if (event.getReaction().getEmoji().toString().equals("❌"))
-				{
-					deny(event);
-				}
-			}
-			catch (Exception e)
-			{
-				Main.log.error("", e);
-			}
-		}
 	}
 
 	/**
@@ -94,26 +76,6 @@ public abstract class AbstractCommand<M extends MessageReceivedEvent>
 	 * @param event The event holding information about the reply
 	 */
 	public void onMessageReceived(MessageReceivedEvent event) throws Exception
-	{
-	}
-
-	/**
-	 * Gets called when {@link AbstractCommand#confirmable()} is set to true and the user reacts with a :white_check_mark: emoji (✅)
-	 *
-	 * @param event The event holding information about the added reaction
-	 * @throws Exception If an exception gets thrown by any implementing methods
-	 */
-	public void confirm(ReactionAddEvent event) throws Exception
-	{
-	}
-
-	/**
-	 * Gets called when {@link AbstractCommand#confirmable()} is set to true and the user reacts with a :x: emoji (❌)
-	 *
-	 * @param event The event holding information about the added reaction
-	 * @throws Exception If an exception gets thrown by any implementing methods
-	 */
-	public void deny(ReactionAddEvent event) throws Exception
 	{
 	}
 }
