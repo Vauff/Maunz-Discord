@@ -29,9 +29,11 @@ import sx.blah.discord.util.EmbedBuilder;
 /**
  * A timer to send notifications of maps currently being played on given servers
  */
-public class MapTimer
+public class ServerTimer
 {
-	/** Holds extended information about servers (for instance online players) */
+	/**
+	 * Holds extended information about servers (for instance online players)
+	 */
 	public static HashMap<Long, Set<String>> serverPlayers = new HashMap<Long, Set<String>>();
 
 	/**
@@ -46,11 +48,11 @@ public class MapTimer
 			{
 				if (Util.isEnabled)
 				{
-					for (File file : new File(Util.getJarLocation() + "services/map-tracking").listFiles())
+					for (File file : new File(Util.getJarLocation() + "services/server-tracking").listFiles())
 					{
 						if (file.isDirectory())
 						{
-							JSONObject json = new JSONObject(Util.getFileContents("services/map-tracking/" + file.getName() + "/serverInfo.json"));
+							JSONObject json = new JSONObject(Util.getFileContents("services/server-tracking/" + file.getName() + "/serverInfo.json"));
 
 							if (json.getBoolean("enabled"))
 							{
@@ -66,10 +68,9 @@ public class MapTimer
 									}
 									catch (NullPointerException e)
 									{
-										HashMap<String, SteamPlayer> players = server.getPlayers();
 										Set<String> keySet = new HashSet<String>();
 
-										for (SteamPlayer player : new ArrayList<SteamPlayer>(players.values()))
+										for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
 										{
 											keySet.add(player.getName());
 										}
@@ -84,24 +85,29 @@ public class MapTimer
 
 									if (json.getInt("downtimeTimer") == 3)
 									{
-										Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), "The server has gone offline");
+										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has gone offline");
 									}
 
 									if (json.getInt("downtimeTimer") == 4320)
 									{
-										Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										json.put("enabled", false);
 									}
 
-									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 									continue;
+								}
+
+								if (json.getInt("downtimeTimer") >= 3)
+								{
+									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has come back online");
 								}
 
 								String serverInfo = server.toString();
 								long timestamp = 0;
-								String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace(System.lineSeparator(), "");
-								int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
-								int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace(System.lineSeparator(), ""));
+								String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace("\n", "");
+								int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace("\n", ""));
+								int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace("\n", ""));
 								String url = "http://158.69.59.239/mapimgs/" + map + ".jpg";
 
 								if (currentPlayers > maxPlayers)
@@ -127,14 +133,16 @@ public class MapTimer
 									{
 									}
 
-									EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
-									Util.msg(Main.client.getChannelByID(json.getLong("mapTrackingChannelID")), embed);
+									EmbedObject channelEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+									EmbedObject pmEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nGuild Name: **" + Main.client.getGuildByID(Long.parseLong(file.getName())).getName() + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 
-									for (File notificationFile : new File(Util.getJarLocation() + "services/map-tracking/" + file.getName()).listFiles())
+									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), channelEmbed);
+
+									for (File notificationFile : new File(Util.getJarLocation() + "services/server-tracking/" + file.getName()).listFiles())
 									{
 										if (!notificationFile.getName().equals("serverInfo.json"))
 										{
-											JSONObject notificationJson = new JSONObject(Util.getFileContents("services/map-tracking/" + file.getName() + "/" + notificationFile.getName()));
+											JSONObject notificationJson = new JSONObject(Util.getFileContents("services/server-tracking/" + file.getName() + "/" + notificationFile.getName()));
 											IUser user = null;
 
 											try
@@ -157,7 +165,7 @@ public class MapTimer
 												{
 													try
 													{
-														Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+														Util.msg(Main.client.getOrCreatePMChannel(user), pmEmbed);
 													}
 													catch (NullPointerException e)
 													{
@@ -208,7 +216,7 @@ public class MapTimer
 
 								json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());
 								json.put("downtimeTimer", 0);
-								FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/map-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+								FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 								server.disconnect();
 							}
 						}

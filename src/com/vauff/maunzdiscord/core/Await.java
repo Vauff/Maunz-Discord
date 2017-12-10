@@ -10,17 +10,17 @@ public class Await
 	private String id;
 	private AbstractCommand<? extends MessageReceivedEvent> command;
 	private boolean dontRemove = false;
-	
+
 	/**
 	 * @param anID An ID of a user who triggered the message or a message to be removed later on
-	 * @param cmd The command with which to continue execution upon adding a reaction
+	 * @param cmd  The command with which to continue execution upon adding a reaction
 	 */
 	public Await(String anID, AbstractCommand<? extends MessageReceivedEvent> cmd)
 	{
 		id = anID;
 		command = cmd;
 	}
-	
+
 	/**
 	 * @return The ID of the user who triggered the message or of the message to be removed later on
 	 */
@@ -28,7 +28,7 @@ public class Await
 	{
 		return id;
 	}
-	
+
 	/**
 	 * @return The command with which to continue execution upon adding a reaction
 	 */
@@ -36,7 +36,7 @@ public class Await
 	{
 		return command;
 	}
-	
+
 	/**
 	 * Set this instance to not be removed from {@link AbstractCommand#AWAITED}
 	 */
@@ -44,7 +44,7 @@ public class Await
 	{
 		dontRemove = true;
 	}
-	
+
 	/**
 	 * @return true if this instance should be removed from {@link AbstractCommand#AWAITED}, false otherwise
 	 */

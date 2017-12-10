@@ -6,5 +6,6 @@
 /*.iml
 /maunzdiscord.log
 /maunzdiscord-old.log
-/src/com/vauff/maunzdiscord/core/Passwords.java
 /target/
+/out/
+/resources/META-INF/

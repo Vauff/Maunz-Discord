@@ -56,13 +56,13 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 					else if (statusRaw.contains(","))
 					{
 						String uuid = status[0];
-						
+
 						uuid = new StringBuilder(uuid).insert(uuid.length() - 24, "-").toString();
 						uuid = new StringBuilder(uuid).insert(uuid.length() - 20, "-").toString();
 						uuid = new StringBuilder(uuid).insert(uuid.length() - 16, "-").toString();
 						uuid = new StringBuilder(uuid).insert(uuid.length() - 12, "-").toString();
 
-						String headURL = "http://cravatar.eu/helmavatar/" + status[1] +"/120";
+						String headURL = "http://cravatar.eu/helmavatar/" + status[1] + "/120";
 						EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(headURL))).withThumbnail(headURL).appendField("Name", status[1], true).withFooterText("Powered by axis.iaero.me").appendField("Account Status", "Premium", true).appendField("Migrated", StringUtils.capitalize(status[2]), true).appendField("UUID", uuid, true).appendField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true).appendField("Raw Skin", "https://minotar.net/skin/" + status[1], true).build();
 						Util.msg(event.getChannel(), embed);
 					}

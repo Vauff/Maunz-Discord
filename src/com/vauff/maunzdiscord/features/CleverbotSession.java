@@ -7,7 +7,9 @@ import com.google.code.chatterbotapi.ChatterBotFactory;
 import com.google.code.chatterbotapi.ChatterBotSession;
 import com.google.code.chatterbotapi.ChatterBotType;
 
-import com.vauff.maunzdiscord.core.Passwords;
+import com.vauff.maunzdiscord.core.Util;
+
+import org.json.JSONObject;
 
 public class CleverbotSession
 {
@@ -15,8 +17,9 @@ public class CleverbotSession
 
 	public CleverbotSession() throws Exception
 	{
+		JSONObject json = new JSONObject(Util.getFileContents("config.json"));
 		ChatterBotFactory factory = new ChatterBotFactory();
-		ChatterBot bot = factory.create(ChatterBotType.CLEVERBOT, Passwords.cleverBotAPIKey);
+		ChatterBot bot = factory.create(ChatterBotType.CLEVERBOT, json.getString("cleverbotAPIKey"));
 
 		session = bot.createSession(Locale.ENGLISH);
 	}
