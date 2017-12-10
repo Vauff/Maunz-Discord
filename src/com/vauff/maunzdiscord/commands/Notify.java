@@ -71,16 +71,23 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								StringBuilder mapsBuilder = new StringBuilder();
-
-								for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+								if (json.getJSONArray("notifications").length() != 0)
 								{
-									mapsBuilder = mapsBuilder.append(json.getJSONArray("notifications").getString(i) + " | ");
+									StringBuilder mapsBuilder = new StringBuilder();
+
+									for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+									{
+										mapsBuilder = mapsBuilder.append(json.getJSONArray("notifications").getString(i) + " | ");
+									}
+
+									String maps = mapsBuilder.toString().substring(0, mapsBuilder.toString().length() - 3);
+
+									Util.msg(event.getChannel(), "You currently have notifications set for the following maps: **" + maps.toString().replace("_", "\\_") + "**");
 								}
-
-								String maps = mapsBuilder.toString().substring(0, mapsBuilder.toString().length() - 3);
-
-								Util.msg(event.getChannel(), "You currently have notifications set for the following maps: **" + maps.toString().replace("_", "\\_") + "**");
+								else
+								{
+									Util.msg(event.getChannel(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
+								}
 							}
 						}
 						else if (args[1].equalsIgnoreCase("wipe"))
