@@ -68,10 +68,9 @@ public class ServerTimer
 									}
 									catch (NullPointerException e)
 									{
-										HashMap<String, SteamPlayer> players = server.getPlayers();
 										Set<String> keySet = new HashSet<String>();
 
-										for (SteamPlayer player : new ArrayList<SteamPlayer>(players.values()))
+										for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
 										{
 											keySet.add(player.getName());
 										}

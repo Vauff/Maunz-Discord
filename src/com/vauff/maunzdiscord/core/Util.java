@@ -120,7 +120,7 @@ public class Util
 	/**
 	 * Formats the given time into a string
 	 *
-	 * @param The time in milliseconds to format as a string
+	 * @param time The time in milliseconds to format as a string
 	 * @return The given time as a String in the format
 	 * EEEE MMMM d'st/nd/rd/th', yyyy, h:mm a z
 	 * as defined in {@link SimpleDateFormat}
@@ -137,21 +137,61 @@ public class Util
 	/**
 	 * Formats the uptime of the bot as a string
 	 *
-	 * @return The uptime of the bot formatted as
-	 * days:hours:minutes:seconds
-	 * with a leading zero if one of the time values is a single digit
+	 * @return The uptime of the bot formatted as the 2 top most values
 	 */
 	public static String getUptime()
 	{
 		MainListener.uptime.split();
 
-		String[] uptimeraw = MainListener.uptime.toSplitString().split("\\.");
-		int hours = Integer.parseInt(uptimeraw[0].split(":")[0]);
-		int days = (hours / 24) >> 0;
+		String uptimeRaw = MainListener.uptime.toSplitString().split("\\.")[0];
+		String response = "";
+		String secondText = "seconds";
+		String minuteText = "minutes";
+		String hourText = "hours";
+		String dayText = "days";
+		int seconds = Integer.parseInt(uptimeRaw.split(":")[2]);
+		int minutes = Integer.parseInt(uptimeRaw.split(":")[1]);
+		int hours = Integer.parseInt(uptimeRaw.split(":")[0]) % 24;
+		int days = (Integer.parseInt(uptimeRaw.split(":")[0]) / 24);
 
-		hours = hours % 24;
+		if (seconds == 1)
+		{
+			secondText = "second";
+		}
 
-		return days + ":" + (hours < 10 ? "0" + hours : hours) + ":" + uptimeraw[0].split(":")[1] + ":" + uptimeraw[0].split(":")[2];
+		if (minutes == 1)
+		{
+			minuteText = "minute";
+		}
+
+		if (hours == 1)
+		{
+			hourText = "hour";
+		}
+
+		if (days == 1)
+		{
+			dayText = "day";
+		}
+
+		if (days >= 1)
+		{
+			return days + " " + dayText + ", " + hours + " " + hourText;
+		}
+
+		else if (hours >= 1)
+		{
+			return hours + " " + hourText + ", " + minutes + " " + minuteText;
+		}
+
+		else if (minutes >= 1)
+		{
+			return minutes + " " + minuteText + ", " + seconds + " " + secondText;
+		}
+		else
+		{
+			return seconds + " " + secondText;
+		}
 	}
 
 	/**
