@@ -369,12 +369,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					if (service.equals("server-tracking"))
 					{
 						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json")));
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[4]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "servertrackingedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addReactions(m, true, 3);
+						Util.addReactions(m, true, 4);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -395,7 +395,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addReactions(m, true, 3);
+						Util.addReactions(m, true, 4);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -419,12 +419,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						json.put("enabled", !json.getBoolean("enabled"));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[4]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "servertrackingedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addReactions(m, true, 3);
+						Util.addReactions(m, true, 4);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -438,6 +438,29 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
+					{
+						json.put("mapCharacterLimit", !json.getBoolean("mapCharacterLimit"));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+
+						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[4]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
+
+						waitForReaction(m.getStringID(), event.getUser().getStringID());
+						states.put(event.getUser().getStringID(), "servertrackingedit");
+						menuMessages.put(event.getUser().getStringID(), m.getStringID());
+						Util.addReactions(m, true, 4);
+
+						Executors.newScheduledThreadPool(1).schedule(() ->
+						{
+							if (!m.isDeleted())
+							{
+								m.delete();
+								states.remove(event.getUser().getStringID());
+								menuMessages.remove(event.getUser().getStringID());
+							}
+						}, 120, TimeUnit.SECONDS);
+					}
+
+					else if (event.getReaction().getEmoji().toString().equals("3⃣"))
 					{
 						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)");
 
@@ -456,7 +479,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}, 120, TimeUnit.SECONDS);
 					}
 
-					else if (event.getReaction().getEmoji().toString().equals("3⃣"))
+					else if (event.getReaction().getEmoji().toString().equals("4⃣"))
 					{
 						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "Please mention the channel you would like to send server tracking updates in");
 
@@ -491,7 +514,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addReactions(m, true, 3);
+						Util.addReactions(m, true, 4);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -514,7 +537,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addReactions(m, true, 3);
+						Util.addReactions(m, true, 4);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -537,7 +560,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
 						states.put(event.getUser().getStringID(), "csgoupdatesedit");
 						menuMessages.put(event.getUser().getStringID(), m.getStringID());
-						Util.addReactions(m, true, 3);
+						Util.addReactions(m, true, 4);
 
 						Executors.newScheduledThreadPool(1).schedule(() ->
 						{
@@ -780,6 +803,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					json.put("serverPort", port);
 					json.put("enabled", true);
 					json.put("timestamp", 1);
+					json.put("mapCharacterLimit", false);
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					Util.msg(event.getChannel(), "Successfully added the Server Tracking service!");
 				}
@@ -891,7 +915,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 					states.put(event.getAuthor().getStringID(), "csgoupdatesedit");
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					Util.addReactions(m, true, 3);
+					Util.addReactions(m, true, 4);
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
@@ -955,12 +979,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					json.put("serverPort", port);
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[4]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 					states.put(event.getAuthor().getStringID(), "servertrackingedit");
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					Util.addReactions(m, true, 3);
+					Util.addReactions(m, true, 4);
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
@@ -1019,12 +1043,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					json.put("serverTrackingChannelID", Long.parseLong(message));
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[3]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
+					IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[4]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 					waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 					states.put(event.getAuthor().getStringID(), "servertrackingedit");
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					Util.addReactions(m, true, 3);
+					Util.addReactions(m, true, 4);
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{

@@ -30,6 +30,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
 		String[] args = event.getMessage().getContent().split(" ");
+		String argument;
 		String guildID = event.getGuild().getStringID();
 		File file = new File(Util.getJarLocation() + "services/server-tracking/" + guildID + "/" + event.getAuthor().getStringID() + ".json");
 		File serverInfoFile = new File(Util.getJarLocation() + "services/server-tracking/" + guildID + "/serverInfo.json");
@@ -57,13 +58,22 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					if (args[1].equals(""))
+					if (serverInfoJson.getBoolean("mapCharacterLimit"))
+					{
+						argument = StringUtils.substring(event.getMessage().getContent().split(" ")[1], 0, 31);
+					}
+					else
+					{
+						argument = event.getMessage().getContent().split(" ")[1];
+					}
+
+					if (argument.equals(""))
 					{
 						Util.msg(event.getChannel(), "Please keep to one space between arguments to prevent breakage");
 					}
 					else
 					{
-						if (args[1].equalsIgnoreCase("list"))
+						if (argument.equalsIgnoreCase("list"))
 						{
 							if (!file.exists())
 							{
@@ -90,7 +100,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								}
 							}
 						}
-						else if (args[1].equalsIgnoreCase("wipe"))
+						else if (argument.equalsIgnoreCase("wipe"))
 						{
 							if (!file.exists())
 							{
@@ -130,7 +140,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								{
 									String mapNotification = json.getJSONArray("notifications").getString(i);
 
-									if (mapNotification.equalsIgnoreCase(args[1]))
+									if (mapNotification.equalsIgnoreCase(argument))
 									{
 										mapSet = true;
 										index = i;
@@ -143,7 +153,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							{
 								String map = serverInfoJson.getJSONArray("mapDatabase").getString(i);
 
-								if (map.equalsIgnoreCase(args[1]))
+								if (map.equalsIgnoreCase(argument))
 								{
 									mapExists = true;
 								}
@@ -151,24 +161,24 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 							if (mapSet)
 							{
-								Util.msg(event.getChannel(), "Removing **" + args[1].replace("_", "\\_") + "** from your map notifications!");
+								Util.msg(event.getChannel(), "Removing **" + argument.replace("_", "\\_") + "** from your map notifications!");
 								json.put("lastName", event.getAuthor().getName());
 								json.getJSONArray("notifications").remove(index);
 								FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 							}
 							else
 							{
-								if (!args[1].contains("﻿"))
+								if (!argument.contains("﻿"))
 								{
 									if (mapExists)
 									{
-										Util.msg(event.getChannel(), "Adding **" + args[1].replace("_", "\\_") + "** to your map notifications!");
+										Util.msg(event.getChannel(), "Adding **" + argument.replace("_", "\\_") + "** to your map notifications!");
 
 										if (file.exists())
 										{
 											json = new JSONObject(Util.getFileContents(file));
 											json.put("lastName", event.getAuthor().getName());
-											json.getJSONArray("notifications").put(args[1]);
+											json.getJSONArray("notifications").put(argument);
 											FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 										}
 										else
@@ -177,7 +187,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 											json = new JSONObject();
 											json.put("lastName", event.getAuthor().getName());
 											json.put("notifications", new JSONArray());
-											json.getJSONArray("notifications").put(args[1]);
+											json.getJSONArray("notifications").put(argument);
 											FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 										}
 									}
@@ -190,7 +200,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										{
 											String map = serverInfoJson.getJSONArray("mapDatabase").getString(i);
 
-											if (StringUtils.containsIgnoreCase(map, args[1]))
+											if (StringUtils.containsIgnoreCase(map, argument))
 											{
 												mapSuggestion = map;
 												break;
@@ -199,9 +209,9 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 										if (mapSuggestion.equals(""))
 										{
-											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+											m = event.getChannel().sendMessage("The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-											confirmationMaps.put(event.getAuthor().getStringID(), args[1]);
+											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 											m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
 											Thread.sleep(250);
@@ -209,9 +219,9 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										}
 										else
 										{
-											m = event.getChannel().sendMessage("The map **" + args[1].replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to add" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + args[1].replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
+											m = event.getChannel().sendMessage("The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to add" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + argument.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
 											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-											confirmationMaps.put(event.getAuthor().getStringID(), args[1]);
+											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationSuggestionMaps.put(event.getAuthor().getStringID(), mapSuggestion);
 											confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 											Util.addReactions(m, true, 2);
