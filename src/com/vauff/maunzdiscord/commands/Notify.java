@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -195,10 +197,19 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 									{
 										String mapSuggestion = "";
 										IMessage m;
+										ArrayList<String> mapDatabase = new ArrayList<String>();
 
 										for (int i = 0; i < serverInfoJson.getJSONArray("mapDatabase").length(); i++)
 										{
-											String map = serverInfoJson.getJSONArray("mapDatabase").getString(i);
+											mapDatabase.add(serverInfoJson.getJSONArray("mapDatabase").getString(i));
+										}
+
+										Collections.sort(mapDatabase, String.CASE_INSENSITIVE_ORDER);
+										Collections.reverse(mapDatabase);
+
+										for (int i = 0; i < mapDatabase.size(); i++)
+										{
+											String map = mapDatabase.get(i);
 
 											if (StringUtils.containsIgnoreCase(map, argument))
 											{

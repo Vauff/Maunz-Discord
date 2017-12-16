@@ -37,6 +37,11 @@ public class ServerTimer
 	public static HashMap<Long, Set<String>> serverPlayers = new HashMap<Long, Set<String>>();
 
 	/**
+	 * Holds SourceServers that have already been queried during a session to prevent querying the same server twice in one session
+	 */
+	public static HashMap<String, SourceServer> servers = new HashMap<String, SourceServer>();
+
+	/**
 	 * Checks the servers in {@link Util#getJarLocation()}/services/map-tracking for new maps being played and sends them to a channel
 	 * as well as notifying users that set up a notification for that map
 	 */
@@ -60,7 +65,15 @@ public class ServerTimer
 
 								try
 								{
-									server.initialize();
+									if (servers.containsKey(json.getString("serverIP") + ":" + json.getInt("serverPort")))
+									{
+										server = servers.get(json.getString("serverIP") + ":" + json.getInt("serverPort"));
+									}
+									else
+									{
+										server.initialize();
+										servers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server);
+									}
 
 									try
 									{
@@ -221,6 +234,8 @@ public class ServerTimer
 							}
 						}
 					}
+
+					servers.clear();
 				}
 			}
 			catch (Exception e)
