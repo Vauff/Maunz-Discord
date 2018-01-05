@@ -96,7 +96,7 @@ public class ServerTimer
 									Main.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
 									json.put("downtimeTimer", json.getInt("downtimeTimer") + 1);
 
-									if (json.getInt("downtimeTimer") == 3)
+									if (json.getInt("downtimeTimer") == json.getInt("failedConnectionsThreshold"))
 									{
 										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has gone offline");
 									}

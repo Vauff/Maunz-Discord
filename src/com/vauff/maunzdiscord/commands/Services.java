@@ -804,6 +804,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					json.put("enabled", true);
 					json.put("timestamp", 1);
 					json.put("mapCharacterLimit", false);
+					json.put("failedConnectionsThreshold", 3);
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					Util.msg(event.getChannel(), "Successfully added the Server Tracking service!");
 				}
