@@ -7,8 +7,9 @@ import com.vauff.maunzdiscord.core.Main;
  */
 public class StatsTimer
 {
+	private static boolean showingGuilds = false;
 	/**
-	 * Updates the bot's playing text to show the amount of guilds the bot is on and how many users those guilds have
+	 * Updates the bot's playing text to show the amount of guilds the bot is on and the invite link to the official Maunz Discord server
 	 */
 	public static Runnable timer = new Runnable()
 	{
@@ -16,7 +17,16 @@ public class StatsTimer
 		{
 			try
 			{
-				Main.client.changePlayingText(Main.client.getGuilds().size() + " guilds");
+				if (!showingGuilds)
+				{
+					Main.client.changePlayingText(Main.client.getGuilds().size() + " guilds");
+					showingGuilds = true;
+				}
+				else
+				{
+					Main.client.changePlayingText("discord.gg/v55fW9b");
+					showingGuilds = false;
+				}
 			}
 			catch (Exception e)
 			{

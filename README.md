@@ -1,8 +1,8 @@
 # Maunz-Discord
 
-[![Version](https://badge.fury.io/gh/Vauff%2FMaunz-Discord.svg)](https://badge.fury.io/gh/Vauff%2FMaunz-Discord) [![Invite Link](https://img.shields.io/badge/add%20bot%20on-Discord-7289da.svg)](https://discordapp.com/oauth2/authorize?&client_id=230780946142593025&scope=bot)
+[![Version](https://badge.fury.io/gh/Vauff%2FMaunz-Discord.svg)](https://badge.fury.io/gh/Vauff%2FMaunz-Discord) [![Add Bot to Server](https://img.shields.io/badge/add%20bot%20on-Discord-7289da.svg)](https://discordapp.com/oauth2/authorize?&client_id=230780946142593025&scope=bot)
 
-Maunz is a Discord bot created by Vauff written in Java using the Discord4J library. You can add Maunz to your guild by clicking on the Discord badge above. This project is a Discord port of my [IRC bot Maunz](https://github.com/Vauff/Maunz). If you'd like to help Maunz development feel free to suggest ideas on [Trello](https://trello.com/b/9W7PmTvX/maunz) in the features list, or if you find any, even bugs in the bugs list :(
+Maunz is a Discord bot created by Vauff written in Java using the Discord4J library. You can add Maunz to your guild by clicking on the Discord badge above. This project is a Discord port of my [IRC bot Maunz](https://github.com/Vauff/Maunz). If you'd like to suggest features, report bugs, receive assistance on using the bot or just follow development you're free to join the official [Maunz Discord server](https://discord.gg/v55fW9b).
 
 # Commands
 
