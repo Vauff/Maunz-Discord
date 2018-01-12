@@ -138,11 +138,6 @@ public class MainListener
 				{
 					Main.client.getMessageByID(Long.parseLong(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getID())).delete();
 					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getCommand().onMessageReceived(event);
-
-					if (AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).shouldRemove())
-					{
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID());
-					}
 				}
 			}
 			catch (NullPointerException e)
@@ -165,7 +160,6 @@ public class MainListener
 			{
 				event.getMessage().delete();
 				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getCommand().onReactionAdd(event);
-				AbstractCommand.AWAITED.remove(event.getMessage().getStringID());
 			}
 		}
 		catch (Exception e)

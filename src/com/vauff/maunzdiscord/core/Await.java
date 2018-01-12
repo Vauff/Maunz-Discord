@@ -36,20 +36,4 @@ public class Await
 	{
 		return command;
 	}
-
-	/**
-	 * Set this instance to not be removed from {@link AbstractCommand#AWAITED}
-	 */
-	public void dontRemove()
-	{
-		dontRemove = true;
-	}
-
-	/**
-	 * @return true if this instance should be removed from {@link AbstractCommand#AWAITED}, false otherwise
-	 */
-	public boolean shouldRemove()
-	{
-		return !dontRemove;
-	}
 }

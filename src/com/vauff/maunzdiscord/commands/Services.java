@@ -47,8 +47,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				if (!m.isDeleted())
 				{
 					m.delete();
-					states.remove(event.getAuthor().getStringID());
-					menuMessages.remove(event.getAuthor().getStringID());
 				}
 			}, 120, TimeUnit.SECONDS);
 		}
@@ -71,13 +69,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 		{
 			if (event.getMessage().getStringID().equals(menuMessages.get(event.getUser().getStringID())))
 			{
-				if (event.getReaction().getEmoji().toString().equals("❌"))
-				{
-					states.remove(event.getUser().getStringID());
-					menuMessages.remove(event.getUser().getStringID());
-				}
-
-				else if (states.get(event.getUser().getStringID()).equals("main"))
+				if (states.get(event.getUser().getStringID()).equals("main"))
 				{
 					List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "services/server-tracking/", Util.getJarLocation() + "services/csgo-updates/"));
 					List<String> services = new ArrayList<String>();
@@ -129,8 +121,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 								if (!m.isDeleted())
 								{
 									m.delete();
-									states.remove(event.getUser().getStringID());
-									menuMessages.remove(event.getUser().getStringID());
 								}
 							}, 120, TimeUnit.SECONDS);
 						}
@@ -174,8 +164,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 								if (!m.isDeleted())
 								{
 									m.delete();
-									states.remove(event.getUser().getStringID());
-									menuMessages.remove(event.getUser().getStringID());
 								}
 							}, 120, TimeUnit.SECONDS);
 						}
@@ -219,8 +207,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 								if (!m.isDeleted())
 								{
 									m.delete();
-									states.remove(event.getUser().getStringID());
-									menuMessages.remove(event.getUser().getStringID());
 								}
 							}, 120, TimeUnit.SECONDS);
 						}
@@ -262,8 +248,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -281,8 +265,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -309,8 +291,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getUser().getStringID());
-							menuMessages.remove(event.getUser().getStringID());
 						}
 					}, 120, TimeUnit.SECONDS);
 				}
@@ -381,8 +361,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -402,8 +380,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -431,8 +407,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -454,8 +428,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -473,8 +445,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -492,8 +462,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -521,8 +489,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -544,8 +510,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -567,8 +531,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -586,8 +548,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -637,8 +597,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -657,8 +615,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 							if (!m.isDeleted())
 							{
 								m.delete();
-								states.remove(event.getUser().getStringID());
-								menuMessages.remove(event.getUser().getStringID());
 							}
 						}, 120, TimeUnit.SECONDS);
 					}
@@ -729,15 +685,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					states.put(event.getAuthor().getStringID(), "servertrackingadd.2," + message);
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
 					}, 120, TimeUnit.SECONDS);
 				}
@@ -747,18 +700,13 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
-
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}
 			}
@@ -814,18 +762,13 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
-
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}
 			}
@@ -860,8 +803,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
 					}, 120, TimeUnit.SECONDS);
 				}
@@ -871,18 +812,13 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
-
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}
 			}
@@ -923,8 +859,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
 					}, 120, TimeUnit.SECONDS);
 				}
@@ -934,18 +868,13 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
-
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}
 			}
@@ -992,8 +921,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
 					}, 120, TimeUnit.SECONDS);
 				}
@@ -1003,18 +930,13 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
-
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}
 			}
@@ -1056,8 +978,6 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
 					}, 120, TimeUnit.SECONDS);
 				}
@@ -1067,18 +987,13 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					waitForReply(m.getStringID(), event.getAuthor().getStringID());
 					menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).dontRemove();
 
 					Executors.newScheduledThreadPool(1).schedule(() ->
 					{
 						if (!m.isDeleted())
 						{
 							m.delete();
-							states.remove(event.getAuthor().getStringID());
-							menuMessages.remove(event.getAuthor().getStringID());
 						}
-
-						AbstractCommand.AWAITED.remove(event.getAuthor().getStringID()); //removing the author as he hasn't been removed because of the line above calling AbstractCommand#dontRemove
 					}, 120, TimeUnit.SECONDS);
 				}
 			}
