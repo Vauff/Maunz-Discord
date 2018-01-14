@@ -106,6 +106,12 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 		}
 	}
 
+	/**
+	 * Finds the appropriate port number for the given connection protocol
+	 *
+	 * @param uri The host to determine the port number for
+	 * @return 443 if the protocol is https, 21 if the protocol is 21, and 80 otherwise
+	 */
 	private int getPortByProtocol(String uri)
 	{
 		if (uri.startsWith("https"))
