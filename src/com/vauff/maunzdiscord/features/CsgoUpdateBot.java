@@ -113,8 +113,9 @@ public class CsgoUpdateBot extends PircBot
 							}
 						}
 					}
-					else if (html.replaceAll("\\d", "").contains("branches/./buildid") || html.replaceAll("\\d", "").contains("branches/../buildid") || html.replaceAll("\\d", "").contains("branches/.../buildid"))
+					else if (!htmlRaw.contains("octicon octicon-diff-removed") && (html.replaceAll("\\d", "").contains("branches/./buildid") || html.replaceAll("\\d", "").contains("branches/../buildid") || html.replaceAll("\\d", "").contains("branches/.../buildid")))
 					{
+						System.out.println(htmlRaw);
 						String msg = "SteamDB has spotted a version branch update for CS:GO on the 730 app, this means **an update might be coming.** <https://steamdb.info/app/730/history/>";
 
 						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
@@ -129,38 +130,19 @@ public class CsgoUpdateBot extends PircBot
 							}
 						}
 					}
-					else if (html.replaceAll("\\d", "").contains("branches/.-rc/buildid") || html.replaceAll("\\d", "").contains("branches/..-rc/buildid") || html.replaceAll("\\d", "").contains("branches/...-rc/buildid"))
+					else if (!htmlRaw.contains("octicon octicon-diff-removed") && (html.replaceAll("\\d", "").contains("branches/.-rc/buildid") || html.replaceAll("\\d", "").contains("branches/..-rc/buildid") || html.replaceAll("\\d", "").contains("branches/...-rc/buildid")))
 					{
-						if (!htmlRaw.contains("octicon octicon-diff-removed"))
+						String msg = "SteamDB has spotted a beta branch update for CS:GO on the 730 app, this means **a beta update was pushed to the Steam client!** <https://steamdb.info/app/730/history/>";
+
+						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
+
+						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
 						{
-							String msg = "SteamDB has spotted a beta branch update for CS:GO on the 730 app, this means **a beta update was pushed to the Steam client!** <https://steamdb.info/app/730/history/>";
+							JSONObject json = new JSONObject(Util.getFileContents(file));
 
-							Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
-
-							for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+							if (json.getBoolean("enabled"))
 							{
-								JSONObject json = new JSONObject(Util.getFileContents(file));
-
-								if (json.getBoolean("enabled"))
-								{
-									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
-								}
-							}
-						}
-						else
-						{
-							String msg = "SteamDB has spotted a version branch update for CS:GO on the 730 app, this means **an update might be coming.** <https://steamdb.info/app/730/history/>";
-
-							Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
-
-							for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
-							{
-								JSONObject json = new JSONObject(Util.getFileContents(file));
-
-								if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings"))
-								{
-									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
-								}
+								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 							}
 						}
 					}
