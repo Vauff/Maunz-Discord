@@ -169,6 +169,6 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*quote" };
+		return new String[] { "*quote", "*quotes" };
 	}
 }
