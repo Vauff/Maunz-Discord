@@ -115,7 +115,6 @@ public class CsgoUpdateBot extends PircBot
 					}
 					else if (!htmlRaw.contains("octicon octicon-diff-removed") && (html.replaceAll("\\d", "").contains("branches/./buildid") || html.replaceAll("\\d", "").contains("branches/../buildid") || html.replaceAll("\\d", "").contains("branches/.../buildid")))
 					{
-						System.out.println(htmlRaw);
 						String msg = "SteamDB has spotted a version branch update for CS:GO on the 730 app, this means **an update might be coming.** <https://steamdb.info/app/730/history/>";
 
 						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
