@@ -47,5 +47,3 @@ _*services_ - Opens an interface for enabling specific services on a guild.
 *steam \<steamid> - Links you to a Steam profile based on a Steam ID.
 
 _*stop_ - Stops Maunz.
-
-*trello - Links you to the Trello board of Maunz. Feature requests and bug reports can be made here.

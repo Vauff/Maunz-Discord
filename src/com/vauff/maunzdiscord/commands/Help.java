@@ -72,8 +72,6 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				return "Links you to a Steam profile based on a Steam ID. **Usage *steam <steamid>**";
 			case "stop":
 				return "Stops Maunz, only usable by Vauff. **Usage: *stop**";
-			case "trello":
-				return "Links you to the Trello board of Maunz. Feature requests and bug reports can be made here. **Usage: *trello**";
 			default:
 				return "I don't recognize the command " + args[1] + "!";
 		}
