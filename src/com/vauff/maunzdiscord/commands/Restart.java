@@ -28,8 +28,6 @@ public class Restart extends AbstractCommand<MessageReceivedEvent>
 
 			Main.log.info("Maunz is restarting...");
 			new ProcessBuilder(command).start();
-			Main.bot.disconnect();
-			Main.client.logout();
 			System.exit(0);
 		}
 		else
