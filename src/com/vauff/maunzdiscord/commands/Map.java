@@ -22,11 +22,11 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 		if (!event.getChannel().isPrivate())
 		{
 			String guildID = event.getGuild().getStringID();
-			File file = new File(Util.getJarLocation() + "services/server-tracking/" + guildID + "/serverInfo.json");
+			File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + guildID + "/serverInfo.json");
 
 			if (file.exists())
 			{
-				JSONObject json = new JSONObject(Util.getFileContents("services/server-tracking/" + guildID + "/serverInfo.json"));
+				JSONObject json = new JSONObject(Util.getFileContents("data/services/server-tracking/" + guildID + "/serverInfo.json"));
 
 				if (json.getBoolean("enabled"))
 				{

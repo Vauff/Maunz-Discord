@@ -34,8 +34,8 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 		String[] args = event.getMessage().getContent().split(" ");
 		String argument;
 		String guildID = event.getGuild().getStringID();
-		File file = new File(Util.getJarLocation() + "services/server-tracking/" + guildID + "/" + event.getAuthor().getStringID() + ".json");
-		File serverInfoFile = new File(Util.getJarLocation() + "services/server-tracking/" + guildID + "/serverInfo.json");
+		File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + guildID + "/" + event.getAuthor().getStringID() + ".json");
+		File serverInfoFile = new File(Util.getJarLocation() + "data/services/server-tracking/" + guildID + "/serverInfo.json");
 		JSONObject json = null;
 
 		if (serverInfoFile.exists())
@@ -283,7 +283,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())))
 			{
 				String guildID = event.getGuild().getStringID();
-				String fileName = "services/server-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
+				String fileName = "data/services/server-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
 				File file = new File(Util.getJarLocation() + fileName);
 				JSONObject json = null;
 

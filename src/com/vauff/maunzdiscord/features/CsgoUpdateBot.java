@@ -87,7 +87,7 @@ public class CsgoUpdateBot extends PircBot
 
 						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
 
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+						for (File file : new File(Util.getJarLocation() + "data/services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
@@ -103,7 +103,7 @@ public class CsgoUpdateBot extends PircBot
 
 						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
 
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+						for (File file : new File(Util.getJarLocation() + "data/services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
@@ -119,7 +119,7 @@ public class CsgoUpdateBot extends PircBot
 
 						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
 
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+						for (File file : new File(Util.getJarLocation() + "data/services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
@@ -135,7 +135,7 @@ public class CsgoUpdateBot extends PircBot
 
 						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
 
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+						for (File file : new File(Util.getJarLocation() + "data/services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
@@ -151,7 +151,7 @@ public class CsgoUpdateBot extends PircBot
 
 						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
 
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+						for (File file : new File(Util.getJarLocation() + "data/services/csgo-updates").listFiles())
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
@@ -167,7 +167,7 @@ public class CsgoUpdateBot extends PircBot
 				{
 					String msg = "SteamDB has spotted an update for CS:GO on the 741 app, this means **an update is definitely coming!** <https://steamdb.info/app/741/history/>";
 
-					for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+					for (File file : new File(Util.getJarLocation() + "data/services/csgo-updates").listFiles())
 					{
 						JSONObject json = new JSONObject(Util.getFileContents(file));
 

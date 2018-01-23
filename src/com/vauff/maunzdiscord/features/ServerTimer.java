@@ -53,11 +53,11 @@ public class ServerTimer
 			{
 				if (Util.isEnabled)
 				{
-					for (File file : new File(Util.getJarLocation() + "services/server-tracking").listFiles())
+					for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
 					{
 						if (file.isDirectory())
 						{
-							JSONObject json = new JSONObject(Util.getFileContents("services/server-tracking/" + file.getName() + "/serverInfo.json"));
+							JSONObject json = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/serverInfo.json"));
 
 							if (json.getBoolean("enabled"))
 							{
@@ -107,7 +107,7 @@ public class ServerTimer
 										json.put("enabled", false);
 									}
 
-									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 									continue;
 								}
 
@@ -151,11 +151,11 @@ public class ServerTimer
 
 									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), channelEmbed);
 
-									for (File notificationFile : new File(Util.getJarLocation() + "services/server-tracking/" + file.getName()).listFiles())
+									for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
 									{
 										if (!notificationFile.getName().equals("serverInfo.json"))
 										{
-											JSONObject notificationJson = new JSONObject(Util.getFileContents("services/server-tracking/" + file.getName() + "/" + notificationFile.getName()));
+											JSONObject notificationJson = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/" + notificationFile.getName()));
 											IUser user = null;
 
 											try
@@ -229,7 +229,7 @@ public class ServerTimer
 
 								json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());
 								json.put("downtimeTimer", 0);
-								FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+								FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 								server.disconnect();
 							}
 						}

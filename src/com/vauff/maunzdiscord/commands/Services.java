@@ -71,7 +71,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 			{
 				if (states.get(event.getUser().getStringID()).equals("main"))
 				{
-					List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "services/server-tracking/", Util.getJarLocation() + "services/csgo-updates/"));
+					List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "data/services/server-tracking/", Util.getJarLocation() + "data/services/csgo-updates/"));
 					List<String> services = new ArrayList<String>();
 					boolean guildHasService = false;
 
@@ -83,7 +83,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						if (file.exists() || file2.exists())
 						{
 							guildHasService = true;
-							services.add(fileLocation.split("services/")[1].replace("/", ""));
+							services.add(fileLocation.split("data/services/")[1].replace("/", ""));
 						}
 					}
 
@@ -298,7 +298,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				else if (states.get(event.getUser().getStringID()).startsWith("csgoupdatesadd.3"))
 				{
 					String[] statesSplit = states.get(event.getUser().getStringID()).split(",");
-					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
+					File file = new File(Util.getJarLocation() + "data/services/csgo-updates/" + event.getGuild().getStringID() + ".json");
 					JSONObject json = new JSONObject();
 					boolean earlyWarnings = false;
 
@@ -348,7 +348,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					if (service.equals("server-tracking"))
 					{
-						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json")));
+						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json")));
 						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: Server Tracking**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**" + System.lineSeparator() + "**`[4]`**  |  Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
@@ -367,7 +367,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					else if (service.equals("csgo-updates"))
 					{
-						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json")));
+						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/services/csgo-updates/" + event.getGuild().getStringID() + ".json")));
 						IMessage m = event.getChannel().sendMessage(":pencil:  |  **Edit Existing Service: CS:GO Update Notifications**" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**" + System.lineSeparator() + "**`[2]`**  |  Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**" + System.lineSeparator() + "**`[3]`**  |  Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**" + System.lineSeparator() + "**`[4]`**  |  Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">");
 
 						waitForReaction(m.getStringID(), event.getUser().getStringID());
@@ -387,7 +387,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				else if (states.get(event.getUser().getStringID()).equals("servertrackingedit"))
 				{
-					File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
@@ -469,7 +469,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				else if (states.get(event.getUser().getStringID()).equals("csgoupdatesedit"))
 				{
-					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
+					File file = new File(Util.getJarLocation() + "data/services/csgo-updates/" + event.getGuild().getStringID() + ".json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
@@ -624,8 +624,8 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
 					{
-						File folder = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/");
-						File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+						File folder = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/");
+						File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 
 						file.delete();
 						folder.delete();
@@ -642,7 +642,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (event.getReaction().getEmoji().toString().equals("1⃣"))
 					{
-						File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
+						File file = new File(Util.getJarLocation() + "data/services/csgo-updates/" + event.getGuild().getStringID() + ".json");
 
 						file.delete();
 						Util.msg(event.getChannel(), "Successfully deleted the CS:GO updates service!");
@@ -735,8 +735,8 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (serverOnline)
 				{
-					File folder = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/");
-					File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					File folder = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/");
+					File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject();
 
 					folder.mkdir();
@@ -841,7 +841,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (!message.equals(""))
 				{
-					File file = new File(Util.getJarLocation() + "services/csgo-updates/" + event.getGuild().getStringID() + ".json");
+					File file = new File(Util.getJarLocation() + "data/services/csgo-updates/" + event.getGuild().getStringID() + ".json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
 					json.put("updateNotificationChannelID", Long.parseLong(message));
@@ -902,7 +902,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (serverOnline)
 				{
-					File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
 					json.put("serverIP", ip);
@@ -960,7 +960,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 				if (!message.equals(""))
 				{
-					File file = new File(Util.getJarLocation() + "services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
+					File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
 					json.put("serverTrackingChannelID", Long.parseLong(message));
