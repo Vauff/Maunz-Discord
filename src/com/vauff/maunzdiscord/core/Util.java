@@ -247,7 +247,7 @@ public class Util
 		{
 			JSONObject json = new JSONObject(Util.getFileContents("config.json"));
 
-			sqlCon = DriverManager.getConnection("jdbc:mysql://158.69.59.239:3306/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", "Vauff", json.getString("databasePassword"));
+			sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getJSONObject("database").getString("hostname") + "/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getJSONObject("database").getString("username"), json.getJSONObject("database").getString("password"));
 		}
 		catch (SQLException e)
 		{

@@ -40,8 +40,11 @@ public class Main
 				file.createNewFile();
 				json.put("discordToken", "");
 				json.put("discordDevToken", "");
-				json.put("databasePassword", "");
 				json.put("cleverbotAPIKey", "");
+				json.put("database", new JSONObject());
+				json.getJSONObject("database").put("hostname", "");
+				json.getJSONObject("database").put("username", "");
+				json.getJSONObject("database").put("password", "");
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 			}
 

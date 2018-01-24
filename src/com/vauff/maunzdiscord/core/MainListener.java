@@ -65,22 +65,22 @@ public class MainListener
 			commands.add(new Steam());
 			commands.add(new Stop());
 
-			if (!json.getString("databasePassword").equals(""))
+			if (json.getJSONObject("database").getString("hostname").equals("") || json.getJSONObject("database").getString("username").equals("") || json.getJSONObject("database").getString("password").equals(""))
+			{
+				Main.log.warn("The quote command is disabled due to 1 or more values in the database section of config.json not being supplied");
+			}
+			else
 			{
 				commands.add(new Quote());
 			}
-			else
-			{
-				Main.log.warn("The quote command is disabled due to databasePassword not being supplied in the config.json");
-			}
 
-			if (!json.getString("cleverbotAPIKey").equals(""))
-			{
-				commands.add(new Intelligence());
-			}
-			else
+			if (json.getString("cleverbotAPIKey").equals(""))
 			{
 				Main.log.warn("Maunz intelligence is disabled due to cleverbotAPIKey not being supplied in the config.json");
+			}
+			else
+			{
+				commands.add(new Intelligence());
 			}
 		}
 		catch (Exception e)
