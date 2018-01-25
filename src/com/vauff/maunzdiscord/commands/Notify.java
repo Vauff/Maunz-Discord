@@ -230,7 +230,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										}
 										else
 										{
-											m = event.getChannel().sendMessage("The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to add" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + argument.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
+											m = event.getChannel().sendMessage("The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + argument.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
 											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationSuggestionMaps.put(event.getAuthor().getStringID(), mapSuggestion);
@@ -362,6 +362,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 				else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 				{
 					boolean mapSet = false;
+					int index = 0;
 
 					if (file.exists())
 					{
@@ -374,6 +375,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							if (mapNotification.equalsIgnoreCase(confirmationSuggestionMaps.get(event.getUser().getStringID())))
 							{
 								mapSet = true;
+								index = i;
 							}
 						}
 					}
@@ -401,7 +403,10 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					}
 					else
 					{
-						Util.msg(event.getChannel(), "You already have this map added to your map notifications!");
+						Util.msg(event.getChannel(), "Removing **" + confirmationSuggestionMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** from your map notifications!");
+						json.put("lastName", event.getUser().getName());
+						json.getJSONArray("notifications").remove(index);
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
 				}
 			}
