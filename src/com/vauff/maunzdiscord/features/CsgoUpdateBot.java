@@ -38,7 +38,7 @@ public class CsgoUpdateBot extends PircBot
 	{
 		try
 		{
-			if (sender.equals(listeningNick) && Util.isEnabled)
+			if (sender.equals(listeningNick))
 			{
 				if (message.contains("https://steamdb.info/changelist/"))
 				{
@@ -91,7 +91,7 @@ public class CsgoUpdateBot extends PircBot
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
-							if (json.getBoolean("enabled"))
+							if (json.getBoolean("enabled") && Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")))))
 							{
 								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 							}
@@ -107,7 +107,7 @@ public class CsgoUpdateBot extends PircBot
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
-							if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings"))
+							if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings") && Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")))))
 							{
 								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 							}
@@ -123,7 +123,7 @@ public class CsgoUpdateBot extends PircBot
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
-							if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings"))
+							if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings") && Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")))))
 							{
 								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 							}
@@ -139,7 +139,7 @@ public class CsgoUpdateBot extends PircBot
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
-							if (json.getBoolean("enabled"))
+							if (json.getBoolean("enabled") && Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")))))
 							{
 								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 							}
@@ -155,7 +155,7 @@ public class CsgoUpdateBot extends PircBot
 						{
 							JSONObject json = new JSONObject(Util.getFileContents(file));
 
-							if (json.getBoolean("nonImportantUpdates") && json.getBoolean("enabled"))
+							if (json.getBoolean("nonImportantUpdates") && json.getBoolean("enabled") && Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")))))
 							{
 								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 							}
@@ -171,7 +171,7 @@ public class CsgoUpdateBot extends PircBot
 					{
 						JSONObject json = new JSONObject(Util.getFileContents(file));
 
-						if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings"))
+						if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings") && Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")))))
 						{
 							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
 						}

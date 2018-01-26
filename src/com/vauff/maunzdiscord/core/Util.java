@@ -35,10 +35,6 @@ import sx.blah.discord.handle.obj.Permissions;
 public class Util
 {
 	/**
-	 * true if the bot is enabled, false otherwise
-	 */
-	public static boolean isEnabled = true;
-	/**
 	 * true if the bot is in development mode, false otherwise.
 	 * Used to determine the Discord API token and handle differences in the live and dev version
 	 */
@@ -386,6 +382,29 @@ public class Util
 		if (cancellable)
 		{
 			m.addReaction(EmojiManager.getForAlias(":x:"));
+		}
+	}
+
+	public static boolean isEnabled(IGuild guild)
+	{
+		try
+		{
+			JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+			JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
+
+			if (botJson.getBoolean("enabled") && guildJson.getBoolean("enabled"))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+			return false;
 		}
 	}
 }

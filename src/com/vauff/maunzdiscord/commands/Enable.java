@@ -1,27 +1,63 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 
+import org.apache.commons.io.FileUtils;
+
+import org.json.JSONObject;
+
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+import sx.blah.discord.handle.obj.IMessage;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Enable extends AbstractCommand<MessageReceivedEvent>
 {
+	private static HashMap<String, String> menuMessages = new HashMap<String, String>();
+
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		if (Util.hasPermission(event.getAuthor()))
+		if (Util.hasPermission(event.getAuthor(), event.getGuild()))
 		{
-			if (!Util.isEnabled)
+			File botFile = new File(Util.getJarLocation() + "config.json");
+			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
+			JSONObject botJson = new JSONObject(Util.getFileContents(botFile));
+			JSONObject guildJson = new JSONObject(Util.getFileContents(guildFile));
+
+			if (Util.hasPermission(event.getAuthor()))
 			{
-				Util.msg(event.getChannel(), "Maunz is now enabled");
-				Main.log.info("Maunz is now enabled, messages will be parsed for commands");
-				Util.isEnabled = true;
+				IMessage m = event.getChannel().sendMessage("Please select whether you'd like to enable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enable globally" + System.lineSeparator() + "**`[2]`**  |  Enable in guild only");
+
+				waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+				menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+				Util.addReactions(m, true, 2);
+
+				Executors.newScheduledThreadPool(1).schedule(() ->
+				{
+					if (!m.isDeleted())
+					{
+						m.delete();
+					}
+				}, 120, TimeUnit.SECONDS);
 			}
 			else
 			{
-				Util.msg(event.getChannel(), "You silly, I was already enabled!");
+				if (!guildJson.getBoolean("enabled"))
+				{
+					Util.msg(event.getChannel(), "Maunz is now enabled in this guild");
+					guildJson.put("enabled", true);
+					FileUtils.writeStringToFile(guildFile, guildJson.toString(2), "UTF-8");
+				}
+				else
+				{
+					Util.msg(event.getChannel(), "You silly, I was already enabled in this guild!");
+				}
 			}
 		}
 		else
@@ -34,5 +70,44 @@ public class Enable extends AbstractCommand<MessageReceivedEvent>
 	public String[] getAliases()
 	{
 		return new String[] { "*enable" };
+	}
+
+	@Override
+	public void onReactionAdd(ReactionAddEvent event) throws Exception
+	{
+		if (menuMessages.containsKey(event.getUser().getStringID()))
+		{
+			File botFile = new File(Util.getJarLocation() + "config.json");
+			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
+			JSONObject botJson = new JSONObject(Util.getFileContents(botFile));
+			JSONObject guildJson = new JSONObject(Util.getFileContents(guildFile));
+
+			if (event.getReaction().getEmoji().toString().equals("1⃣"))
+			{
+				if (!botJson.getBoolean("enabled"))
+				{
+					Util.msg(event.getChannel(), "Maunz is now enabled globally");
+					botJson.put("enabled", true);
+					FileUtils.writeStringToFile(botFile, botJson.toString(2), "UTF-8");
+				}
+				else
+				{
+					Util.msg(event.getChannel(), "You silly, I was already enabled globally!");
+				}
+			}
+			else if (event.getReaction().getEmoji().toString().equals("2⃣"))
+			{
+				if (!guildJson.getBoolean("enabled"))
+				{
+					Util.msg(event.getChannel(), "Maunz is now enabled in this guild");
+					guildJson.put("enabled", true);
+					FileUtils.writeStringToFile(guildFile, guildJson.toString(2), "UTF-8");
+				}
+				else
+				{
+					Util.msg(event.getChannel(), "You silly, I was already enabled in this guild!");
+				}
+			}
+		}
 	}
 }

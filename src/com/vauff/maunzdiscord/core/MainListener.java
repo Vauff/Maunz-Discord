@@ -119,6 +119,7 @@ public class MainListener
 					JSONObject json = new JSONObject();
 
 					file.createNewFile();
+					json.put("enabled", true);
 					json.put("lastGuildName", guild.getName());
 					json.put("blacklist", new JSONArray());
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
@@ -145,7 +146,7 @@ public class MainListener
 
 			for (AbstractCommand<MessageReceivedEvent> cmd : commands)
 			{
-				if (Util.isEnabled || cmd instanceof Enable || cmd instanceof Disable)
+				if (Util.isEnabled(event.getGuild()) || cmd instanceof Enable || cmd instanceof Disable)
 				{
 					for (String s : cmd.getAliases())
 					{

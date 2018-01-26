@@ -51,11 +51,11 @@ public class ServerTimer
 		{
 			try
 			{
-				if (Util.isEnabled)
+				for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
 				{
-					for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
+					if (file.isDirectory())
 					{
-						if (file.isDirectory())
+						if (Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName()))))
 						{
 							JSONObject json = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/serverInfo.json"));
 
@@ -234,9 +234,9 @@ public class ServerTimer
 							}
 						}
 					}
-
-					servers.clear();
 				}
+
+				servers.clear();
 			}
 			catch (Exception e)
 			{

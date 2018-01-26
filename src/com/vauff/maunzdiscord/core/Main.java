@@ -38,6 +38,7 @@ public class Main
 			{
 				json = new JSONObject();
 				file.createNewFile();
+				json.put("enabled", true);
 				json.put("discordToken", "");
 				json.put("discordDevToken", "");
 				json.put("cleverbotAPIKey", "");
