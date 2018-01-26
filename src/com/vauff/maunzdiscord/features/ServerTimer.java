@@ -73,22 +73,22 @@ public class ServerTimer
 									{
 										server.initialize();
 										servers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server);
-									}
 
-									try
-									{
-										serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
-									}
-									catch (NullPointerException e)
-									{
-										Set<String> keySet = new HashSet<String>();
-
-										for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
+										try
 										{
-											keySet.add(player.getName());
+											serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
 										}
+										catch (NullPointerException e)
+										{
+											Set<String> keySet = new HashSet<String>();
 
-										serverPlayers.put(Long.parseLong(file.getName()), keySet);
+											for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
+											{
+												keySet.add(player.getName());
+											}
+
+											serverPlayers.put(Long.parseLong(file.getName()), keySet);
+										}
 									}
 								}
 								catch (NullPointerException | TimeoutException | SteamCondenserException e)
