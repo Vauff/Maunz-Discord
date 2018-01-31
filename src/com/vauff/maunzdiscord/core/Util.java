@@ -141,7 +141,6 @@ public class Util
 		MainListener.uptime.split();
 
 		String uptimeRaw = MainListener.uptime.toSplitString().split("\\.")[0];
-		String response = "";
 		String secondText = "seconds";
 		String minuteText = "minutes";
 		String hourText = "hours";
