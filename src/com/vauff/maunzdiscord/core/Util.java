@@ -237,6 +237,9 @@ public class Util
 		}
 	}
 
+	/**
+	 * Connects to the Chat-Quotes database
+	 */
 	public static void sqlConnect() throws Exception
 	{
 		try
@@ -424,6 +427,13 @@ public class Util
 		}
 	}
 
+	/**
+	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
+	 *
+	 * @param m The message to add the emojis to
+	 * @param cancellable Wether an x emoji should be added at the end or not
+	 * @param i The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
+	 */
 	public static void addReactions(IMessage m, boolean cancellable, int i) throws Exception
 	{
 		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
@@ -440,6 +450,12 @@ public class Util
 		}
 	}
 
+	/**
+	 * Checks wether the bot is enabled for a specified guild
+	 *
+	 * @param guild The guild for which to check if the bot is enabled
+	 * @return true if the bot is enabled for the guild, false otherwise
+	 */
 	public static boolean isEnabled(IGuild guild)
 	{
 		try
