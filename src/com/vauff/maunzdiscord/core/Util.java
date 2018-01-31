@@ -434,7 +434,7 @@ public class Util
 	 * @param cancellable Wether an x emoji should be added at the end or not
 	 * @param i The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
 	 */
-	public static void addReactions(IMessage m, boolean cancellable, int i) throws Exception
+	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
 	{
 		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
