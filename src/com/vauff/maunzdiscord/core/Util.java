@@ -271,21 +271,7 @@ public class Util
 	 */
 	public static boolean hasPermission(IUser user, IGuild guild)
 	{
-		if (user.getLongID() == 129448521861431296L)
-		{
-			return true;
-		}
-		else
-		{
-			if (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		return user.getLongID() == 129448521861431296L ? true : (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR) ? true : false);
 	}
 
 	/**
@@ -442,13 +428,10 @@ public class Util
 	{
 		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < i; j++)
 		{
-			if (i > j)
-			{
-				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
-				Thread.sleep(250);
-			}
+			m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
+			Thread.sleep(250);
 		}
 
 		if (cancellable)
@@ -464,14 +447,7 @@ public class Util
 			JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 			JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
 
-			if (botJson.getBoolean("enabled") && guildJson.getBoolean("enabled"))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
 		}
 		catch (Exception e)
 		{
