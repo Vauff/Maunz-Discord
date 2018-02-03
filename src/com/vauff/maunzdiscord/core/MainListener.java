@@ -30,7 +30,7 @@ public class MainListener
 	/**
 	 * Holds all commands
 	 */
-	private LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<AbstractCommand<MessageReceivedEvent>>();
+	public static LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<AbstractCommand<MessageReceivedEvent>>();
 	/**
 	 * A watch to keep track of the uptime of the bot
 	 */
@@ -48,6 +48,7 @@ public class MainListener
 			commands.add(new About());
 			commands.add(new AccInfo());
 			commands.add(new Benchmark());
+			commands.add(new Blacklist());
 			commands.add(new Changelog());
 			commands.add(new Disable());
 			commands.add(new Enable());
@@ -161,7 +162,7 @@ public class MainListener
 								{
 									String entry = json.getJSONArray("blacklist").getString(i);
 
-									if (entry.split(":")[0].equalsIgnoreCase(event.getChannel().getStringID()) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace("*", "")) || entry.split(":")[1].equalsIgnoreCase("all")))
+									if ((entry.split(":")[0].equalsIgnoreCase(event.getChannel().getStringID()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace("*", "")) || entry.split(":")[1].equalsIgnoreCase("all")))
 									{
 										blacklisted = true;
 										break;
