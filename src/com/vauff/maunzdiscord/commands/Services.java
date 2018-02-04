@@ -309,6 +309,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 					file.createNewFile();
 					json.put("enabled", true);
+					json.put("lastGuildName", event.getGuild().getName());
 					json.put("updateNotificationChannelID", Long.parseLong(statesSplit[1]));
 					json.put("nonImportantUpdates", Boolean.valueOf(statesSplit[2]));
 					json.put("earlyWarnings", earlyWarnings);
