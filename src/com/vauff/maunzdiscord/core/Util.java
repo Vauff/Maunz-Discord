@@ -48,7 +48,8 @@ public class Util
 	public static Connection sqlCon;
 
 	/**
-	 * @return The path at which the running jar file is located.
+	 * @return The path at which the running jar file is located,
+	 * 			or an empty string if an exception has been caught
 	 */
 	public static String getJarLocation()
 	{
@@ -71,8 +72,7 @@ public class Util
 		catch (URISyntaxException e)
 		{
 			Main.log.error("", e);
-
-			return null;
+			return "";
 		}
 	}
 
@@ -431,7 +431,7 @@ public class Util
 	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
 	 *
 	 * @param m The message to add the emojis to
-	 * @param cancellable Wether an x emoji should be added at the end or not
+	 * @param cancellable Whether an x emoji should be added at the end or not
 	 * @param i The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
 	 */
 	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
@@ -451,7 +451,7 @@ public class Util
 	}
 
 	/**
-	 * Checks wether the bot is enabled for a specified guild
+	 * Checks whether the bot is enabled for a specified guild
 	 *
 	 * @param guild The guild for which to check if the bot is enabled
 	 * @return true if the bot is enabled for the guild, false otherwise
