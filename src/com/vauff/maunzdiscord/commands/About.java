@@ -19,7 +19,7 @@ public class About extends AbstractCommand<MessageReceivedEvent>
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
 		EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withThumbnail("https://i.imgur.com/Fzw48O4.jpg").withTitle("Maunz").withUrl("https://github.com/Vauff/Maunz-Discord").withDesc("Maunz is a Discord bot created by Vauff written in Java using the Discord4J library").appendField("Version", Main.version, true).appendField("Java Version", System.getProperty("java.version"), true).appendField("Uptime", Util.getUptime(), true).appendField("Dev Mode", StringUtils.capitalize(Boolean.toString(Util.devMode)), true).appendField("Build Date", getBuildDate(), true).build();
-		Util.msg(event.getChannel(), embed);
+		Util.msg(event.getChannel(), event.getAuthor(), embed);
 	}
 
 	/**

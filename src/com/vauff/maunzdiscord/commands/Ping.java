@@ -10,7 +10,7 @@ public class Ping extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		Util.msg(event.getChannel(), "Pong!");
+		Util.msg(event.getChannel(), event.getAuthor(), "Pong!");
 	}
 
 	@Override

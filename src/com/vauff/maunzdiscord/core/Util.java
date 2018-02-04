@@ -28,6 +28,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * A class holding several static utility methods
@@ -292,6 +293,36 @@ public class Util
 	 * Sends a message to a channel
 	 *
 	 * @param channel The channel
+	 * @param author  The author
+	 * @param message The message
+	 */
+	public static void msg(IChannel channel, IUser author, String message)
+	{
+		try
+		{
+			channel.sendMessage(message);
+		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("SEND_MESSAGES!"))
+			{
+				msg(author.getOrCreatePMChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.mention() + " because it's lacking the **SEND_MESSAGES** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+			}
+			else
+			{
+				Main.log.error(e);
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+	}
+
+	/**
+	 * Sends a message to a channel
+	 *
+	 * @param channel The channel
 	 * @param message The message
 	 */
 	public static void msg(IChannel channel, String message)
@@ -302,7 +333,38 @@ public class Util
 		}
 		catch (Exception e)
 		{
-			Main.log.error(e);
+			Main.log.error("", e);
+		}
+	}
+
+	/**
+	 * Sends an embed to a channel
+	 *
+	 * @param channel The channel
+	 * @param author  The author
+	 * @param message The embed
+	 */
+	public static void msg(IChannel channel, IUser author, EmbedObject message)
+	{
+		try
+		{
+			channel.sendMessage("", message, false);
+		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("EMBED_LINKS!"))
+			{
+				msg(channel, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command because it's lacking the **EMBED_LINKS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+			}
+
+			else
+			{
+				Main.log.error(e);
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
 		}
 	}
 
@@ -318,9 +380,20 @@ public class Util
 		{
 			channel.sendMessage("", message, false);
 		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("EMBED_LINKS!"))
+			{
+				msg(channel, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to send a message because it's lacking the **EMBED_LINKS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set.");
+			}
+			else
+			{
+				Main.log.error(e);
+			}
+		}
 		catch (Exception e)
 		{
-			Main.log.error(e);
+			Main.log.error("", e);
 		}
 	}
 

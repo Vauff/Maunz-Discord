@@ -17,7 +17,7 @@ public class Reddit extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "You need to provide a subreddit!");
+			Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a subreddit!");
 		}
 		else
 		{
@@ -41,19 +41,19 @@ public class Reddit extends AbstractCommand<MessageReceivedEvent>
 
 			if (reddit.title().equals("search results"))
 			{
-				Util.msg(event.getChannel(), "That subreddit doesn't exist!");
+				Util.msg(event.getChannel(), event.getAuthor(), "That subreddit doesn't exist!");
 			}
 			else if (reddit.title().contains(": banned"))
 			{
-				Util.msg(event.getChannel(), "That subreddit is banned!");
+				Util.msg(event.getChannel(), event.getAuthor(), "That subreddit is banned!");
 			}
 			else if (reddit.title().contains(": private"))
 			{
-				Util.msg(event.getChannel(), "That subreddit is private!");
+				Util.msg(event.getChannel(), event.getAuthor(), "That subreddit is private!");
 			}
 			else
 			{
-				Util.msg(event.getChannel(), url);
+				Util.msg(event.getChannel(), event.getAuthor(), url);
 			}
 		}
 	}

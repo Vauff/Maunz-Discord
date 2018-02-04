@@ -56,7 +56,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 				if (args.length == 1)
 				{
-					Util.msg(event.getChannel(), "You need to specify an argument! **Usage: *notify <list/wipe/mapname>**");
+					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify an argument! **Usage: *notify <list/wipe/mapname>**");
 				}
 				else
 				{
@@ -71,7 +71,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 					if (argument.equals(""))
 					{
-						Util.msg(event.getChannel(), "Please keep to one space between arguments to prevent breakage");
+						Util.msg(event.getChannel(), event.getAuthor(), "Please keep to one space between arguments to prevent breakage");
 					}
 					else
 					{
@@ -79,7 +79,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						{
 							if (!file.exists())
 							{
-								Util.msg(event.getChannel(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
+								Util.msg(event.getChannel(), event.getAuthor(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
 							}
 							else
 							{
@@ -94,11 +94,11 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 									String maps = mapsBuilder.toString().substring(0, mapsBuilder.toString().length() - 3);
 
-									Util.msg(event.getChannel(), "You currently have notifications set for the following maps: **" + maps.toString().replace("_", "\\_") + "**");
+									Util.msg(event.getChannel(), event.getAuthor(), "You currently have notifications set for the following maps: **" + maps.toString().replace("_", "\\_") + "**");
 								}
 								else
 								{
-									Util.msg(event.getChannel(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
+									Util.msg(event.getChannel(), event.getAuthor(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
 								}
 							}
 						}
@@ -106,7 +106,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						{
 							if (!file.exists())
 							{
-								Util.msg(event.getChannel(), "You don't have any map notifications to wipe!");
+								Util.msg(event.getChannel(), event.getAuthor(), "You don't have any map notifications to wipe!");
 							}
 							else
 							{
@@ -163,7 +163,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 							if (mapSet)
 							{
-								Util.msg(event.getChannel(), "Removing **" + argument.replace("_", "\\_") + "** from your map notifications!");
+								Util.msg(event.getChannel(), event.getAuthor(), "Removing **" + argument.replace("_", "\\_") + "** from your map notifications!");
 								json.put("lastName", event.getAuthor().getName());
 								json.getJSONArray("notifications").remove(index);
 								FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
@@ -174,7 +174,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								{
 									if (mapExists)
 									{
-										Util.msg(event.getChannel(), "Adding **" + argument.replace("_", "\\_") + "** to your map notifications!");
+										Util.msg(event.getChannel(), event.getAuthor(), "Adding **" + argument.replace("_", "\\_") + "** to your map notifications!");
 
 										if (file.exists())
 										{
@@ -251,7 +251,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								}
 								else
 								{
-									Util.msg(event.getChannel(), "Do not include invisible characters with your map name!");
+									Util.msg(event.getChannel(), event.getAuthor(), "Do not include invisible characters with your map name!");
 								}
 							}
 						}
@@ -260,12 +260,12 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 			}
 			else
 			{
-				Util.msg(event.getChannel(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+				Util.msg(event.getChannel(), event.getAuthor(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+			Util.msg(event.getChannel(), event.getAuthor(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 		}
 	}
 
@@ -292,11 +292,11 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
 					{
 						FileUtils.forceDelete(file);
-						Util.msg(event.getChannel(), "Successfully wiped all of your map notifications!");
+						Util.msg(event.getChannel(), event.getUser(), "Successfully wiped all of your map notifications!");
 					}
 					else
 					{
-						Util.msg(event.getChannel(), "Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+						Util.msg(event.getChannel(), event.getUser(), "Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
 
 						if (file.exists())
 						{
@@ -325,11 +325,11 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
 					{
-						Util.msg(event.getChannel(), "No problem, I won't wipe all your map notifications");
+						Util.msg(event.getChannel(), event.getUser(), "No problem, I won't wipe all your map notifications");
 					}
 					else
 					{
-						Util.msg(event.getChannel(), "No problem, I won't add **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
+						Util.msg(event.getChannel(), event.getUser(), "No problem, I won't add **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
 					}
 
 					confirmationMaps.remove(event.getUser().getStringID());
@@ -339,7 +339,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 				else if (event.getReaction().getEmoji().toString().equals("1⃣"))
 				{
-					Util.msg(event.getChannel(), "Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+					Util.msg(event.getChannel(), event.getUser(), "Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
 
 					if (file.exists())
 					{
@@ -382,7 +382,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 					if (!mapSet)
 					{
-						Util.msg(event.getChannel(), "Adding **" + confirmationSuggestionMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+						Util.msg(event.getChannel(), event.getUser(), "Adding **" + confirmationSuggestionMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
 
 						if (file.exists())
 						{
@@ -403,7 +403,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					}
 					else
 					{
-						Util.msg(event.getChannel(), "Removing **" + confirmationSuggestionMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** from your map notifications!");
+						Util.msg(event.getChannel(), event.getUser(), "Removing **" + confirmationSuggestionMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** from your map notifications!");
 						json.put("lastName", event.getUser().getName());
 						json.getJSONArray("notifications").remove(index);
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");

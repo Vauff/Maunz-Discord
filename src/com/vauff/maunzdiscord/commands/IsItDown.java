@@ -22,7 +22,7 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "You need to specify an argument! **Usage: *isitdown <hostname>**");
+			Util.msg(event.getChannel(), event.getAuthor(), "You need to specify an argument! **Usage: *isitdown <hostname>**");
 		}
 		else
 		{
@@ -50,18 +50,18 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 
 				if (host == null)
 				{
-					Util.msg(event.getChannel(), "Please specify a valid hostname or URI.");
+					Util.msg(event.getChannel(), event.getAuthor(), "Please specify a valid hostname or URI.");
 					return;
 				}
 
 				isUp = pingHost(host, port);
 
-				Util.msg(event.getChannel(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
+				Util.msg(event.getChannel(), event.getAuthor(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
 
 			}
 			catch (Exception e)
 			{
-				Util.msg(event.getChannel(), "Please specify a valid hostname or URI.");
+				Util.msg(event.getChannel(), event.getAuthor(), "Please specify a valid hostname or URI.");
 			}
 		}
 	}

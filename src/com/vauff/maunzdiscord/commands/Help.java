@@ -14,11 +14,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "Command help is available at <https://github.com/Vauff/Maunz-Discord/blob/master/README.md>" + System.lineSeparator() + System.lineSeparator() + "You can also get support in the #help channel on the Maunz Discord server at https://discord.gg/v55fW9b");
+			Util.msg(event.getChannel(), event.getAuthor(), "Command help is available at <https://github.com/Vauff/Maunz-Discord/blob/master/README.md>" + System.lineSeparator() + System.lineSeparator() + "You can also get support in the #help channel on the Maunz Discord server at https://discord.gg/v55fW9b");
 		}
 		else
 		{
-			Util.msg(event.getChannel(), cmdHelp(args));
+			Util.msg(event.getChannel(), event.getAuthor(), cmdHelp(args));
 		}
 	}
 

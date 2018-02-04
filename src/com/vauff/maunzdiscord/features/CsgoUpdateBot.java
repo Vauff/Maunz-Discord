@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.net.SocketTimeoutException;
 
 import org.apache.commons.io.FileUtils;
+
 import org.jibble.pircbot.Colors;
 import org.jibble.pircbot.PircBot;
 

@@ -50,19 +50,19 @@ public class Enable extends AbstractCommand<MessageReceivedEvent>
 			{
 				if (!guildJson.getBoolean("enabled"))
 				{
-					Util.msg(event.getChannel(), "Maunz is now enabled in this guild");
+					Util.msg(event.getChannel(), event.getAuthor(), "Maunz is now enabled in this guild");
 					guildJson.put("enabled", true);
 					FileUtils.writeStringToFile(guildFile, guildJson.toString(2), "UTF-8");
 				}
 				else
 				{
-					Util.msg(event.getChannel(), "You silly, I was already enabled in this guild!");
+					Util.msg(event.getChannel(), event.getAuthor(), "You silly, I was already enabled in this guild!");
 				}
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "You do not have permission to use that command");
+			Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
 		}
 	}
 
@@ -86,26 +86,26 @@ public class Enable extends AbstractCommand<MessageReceivedEvent>
 			{
 				if (!botJson.getBoolean("enabled"))
 				{
-					Util.msg(event.getChannel(), "Maunz is now enabled globally");
+					Util.msg(event.getChannel(), event.getUser(), "Maunz is now enabled globally");
 					botJson.put("enabled", true);
 					FileUtils.writeStringToFile(botFile, botJson.toString(2), "UTF-8");
 				}
 				else
 				{
-					Util.msg(event.getChannel(), "You silly, I was already enabled globally!");
+					Util.msg(event.getChannel(), event.getUser(), "You silly, I was already enabled globally!");
 				}
 			}
 			else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 			{
 				if (!guildJson.getBoolean("enabled"))
 				{
-					Util.msg(event.getChannel(), "Maunz is now enabled in this guild");
+					Util.msg(event.getChannel(), event.getUser(), "Maunz is now enabled in this guild");
 					guildJson.put("enabled", true);
 					FileUtils.writeStringToFile(guildFile, guildJson.toString(2), "UTF-8");
 				}
 				else
 				{
-					Util.msg(event.getChannel(), "You silly, I was already enabled in this guild!");
+					Util.msg(event.getChannel(), event.getUser(), "You silly, I was already enabled in this guild!");
 				}
 			}
 		}

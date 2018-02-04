@@ -49,31 +49,31 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 							}
 
 							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(json.getLong("timestamp")).withThumbnail(url).withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
-							Util.msg(event.getChannel(), embed);
+							Util.msg(event.getChannel(), event.getAuthor(), embed);
 						}
 						else
 						{
-							Util.msg(event.getChannel(), "There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again");
+							Util.msg(event.getChannel(), event.getAuthor(), "There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again");
 						}
 					}
 					else
 					{
-						Util.msg(event.getChannel(), "The server currently appears to be offline");
+						Util.msg(event.getChannel(), event.getAuthor(), "The server currently appears to be offline");
 					}
 				}
 				else
 				{
-					Util.msg(event.getChannel(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+					Util.msg(event.getChannel(), event.getAuthor(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 				}
 			}
 			else
 			{
-				Util.msg(event.getChannel(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
+				Util.msg(event.getChannel(), event.getAuthor(), "The server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set it up");
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "This command can't be done in a PM, only in a guild with the server tracking service enabled");
+			Util.msg(event.getChannel(), event.getAuthor(), "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 		}
 	}
 

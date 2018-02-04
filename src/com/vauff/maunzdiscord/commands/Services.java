@@ -52,7 +52,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "You do not have permission to use that command");
+			Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
 		}
 	}
 
@@ -126,7 +126,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							Util.msg(event.getChannel(), "There are no more services to add!");
+							Util.msg(event.getChannel(), event.getUser(), "There are no more services to add!");
 						}
 					}
 
@@ -169,7 +169,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							Util.msg(event.getChannel(), "There are currently no services in this guild to edit!");
+							Util.msg(event.getChannel(), event.getUser(), "There are currently no services in this guild to edit!");
 						}
 					}
 
@@ -212,7 +212,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							Util.msg(event.getChannel(), "There are currently no services in this guild to delete!");
+							Util.msg(event.getChannel(), event.getUser(), "There are currently no services in this guild to delete!");
 						}
 					}
 				}
@@ -314,7 +314,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					json.put("nonImportantUpdates", Boolean.valueOf(statesSplit[2]));
 					json.put("earlyWarnings", earlyWarnings);
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					Util.msg(event.getChannel(), "Successfully added the CS:GO Update Notifications service!");
+					Util.msg(event.getChannel(), event.getUser(), "Successfully added the CS:GO Update Notifications service!");
 				}
 
 				else if (states.get(event.getUser().getStringID()).startsWith("edit,"))
@@ -630,12 +630,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 
 						file.delete();
 						folder.delete();
-						Util.msg(event.getChannel(), "Successfully deleted the server tracking service!");
+						Util.msg(event.getChannel(), event.getUser(), "Successfully deleted the server tracking service!");
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
-						Util.msg(event.getChannel(), "No problem, I won't delete the server tracking service");
+						Util.msg(event.getChannel(), event.getUser(), "No problem, I won't delete the server tracking service");
 					}
 				}
 
@@ -646,12 +646,12 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 						File file = new File(Util.getJarLocation() + "data/services/csgo-updates/" + event.getGuild().getStringID() + ".json");
 
 						file.delete();
-						Util.msg(event.getChannel(), "Successfully deleted the CS:GO updates service!");
+						Util.msg(event.getChannel(), event.getUser(), "Successfully deleted the CS:GO updates service!");
 					}
 
 					else if (event.getReaction().getEmoji().toString().equals("2⃣"))
 					{
-						Util.msg(event.getChannel(), "No problem, I won't delete the CS:GO updates service");
+						Util.msg(event.getChannel(), event.getUser(), "No problem, I won't delete the CS:GO updates service");
 					}
 				}
 			}
@@ -755,7 +755,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 					json.put("mapCharacterLimit", false);
 					json.put("failedConnectionsThreshold", 3);
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					Util.msg(event.getChannel(), "Successfully added the Server Tracking service!");
+					Util.msg(event.getChannel(), event.getAuthor(), "Successfully added the Server Tracking service!");
 				}
 				else
 				{

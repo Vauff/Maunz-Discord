@@ -62,12 +62,11 @@ public class Changelog extends AbstractCommand<MessageReceivedEvent>
 			}
 
 			changelog.append("```");
-			Util.msg(event.getChannel(), changelog.toString());
-			Util.msg(event.getChannel(), "GitHub link: " + "<" + link + ">");
+			Util.msg(event.getChannel(), event.getAuthor(), changelog.toString() + System.lineSeparator() + "GitHub link: " + "<" + link + ">");
 		}
 		catch (HttpStatusException e)
 		{
-			Util.msg(event.getChannel(), "That version of Maunz doesn't exist!");
+			Util.msg(event.getChannel(), event.getAuthor(), "That version of Maunz doesn't exist!");
 		}
 	}
 

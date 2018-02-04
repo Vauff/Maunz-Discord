@@ -18,7 +18,7 @@ public class Steam extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "Please give me a Steam ID!");
+			Util.msg(event.getChannel(), event.getAuthor(), "Please give me a Steam ID!");
 		}
 		else
 		{
@@ -39,11 +39,11 @@ public class Steam extends AbstractCommand<MessageReceivedEvent>
 
 			if (steam.title().equals("Steam Community :: Error"))
 			{
-				Util.msg(event.getChannel(), "That Steam profile doesn't exist!");
+				Util.msg(event.getChannel(), event.getAuthor(), "That Steam profile doesn't exist!");
 			}
 			else
 			{
-				Util.msg(event.getChannel(), "Here you go! " + url);
+				Util.msg(event.getChannel(), event.getAuthor(), "Here you go! " + url);
 			}
 		}
 	}

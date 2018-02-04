@@ -32,7 +32,7 @@ public class Restart extends AbstractCommand<MessageReceivedEvent>
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "You do not have permission to use that command");
+			Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
 		}
 	}
 

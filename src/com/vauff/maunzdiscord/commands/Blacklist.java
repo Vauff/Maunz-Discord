@@ -68,11 +68,11 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 
 									if (input.equalsIgnoreCase("all"))
 									{
-										Util.msg(event.getChannel(), "Removing all commands from this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
+										Util.msg(event.getChannel(), event.getAuthor(), "Removing all commands from this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
 									}
 									else
 									{
-										Util.msg(event.getChannel(), "Removing the ***" + input + "** command from this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
+										Util.msg(event.getChannel(), event.getAuthor(), "Removing the ***" + input + "** command from this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
 									}
 
 									json.getJSONArray("blacklist").remove(i);
@@ -85,11 +85,11 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 							{
 								if (input.equalsIgnoreCase("all"))
 								{
-									Util.msg(event.getChannel(), "Adding all commands to this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
+									Util.msg(event.getChannel(), event.getAuthor(), "Adding all commands to this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
 								}
 								else
 								{
-									Util.msg(event.getChannel(), "Adding the ***" + input + "** command to this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
+									Util.msg(event.getChannel(), event.getAuthor(), "Adding the ***" + input + "** command to this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
 								}
 
 								json.getJSONArray("blacklist").put(event.getChannel().getStringID() + ":" + input);
@@ -98,7 +98,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							Util.msg(event.getChannel(), "The command **" + args[1] + "** doesn't exist!");
+							Util.msg(event.getChannel(), event.getAuthor(), "The command **" + args[1] + "** doesn't exist!");
 						}
 					}
 					else
@@ -118,7 +118,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 								}
 								else
 								{
-									Util.msg(event.getChannel(), "That channel is in another guild!");
+									Util.msg(event.getChannel(), event.getAuthor(), "That channel is in another guild!");
 								}
 							}
 						}
@@ -167,22 +167,22 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 										{
 											if (location.equalsIgnoreCase("all"))
 											{
-												Util.msg(event.getChannel(), "Removing all commands from this guilds blacklist for all channels!");
+												Util.msg(event.getChannel(), event.getAuthor(), "Removing all commands from this guilds blacklist for all channels!");
 											}
 											else
 											{
-												Util.msg(event.getChannel(), "Removing all commands from this guilds blacklist for <#" + location + ">!");
+												Util.msg(event.getChannel(), event.getAuthor(), "Removing all commands from this guilds blacklist for <#" + location + ">!");
 											}
 										}
 										else
 										{
 											if (location.equalsIgnoreCase("all"))
 											{
-												Util.msg(event.getChannel(), "Removing the ***" + input + "** command from this guilds blacklist for all channels!");
+												Util.msg(event.getChannel(), event.getAuthor(), "Removing the ***" + input + "** command from this guilds blacklist for all channels!");
 											}
 											else
 											{
-												Util.msg(event.getChannel(), "Removing the ***" + input + "** command from this guilds blacklist for <#" + location + ">!");
+												Util.msg(event.getChannel(), event.getAuthor(), "Removing the ***" + input + "** command from this guilds blacklist for <#" + location + ">!");
 											}
 										}
 
@@ -198,22 +198,22 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 									{
 										if (location.equalsIgnoreCase("all"))
 										{
-											Util.msg(event.getChannel(), "Adding all commands to this guilds blacklist for all channels!");
+											Util.msg(event.getChannel(), event.getAuthor(), "Adding all commands to this guilds blacklist for all channels!");
 										}
 										else
 										{
-											Util.msg(event.getChannel(), "Adding all commands to this guilds blacklist for <#" + location + ">!");
+											Util.msg(event.getChannel(), event.getAuthor(), "Adding all commands to this guilds blacklist for <#" + location + ">!");
 										}
 									}
 									else
 									{
 										if (location.equalsIgnoreCase("all"))
 										{
-											Util.msg(event.getChannel(), "Adding the ***" + input + "** command to this guilds blacklist for all channels!");
+											Util.msg(event.getChannel(), event.getAuthor(), "Adding the ***" + input + "** command to this guilds blacklist for all channels!");
 										}
 										else
 										{
-											Util.msg(event.getChannel(), "Adding the ***" + input + "** command to this guilds blacklist for <#" + location + ">!");
+											Util.msg(event.getChannel(), event.getAuthor(), "Adding the ***" + input + "** command to this guilds blacklist for <#" + location + ">!");
 										}
 									}
 
@@ -223,28 +223,28 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								Util.msg(event.getChannel(), "The command **" + args[1] + "** doesn't exist!");
+								Util.msg(event.getChannel(), event.getAuthor(), "The command **" + args[1] + "** doesn't exist!");
 							}
 						}
 						else
 						{
-							Util.msg(event.getChannel(), "You need to specify a channel to blacklist (or \"all\")! **Usage: *blacklist [all/channel] <all/command>**");
+							Util.msg(event.getChannel(), event.getAuthor(), "You need to specify a channel to blacklist (or \"all\")! **Usage: *blacklist [all/channel] <all/command>**");
 						}
 					}
 				}
 				else
 				{
-					Util.msg(event.getChannel(), "You need to specify a command to blacklist (or \"all\")! **Usage: *blacklist [all/channel] <all/command>**");
+					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify a command to blacklist (or \"all\")! **Usage: *blacklist [all/channel] <all/command>**");
 				}
 			}
 			else
 			{
-				Util.msg(event.getChannel(), "You do not have permission to use that command");
+				Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "This command can't be done in a PM, only in a guild in which you have the administrator permission in");
+			Util.msg(event.getChannel(), event.getAuthor(), "This command can't be done in a PM, only in a guild in which you have the administrator permission in");
 		}
 	}
 

@@ -20,7 +20,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "You can view the quotes site here: http://158.69.59.239/quotes/");
+			Util.msg(event.getChannel(), event.getAuthor(), "You can view the quotes site here: http://158.69.59.239/quotes/");
 		}
 		else
 		{
@@ -57,7 +57,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 							StringBuilder list = new StringBuilder();
 
 							list.append("```" + System.lineSeparator());
-							Util.msg(event.getChannel(), "--- **Page " + page + "/" + (int) Math.ceil(secondRs.getDouble("id") / 10) + "** ---");
+							Util.msg(event.getChannel(), event.getAuthor(), "--- **Page " + page + "/" + (int) Math.ceil(secondRs.getDouble("id") / 10) + "** ---");
 
 							while (rs.next())
 							{
@@ -68,11 +68,11 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 							}
 
 							list.append("```");
-							Util.msg(event.getChannel(), list.toString());
+							Util.msg(event.getChannel(), event.getAuthor(), list.toString());
 						}
 						else
 						{
-							Util.msg(event.getChannel(), "That page doesn't exist!");
+							Util.msg(event.getChannel(), event.getAuthor(), "That page doesn't exist!");
 						}
 
 						Util.sqlCon.abort(command ->
@@ -81,14 +81,14 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 					}
 					else
 					{
-						Util.msg(event.getChannel(), "Page numbers need to be numerical!");
+						Util.msg(event.getChannel(), event.getAuthor(), "Page numbers need to be numerical!");
 					}
 
 					break;
 				case "view":
 					if (args.length == 2)
 					{
-						Util.msg(event.getChannel(), "You need to give me a quote ID! **Usage: *quote view <quoteid>**");
+						Util.msg(event.getChannel(), event.getAuthor(), "You need to give me a quote ID! **Usage: *quote view <quoteid>**");
 					}
 					else
 					{
@@ -100,7 +100,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 
 							if (!rs.next())
 							{
-								Util.msg(event.getChannel(), "That quote doesn't exist!");
+								Util.msg(event.getChannel(), event.getAuthor(), "That quote doesn't exist!");
 							}
 							else
 							{
@@ -111,7 +111,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 									StringBuilder quote = new StringBuilder();
 
 									quote.append("```" + System.lineSeparator());
-									Util.msg(event.getChannel(), "**ID:** " + rs.getString("id") + " **Title:** " + rs.getString("title") + " **Submitter:** " + rs.getString("submitter") + " **Date:** " + Util.getTime(rs.getLong("time") * 1000));
+									Util.msg(event.getChannel(), event.getAuthor(), "**ID:** " + rs.getString("id") + " **Title:** " + rs.getString("title") + " **Submitter:** " + rs.getString("submitter") + " **Date:** " + Util.getTime(rs.getLong("time") * 1000));
 
 									for (String s : rs.getString("quote").split("\n"))
 									{
@@ -128,16 +128,16 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 									}
 
 									quote.append("```");
-									Util.msg(event.getChannel(), quote.toString());
+									Util.msg(event.getChannel(), event.getAuthor(), quote.toString());
 
 									if (cut)
 									{
-										Util.msg(event.getChannel(), "The rest of this quote is too long for Discord. Please see the full quote at http://158.69.59.239/quotes/viewquote.php?id=" + args[2]);
+										Util.msg(event.getChannel(), event.getAuthor(), "The rest of this quote is too long for Discord. Please see the full quote at http://158.69.59.239/quotes/viewquote.php?id=" + args[2]);
 									}
 								}
 								else
 								{
-									Util.msg(event.getChannel(), "That quote hasn't been approved yet!");
+									Util.msg(event.getChannel(), event.getAuthor(), "That quote hasn't been approved yet!");
 								}
 							}
 
@@ -149,17 +149,17 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							Util.msg(event.getChannel(), "Quote IDs need to be numerical!");
+							Util.msg(event.getChannel(), event.getAuthor(), "Quote IDs need to be numerical!");
 						}
 					}
 
 					break;
 				case "add":
-					Util.msg(event.getChannel(), "You can submit new quotes here: http://158.69.59.239/quotes/addquote.php");
+					Util.msg(event.getChannel(), event.getAuthor(), "You can submit new quotes here: http://158.69.59.239/quotes/addquote.php");
 
 					break;
 				default:
-					Util.msg(event.getChannel(), "The argument **" + args[1] + "** was not recognized! **Usage: *quote <view/list/add> <quoteid>/[page]**");
+					Util.msg(event.getChannel(), event.getAuthor(), "The argument **" + args[1] + "** was not recognized! **Usage: *quote <view/list/add> <quoteid>/[page]**");
 
 					break;
 			}
