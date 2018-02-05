@@ -209,6 +209,60 @@ public class MainListener
 				event.getMessage().delete();
 				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getCommand().onReactionAdd(event);
 			}
+			else if(AbstractMenuPage.ACTIVE.containsKey(event.getUser().getLongID()))
+			{
+				try
+				{
+					if(event.getMessageID() == AbstractMenuPage.ACTIVE.get(event.getUser().getLongID()).menu.getLongID())
+					{
+						ReactionEmoji e = event.getReaction().getEmoji();
+						int index;
+
+						switch(e.toString())
+						{
+							case "❌":
+								index = -1;
+								break;
+							case "1⃣":
+								index = 0;
+								break;
+							case "2⃣":
+								index = 1;
+								break;
+							case "3⃣":
+								index = 2;
+								break;
+							case "4⃣":
+								index = 3;
+								break;
+							case "5⃣":
+								index = 4;
+								break;
+							case "6⃣":
+								index = 5;
+								break;
+							case "7⃣":
+								index = 6;
+								break;
+							case "8⃣":
+								index = 7;
+								break;
+							case "9⃣":
+								index = 8;
+								break;
+							default:
+								Main.log.warn("Emoji added that is not part of the menu. Awaiting new input.");
+								return;
+						}
+
+						AbstractMenuPage.ACTIVE.get(event.getUser().getLongID()).onReacted(event, index);
+					}
+				}
+				catch(Exception e)
+				{
+					Main.log.error("", e);
+				}
+			}
 		}
 		catch (Exception e)
 		{

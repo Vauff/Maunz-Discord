@@ -94,12 +94,19 @@ public class Util
 	 * Gets the contents of a file as a string
 	 *
 	 * @param arg The path of the file
-	 * @return The content of the file
-	 * @throws IOException If {@link FileUtils#readFileToString(File)} throws an IOException
+	 * @return The content of the file, or an empty string if an exception has been caught
 	 */
-	public static String getFileContents(File arg) throws IOException
+	public static String getFileContents(File arg)
 	{
-		return FileUtils.readFileToString(arg, "UTF-8");
+		try
+		{
+			return FileUtils.readFileToString(arg, "UTF-8");
+		}
+		catch(Exception e)
+		{
+			Main.log.error("", e);
+			return "";
+		}
 	}
 
 	/**
@@ -434,19 +441,26 @@ public class Util
 	 * @param cancellable Whether an x emoji should be added at the end or not
 	 * @param i The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
 	 */
-	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
+	public static void addNumberedReactions(IMessage m, boolean cancellable, int i)
 	{
-		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
-
-		for (int j = 0; j < i; j++)
+		try
 		{
-			m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
-			Thread.sleep(250);
+			String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+
+			for (int j = 0; j < i; j++)
+			{
+				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
+				Thread.sleep(250);
+			}
+
+			if (cancellable)
+			{
+				m.addReaction(EmojiManager.getForAlias(":x:"));
+			}
 		}
-
-		if (cancellable)
+		catch(Exception e)
 		{
-			m.addReaction(EmojiManager.getForAlias(":x:"));
+			Main.log.error("", e);
 		}
 	}
 
@@ -458,17 +472,9 @@ public class Util
 	 */
 	public static boolean isEnabled(IGuild guild)
 	{
-		try
-		{
-			JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
-			JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
+		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
 
-			return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-			return false;
-		}
+		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
 	}
 }
