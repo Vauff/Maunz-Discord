@@ -235,7 +235,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationSuggestionMaps.put(event.getAuthor().getStringID(), mapSuggestion);
 											confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
-											Util.addReactions(m, true, 2);
+											Util.addNumberedReactions(m, true, 2);
 										}
 
 										Executors.newScheduledThreadPool(1).schedule(() ->

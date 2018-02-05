@@ -48,7 +48,7 @@ public class Util
 	public static Connection sqlCon;
 
 	/**
-	 * @return The path at which the running jar file is located.
+	 * @return The path at which the running jar file is located
 	 */
 	public static String getJarLocation()
 	{
@@ -71,7 +71,6 @@ public class Util
 		catch (URISyntaxException e)
 		{
 			Main.log.error("", e);
-
 			return null;
 		}
 	}
@@ -94,12 +93,19 @@ public class Util
 	 * Gets the contents of a file as a string
 	 *
 	 * @param arg The path of the file
-	 * @return The content of the file
-	 * @throws IOException If {@link FileUtils#readFileToString(File)} throws an IOException
+	 * @return The content of the file, or an empty string if an exception has been caught
 	 */
-	public static String getFileContents(File arg) throws IOException
+	public static String getFileContents(File arg)
 	{
-		return FileUtils.readFileToString(arg, "UTF-8");
+		try
+		{
+			return FileUtils.readFileToString(arg, "UTF-8");
+		}
+		catch(Exception e)
+		{
+			Main.log.error("", e);
+			return "";
+		}
 	}
 
 	/**
@@ -141,7 +147,6 @@ public class Util
 		MainListener.uptime.split();
 
 		String uptimeRaw = MainListener.uptime.toSplitString().split("\\.")[0];
-		String response = "";
 		String secondText = "seconds";
 		String minuteText = "minutes";
 		String hourText = "hours";
@@ -238,6 +243,9 @@ public class Util
 		}
 	}
 
+	/**
+	 * Connects to the Chat-Quotes database
+	 */
 	public static void sqlConnect() throws Exception
 	{
 		try
@@ -272,21 +280,7 @@ public class Util
 	 */
 	public static boolean hasPermission(IUser user, IGuild guild)
 	{
-		if (user.getLongID() == 129448521861431296L)
-		{
-			return true;
-		}
-		else
-		{
-			if (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		return user.getLongID() == 129448521861431296L ? true : (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR) ? true : false);
 	}
 
 	/**
@@ -439,45 +433,47 @@ public class Util
 		}
 	}
 
-	public static void addReactions(IMessage m, boolean cancellable, int i) throws Exception
+	/**
+	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
+	 *
+	 * @param m The message to add the emojis to
+	 * @param cancellable Whether an x emoji should be added at the end or not
+	 * @param i The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
+	 */
+	public static void addNumberedReactions(IMessage m, boolean cancellable, int i)
 	{
-		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
-
-		for (int j = 0; j < 10; j++)
+		try
 		{
-			if (i > j)
+			String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+
+			for (int j = 0; j < i; j++)
 			{
 				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
 				Thread.sleep(250);
 			}
-		}
 
-		if (cancellable)
+			if (cancellable)
+			{
+				m.addReaction(EmojiManager.getForAlias(":x:"));
+			}
+		}
+		catch(Exception e)
 		{
-			m.addReaction(EmojiManager.getForAlias(":x:"));
+			Main.log.error("", e);
 		}
 	}
 
+	/**
+	 * Checks whether the bot is enabled for a specified guild
+	 *
+	 * @param guild The guild for which to check if the bot is enabled
+	 * @return true if the bot is enabled for the guild, false otherwise
+	 */
 	public static boolean isEnabled(IGuild guild)
 	{
-		try
-		{
-			JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
-			JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
+		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
 
-			if (botJson.getBoolean("enabled") && guildJson.getBoolean("enabled"))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-			return false;
-		}
+		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
 	}
 }

@@ -9,7 +9,6 @@ public class Await
 {
 	private String id;
 	private AbstractCommand<? extends MessageReceivedEvent> command;
-	private boolean dontRemove = false;
 
 	/**
 	 * @param anID An ID of a user who triggered the message or a message to be removed later on

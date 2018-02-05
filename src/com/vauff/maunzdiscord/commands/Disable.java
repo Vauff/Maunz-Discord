@@ -25,9 +25,7 @@ public class Disable extends AbstractCommand<MessageReceivedEvent>
 	{
 		if (Util.hasPermission(event.getAuthor(), event.getGuild()))
 		{
-			File botFile = new File(Util.getJarLocation() + "config.json");
 			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
-			JSONObject botJson = new JSONObject(Util.getFileContents(botFile));
 			JSONObject guildJson = new JSONObject(Util.getFileContents(guildFile));
 
 			if (Util.hasPermission(event.getAuthor()))
@@ -36,7 +34,7 @@ public class Disable extends AbstractCommand<MessageReceivedEvent>
 
 				waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 				menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
-				Util.addReactions(m, true, 2);
+				Util.addNumberedReactions(m, true, 2);
 
 				Executors.newScheduledThreadPool(1).schedule(() ->
 				{

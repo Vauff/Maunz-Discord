@@ -36,6 +36,7 @@ public class CsgoUpdateBot extends PircBot
 		}
 	}
 
+	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message)
 	{
 		try
