@@ -39,6 +39,9 @@ public class CSGOUpdatesShowNonImportant extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] { "Yes", "No" };
+		return new String[] {
+				"Yes",
+				"No"
+		};
 	}
 }

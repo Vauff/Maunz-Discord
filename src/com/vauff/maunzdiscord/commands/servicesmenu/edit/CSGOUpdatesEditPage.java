@@ -87,6 +87,11 @@ public class CSGOUpdatesEditPage extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] { "Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**", "Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**", "Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**", "Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">" };
+		return new String[] {
+				"Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**",
+				"Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**",
+				"Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**",
+				"Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">"
+		};
 	}
 }

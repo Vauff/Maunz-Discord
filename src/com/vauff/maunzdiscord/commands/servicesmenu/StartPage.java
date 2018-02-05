@@ -28,6 +28,10 @@ public class StartPage extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] { "Add New Service", "Edit Existing Service", "Delete Existing Service" };
+		return new String[] {
+				"Add New Service",
+				"Edit Existing Service",
+				"Delete Existing Service"
+		};
 	}
 }

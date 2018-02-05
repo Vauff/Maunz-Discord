@@ -444,7 +444,17 @@ public class Util
 	{
 		try
 		{
-			String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
+			String[] reactions = {
+					"one",
+					"two",
+					"three",
+					"four",
+					"five",
+					"six",
+					"seven",
+					"eight",
+					"nine"
+			};
 
 			for (int j = 0; j < i; j++)
 			{

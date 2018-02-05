@@ -31,6 +31,9 @@ public class DeleteConfirmationPage extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] { "Yes, delete the service permanently", "No, keep the service" };
+		return new String[] {
+				"Yes, delete the service permanently",
+				"No, keep the service"
+		};
 	}
 }

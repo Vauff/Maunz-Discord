@@ -81,6 +81,11 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] { "Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**", "Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**", "Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**", "Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">" };
+		return new String[] {
+				"Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**",
+				"Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**",
+				"Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**",
+				"Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">"
+		};
 	}
 }
