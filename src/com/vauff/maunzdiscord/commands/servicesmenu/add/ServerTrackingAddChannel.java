@@ -56,7 +56,7 @@ public class ServerTrackingAddChannel extends AbstractMenuPage
 		{
 			AbstractMenuPage page = new ServerTrackingAddIP(trigger, cmd, handler);
 
-			((ServerTrackingSetupPageData)handler).channel = message;
+			((ServerTrackingSetupPageData) handler).channel = message;
 			show(page);
 			waitForReply(page.menu.getStringID(), event.getAuthor().getStringID());
 		}

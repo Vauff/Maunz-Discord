@@ -22,43 +22,47 @@ public class CSGOUpdatesEditPage extends AbstractMenuPage
 	{
 		super(trigger, cmd);
 
-		addChild(0, (event) -> {
+		addChild(0, (event) ->
+		{
 			try
 			{
 				json.put("enabled", !json.getBoolean("enabled"));
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				show(this);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Main.log.error("", e);
 			}
 		});
-		addChild(1, (event) -> {
+		addChild(1, (event) ->
+		{
 			try
 			{
 				json.put("nonImportantUpdates", !json.getBoolean("nonImportantUpdates"));
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				show(this);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Main.log.error("", e);
 			}
 		});
-		addChild(2, (event) -> {
+		addChild(2, (event) ->
+		{
 			try
 			{
 				json.put("earlyWarnings", !json.getBoolean("earlyWarnings"));
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				show(this);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Main.log.error("", e);
 			}
 		});
-		addChild(3, (event) -> {
+		addChild(3, (event) ->
+		{
 			AbstractMenuPage page = new CSGOUpdatesEditChannel(trigger, cmd);
 
 			show(page);
@@ -83,11 +87,6 @@ public class CSGOUpdatesEditPage extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] {
-				"Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**",
-				"Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**",
-				"Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**",
-				"Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">"
-		};
+		return new String[] { "Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**", "Non Important Updates: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("nonImportantUpdates"))) + "**", "Early Warnings: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("earlyWarnings"))) + "**", "Update Notification Channel: " + "<#" + json.getLong("updateNotificationChannelID") + ">" };
 	}
 }

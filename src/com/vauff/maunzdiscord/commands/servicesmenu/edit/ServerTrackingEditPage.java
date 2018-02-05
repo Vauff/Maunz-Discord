@@ -22,37 +22,41 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 	{
 		super(trigger, cmd);
 
-		addChild(0, (event) -> {
+		addChild(0, (event) ->
+		{
 			try
 			{
 				json.put("enabled", !json.getBoolean("enabled"));
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				show(this);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Main.log.error("", e);
 			}
 		});
-		addChild(1, (event) -> {
+		addChild(1, (event) ->
+		{
 			try
 			{
 				json.put("mapCharacterLimit", !json.getBoolean("mapCharacterLimit"));
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				show(this);
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				Main.log.error("", e);
 			}
 		});
-		addChild(2, (event) -> {
+		addChild(2, (event) ->
+		{
 			AbstractMenuPage page = new ServerTrackingEditIP(trigger, cmd);
 
 			show(page);
 			waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
 		});
-		addChild(3, (event) -> {
+		addChild(3, (event) ->
+		{
 			AbstractMenuPage page = new ServerTrackingEditChannel(trigger, cmd);
 
 			show(page);
@@ -77,11 +81,6 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] {
-				"Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**",
-				"Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**",
-				"Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**",
-				"Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">"
-		};
+		return new String[] { "Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**", "Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**", "Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**", "Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">" };
 	}
 }

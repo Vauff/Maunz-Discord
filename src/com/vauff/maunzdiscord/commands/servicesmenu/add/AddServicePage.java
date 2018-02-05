@@ -13,13 +13,14 @@ public class AddServicePage extends AbstractServiceActionPage
 	{
 		super(trigger, cmd);
 
-		if(services.size() != 2)
+		if (services.size() != 2)
 		{
 			int i = 0;
 
 			if (!services.contains("server-tracking"))
 			{
-				addChild(i++, (event) -> {
+				addChild(i++, (event) ->
+				{
 					AbstractMenuPage page = new ServerTrackingAddChannel(trigger, cmd, false);
 
 					show(page);
@@ -29,7 +30,8 @@ public class AddServicePage extends AbstractServiceActionPage
 
 			if (!services.contains("csgo-updates"))
 			{
-				addChild(i, (event) -> {
+				addChild(i, (event) ->
+				{
 					AbstractMenuPage page = new CSGOUpdatesAddChannel(trigger, cmd, false);
 
 					show(page);
@@ -42,7 +44,7 @@ public class AddServicePage extends AbstractServiceActionPage
 	@Override
 	public void show()
 	{
-		if(services.size() == 2)
+		if (services.size() == 2)
 		{
 			Util.msg(trigger.getChannel(), "There are no more services to add!");
 			end();

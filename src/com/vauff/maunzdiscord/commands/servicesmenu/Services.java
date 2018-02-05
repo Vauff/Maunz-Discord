@@ -30,7 +30,7 @@ public class Services extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) throws Exception
 	{
-		if(AbstractMenuPage.ACTIVE.containsKey(event.getAuthor().getLongID()))
+		if (AbstractMenuPage.ACTIVE.containsKey(event.getAuthor().getLongID()))
 		{
 			AbstractMenuPage.ACTIVE.get(event.getAuthor().getLongID()).onReplied(event);
 		}

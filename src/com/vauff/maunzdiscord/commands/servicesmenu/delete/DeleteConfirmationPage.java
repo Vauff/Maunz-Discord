@@ -19,7 +19,7 @@ public class DeleteConfirmationPage extends AbstractMenuPage
 	@Override
 	public final String getTitle()
 	{
-		return ":x:  |  **Delete Existing Service: " + serviceToDelete +"**";
+		return ":x:  |  **Delete Existing Service: " + serviceToDelete + "**";
 	}
 
 	@Override
@@ -31,9 +31,6 @@ public class DeleteConfirmationPage extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] {
-				"Yes, delete the service permanently",
-				"No, keep the service"
-		};
+		return new String[] { "Yes, delete the service permanently", "No, keep the service" };
 	}
 }

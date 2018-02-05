@@ -18,13 +18,15 @@ public class CSGOUpdatesEarlyWarnings extends AbstractMenuPage
 	{
 		super(trigger, cmd, handler);
 
-		addChild(0, (event) -> {
-			((CSGOUpdatesSetupPageData)handler).earlyWarnings = true;
+		addChild(0, (event) ->
+		{
+			((CSGOUpdatesSetupPageData) handler).earlyWarnings = true;
 			save();
 		});
 
-		addChild(0, (event) -> {
-			((CSGOUpdatesSetupPageData)handler).earlyWarnings = false;
+		addChild(0, (event) ->
+		{
+			((CSGOUpdatesSetupPageData) handler).earlyWarnings = false;
 			save();
 		});
 	}
@@ -42,14 +44,14 @@ public class CSGOUpdatesEarlyWarnings extends AbstractMenuPage
 			file.createNewFile();
 			json.put("enabled", true);
 			json.put("lastGuildName", trigger.getGuild().getName());
-			json.put("updateNotificationChannelID", Long.parseLong(((CSGOUpdatesSetupPageData)handler).channel));
-			json.put("nonImportantUpdates", Boolean.valueOf(((CSGOUpdatesSetupPageData)handler).showNonImportant));
-			json.put("earlyWarnings", ((CSGOUpdatesSetupPageData)handler).earlyWarnings);
+			json.put("updateNotificationChannelID", Long.parseLong(((CSGOUpdatesSetupPageData) handler).channel));
+			json.put("nonImportantUpdates", Boolean.valueOf(((CSGOUpdatesSetupPageData) handler).showNonImportant));
+			json.put("earlyWarnings", ((CSGOUpdatesSetupPageData) handler).earlyWarnings);
 			FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 			Util.msg(trigger.getChannel(), "Successfully added the CS:GO Update Notifications service!");
 			end();
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			Main.log.error("", e);
 		}
@@ -70,9 +72,6 @@ public class CSGOUpdatesEarlyWarnings extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] {
-				"Yes",
-				"No"
-		};
+		return new String[] { "Yes", "No" };
 	}
 }

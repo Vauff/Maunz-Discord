@@ -13,14 +13,16 @@ public class CSGONotificationsDeletePage extends DeleteConfirmationPage
 	{
 		super(trigger, cmd, std);
 
-		addChild(0, (event) -> {
+		addChild(0, (event) ->
+		{
 			File file = new File(Util.getJarLocation() + "data/services/csgo-updates/" + trigger.getGuild().getStringID() + ".json");
 
 			file.delete();
 			Util.msg(trigger.getChannel(), "Successfully deleted the CS:GO updates service!");
 		});
 
-		addChild(1, (event) -> {
+		addChild(1, (event) ->
+		{
 			Util.msg(trigger.getChannel(), "No problem, I won't delete the CS:GO updates service");
 		});
 	}

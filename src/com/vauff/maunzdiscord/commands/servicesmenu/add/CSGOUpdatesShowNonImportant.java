@@ -11,13 +11,15 @@ public class CSGOUpdatesShowNonImportant extends AbstractMenuPage
 	{
 		super(trigger, cmd, handler);
 
-		addChild(0, (event) -> {
-			((CSGOUpdatesSetupPageData)handler).showNonImportant = true;
+		addChild(0, (event) ->
+		{
+			((CSGOUpdatesSetupPageData) handler).showNonImportant = true;
 			show(new CSGOUpdatesEarlyWarnings(trigger, cmd, handler));
 		});
 
-		addChild(0, (event) -> {
-			((CSGOUpdatesSetupPageData)handler).showNonImportant = false;
+		addChild(0, (event) ->
+		{
+			((CSGOUpdatesSetupPageData) handler).showNonImportant = false;
 			show(new CSGOUpdatesEarlyWarnings(trigger, cmd, handler));
 		});
 	}
@@ -37,9 +39,6 @@ public class CSGOUpdatesShowNonImportant extends AbstractMenuPage
 	@Override
 	public String[] getItems()
 	{
-		return new String[] {
-				"Yes",
-				"No"
-		};
+		return new String[] { "Yes", "No" };
 	}
 }

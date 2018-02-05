@@ -12,21 +12,27 @@ import sx.blah.discord.handle.obj.IMessage;
 
 public abstract class AbstractMenuPage
 {
-	/** Contains all active menus by users with their currently shown pages (used for reactions) */
+	/**
+	 * Contains all active menus by users with their currently shown pages (used for reactions)
+	 */
 	public static final HashMap<Long, AbstractMenuPage> ACTIVE = new HashMap<Long, AbstractMenuPage>();
 	protected AbstractCommand<MessageReceivedEvent> cmd;
 	protected AbstractMenuPage[] childPages = new AbstractMenuPage[9];
 	protected Consumer<ReactionAddEvent>[] childConsumers = new Consumer[9];
 	protected MessageReceivedEvent trigger;
-	/** The menu message sent by the bot */
+	/**
+	 * The menu message sent by the bot
+	 */
 	public IMessage menu;
-	/** A representative interface that helps saving data across multiple menu pages */
+	/**
+	 * A representative interface that helps saving data across multiple menu pages
+	 */
 	protected IDataHandler handler;
 	protected ScheduledFuture removeTimer;
 
 	/**
 	 * @param trigger The message event that triggered this menu
-	 * @param cmd The command that triggered this menu
+	 * @param cmd     The command that triggered this menu
 	 */
 	public AbstractMenuPage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd)
 	{
@@ -61,8 +67,8 @@ public abstract class AbstractMenuPage
 
 	/**
 	 * @return An array where each entry represents the description of the menu item with the same index.
-	 * 			Minimum length is 1, maximum length is 9. Line separators and prefixes ("**`[1]`**  |  ")
-	 * 			are added automatically. Can be null and will be ignored if so
+	 * Minimum length is 1, maximum length is 9. Line separators and prefixes ("**`[1]`**  |  ")
+	 * are added automatically. Can be null and will be ignored if so
 	 */
 	public abstract String[] getItems();
 
@@ -71,7 +77,9 @@ public abstract class AbstractMenuPage
 	 *
 	 * @param event The event that contains the reply in question
 	 */
-	public void onReplied(MessageReceivedEvent event) throws Exception {}
+	public void onReplied(MessageReceivedEvent event) throws Exception
+	{
+	}
 
 	/**
 	 * Sends a specific page to chat after deleting the previous menu and canceling its timer
@@ -94,7 +102,7 @@ public abstract class AbstractMenuPage
 	{
 		String items = "";
 
-		for(int i = 0; i < getAmount(); i++)
+		for (int i = 0; i < getAmount(); i++)
 		{
 			items += "**`[" + (i + 1) + "]`**  |  " + getItems()[i] + System.lineSeparator();
 		}
@@ -103,7 +111,8 @@ public abstract class AbstractMenuPage
 		menu = trigger.getChannel().sendMessage(getTitle() + System.lineSeparator() + System.lineSeparator() + (getText() != null ? getText().replaceAll("\n", System.lineSeparator()) + System.lineSeparator() + System.lineSeparator() : "") + items);
 		Util.addNumberedReactions(menu, true, getAmount());
 
-		removeTimer = Executors.newScheduledThreadPool(1).schedule(() -> {
+		removeTimer = Executors.newScheduledThreadPool(1).schedule(() ->
+		{
 			if (!menu.isDeleted())
 			{
 				AbstractCommand.AWAITED.remove(trigger.getAuthor().getStringID());
@@ -122,8 +131,10 @@ public abstract class AbstractMenuPage
 		AbstractCommand.AWAITED.remove(trigger.getAuthor().getStringID());
 		ACTIVE.remove(trigger.getAuthor().getLongID());
 
-		if(removeTimer != null)
+		if (removeTimer != null)
+		{
 			removeTimer.cancel(false);
+		}
 
 		menu.delete();
 	}
@@ -133,31 +144,33 @@ public abstract class AbstractMenuPage
 	 * Tries to find a valid page first. If childPages[item] is null, this method will try to execute a child function.
 	 *
 	 * @param event The event that triggered this reaction
-	 * @param item The selected item, 0-8. -1 if the user clicked X
+	 * @param item  The selected item, 0-8. -1 if the user clicked X
 	 */
 	public final void onReacted(ReactionAddEvent event, int item) throws Exception
 	{
-		if(item < -1 || item > 8)
+		if (item < -1 || item > 8)
 		{
 			Main.log.warn("Tried to add a child with index " + item + ". Index needs to be between including -1 and 8");
 			return;
 		}
 
-		if(item == -1)
+		if (item == -1)
 		{
 			end();
 		}
-		else if(childPages[item] != null)
+		else if (childPages[item] != null)
 		{
 			show(childPages[item]);
 		}
-		else if(childConsumers[item] != null)
+		else if (childConsumers[item] != null)
 		{
 			end();
 			childConsumers[item].accept(event);
 		}
 		else
+		{
 			Main.log.warn("A menu item was selected (" + item + ") but a corresponding page or function could not be found.");
+		}
 	}
 
 	/**
@@ -165,14 +178,14 @@ public abstract class AbstractMenuPage
 	 * Adding all childs should be done in the constructor of this page. The array needs to be populated
 	 * from smallest to biggest index.
 	 *
-	 * @param i The place at which to add the child (1 will be the second child, meaning when selecting the
-	 * 			 second options the page at this index 1 will be shown). This parameter can be between
-	 * 			 0 (including) and 8 (including)
+	 * @param i    The place at which to add the child (1 will be the second child, meaning when selecting the
+	 *             second options the page at this index 1 will be shown). This parameter can be between
+	 *             0 (including) and 8 (including)
 	 * @param page The page to add
 	 */
 	public final void addChild(int i, AbstractMenuPage page)
 	{
-		if(i < 0 || i > 8)
+		if (i < 0 || i > 8)
 		{
 			Main.log.warn("i was " + i + " when calling addChild on a menu page. Page was not added.");
 			return;
@@ -186,14 +199,14 @@ public abstract class AbstractMenuPage
 	 * Adding all childs should be done in the constructor of this page. The array needs to be populated
 	 * from smallest to biggest index.
 	 *
-	 * @param i The place at which to add the child (1 will be the second child, meaning when selecting the
-	 * 			 second options the page at this index 1 will be shown). This parameter can be between
-	 * 			 0 (including) and 8 (including)
+	 * @param i    The place at which to add the child (1 will be the second child, meaning when selecting the
+	 *             second options the page at this index 1 will be shown). This parameter can be between
+	 *             0 (including) and 8 (including)
 	 * @param page The page to add
 	 */
 	public final void addChild(int i, Consumer<ReactionAddEvent> f)
 	{
-		if(i < 0 || i > 8)
+		if (i < 0 || i > 8)
 		{
 			Main.log.warn("index was " + i + " when calling addChild on a menu page, but needs to be between 0 and 8. Page was not added.");
 			return;
@@ -214,12 +227,14 @@ public abstract class AbstractMenuPage
 	 * Sets up this menu to await a reply by the user who triggered this menu
 	 *
 	 * @param messageID The message which will get deleted afterwards
-	 * @param userID The user who triggered this command
+	 * @param userID    The user who triggered this command
 	 */
 	public void waitForReply(String messageID, String userID)
 	{
 		AbstractCommand.AWAITED.put(userID, new Await(messageID, cmd));
 	}
 
-	public interface IDataHandler {}
+	public interface IDataHandler
+	{
+	}
 }

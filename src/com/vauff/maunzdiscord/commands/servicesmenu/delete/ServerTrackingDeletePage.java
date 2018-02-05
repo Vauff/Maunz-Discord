@@ -13,7 +13,8 @@ public class ServerTrackingDeletePage extends DeleteConfirmationPage
 	{
 		super(trigger, cmd, std);
 
-		addChild(0, (event) -> {
+		addChild(0, (event) ->
+		{
 			File folder = new File(Util.getJarLocation() + "data/services/server-tracking/" + trigger.getGuild().getStringID() + "/");
 			File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + trigger.getGuild().getStringID() + "/serverInfo.json");
 
@@ -22,7 +23,8 @@ public class ServerTrackingDeletePage extends DeleteConfirmationPage
 			Util.msg(trigger.getChannel(), "Successfully deleted the server tracking service!");
 		});
 
-		addChild(1, (event) -> {
+		addChild(1, (event) ->
+		{
 			Util.msg(trigger.getChannel(), "No problem, I won't delete the server tracking service");
 		});
 	}

@@ -101,7 +101,7 @@ public class Util
 		{
 			return FileUtils.readFileToString(arg, "UTF-8");
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			Main.log.error("", e);
 			return "";
@@ -436,9 +436,9 @@ public class Util
 	/**
 	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
 	 *
-	 * @param m The message to add the emojis to
+	 * @param m           The message to add the emojis to
 	 * @param cancellable Whether an x emoji should be added at the end or not
-	 * @param i The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
+	 * @param i           The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
 	 */
 	public static void addNumberedReactions(IMessage m, boolean cancellable, int i)
 	{
@@ -457,7 +457,7 @@ public class Util
 				m.addReaction(EmojiManager.getForAlias(":x:"));
 			}
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			Main.log.error("", e);
 		}

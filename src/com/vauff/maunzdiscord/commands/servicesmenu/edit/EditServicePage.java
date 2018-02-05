@@ -12,7 +12,7 @@ public class EditServicePage extends AbstractServiceActionPage
 	{
 		super(trigger, cmd);
 
-		if(guildHasService)
+		if (guildHasService)
 		{
 			int i = 0;
 
@@ -31,7 +31,7 @@ public class EditServicePage extends AbstractServiceActionPage
 	@Override
 	public void show()
 	{
-		if(!guildHasService)
+		if (!guildHasService)
 		{
 			Util.msg(trigger.getChannel(), "There are currently no services in this guild to edit!");
 		}

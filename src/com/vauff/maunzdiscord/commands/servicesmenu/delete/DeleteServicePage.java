@@ -11,7 +11,7 @@ public class DeleteServicePage extends AbstractServiceActionPage
 	{
 		super(trigger, cmd);
 
-		if(guildHasService)
+		if (guildHasService)
 		{
 			int i = 0;
 
@@ -23,7 +23,7 @@ public class DeleteServicePage extends AbstractServiceActionPage
 			if (services.contains("csgo-updates"))
 			{
 
-				addChild(i, new CSGONotificationsDeletePage(trigger,cmd, "CS:GO Update Notifications"));
+				addChild(i, new CSGONotificationsDeletePage(trigger, cmd, "CS:GO Update Notifications"));
 			}
 		}
 	}

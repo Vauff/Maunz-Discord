@@ -211,16 +211,16 @@ public class MainListener
 				event.getMessage().delete();
 				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getCommand().onReactionAdd(event);
 			}
-			else if(AbstractMenuPage.ACTIVE.containsKey(event.getUser().getLongID()))
+			else if (AbstractMenuPage.ACTIVE.containsKey(event.getUser().getLongID()))
 			{
 				try
 				{
-					if(event.getMessageID() == AbstractMenuPage.ACTIVE.get(event.getUser().getLongID()).menu.getLongID())
+					if (event.getMessageID() == AbstractMenuPage.ACTIVE.get(event.getUser().getLongID()).menu.getLongID())
 					{
 						ReactionEmoji e = event.getReaction().getEmoji();
 						int index;
 
-						switch(e.toString())
+						switch (e.toString())
 						{
 							case "❌":
 								index = -1;
@@ -260,7 +260,7 @@ public class MainListener
 						AbstractMenuPage.ACTIVE.get(event.getUser().getLongID()).onReacted(event, index);
 					}
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					Main.log.error("", e);
 				}

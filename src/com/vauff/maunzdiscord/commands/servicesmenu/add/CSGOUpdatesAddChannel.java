@@ -56,7 +56,7 @@ public class CSGOUpdatesAddChannel extends AbstractMenuPage
 		{
 			AbstractMenuPage page = new CSGOUpdatesShowNonImportant(trigger, cmd, handler);
 
-			((CSGOUpdatesSetupPageData)handler).channel = message;
+			((CSGOUpdatesSetupPageData) handler).channel = message;
 			show(page);
 			waitForReply(page.menu.getStringID(), event.getAuthor().getStringID());
 		}
