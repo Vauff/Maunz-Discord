@@ -48,8 +48,7 @@ public class Util
 	public static Connection sqlCon;
 
 	/**
-	 * @return The path at which the running jar file is located,
-	 * 			or an empty string if an exception has been caught
+	 * @return The path at which the running jar file is located
 	 */
 	public static String getJarLocation()
 	{
@@ -72,7 +71,7 @@ public class Util
 		catch (URISyntaxException e)
 		{
 			Main.log.error("", e);
-			return "";
+			return null;
 		}
 	}
 
