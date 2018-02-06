@@ -14,11 +14,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "Command help is available at <https://github.com/Vauff/Maunz-Discord/blob/master/README.md>" + System.lineSeparator() + System.lineSeparator() + "You can also get support in the #help channel on the Maunz Discord server at https://discord.gg/v55fW9b");
+			Util.msg(event.getChannel(), event.getAuthor(), "Command help is available at <https://github.com/Vauff/Maunz-Discord/blob/master/README.md>" + System.lineSeparator() + System.lineSeparator() + "You can also get support in the #help channel on the Maunz Discord server at https://discord.gg/v55fW9b");
 		}
 		else
 		{
-			Util.msg(event.getChannel(), cmdHelp(args));
+			Util.msg(event.getChannel(), event.getAuthor(), cmdHelp(args));
 		}
 	}
 
@@ -38,6 +38,8 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				return "Shows information about a Minecraft account. **Usage: *accinfo <username>**";
 			case "benchmark":
 				return "Provides complete benchmark information on a GPU or CPU powered by PassMark. **Usage: *benchmark <gpu/cpu>**";
+			case "blacklist":
+				return "Allows you to blacklist the usage of either all commands or specific commands in a channel. **Usage: *blacklist [all/channel] <all/command>**";
 			case "changelog":
 				return "Tells you the changelog of the Maunz version you specify. **Usage: *changelog [version]**";
 			case "disable":
@@ -51,7 +53,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 			case "map":
 				return "Tells you which map a server is playing outside of its standard map tracking channel. **Usage: *map**";
 			case "notify":
-				return "Lets you list, add or remove your server map notifications. **Usage: *notify <list/wipe/mapname>**";
+				return "Lets you list, wipe, add or remove your server map notifications. **Usage: *notify <list/wipe/mapname>**";
 			case "ping":
 				return "Makes Maunz respond to you with pong. Very useful for testing your connection! **Usage: *ping**";
 			case "players":
@@ -72,8 +74,6 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				return "Links you to a Steam profile based on a Steam ID. **Usage *steam <steamid>**";
 			case "stop":
 				return "Stops Maunz, only usable by Vauff. **Usage: *stop**";
-			case "trello":
-				return "Links you to the Trello board of Maunz. Feature requests and bug reports can be made here. **Usage: *trello**";
 			default:
 				return "I don't recognize the command " + args[1] + "!";
 		}

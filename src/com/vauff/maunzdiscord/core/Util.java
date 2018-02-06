@@ -28,16 +28,13 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * A class holding several static utility methods
  */
 public class Util
 {
-	/**
-	 * true if the bot is enabled, false otherwise
-	 */
-	public static boolean isEnabled = true;
 	/**
 	 * true if the bot is in development mode, false otherwise.
 	 * Used to determine the Discord API token and handle differences in the live and dev version
@@ -51,7 +48,7 @@ public class Util
 	public static Connection sqlCon;
 
 	/**
-	 * @return The path at which the running jar file is located.
+	 * @return The path at which the running jar file is located
 	 */
 	public static String getJarLocation()
 	{
@@ -74,7 +71,6 @@ public class Util
 		catch (URISyntaxException e)
 		{
 			Main.log.error("", e);
-
 			return null;
 		}
 	}
@@ -97,12 +93,19 @@ public class Util
 	 * Gets the contents of a file as a string
 	 *
 	 * @param arg The path of the file
-	 * @return The content of the file
-	 * @throws IOException If {@link FileUtils#readFileToString(File)} throws an IOException
+	 * @return The content of the file, or an empty string if an exception has been caught
 	 */
-	public static String getFileContents(File arg) throws IOException
+	public static String getFileContents(File arg)
 	{
-		return FileUtils.readFileToString(arg, "UTF-8");
+		try
+		{
+			return FileUtils.readFileToString(arg, "UTF-8");
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+			return "";
+		}
 	}
 
 	/**
@@ -144,7 +147,6 @@ public class Util
 		MainListener.uptime.split();
 
 		String uptimeRaw = MainListener.uptime.toSplitString().split("\\.")[0];
-		String response = "";
 		String secondText = "seconds";
 		String minuteText = "minutes";
 		String hourText = "hours";
@@ -241,13 +243,16 @@ public class Util
 		}
 	}
 
+	/**
+	 * Connects to the Chat-Quotes database
+	 */
 	public static void sqlConnect() throws Exception
 	{
 		try
 		{
 			JSONObject json = new JSONObject(Util.getFileContents("config.json"));
 
-			sqlCon = DriverManager.getConnection("jdbc:mysql://158.69.59.239:3306/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", "Vauff", json.getString("databasePassword"));
+			sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getJSONObject("database").getString("hostname") + "/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getJSONObject("database").getString("username"), json.getJSONObject("database").getString("password"));
 		}
 		catch (SQLException e)
 		{
@@ -256,39 +261,59 @@ public class Util
 	}
 
 	/**
-	 * Checks if the client ID of a user is equal to the client ID of Vauff
+	 * Checks if the client ID of a user is equal to the client ID of the botOwner supplied in config.json
 	 *
 	 * @param user The user to check
-	 * @return true if the client IDs match and the given user is Vauff, false otherwise
+	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json, false otherwise
 	 */
 	public static boolean hasPermission(IUser user)
 	{
-		return user.getLongID() == 129448521861431296L;
+		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+
+		return user.getLongID() == json.getLong("botOwnerID");
 	}
 
 	/**
-	 * Checks if the client ID of a user is equal to the client ID of Vauff or the user is administrator in the supplied guild
+	 * Checks if the client ID of a user is equal to the client ID of the botOwner supplied in config.json or the user is administrator in the supplied guild
 	 *
 	 * @param user  The user to check
 	 * @param guild The guild to check for permissions in
-	 * @return true if the client IDs match and the given user is Vauff or the user is a guild administrator, false otherwise
+	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json or the user is a guild administrator, false otherwise
 	 */
 	public static boolean hasPermission(IUser user, IGuild guild)
 	{
-		if (user.getLongID() == 129448521861431296L)
+		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+
+		return user.getLongID() == json.getLong("botOwnerID") ? true : (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR) || user.getPermissionsForGuild(guild).contains(Permissions.MANAGE_SERVER) ? true : false);
+	}
+
+	/**
+	 * Sends a message to a channel
+	 *
+	 * @param channel The channel
+	 * @param author  The author
+	 * @param message The message
+	 */
+	public static void msg(IChannel channel, IUser author, String message)
+	{
+		try
 		{
-			return true;
+			channel.sendMessage(message);
 		}
-		else
+		catch (MissingPermissionsException e)
 		{
-			if (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR))
+			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("SEND_MESSAGES!"))
 			{
-				return true;
+				msg(author.getOrCreatePMChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.mention() + " because it's lacking the **SEND_MESSAGES** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 			}
 			else
 			{
-				return false;
+				Main.log.error(e);
 			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
 		}
 	}
 
@@ -306,7 +331,38 @@ public class Util
 		}
 		catch (Exception e)
 		{
-			Main.log.error(e);
+			Main.log.error("", e);
+		}
+	}
+
+	/**
+	 * Sends an embed to a channel
+	 *
+	 * @param channel The channel
+	 * @param author  The author
+	 * @param message The embed
+	 */
+	public static void msg(IChannel channel, IUser author, EmbedObject message)
+	{
+		try
+		{
+			channel.sendMessage("", message, false);
+		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("EMBED_LINKS!"))
+			{
+				msg(channel, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command because it's lacking the **EMBED_LINKS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+			}
+
+			else
+			{
+				Main.log.error(e);
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
 		}
 	}
 
@@ -322,9 +378,20 @@ public class Util
 		{
 			channel.sendMessage("", message, false);
 		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("EMBED_LINKS!"))
+			{
+				msg(channel, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to send a message because it's lacking the **EMBED_LINKS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set.");
+			}
+			else
+			{
+				Main.log.error(e);
+			}
+		}
 		catch (Exception e)
 		{
-			Main.log.error(e);
+			Main.log.error("", e);
 		}
 	}
 
@@ -370,22 +437,68 @@ public class Util
 		}
 	}
 
-	public static void addReactions(IMessage m, boolean cancellable, int i) throws Exception
+	/**
+	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
+	 *
+	 * @param m           The message to add the emojis to
+	 * @param cancellable Whether an x emoji should be added at the end or not
+	 * @param i           The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
+	 */
+	public static void addNumberedReactions(IMessage m, boolean cancellable, int i)
 	{
-		String[] reactions = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
-
-		for (int j = 0; j < 10; j++)
+		try
 		{
-			if (i > j)
+			String[] reactions = {
+					"one",
+					"two",
+					"three",
+					"four",
+					"five",
+					"six",
+					"seven",
+					"eight",
+					"nine"
+			};
+
+			for (int j = 0; j < i; j++)
 			{
 				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
 				Thread.sleep(250);
 			}
-		}
 
-		if (cancellable)
-		{
-			m.addReaction(EmojiManager.getForAlias(":x:"));
+			if (cancellable)
+			{
+				m.addReaction(EmojiManager.getForAlias(":x:"));
+			}
 		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("ADD_REACTIONS!"))
+			{
+				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+			}
+			else
+			{
+				Main.log.error(e);
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+	}
+
+	/**
+	 * Checks whether the bot is enabled for a specified guild
+	 *
+	 * @param guild The guild for which to check if the bot is enabled
+	 * @return true if the bot is enabled for the guild, false otherwise
+	 */
+	public static boolean isEnabled(IGuild guild)
+	{
+		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
+
+		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
 	}
 }

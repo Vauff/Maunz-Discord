@@ -21,7 +21,7 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "You need to provide a GPU/CPU name to benchmark!");
+			Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a GPU/CPU name to benchmark!");
 		}
 		else
 		{
@@ -83,7 +83,7 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 					}
 
 					EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withThumbnail("https://i.imgur.com/nAe3jfd.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).build();
-					Util.msg(event.getChannel(), embed);
+					Util.msg(event.getChannel(), event.getAuthor(), embed);
 				}
 				if (link.contains("cpu.php"))
 				{
@@ -127,12 +127,12 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 					}
 
 					EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withThumbnail("https://i.imgur.com/iKLrQQN.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Single Thread Score", singleThread, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Cores", cores, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).appendField("Clock Speed", clockSpeed, true).appendField("Turbo Speed", turboSpeed, true).appendField("Socket", socket, true).appendField("Typical TDP", tdp, true).build();
-					Util.msg(event.getChannel(), embed);
+					Util.msg(event.getChannel(), event.getAuthor(), embed);
 				}
 			}
 			else
 			{
-				Util.msg(event.getChannel(), "I couldn't find any results for \"" + Util.addArgs(args, 1) + "\"!");
+				Util.msg(event.getChannel(), event.getAuthor(), "I couldn't find any results for \"" + Util.addArgs(args, 1) + "\"!");
 			}
 
 		}

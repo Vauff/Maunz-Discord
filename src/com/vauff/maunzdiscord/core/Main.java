@@ -18,7 +18,7 @@ public class Main
 {
 	public static IDiscordClient client;
 	public static CsgoUpdateBot bot;
-	public static String version = "2.2.3";
+	public static String version = "2.3";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -38,10 +38,15 @@ public class Main
 			{
 				json = new JSONObject();
 				file.createNewFile();
+				json.put("enabled", true);
 				json.put("discordToken", "");
 				json.put("discordDevToken", "");
-				json.put("databasePassword", "");
+				json.put("botOwnerID", 0L);
 				json.put("cleverbotAPIKey", "");
+				json.put("database", new JSONObject());
+				json.getJSONObject("database").put("hostname", "");
+				json.getJSONObject("database").put("username", "");
+				json.getJSONObject("database").put("password", "");
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 			}
 

@@ -5,6 +5,8 @@ import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.net.SocketTimeoutException;
 
+import org.apache.commons.io.FileUtils;
+
 import org.jibble.pircbot.Colors;
 import org.jibble.pircbot.PircBot;
 
@@ -34,11 +36,12 @@ public class CsgoUpdateBot extends PircBot
 		}
 	}
 
+	@Override
 	public void onMessage(String channel, String sender, String login, String hostname, String message)
 	{
 		try
 		{
-			if (sender.equals(listeningNick) && Util.isEnabled)
+			if (sender.equals(listeningNick))
 			{
 				if (message.contains("https://steamdb.info/changelist/"))
 				{
@@ -81,102 +84,53 @@ public class CsgoUpdateBot extends PircBot
 					String html = doc.select("div[data-changeid=\"" + consistentLastChangelistNumber + "\"]").text();
 					String htmlRaw = doc.select("div[data-changeid=\"" + consistentLastChangelistNumber + "\"]").html();
 
-					if (html.contains("branches/public/buildid"))
+					for (File file : new File(Util.getJarLocation() + "data/services/csgo-updates").listFiles())
 					{
-						String msg = "SteamDB has spotted a public branch update for CS:GO on the 730 app, this means **an update was pushed to the Steam client!** <https://steamdb.info/app/730/history/>";
+						JSONObject json = new JSONObject(Util.getFileContents(file));
 
-						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
-
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+						try
 						{
-							JSONObject json = new JSONObject(Util.getFileContents(file));
-
-							if (json.getBoolean("enabled"))
-							{
-								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
-							}
+							Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")));
 						}
-					}
-					else if (html.contains("branches/dpr/buildid"))
-					{
-						String msg = "SteamDB has spotted a DPR branch update for CS:GO on the 730 app, this means **an update is probably coming.** <https://steamdb.info/app/730/history/>";
-
-						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
-
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+						catch (NullPointerException e)
 						{
-							JSONObject json = new JSONObject(Util.getFileContents(file));
-
-							if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings"))
-							{
-								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
-							}
+							Main.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the CS:GO update service loop will move on to the next guild");
+							continue;
 						}
-					}
-					else if (html.replaceAll("\\d", "").contains("branches/./buildid") || html.replaceAll("\\d", "").contains("branches/../buildid") || html.replaceAll("\\d", "").contains("branches/.../buildid"))
-					{
-						String msg = "SteamDB has spotted a version branch update for CS:GO on the 730 app, this means **an update might be coming.** <https://steamdb.info/app/730/history/>";
 
-						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
-
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+						if (json.getBoolean("enabled") && Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")))))
 						{
-							JSONObject json = new JSONObject(Util.getFileContents(file));
+							json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", ""))).getName());
+							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 
-							if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings"))
+							if (html.contains("branches/public/buildid"))
 							{
-								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), "SteamDB has spotted a public branch update for CS:GO on the 730 app, this means **an update was pushed to the Steam client!** <https://steamdb.info/app/730/history/>");
 							}
-						}
-					}
-					else if (html.replaceAll("\\d", "").contains("branches/.-rc/buildid") || html.replaceAll("\\d", "").contains("branches/..-rc/buildid") || html.replaceAll("\\d", "").contains("branches/...-rc/buildid"))
-					{
-						if (!htmlRaw.contains("octicon octicon-diff-removed"))
-						{
-							String msg = "SteamDB has spotted a beta branch update for CS:GO on the 730 app, this means **a beta update was pushed to the Steam client!** <https://steamdb.info/app/730/history/>";
-
-							Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
-
-							for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+							else if (html.contains("branches/dpr/buildid"))
 							{
-								JSONObject json = new JSONObject(Util.getFileContents(file));
-
-								if (json.getBoolean("enabled"))
+								if (json.getBoolean("earlyWarnings"))
 								{
-									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), "SteamDB has spotted a DPR branch update for CS:GO on the 730 app, this means **an update is probably coming.** <https://steamdb.info/app/730/history/>");
 								}
 							}
-						}
-						else
-						{
-							String msg = "SteamDB has spotted a version branch update for CS:GO on the 730 app, this means **an update might be coming.** <https://steamdb.info/app/730/history/>";
-
-							Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
-
-							for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+							else if (!htmlRaw.contains("octicon octicon-diff-removed") && (html.replaceAll("\\d", "").contains("branches/./buildid") || html.replaceAll("\\d", "").contains("branches/../buildid") || html.replaceAll("\\d", "").contains("branches/.../buildid")))
 							{
-								JSONObject json = new JSONObject(Util.getFileContents(file));
-
-								if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings"))
+								if (json.getBoolean("earlyWarnings"))
 								{
-									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), "SteamDB has spotted a version branch update for CS:GO on the 730 app, this means **an update might be coming.** <https://steamdb.info/app/730/history/>");
 								}
 							}
-						}
-					}
-					else
-					{
-						String msg = "SteamDB has spotted a non-important update for CS:GO on the 730 app, this **most likely doesn't mean anything.** <https://steamdb.info/app/730/history/>";
-
-						Main.log.info("Found a CS:GO 730 update with changelog number " + consistentLastChangelistNumber);
-
-						for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
-						{
-							JSONObject json = new JSONObject(Util.getFileContents(file));
-
-							if (json.getBoolean("nonImportantUpdates") && json.getBoolean("enabled"))
+							else if (!htmlRaw.contains("octicon octicon-diff-removed") && (html.replaceAll("\\d", "").contains("branches/.-rc/buildid") || html.replaceAll("\\d", "").contains("branches/..-rc/buildid") || html.replaceAll("\\d", "").contains("branches/...-rc/buildid")))
 							{
-								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+								Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), "SteamDB has spotted a beta branch update for CS:GO on the 730 app, this means **a beta update was pushed to the Steam client!** <https://steamdb.info/app/730/history/>");
+							}
+							else
+							{
+								if (json.getBoolean("nonImportantUpdates"))
+								{
+									Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), "SteamDB has spotted a non-important update for CS:GO on the 730 app, this **most likely doesn't mean anything.** <https://steamdb.info/app/730/history/>");
+								}
 							}
 						}
 					}
@@ -184,15 +138,25 @@ public class CsgoUpdateBot extends PircBot
 
 				if (Colors.removeFormattingAndColors(message).contains("App: 741 - SteamDB Unknown App 741 (Counter-Strike Global Offensive - Valve Dedicated Server) (needs token)"))
 				{
-					String msg = "SteamDB has spotted an update for CS:GO on the 741 app, this means **an update is definitely coming!** <https://steamdb.info/app/741/history/>";
-
-					for (File file : new File(Util.getJarLocation() + "services/csgo-updates").listFiles())
+					for (File file : new File(Util.getJarLocation() + "data/services/csgo-updates").listFiles())
 					{
 						JSONObject json = new JSONObject(Util.getFileContents(file));
 
-						if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings"))
+						try
 						{
-							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), msg);
+							Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")));
+						}
+						catch (NullPointerException e)
+						{
+							Main.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the CS:GO update service loop will move on to the next guild");
+							continue;
+						}
+
+						if (json.getBoolean("enabled") && json.getBoolean("earlyWarnings") && Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")))))
+						{
+							json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", ""))).getName());
+							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+							Util.msg(Main.client.getChannelByID(json.getLong("updateNotificationChannelID")), "SteamDB has spotted an update for CS:GO on the 741 app, this means **an update is definitely coming!** <https://steamdb.info/app/741/history/>");
 						}
 					}
 				}

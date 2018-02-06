@@ -28,13 +28,11 @@ public class Restart extends AbstractCommand<MessageReceivedEvent>
 
 			Main.log.info("Maunz is restarting...");
 			new ProcessBuilder(command).start();
-			Main.bot.disconnect();
-			Main.client.logout();
 			System.exit(0);
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "You do not have permission to use that command");
+			Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
 		}
 	}
 

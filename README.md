@@ -14,6 +14,8 @@ Italic ones are permission restricted commands to either just Vauff or guild adm
 
 *benchmark \<gpu/cpu> - Provides complete benchmark information on a GPU or CPU powered by PassMark.
 
+*blacklist [all/channel] \<all/command> - Allows you to blacklist the usage of either all commands or specific commands in a channel
+
 *changelog [version] - Tells you the changelog of the Maunz version you specify.
 
 _*disable_ - Disables Maunz.
@@ -26,7 +28,7 @@ _*enable_ - Enables Maunz.
 
 *map - Tells you which map a server is playing outside of its standard map tracking channel.
 
-*notify \<list/wipe/mapname> - Lets you list, add or remove your server map notifications.
+*notify \<list/wipe/mapname> - Lets you list, wipe, add or remove your server map notifications.
 
 *ping - Makes Maunz respond to you with pong. Very useful for testing your connection!
 
@@ -47,5 +49,3 @@ _*services_ - Opens an interface for enabling specific services on a guild.
 *steam \<steamid> - Links you to a Steam profile based on a Steam ID.
 
 _*stop_ - Stops Maunz.
-
-*trello - Links you to the Trello board of Maunz. Feature requests and bug reports can be made here.

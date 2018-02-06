@@ -2,12 +2,12 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
 
 /**
  * Created by Ramon on 03-Apr-17.
@@ -22,34 +22,47 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), "You need to specify an argument! **Usage: *isitdown <hostname>**");
+			Util.msg(event.getChannel(), event.getAuthor(), "You need to specify an argument! **Usage: *isitdown <hostname>**");
 		}
 		else
 		{
 			boolean isUp;
-			String responseHostname = args[1].replaceAll("^https?:\\/\\/", "").split("/")[0];
-			String hostname;
+			URI uri;
+			String origUri = args[1];
+			String cleanedUri = args[1].replaceAll("(^\\w+:|^)\\/\\/", "").split("/")[0];
+			String host;
+			int port;
 
-			if (args[1].replaceAll("^https?:\\/\\/", "").contains(":"))
+			try
 			{
-				hostname = args[1].replaceAll("^https?:\\/\\/", "").split("/")[0].split(":")[0];
-				isUp = pingHost(hostname, Integer.parseInt(args[1].replaceAll("^https?:\\/\\/", "").split("/")[0].split(":")[1]));
-			}
-			else
-			{
-				hostname = args[1].replaceAll("^https?:\\/\\/", "").split("/")[0];
+				uri = new URI("my://" + cleanedUri);
 
-				if (args[1].startsWith("https"))
+				host = uri.getHost();
+
+				if (uri.getPort() == -1)
 				{
-					isUp = pingHost(hostname, 443);
+					port = getPortByProtocol(origUri);
 				}
 				else
 				{
-					isUp = pingHost(hostname, 80);
+					port = uri.getPort();
 				}
-			}
 
-			Util.msg(event.getChannel(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + responseHostname + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
+				if (host == null)
+				{
+					Util.msg(event.getChannel(), event.getAuthor(), "Please specify a valid hostname or URI.");
+					return;
+				}
+
+				isUp = pingHost(host, port);
+
+				Util.msg(event.getChannel(), event.getAuthor(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
+
+			}
+			catch (Exception e)
+			{
+				Util.msg(event.getChannel(), event.getAuthor(), "Please specify a valid hostname or URI.");
+			}
 		}
 	}
 
@@ -63,9 +76,8 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 	 * Pings a host at a specific port. The ping will be deemed unsuccessful if the socket couldn't connect
 	 * to the host within the given timeframe
 	 *
-	 * @param host    The host to ping
-	 * @param port    The port to ping the host at
-	 * @param timeout The timeout in milliseconds after which the ping will be deemed unsuccessful
+	 * @param host The host to ping
+	 * @param port The port to ping the host at
 	 * @return true if the connection was successful, false otherwise (aka the socket could not connect to the host/port after timeout amount of milliseconds
 	 */
 	private static boolean pingHost(String host, int port)
@@ -92,5 +104,27 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Finds the appropriate port number for the given connection protocol
+	 *
+	 * @param uri The host to determine the port number for
+	 * @return 443 if the protocol is https, 21 if the protocol is ftp, and 80 otherwise
+	 */
+	private int getPortByProtocol(String uri)
+	{
+		if (uri.startsWith("https"))
+		{
+			return 443;
+		}
+
+		if (uri.startsWith("ftp"))
+		{
+			return 21;
+		}
+
+		// Assume http
+		return 80;
 	}
 }

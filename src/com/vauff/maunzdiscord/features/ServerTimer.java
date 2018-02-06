@@ -51,16 +51,26 @@ public class ServerTimer
 		{
 			try
 			{
-				if (Util.isEnabled)
+				for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
 				{
-					for (File file : new File(Util.getJarLocation() + "services/server-tracking").listFiles())
+					if (file.isDirectory())
 					{
-						if (file.isDirectory())
+						if (Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName()))))
 						{
-							JSONObject json = new JSONObject(Util.getFileContents("services/server-tracking/" + file.getName() + "/serverInfo.json"));
+							JSONObject json = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/serverInfo.json"));
 
 							if (json.getBoolean("enabled"))
 							{
+								try
+								{
+									Main.client.getGuildByID(Long.parseLong(file.getName()));
+								}
+								catch (NullPointerException e)
+								{
+									Main.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the server tracking service loop will move on to the next guild");
+									continue;
+								}
+
 								SourceServer server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
 
 								try
@@ -73,22 +83,22 @@ public class ServerTimer
 									{
 										server.initialize();
 										servers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server);
-									}
 
-									try
-									{
-										serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
-									}
-									catch (NullPointerException e)
-									{
-										Set<String> keySet = new HashSet<String>();
-
-										for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
+										try
 										{
-											keySet.add(player.getName());
+											serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
 										}
+										catch (NullPointerException e)
+										{
+											Set<String> keySet = new HashSet<String>();
 
-										serverPlayers.put(Long.parseLong(file.getName()), keySet);
+											for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
+											{
+												keySet.add(player.getName());
+											}
+
+											serverPlayers.put(Long.parseLong(file.getName()), keySet);
+										}
 									}
 								}
 								catch (NullPointerException | TimeoutException | SteamCondenserException e)
@@ -107,7 +117,7 @@ public class ServerTimer
 										json.put("enabled", false);
 									}
 
-									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 									continue;
 								}
 
@@ -151,11 +161,11 @@ public class ServerTimer
 
 									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), channelEmbed);
 
-									for (File notificationFile : new File(Util.getJarLocation() + "services/server-tracking/" + file.getName()).listFiles())
+									for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
 									{
 										if (!notificationFile.getName().equals("serverInfo.json"))
 										{
-											JSONObject notificationJson = new JSONObject(Util.getFileContents("services/server-tracking/" + file.getName() + "/" + notificationFile.getName()));
+											JSONObject notificationJson = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/" + notificationFile.getName()));
 											IUser user = null;
 
 											try
@@ -229,14 +239,14 @@ public class ServerTimer
 
 								json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());
 								json.put("downtimeTimer", 0);
-								FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+								FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 								server.disconnect();
 							}
 						}
 					}
-
-					servers.clear();
 				}
+
+				servers.clear();
 			}
 			catch (Exception e)
 			{

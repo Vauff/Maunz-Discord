@@ -14,13 +14,11 @@ public class Stop extends AbstractCommand<MessageReceivedEvent>
 		if (Util.hasPermission(event.getAuthor()))
 		{
 			Main.log.info("Maunz is stopping...");
-			Main.bot.disconnect();
-			Main.client.logout();
 			System.exit(0);
 		}
 		else
 		{
-			Util.msg(event.getChannel(), "You do not have permission to use that command");
+			Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
 		}
 	}
 
