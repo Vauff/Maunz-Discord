@@ -41,6 +41,7 @@ public class Main
 				json.put("enabled", true);
 				json.put("discordToken", "");
 				json.put("discordDevToken", "");
+				json.put("botOwnerID", 0L);
 				json.put("cleverbotAPIKey", "");
 				json.put("database", new JSONObject());
 				json.getJSONObject("database").put("hostname", "");

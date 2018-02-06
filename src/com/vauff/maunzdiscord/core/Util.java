@@ -261,26 +261,30 @@ public class Util
 	}
 
 	/**
-	 * Checks if the client ID of a user is equal to the client ID of Vauff
+	 * Checks if the client ID of a user is equal to the client ID of the botOwner supplied in config.json
 	 *
 	 * @param user The user to check
-	 * @return true if the client IDs match and the given user is Vauff, false otherwise
+	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json, false otherwise
 	 */
 	public static boolean hasPermission(IUser user)
 	{
-		return user.getLongID() == 129448521861431296L;
+		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+
+		return user.getLongID() == json.getLong("botOwnerID");
 	}
 
 	/**
-	 * Checks if the client ID of a user is equal to the client ID of Vauff or the user is administrator in the supplied guild
+	 * Checks if the client ID of a user is equal to the client ID of the botOwner supplied in config.json or the user is administrator in the supplied guild
 	 *
 	 * @param user  The user to check
 	 * @param guild The guild to check for permissions in
-	 * @return true if the client IDs match and the given user is Vauff or the user is a guild administrator, false otherwise
+	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json or the user is a guild administrator, false otherwise
 	 */
 	public static boolean hasPermission(IUser user, IGuild guild)
 	{
-		return user.getLongID() == 129448521861431296L ? true : (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR) ? true : false);
+		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+
+		return user.getLongID() == json.getLong("botOwnerID") ? true : (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR) || user.getPermissionsForGuild(guild).contains(Permissions.MANAGE_SERVER) ? true : false);
 	}
 
 	/**
