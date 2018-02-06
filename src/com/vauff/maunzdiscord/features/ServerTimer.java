@@ -55,22 +55,22 @@ public class ServerTimer
 				{
 					if (file.isDirectory())
 					{
-						if (Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName()))))
+						JSONObject json = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/serverInfo.json"));
+
+						if (json.getBoolean("enabled"))
 						{
-							JSONObject json = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/serverInfo.json"));
-
-							if (json.getBoolean("enabled"))
+							try
 							{
-								try
-								{
-									Main.client.getGuildByID(Long.parseLong(file.getName()));
-								}
-								catch (NullPointerException e)
-								{
-									Main.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the server tracking service loop will move on to the next guild");
-									continue;
-								}
+								Main.client.getGuildByID(Long.parseLong(file.getName()));
+							}
+							catch (NullPointerException e)
+							{
+								Main.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the server tracking service loop will move on to the next guild");
+								continue;
+							}
 
+							if (Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName()))))
+							{
 								SourceServer server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
 
 								try
