@@ -471,6 +471,17 @@ public class Util
 				m.addReaction(EmojiManager.getForAlias(":x:"));
 			}
 		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("ADD_REACTIONS!"))
+			{
+				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+			}
+			else
+			{
+				Main.log.error(e);
+			}
+		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
