@@ -18,7 +18,7 @@ public class Main
 {
 	public static IDiscordClient client;
 	public static CsgoUpdateBot bot;
-	public static String version = "2.3.1";
+	public static String version = "2.3.2";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -87,7 +87,7 @@ public class Main
 			}
 
 			client = new ClientBuilder().withToken(Util.token).login();
-			client.getDispatcher().registerListener(new MainListener());
+			client.getDispatcher().registerListener(new ReadyEventListener());
 
 			bot = new CsgoUpdateBot();
 			bot.connect("irc.freenode.net");

@@ -144,9 +144,9 @@ public class Util
 	 */
 	public static String getUptime()
 	{
-		MainListener.uptime.split();
+		ReadyEventListener.uptime.split();
 
-		String uptimeRaw = MainListener.uptime.toSplitString().split("\\.")[0];
+		String uptimeRaw = ReadyEventListener.uptime.toSplitString().split("\\.")[0];
 		String secondText = "seconds";
 		String minuteText = "minutes";
 		String hourText = "hours";
@@ -302,7 +302,7 @@ public class Util
 		}
 		catch (MissingPermissionsException e)
 		{
-			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("SEND_MESSAGES!"))
+			if (e.getMissingPermissions().contains(Permissions.SEND_MESSAGES))
 			{
 				msg(author.getOrCreatePMChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.mention() + " because it's lacking the **SEND_MESSAGES** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 			}
@@ -350,11 +350,14 @@ public class Util
 		}
 		catch (MissingPermissionsException e)
 		{
-			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("EMBED_LINKS!"))
+			if (e.getMissingPermissions().contains(Permissions.SEND_MESSAGES))
+			{
+				msg(author.getOrCreatePMChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.mention() + " because it's lacking the **SEND_MESSAGES** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+			}
+			else if (e.getMissingPermissions().contains(Permissions.EMBED_LINKS))
 			{
 				msg(channel, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command because it's lacking the **EMBED_LINKS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 			}
-
 			else
 			{
 				Main.log.error(e);
@@ -380,7 +383,7 @@ public class Util
 		}
 		catch (MissingPermissionsException e)
 		{
-			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("EMBED_LINKS!"))
+			if (e.getMissingPermissions().contains(Permissions.EMBED_LINKS))
 			{
 				msg(channel, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to send a message because it's lacking the **EMBED_LINKS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set.");
 			}
@@ -473,7 +476,7 @@ public class Util
 		}
 		catch (MissingPermissionsException e)
 		{
-			if (e.getMessage().split("Missing permissions: ")[1].equalsIgnoreCase("ADD_REACTIONS!"))
+			if (e.getMissingPermissions().contains(Permissions.ADD_REACTIONS))
 			{
 				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 			}
