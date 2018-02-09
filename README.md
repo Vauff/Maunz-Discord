@@ -10,7 +10,7 @@ Italic ones are permission restricted commands to either just Vauff or guild adm
 
 *about - Gives information about Maunz such as version and uptime.
 
-*accinfo \<username> - Gives you full information about any Minecraft account.
+*minecraft \<username> - Gives you full information about any Minecraft account.
 
 *benchmark \<gpu/cpu> - Provides complete benchmark information on a GPU or CPU powered by PassMark.
 

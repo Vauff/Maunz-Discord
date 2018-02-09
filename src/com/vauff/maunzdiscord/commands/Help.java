@@ -34,8 +34,6 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		{
 			case "about":
 				return "Gives information about Maunz such as version and uptime. **Usage: *about**";
-			case "accinfo":
-				return "Shows information about a Minecraft account. **Usage: *accinfo <username>**";
 			case "benchmark":
 				return "Provides complete benchmark information on a GPU or CPU powered by PassMark. **Usage: *benchmark <gpu/cpu>**";
 			case "blacklist":
@@ -52,6 +50,9 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				return "Tells you if the given website is down or not. **Usage: *isitdown <hostname>**";
 			case "map":
 				return "Tells you which map a server is playing outside of its standard map tracking channel. **Usage: *map**";
+			case "minecraft":
+			case "accinfo":
+				return "Shows information about a Minecraft account. **Usage: *minecraft <username>**";
 			case "notify":
 				return "Lets you list, wipe, add or remove your server map notifications. **Usage: *notify <list/wipe/mapname>**";
 			case "ping":

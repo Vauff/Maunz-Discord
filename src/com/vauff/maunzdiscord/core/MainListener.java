@@ -31,7 +31,6 @@ public class MainListener
 			JSONObject json = new JSONObject(Util.getFileContents("config.json"));
 
 			commands.add(new About());
-			commands.add(new AccInfo());
 			commands.add(new Benchmark());
 			commands.add(new Blacklist());
 			commands.add(new Changelog());
@@ -40,6 +39,7 @@ public class MainListener
 			commands.add(new Help());
 			commands.add(new IsItDown());
 			commands.add(new Map());
+			commands.add(new Minecraft());
 			commands.add(new Notify());
 			commands.add(new Ping());
 			commands.add(new Players());
@@ -109,7 +109,10 @@ public class MainListener
 
 							if (!blacklisted)
 							{
+								event.getChannel().setTypingStatus(true);
+								Thread.sleep(250);
 								cmd.exe(event);
+								event.getChannel().setTypingStatus(false);
 							}
 						}
 					}

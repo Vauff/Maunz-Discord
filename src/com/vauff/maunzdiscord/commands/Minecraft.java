@@ -13,7 +13,7 @@ import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
-public class AccInfo extends AbstractCommand<MessageReceivedEvent>
+public class Minecraft extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -24,7 +24,7 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 
 			if (args.length == 1)
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "Provide a Minecraft username for me please!");
+				Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a username! **Usage: *minecraft <username>**");
 			}
 			else
 			{
@@ -80,6 +80,12 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 						Util.msg(event.getChannel(), event.getAuthor(), embed);
 					}
 				}
+
+				if (args[0].equalsIgnoreCase("*accinfo"))
+				{
+					Util.msg(event.getChannel(), event.getAuthor(), "**\\*accinfo** has been deprecated in favour of **\\*minecraft**, please make sure to use that in the future instead");
+				}
+
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e)
@@ -91,6 +97,9 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*accinfo" };
+		return new String[] {
+				"*minecraft",
+				"*accinfo"
+		};
 	}
 }
