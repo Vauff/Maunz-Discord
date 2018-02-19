@@ -61,7 +61,7 @@ public class ServerTimer
 						{
 							try
 							{
-								Main.client.getGuildByID(Long.parseLong(file.getName()));
+								Main.client.getGuildByID(Long.parseLong(file.getName())).getStringID();
 							}
 							catch (NullPointerException e)
 							{
