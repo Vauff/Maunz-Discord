@@ -7,9 +7,13 @@ import com.vauff.maunzdiscord.commands.*;
 import com.vauff.maunzdiscord.commands.servicesmenu.Services;
 import com.vauff.maunzdiscord.features.Intelligence;
 
+import org.apache.commons.io.FileUtils;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
@@ -199,6 +203,30 @@ public class MainListener
 				{
 					Main.log.error("", e);
 				}
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+	}
+
+	@EventSubscriber
+	public void onGuildCreate(GuildCreateEvent event)
+	{
+		try
+		{
+			File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
+
+			if (!file.exists())
+			{
+				JSONObject json = new JSONObject();
+
+				file.createNewFile();
+				json.put("enabled", true);
+				json.put("lastGuildName", event.getGuild().getName());
+				json.put("blacklist", new JSONArray());
+				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 			}
 		}
 		catch (Exception e)

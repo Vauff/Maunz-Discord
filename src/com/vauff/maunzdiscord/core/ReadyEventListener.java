@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.obj.IGuild;
 
 public class ReadyEventListener

@@ -90,7 +90,7 @@ public class CsgoUpdateBot extends PircBot
 
 						try
 						{
-							Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")));
+							Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", ""))).getStringID();
 						}
 						catch (NullPointerException e)
 						{
@@ -144,7 +144,7 @@ public class CsgoUpdateBot extends PircBot
 
 						try
 						{
-							Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", "")));
+							Main.client.getGuildByID(Long.parseLong(file.getName().replace(".json", ""))).getStringID();
 						}
 						catch (NullPointerException e)
 						{
