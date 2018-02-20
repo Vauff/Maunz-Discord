@@ -37,6 +37,7 @@ public class AddServicePage extends AbstractServiceActionPage
 		{
 			Util.msg(trigger.getChannel(), "There are no more services to add!");
 			end();
+			return;
 		}
 
 		super.show();
