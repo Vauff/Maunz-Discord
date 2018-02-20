@@ -20,11 +20,6 @@ public class EditServicePage extends AbstractServiceActionPage
 			{
 				addChild(i++, new ServerTrackingEditPage(trigger, cmd));
 			}
-
-			if (services.contains("csgo-updates"))
-			{
-				addChild(i, new CSGOUpdatesEditPage(trigger, cmd));
-			}
 		}
 	}
 

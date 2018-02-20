@@ -13,7 +13,7 @@ public class AddServicePage extends AbstractServiceActionPage
 	{
 		super(trigger, cmd);
 
-		if (services.size() != 2)
+		if (services.size() != 1)
 		{
 			int i = 0;
 
@@ -27,24 +27,13 @@ public class AddServicePage extends AbstractServiceActionPage
 					waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
 				});
 			}
-
-			if (!services.contains("csgo-updates"))
-			{
-				addChild(i, (event) ->
-				{
-					AbstractMenuPage page = new CSGOUpdatesAddChannel(trigger, cmd, false);
-
-					show(page);
-					waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
-				});
-			}
 		}
 	}
 
 	@Override
 	public void show()
 	{
-		if (services.size() == 2)
+		if (services.size() == 1)
 		{
 			Util.msg(trigger.getChannel(), "There are no more services to add!");
 			end();
@@ -67,11 +56,6 @@ public class AddServicePage extends AbstractServiceActionPage
 		if (!services.contains("server-tracking"))
 		{
 			add += "Server Tracking,";
-		}
-
-		if (!services.contains("csgo-updates"))
-		{
-			add += "CS:GO Update Notifications";
 		}
 
 		return add.split(",");

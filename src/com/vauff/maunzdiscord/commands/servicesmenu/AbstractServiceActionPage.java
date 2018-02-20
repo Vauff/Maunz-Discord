@@ -20,7 +20,7 @@ public abstract class AbstractServiceActionPage extends AbstractMenuPage
 	{
 		super(trigger, cmd);
 
-		List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "data/services/server-tracking/", Util.getJarLocation() + "data/services/csgo-updates/"));
+		List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "data/services/server-tracking/"));
 
 		for (String fileLocation : fileLocationList)
 		{
@@ -43,11 +43,6 @@ public abstract class AbstractServiceActionPage extends AbstractMenuPage
 		if (services.contains("server-tracking"))
 		{
 			add += "Server Tracking,";
-		}
-
-		if (services.contains("csgo-updates"))
-		{
-			add += "CS:GO Update Notifications";
 		}
 
 		return add.split(",");

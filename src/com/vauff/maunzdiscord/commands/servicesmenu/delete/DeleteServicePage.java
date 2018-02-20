@@ -19,12 +19,6 @@ public class DeleteServicePage extends AbstractServiceActionPage
 			{
 				addChild(i++, new ServerTrackingDeletePage(trigger, cmd, "Server Tracking"));
 			}
-
-			if (services.contains("csgo-updates"))
-			{
-
-				addChild(i, new CSGONotificationsDeletePage(trigger, cmd, "CS:GO Update Notifications"));
-			}
 		}
 	}
 

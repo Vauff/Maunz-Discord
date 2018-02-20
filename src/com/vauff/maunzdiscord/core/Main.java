@@ -6,18 +6,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.vauff.maunzdiscord.features.CsgoUpdateBot;
-
 import org.json.JSONObject;
 
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
-
 public class Main
 {
 	public static IDiscordClient client;
-	public static CsgoUpdateBot bot;
 	public static String version = "2.4";
 	public static Logger log;
 
@@ -62,7 +58,6 @@ public class Main
 					log.info("Starting Maunz-Discord v" + version + " in dev mode");
 					Util.token = json.getString("discordDevToken");
 					Util.devMode = true;
-					CsgoUpdateBot.listeningNick = "Vauff";
 				}
 				else
 				{
@@ -77,7 +72,6 @@ public class Main
 					log.info("Starting Maunz-Discord v" + version);
 					Util.token = json.getString("discordToken");
 					Util.devMode = false;
-					CsgoUpdateBot.listeningNick = "SteamDB";
 				}
 				else
 				{
@@ -88,18 +82,6 @@ public class Main
 
 			client = new ClientBuilder().withToken(Util.token).login();
 			client.getDispatcher().registerListener(new ReadyEventListener());
-
-			bot = new CsgoUpdateBot();
-			bot.connect("irc.freenode.net");
-
-			if (Util.devMode)
-			{
-				bot.joinChannel("#maunztesting");
-			}
-			else
-			{
-				bot.joinChannel("#steamdb-announce");
-			}
 		}
 		catch (Exception e)
 		{

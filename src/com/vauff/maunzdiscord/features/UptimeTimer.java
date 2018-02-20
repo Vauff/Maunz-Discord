@@ -16,7 +16,7 @@ public class UptimeTimer
 		{
 			try
 			{
-				if (!Main.bot.isConnected() || !Main.client.isLoggedIn())
+				if (!Main.client.isLoggedIn())
 				{
 					final ArrayList<String> command = new ArrayList<String>();
 
