@@ -34,7 +34,7 @@ public class ServerTimer
 	/**
 	 * Holds extended information about servers (for instance online players)
 	 */
-	public static HashMap<Long, Set<String>> serverPlayers = new HashMap<Long, Set<String>>();
+	public static HashMap<String, Set<String>> serverPlayers = new HashMap<String, Set<String>>();
 
 	/**
 	 * Holds SourceServers that have already been queried during a session to prevent querying the same server twice in one session
@@ -71,7 +71,7 @@ public class ServerTimer
 
 							if (Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName()))))
 							{
-								SourceServer server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
+								SourceServer server;
 
 								try
 								{
@@ -81,12 +81,13 @@ public class ServerTimer
 									}
 									else
 									{
+										server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
 										server.initialize();
 										servers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server);
 
 										try
 										{
-											serverPlayers.put(Long.parseLong(file.getName()), server.getPlayers().keySet());
+											serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server.getPlayers().keySet());
 										}
 										catch (NullPointerException e)
 										{
@@ -97,7 +98,7 @@ public class ServerTimer
 												keySet.add(player.getName());
 											}
 
-											serverPlayers.put(Long.parseLong(file.getName()), keySet);
+											serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), keySet);
 										}
 									}
 								}

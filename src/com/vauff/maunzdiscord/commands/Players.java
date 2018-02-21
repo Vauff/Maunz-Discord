@@ -30,12 +30,12 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (!(json.getInt("downtimeTimer") >= 3))
 					{
-						if (ServerTimer.serverPlayers.containsKey(event.getGuild().getLongID()))
+						if (ServerTimer.serverPlayers.containsKey(json.getString("serverIP") + ":" + json.getInt("serverPort")))
 						{
 							Util.msg(event.getChannel(), event.getAuthor(), "Sending the online player list to you in a PM!");
 							playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
 
-							for (String player : ServerTimer.serverPlayers.get(event.getGuild().getLongID()))
+							for (String player : ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")))
 							{
 								if (!player.equals(""))
 								{
