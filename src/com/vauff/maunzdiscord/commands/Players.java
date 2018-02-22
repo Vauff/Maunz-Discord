@@ -32,37 +32,25 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 					{
 						if (ServerTimer.serverPlayers.containsKey(json.getString("serverIP") + ":" + json.getInt("serverPort")))
 						{
-							if (ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")).size() > 8)
+							boolean sizeIsSmall = ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")).size() <= 8;
+
+							if (!sizeIsSmall)
 							{
 								Util.msg(event.getChannel(), event.getAuthor(), "Sending the online player list to you in a PM!");
-								playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
-
-								for (String player : ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")))
-								{
-									if (!player.equals(""))
-									{
-										playersList.append("- " + player + System.lineSeparator());
-									}
-								}
-
-								playersList.append("```");
-								Util.msg(event.getAuthor().getOrCreatePMChannel(), event.getAuthor(), playersList.toString());
 							}
-							else
+
+							playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
+
+							for (String player : ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")))
 							{
-								playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
-
-								for (String player : ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")))
+								if (!player.equals(""))
 								{
-									if (!player.equals(""))
-									{
-										playersList.append("- " + player + System.lineSeparator());
-									}
+									playersList.append("- " + player + System.lineSeparator());
 								}
-
-								playersList.append("```");
-								Util.msg(event.getChannel(), event.getAuthor(), playersList.toString());
 							}
+
+							playersList.append("```");
+							Util.msg((!sizeIsSmall ? event.getAuthor().getOrCreatePMChannel() : event.getChannel()), event.getAuthor(), playersList.toString());
 						}
 						else
 						{
