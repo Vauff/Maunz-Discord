@@ -74,6 +74,7 @@ public class ServerTrackingAddIP extends AbstractMenuPage
 			json.put("mapDatabase", new JSONArray());
 			json.put("serverTrackingChannelID", Long.parseLong(((ServerTrackingSetupPageData) handler).channel));
 			json.put("downtimeTimer", 0);
+			json.put("serverName", "");
 			json.put("players", "0/0");
 			json.put("lastGuildName", event.getGuild().getName());
 			json.put("lastMap", "N/A");
