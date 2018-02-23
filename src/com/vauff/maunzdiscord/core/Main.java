@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
+
 public class Main
 {
 	public static IDiscordClient client;
@@ -36,7 +37,6 @@ public class Main
 				file.createNewFile();
 				json.put("enabled", true);
 				json.put("discordToken", "");
-				json.put("discordDevToken", "");
 				json.put("botOwnerID", 0L);
 				json.put("cleverbotAPIKey", "");
 				json.put("database", new JSONObject());
@@ -51,33 +51,15 @@ public class Main
 			logFile.renameTo(oldLogFile);
 			log = LogManager.getLogger(Main.class);
 
-			if (args.length >= 1 && args[0].equals("-dev"))
+			if (!json.getString("discordToken").equals(""))
 			{
-				if (!json.getString("discordDevToken").equals(""))
-				{
-					log.info("Starting Maunz-Discord v" + version + " in dev mode");
-					Util.token = json.getString("discordDevToken");
-					Util.devMode = true;
-				}
-				else
-				{
-					log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordDevToken option in config.json");
-					System.exit(1);
-				}
+				log.info("Starting Maunz-Discord v" + version);
+				Util.token = json.getString("discordToken");
 			}
 			else
 			{
-				if (!json.getString("discordToken").equals(""))
-				{
-					log.info("Starting Maunz-Discord v" + version);
-					Util.token = json.getString("discordToken");
-					Util.devMode = false;
-				}
-				else
-				{
-					log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordToken option in config.json");
-					System.exit(1);
-				}
+				log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordToken option in config.json");
+				System.exit(1);
 			}
 
 			client = new ClientBuilder().withToken(Util.token).login();

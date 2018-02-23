@@ -36,11 +36,6 @@ import sx.blah.discord.util.MissingPermissionsException;
 public class Util
 {
 	/**
-	 * true if the bot is in development mode, false otherwise.
-	 * Used to determine the Discord API token and handle differences in the live and dev version
-	 */
-	public static boolean devMode;
-	/**
 	 * The Discord API token of the bot, gets set in {@link Main#main(String[])}
 	 */
 	public static String token;

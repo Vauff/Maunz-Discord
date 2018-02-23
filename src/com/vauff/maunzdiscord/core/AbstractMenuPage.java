@@ -136,7 +136,7 @@ public abstract class AbstractMenuPage
 			removeTimer.cancel(false);
 		}
 
-		if(menu != null)
+		if (menu != null)
 		{
 			menu.delete();
 		}

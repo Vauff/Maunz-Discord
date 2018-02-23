@@ -21,11 +21,6 @@ public class Restart extends AbstractCommand<MessageReceivedEvent>
 			command.add("-jar");
 			command.add("Maunz-Discord.jar");
 
-			if (Util.devMode)
-			{
-				command.add("-dev");
-			}
-
 			Main.log.info("Maunz is restarting...");
 			new ProcessBuilder(command).start();
 			System.exit(0);
