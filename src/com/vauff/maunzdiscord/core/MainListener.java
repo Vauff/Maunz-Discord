@@ -115,7 +115,16 @@ public class MainListener
 							{
 								event.getChannel().setTypingStatus(true);
 								Thread.sleep(250);
-								cmd.exe(event);
+
+								try
+								{
+									cmd.exe(event);
+								}
+								catch (Exception e)
+								{
+									Main.log.error("", e);
+								}
+
 								event.getChannel().setTypingStatus(false);
 							}
 						}
