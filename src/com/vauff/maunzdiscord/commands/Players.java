@@ -9,6 +9,7 @@ import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.DiscordException;
 
 public class Players extends AbstractCommand<MessageReceivedEvent>
 {
@@ -34,11 +35,6 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 						{
 							boolean sizeIsSmall = ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")).size() <= 8;
 
-							if (!sizeIsSmall)
-							{
-								Util.msg(event.getChannel(), event.getAuthor(), "Sending the online player list to you in a PM!");
-							}
-
 							playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
 
 							for (String player : ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")))
@@ -50,7 +46,23 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 							}
 
 							playersList.append("```");
-							Util.msg((!sizeIsSmall ? event.getAuthor().getOrCreatePMChannel() : event.getChannel()), event.getAuthor(), playersList.toString());
+
+							try
+							{
+								(!sizeIsSmall ? event.getAuthor().getOrCreatePMChannel() : event.getChannel()).sendMessage(playersList.toString());
+
+								if (!sizeIsSmall)
+								{
+									Util.msg(event.getChannel(), event.getAuthor(), "Sending the online player list to you in a PM!");
+								}
+							}
+							catch (DiscordException e)
+							{
+								if (!sizeIsSmall)
+								{
+									Util.msg(event.getChannel(), event.getAuthor(), "An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked");
+								}
+							}
 						}
 						else
 						{
