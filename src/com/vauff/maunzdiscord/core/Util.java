@@ -11,8 +11,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import javax.imageio.ImageIO;
 
@@ -498,5 +500,67 @@ public class Util
 		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
 
 		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
+	}
+
+	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, IChannel channel)
+	{
+		try
+		{
+			StringBuilder list = new StringBuilder().append("```");
+
+			for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
+			{
+				if (i > entries.size() - 1)
+				{
+					break;
+				}
+				else
+				{
+					if (numberedEntries)
+					{
+						list.append((i + 1) + " - " + entries.get(i) + System.lineSeparator());
+					}
+					else
+					{
+						list.append(entries.get(i) + System.lineSeparator());
+					}
+				}
+			}
+
+			list.append("```");
+
+			IMessage m = channel.sendMessage("--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+
+			Executors.newScheduledThreadPool(1).execute(() ->
+			{
+				try
+				{
+					if (pageNumber != 1)
+					{
+						m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
+						Thread.sleep(250);
+					}
+
+					m.addReaction(EmojiManager.getForAlias(":x:"));
+					Thread.sleep(250);
+
+					if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+					{
+						m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
+						Thread.sleep(250);
+					}
+				}
+				catch (Exception e)
+				{
+					Main.log.error("", e);
+				}
+			});
+			return m;
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+			return null;
+		}
 	}
 }

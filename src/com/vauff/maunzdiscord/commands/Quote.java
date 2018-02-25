@@ -6,12 +6,18 @@ import com.vauff.maunzdiscord.core.Util;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+import sx.blah.discord.handle.obj.IMessage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Quote extends AbstractCommand<MessageReceivedEvent>
 {
+	private static HashMap<String, Integer> reactionPages = new HashMap<String, Integer>();
+	private static HashMap<String, String> reactionMessages = new HashMap<String, String>();
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -40,40 +46,26 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 							page = Integer.parseInt(args[2]);
 						}
 
-						int secondQuoteID = 10 * page;
-						int firstQuoteID = secondQuoteID + 1 - 10;
-
 						Util.sqlConnect();
 
-						PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes WHERE id>=" + firstQuoteID + " AND id<=" + secondQuoteID + ";");
+						PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
 						ResultSet rs = pst.executeQuery();
-						PreparedStatement secondPst = Util.sqlCon.prepareStatement("SELECT COUNT(id) AS id FROM quotes;");
-						ResultSet secondRs = secondPst.executeQuery();
 
-						secondRs.next();
+						ArrayList<String> list = new ArrayList<String>();
 
-						if (page >= 1 && page <= (int) Math.ceil(secondRs.getDouble("id") / 10))
+						while (rs.next())
 						{
-							StringBuilder list = new StringBuilder();
-
-							list.append("```" + System.lineSeparator());
-							Util.msg(event.getChannel(), event.getAuthor(), "--- **Page " + page + "/" + (int) Math.ceil(secondRs.getDouble("id") / 10) + "** ---");
-
-							while (rs.next())
+							if (rs.getInt("approved") == 1)
 							{
-								if (rs.getInt("approved") == 1)
-								{
-									list.append(rs.getInt("id") + " - " + rs.getString("title") + System.lineSeparator());
-								}
+								list.add(rs.getString("title"));
 							}
+						}
 
-							list.append("```");
-							Util.msg(event.getChannel(), event.getAuthor(), list.toString());
-						}
-						else
-						{
-							Util.msg(event.getChannel(), event.getAuthor(), "That page doesn't exist!");
-						}
+						IMessage m = Util.buildPage(list, 10, page, true, event.getChannel());
+
+						reactionMessages.put(event.getAuthor().getStringID(), m.getStringID());
+						waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+						reactionPages.put(event.getAuthor().getStringID(), page);
 
 						Util.sqlCon.abort(command ->
 						{
@@ -173,5 +165,71 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 				"*quote",
 				"*quotes"
 		};
+	}
+
+	@Override
+	public void onReactionAdd(ReactionAddEvent event) throws Exception
+	{
+		if (reactionMessages.containsKey(event.getUser().getStringID()))
+		{
+			if (event.getMessage().getStringID().equals(reactionMessages.get(event.getUser().getStringID())))
+			{
+				if (event.getReaction().getEmoji().toString().equals("▶"))
+				{
+					Util.sqlConnect();
+
+					PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
+					ResultSet rs = pst.executeQuery();
+
+					ArrayList<String> list = new ArrayList<String>();
+
+					while (rs.next())
+					{
+						if (rs.getInt("approved") == 1)
+						{
+							list.add(rs.getString("title"));
+						}
+					}
+
+					IMessage m = Util.buildPage(list, 10, reactionPages.get(event.getUser().getStringID()) + 1, true, event.getChannel());
+
+					reactionMessages.put(event.getUser().getStringID(), m.getStringID());
+					waitForReaction(m.getStringID(), event.getUser().getStringID());
+					reactionPages.put(event.getUser().getStringID(), reactionPages.get(event.getUser().getStringID()) + 1);
+
+					Util.sqlCon.abort(command ->
+					{
+					});
+				}
+
+				else if (event.getReaction().getEmoji().toString().equals("◀"))
+				{
+					Util.sqlConnect();
+
+					PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
+					ResultSet rs = pst.executeQuery();
+
+					ArrayList<String> list = new ArrayList<String>();
+
+					while (rs.next())
+					{
+						if (rs.getInt("approved") == 1)
+						{
+							list.add(rs.getString("title"));
+						}
+					}
+
+					IMessage m = Util.buildPage(list, 10, reactionPages.get(event.getUser().getStringID()) - 1, true, event.getChannel());
+
+					reactionMessages.put(event.getUser().getStringID(), m.getStringID());
+					waitForReaction(m.getStringID(), event.getUser().getStringID());
+					reactionPages.put(event.getUser().getStringID(), reactionPages.get(event.getUser().getStringID()) - 1);
+
+					Util.sqlCon.abort(command ->
+					{
+					});
+				}
+			}
+		}
 	}
 }
