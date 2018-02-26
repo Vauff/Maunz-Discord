@@ -325,7 +325,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					}
 					else
 					{
-						Util.msg(event.getChannel(), event.getUser(), "No problem, I won't add **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
+						Util.msg(event.getChannel(), event.getUser(), "No problem, I won't add or remove **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to/from your map notifications");
 					}
 
 					confirmationMaps.remove(event.getUser().getStringID());
