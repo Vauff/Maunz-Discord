@@ -1,5 +1,18 @@
 package com.vauff.maunzdiscord.features;
 
+import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
+import com.github.koraktor.steamcondenser.steam.SteamPlayer;
+import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
+import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Util;
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
@@ -8,24 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-
-import org.apache.commons.io.FileUtils;
-
-import org.json.JSONObject;
-
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
-
-import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.Util;
-
-import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
-import com.github.koraktor.steamcondenser.steam.SteamPlayer;
-import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
-
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.EmbedBuilder;
 
 /**
  * A timer to send notifications of maps currently being played on given servers

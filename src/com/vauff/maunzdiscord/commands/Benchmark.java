@@ -1,16 +1,14 @@
 package com.vauff.maunzdiscord.commands;
 
-import java.awt.Color;
-
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Util;
+import java.awt.*;
 
 public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 {

@@ -1,26 +1,22 @@
 package com.vauff.maunzdiscord.commands;
 
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
+import com.vdurmont.emoji.EmojiManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+import sx.blah.discord.handle.obj.IMessage;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Util;
-
-import com.vdurmont.emoji.EmojiManager;
-
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 public class Notify extends AbstractCommand<MessageReceivedEvent>
 {

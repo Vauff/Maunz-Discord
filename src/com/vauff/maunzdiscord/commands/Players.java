@@ -1,15 +1,13 @@
 package com.vauff.maunzdiscord.commands;
 
-import java.io.File;
-
-import org.json.JSONObject;
-
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
-
+import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.DiscordException;
+
+import java.io.File;
 
 public class Players extends AbstractCommand<MessageReceivedEvent>
 {

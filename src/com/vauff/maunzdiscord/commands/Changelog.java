@@ -1,14 +1,12 @@
 package com.vauff.maunzdiscord.commands;
 
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class Changelog extends AbstractCommand<MessageReceivedEvent>
 {

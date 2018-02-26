@@ -1,17 +1,16 @@
 package com.vauff.maunzdiscord.commands.servicesmenu.edit;
 
-import java.io.File;
-import java.net.InetAddress;
-
-import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
-
 import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
 import com.vauff.maunzdiscord.core.Util;
-
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IChannel;
+
+import java.io.File;
+import java.net.InetAddress;
 
 public class ServerTrackingEditIP extends AbstractMenuPage
 {
@@ -29,7 +28,7 @@ public class ServerTrackingEditIP extends AbstractMenuPage
 	}
 
 	@Override
-	public String getText()
+	public String getText(IChannel channel)
 	{
 		return (retry ? "The bot was unable to make a connection to a source engine server running on that IP and port\n\n" : "") + "Please type the server's IP in the format of ip:port (e.g. 123.45.678.90:27015)";
 	}

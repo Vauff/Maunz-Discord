@@ -1,15 +1,13 @@
 package com.vauff.maunzdiscord.features;
 
-import java.util.Locale;
-
 import com.google.code.chatterbotapi.ChatterBot;
 import com.google.code.chatterbotapi.ChatterBotFactory;
 import com.google.code.chatterbotapi.ChatterBotSession;
 import com.google.code.chatterbotapi.ChatterBotType;
-
 import com.vauff.maunzdiscord.core.Util;
-
 import org.json.JSONObject;
+
+import java.util.Locale;
 
 public class CleverbotSession
 {

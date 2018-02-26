@@ -1,17 +1,14 @@
 package com.vauff.maunzdiscord.commands;
 
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
+import org.apache.commons.lang3.StringUtils;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Util;
-
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
 
 public class Minecraft extends AbstractCommand<MessageReceivedEvent>
 {

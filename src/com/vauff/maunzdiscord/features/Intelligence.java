@@ -1,17 +1,14 @@
 package com.vauff.maunzdiscord.features;
 
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import com.google.code.chatterbotapi.ChatterBotSession;
-
-import com.vauff.maunzdiscord.features.CleverbotSession;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Intelligence extends AbstractCommand<MessageReceivedEvent>
 {

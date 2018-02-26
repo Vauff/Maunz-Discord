@@ -1,11 +1,10 @@
 package com.vauff.maunzdiscord.commands.servicesmenu.delete;
 
-import java.io.File;
-
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+
+import java.io.File;
 
 public class ServerTrackingDeletePage extends DeleteConfirmationPage
 {

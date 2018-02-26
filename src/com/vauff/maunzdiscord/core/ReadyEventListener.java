@@ -1,24 +1,21 @@
 package com.vauff.maunzdiscord.core;
 
+import com.vauff.maunzdiscord.features.ServerTimer;
+import com.vauff.maunzdiscord.features.StatsTimer;
+import com.vauff.maunzdiscord.features.UptimeTimer;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.obj.IGuild;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.time.StopWatch;
-
-import com.vauff.maunzdiscord.features.UptimeTimer;
-import com.vauff.maunzdiscord.features.ServerTimer;
-import com.vauff.maunzdiscord.features.StatsTimer;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.obj.IGuild;
 
 public class ReadyEventListener
 {

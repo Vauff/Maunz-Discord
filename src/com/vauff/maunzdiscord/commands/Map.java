@@ -1,18 +1,16 @@
 package com.vauff.maunzdiscord.commands;
 
-import java.io.File;
-import java.net.URL;
-
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
 import org.json.JSONObject;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
-
-import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Util;
-
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
+
+import java.io.File;
+import java.net.URL;
 
 public class Map extends AbstractCommand<MessageReceivedEvent>
 {

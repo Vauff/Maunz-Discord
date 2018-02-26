@@ -1,9 +1,9 @@
 package com.vauff.maunzdiscord.core;
 
-import java.util.HashMap;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+
+import java.util.HashMap;
 
 public abstract class AbstractCommand<M extends MessageReceivedEvent>
 {

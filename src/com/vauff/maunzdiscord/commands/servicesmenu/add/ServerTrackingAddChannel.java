@@ -3,8 +3,8 @@ package com.vauff.maunzdiscord.commands.servicesmenu.add;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
 import com.vauff.maunzdiscord.core.Main;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IChannel;
 
 public class ServerTrackingAddChannel extends AbstractMenuPage
 {
@@ -24,9 +24,9 @@ public class ServerTrackingAddChannel extends AbstractMenuPage
 	}
 
 	@Override
-	public String getText()
+	public String getText(IChannel channel)
 	{
-		return (retry ? "The given channel either didn't exist or was in another guild\n\n" : "") + "Please mention the channel you would like to send server tracking updates in";
+		return (retry ? "The given channel either didn't exist or was in another guild\n\n" : "") + "Please mention the channel (e.g. " + channel.mention() + ") you would like to send server tracking updates in";
 	}
 
 	@Override

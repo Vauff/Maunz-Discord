@@ -5,7 +5,6 @@ import com.vauff.maunzdiscord.commands.servicesmenu.delete.DeleteServicePage;
 import com.vauff.maunzdiscord.commands.servicesmenu.edit.EditServicePage;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class StartPage extends AbstractMenuPage

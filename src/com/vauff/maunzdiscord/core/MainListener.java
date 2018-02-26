@@ -1,22 +1,38 @@
 package com.vauff.maunzdiscord.core;
 
-import java.io.File;
-import java.util.LinkedList;
-
-import com.vauff.maunzdiscord.commands.*;
+import com.vauff.maunzdiscord.commands.About;
+import com.vauff.maunzdiscord.commands.Benchmark;
+import com.vauff.maunzdiscord.commands.Blacklist;
+import com.vauff.maunzdiscord.commands.Changelog;
+import com.vauff.maunzdiscord.commands.Disable;
+import com.vauff.maunzdiscord.commands.Enable;
+import com.vauff.maunzdiscord.commands.Help;
+import com.vauff.maunzdiscord.commands.IsItDown;
+import com.vauff.maunzdiscord.commands.Map;
+import com.vauff.maunzdiscord.commands.Minecraft;
+import com.vauff.maunzdiscord.commands.Notify;
+import com.vauff.maunzdiscord.commands.Ping;
+import com.vauff.maunzdiscord.commands.Players;
+import com.vauff.maunzdiscord.commands.Quote;
+import com.vauff.maunzdiscord.commands.Reddit;
+import com.vauff.maunzdiscord.commands.Restart;
+import com.vauff.maunzdiscord.commands.Say;
+import com.vauff.maunzdiscord.commands.Source;
+import com.vauff.maunzdiscord.commands.Steam;
+import com.vauff.maunzdiscord.commands.Stop;
 import com.vauff.maunzdiscord.commands.servicesmenu.Services;
 import com.vauff.maunzdiscord.features.Intelligence;
-
 import org.apache.commons.io.FileUtils;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
+
+import java.io.File;
+import java.util.LinkedList;
 
 public class MainListener
 {

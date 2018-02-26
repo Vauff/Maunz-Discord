@@ -1,6 +1,18 @@
 package com.vauff.maunzdiscord.core;
 
-import java.awt.Color;
+import com.vdurmont.emoji.EmojiManager;
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.MissingPermissionsException;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,22 +27,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.FileUtils;
-
-import com.vdurmont.emoji.EmojiManager;
-
-import org.json.JSONObject;
-
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.MissingPermissionsException;
 
 /**
  * A class holding several static utility methods

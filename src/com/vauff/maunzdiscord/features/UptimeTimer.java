@@ -1,8 +1,8 @@
 package com.vauff.maunzdiscord.features;
 
-import java.util.ArrayList;
-
 import com.vauff.maunzdiscord.core.Main;
+
+import java.util.ArrayList;
 
 /**
  * Holds a timer to restart the bot if the IRC or Discord connection is lost
