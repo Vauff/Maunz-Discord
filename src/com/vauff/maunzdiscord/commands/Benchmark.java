@@ -8,7 +8,7 @@ import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
+import java.awt.Color;
 
 public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 {

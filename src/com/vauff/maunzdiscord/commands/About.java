@@ -7,7 +7,7 @@ import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.awt.*;
+import java.awt.Color;
 import java.net.JarURLConnection;
 
 public class About extends AbstractCommand<MessageReceivedEvent>
