@@ -143,6 +143,10 @@ public class MainListener
 
 								event.getChannel().setTypingStatus(false);
 							}
+							else
+							{
+								Util.msg(event.getAuthor().getOrCreatePMChannel(), ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + event.getChannel().mention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
+							}
 						}
 					}
 
