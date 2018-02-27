@@ -27,7 +27,7 @@ public class Enable extends AbstractCommand<MessageReceivedEvent>
 
 			if (Util.hasPermission(event.getAuthor()))
 			{
-				IMessage m = Util.msg(event.getChannel(), event.getAuthor(),"Please select whether you'd like to enable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enable globally" + System.lineSeparator() + "**`[2]`**  |  Enable in guild only");
+				IMessage m = Util.msg(event.getChannel(), event.getAuthor(), "Please select whether you'd like to enable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enable globally" + System.lineSeparator() + "**`[2]`**  |  Enable in guild only");
 
 				waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 				menuMessages.put(event.getAuthor().getStringID(), m.getStringID());

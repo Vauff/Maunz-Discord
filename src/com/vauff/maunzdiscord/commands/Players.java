@@ -5,7 +5,6 @@ import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
 import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.DiscordException;
 
 import java.io.File;
 
@@ -45,20 +44,18 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 
 							playersList.append("```");
 
-							try
-							{
-								Util.msg((!sizeIsSmall ? event.getAuthor().getOrCreatePMChannel() : event.getChannel()), event.getAuthor(), playersList.toString());
-
-								if (!sizeIsSmall)
-								{
-									Util.msg(event.getChannel(), event.getAuthor(), "Sending the online player list to you in a PM!");
-								}
-							}
-							catch (DiscordException e)
+							if (Util.msg((!sizeIsSmall ? event.getAuthor().getOrCreatePMChannel() : event.getChannel()), event.getAuthor(), playersList.toString()) == null)
 							{
 								if (!sizeIsSmall)
 								{
 									Util.msg(event.getChannel(), event.getAuthor(), "An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked");
+								}
+							}
+							else
+							{
+								if (!sizeIsSmall)
+								{
+									Util.msg(event.getChannel(), event.getAuthor(), "Sending the online player list to you in a PM!");
 								}
 							}
 						}
