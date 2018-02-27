@@ -110,7 +110,7 @@ public abstract class AbstractMenuPage
 		}
 
 		ACTIVE.put(trigger.getAuthor().getLongID(), this);
-		menu = trigger.getChannel().sendMessage(getTitle() + System.lineSeparator() + System.lineSeparator() + (getText(trigger.getChannel()) != null ? getText(trigger.getChannel()).replaceAll("\n", System.lineSeparator()) + System.lineSeparator() + System.lineSeparator() : "") + items);
+		menu = Util.msg(trigger.getChannel(), trigger.getAuthor(), getTitle() + System.lineSeparator() + System.lineSeparator() + (getText(trigger.getChannel()) != null ? getText(trigger.getChannel()).replaceAll("\n", System.lineSeparator()) + System.lineSeparator() + System.lineSeparator() : "") + items);
 		Util.addNumberedReactions(menu, true, getAmount());
 
 		removeTimer = Executors.newScheduledThreadPool(1).schedule(() ->

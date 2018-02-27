@@ -13,6 +13,7 @@ import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
@@ -106,14 +107,17 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+								IMessage m = Util.msg(event.getChannel(), event.getAuthor(), "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 
 								waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 								confirmationMaps.put(event.getAuthor().getStringID(), "wipe");
 								confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
-								m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
-								Thread.sleep(250);
-								m.addReaction(EmojiManager.getForAlias(":x:"));
+
+								ArrayList<String> reactions = new ArrayList<String>();
+
+								reactions.add("white_check_mark");
+								reactions.add("x");
+								Util.addReactions(m, reactions);
 
 								Executors.newScheduledThreadPool(1).schedule(() ->
 								{
@@ -216,17 +220,20 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 										if (mapSuggestion.equals(""))
 										{
-											m = event.getChannel().sendMessage("The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+											m = Util.msg(event.getChannel(), event.getAuthor(), "The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
-											m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
-											Thread.sleep(250);
-											m.addReaction(EmojiManager.getForAlias(":x:"));
+
+											ArrayList<String> reactions = new ArrayList<String>();
+
+											reactions.add("white_check_mark");
+											reactions.add("x");
+											Util.addReactions(m, reactions);
 										}
 										else
 										{
-											m = event.getChannel().sendMessage("The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + argument.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
+											m = Util.msg(event.getChannel(), event.getAuthor(), "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + argument.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
 											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationSuggestionMaps.put(event.getAuthor().getStringID(), mapSuggestion);

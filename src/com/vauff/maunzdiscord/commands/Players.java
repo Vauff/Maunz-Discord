@@ -47,7 +47,7 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 
 							try
 							{
-								(!sizeIsSmall ? event.getAuthor().getOrCreatePMChannel() : event.getChannel()).sendMessage(playersList.toString());
+								Util.msg((!sizeIsSmall ? event.getAuthor().getOrCreatePMChannel() : event.getChannel()), event.getAuthor(), playersList.toString());
 
 								if (!sizeIsSmall)
 								{

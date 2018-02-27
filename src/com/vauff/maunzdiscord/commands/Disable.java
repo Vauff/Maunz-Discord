@@ -27,7 +27,7 @@ public class Disable extends AbstractCommand<MessageReceivedEvent>
 
 			if (Util.hasPermission(event.getAuthor()))
 			{
-				IMessage m = event.getChannel().sendMessage("Please select whether you'd like to disable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Disable globally" + System.lineSeparator() + "**`[2]`**  |  Disable in guild only");
+				IMessage m = Util.msg(event.getChannel(), event.getAuthor(), "Please select whether you'd like to disable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Disable globally" + System.lineSeparator() + "**`[2]`**  |  Disable in guild only");
 
 				waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 				menuMessages.put(event.getAuthor().getStringID(), m.getStringID());

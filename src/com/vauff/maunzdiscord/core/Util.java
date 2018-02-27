@@ -287,11 +287,11 @@ public class Util
 	 * @param author  The author
 	 * @param message The message
 	 */
-	public static void msg(IChannel channel, IUser author, String message)
+	public static IMessage msg(IChannel channel, IUser author, String message)
 	{
 		try
 		{
-			channel.sendMessage(message);
+			return channel.sendMessage(message);
 		}
 		catch (MissingPermissionsException e)
 		{
@@ -303,10 +303,13 @@ public class Util
 			{
 				Main.log.error(e);
 			}
+
+			return null;
 		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
+			return null;
 		}
 	}
 
@@ -316,15 +319,16 @@ public class Util
 	 * @param channel The channel
 	 * @param message The message
 	 */
-	public static void msg(IChannel channel, String message)
+	public static IMessage msg(IChannel channel, String message)
 	{
 		try
 		{
-			channel.sendMessage(message);
+			return channel.sendMessage(message);
 		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
+			return null;
 		}
 	}
 
@@ -335,11 +339,11 @@ public class Util
 	 * @param author  The author
 	 * @param message The embed
 	 */
-	public static void msg(IChannel channel, IUser author, EmbedObject message)
+	public static IMessage msg(IChannel channel, IUser author, EmbedObject message)
 	{
 		try
 		{
-			channel.sendMessage("", message, false);
+			return channel.sendMessage("", message, false);
 		}
 		catch (MissingPermissionsException e)
 		{
@@ -355,10 +359,13 @@ public class Util
 			{
 				Main.log.error(e);
 			}
+
+			return null;
 		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
+			return null;
 		}
 	}
 
@@ -368,11 +375,11 @@ public class Util
 	 * @param channel The channel
 	 * @param message The embed
 	 */
-	public static void msg(IChannel channel, EmbedObject message)
+	public static IMessage msg(IChannel channel, EmbedObject message)
 	{
 		try
 		{
-			channel.sendMessage("", message, false);
+			return channel.sendMessage("", message, false);
 		}
 		catch (MissingPermissionsException e)
 		{
@@ -384,10 +391,13 @@ public class Util
 			{
 				Main.log.error(e);
 			}
+
+			return null;
 		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
+			return null;
 		}
 	}
 
@@ -434,6 +444,69 @@ public class Util
 	}
 
 	/**
+	 * Generic method for adding reactions to a message, used so a no permission message can be sent if required
+	 *
+	 * @param m        The message to add the emojis to
+	 * @param reaction A string that contains a reaction that should be added to a given IMessage
+	 */
+	public static void addReaction(IMessage m, String reaction)
+	{
+		try
+		{
+			m.addReaction(EmojiManager.getForAlias(":" + reaction + ":"));
+			Thread.sleep(250);
+		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMissingPermissions().contains(Permissions.ADD_REACTIONS))
+			{
+				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+			}
+			else
+			{
+				Main.log.error(e);
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+	}
+
+	/**
+	 * Generic method for adding reactions to a message, used so a no permission message can be sent if required
+	 *
+	 * @param m         The message to add the emojis to
+	 * @param reactions An ArrayList<String> that contains a list of reactions that should be added to a given IMessage
+	 */
+	public static void addReactions(IMessage m, ArrayList<String> reactions)
+	{
+		try
+		{
+			for (String reaction : reactions)
+			{
+				m.addReaction(EmojiManager.getForAlias(":" + reaction + ":"));
+				Thread.sleep(250);
+			}
+		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMissingPermissions().contains(Permissions.ADD_REACTIONS))
+			{
+				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+			}
+			else
+			{
+				Main.log.error(e);
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+	}
+
+	/**
 	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
 	 *
 	 * @param m           The message to add the emojis to
@@ -444,6 +517,7 @@ public class Util
 	{
 		try
 		{
+			ArrayList<String> finalReactions = new ArrayList<String>();
 			String[] reactions = {
 					"one",
 					"two",
@@ -458,25 +532,16 @@ public class Util
 
 			for (int j = 0; j < i; j++)
 			{
-				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
+				finalReactions.add(reactions[j]);
 				Thread.sleep(250);
 			}
 
 			if (cancellable)
 			{
-				m.addReaction(EmojiManager.getForAlias(":x:"));
+				finalReactions.add("x");
 			}
-		}
-		catch (MissingPermissionsException e)
-		{
-			if (e.getMissingPermissions().contains(Permissions.ADD_REACTIONS))
-			{
-				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
-			}
-			else
-			{
-				Main.log.error(e);
-			}
+
+			addReactions(m, finalReactions);
 		}
 		catch (Exception e)
 		{
@@ -525,7 +590,7 @@ public class Util
 
 			list.append("```");
 
-			IMessage m = channel.sendMessage("--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+			IMessage m = Util.msg(channel, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
 
 			Executors.newScheduledThreadPool(1).execute(() ->
 			{
@@ -551,6 +616,7 @@ public class Util
 					Main.log.error("", e);
 				}
 			});
+
 			return m;
 		}
 		catch (Exception e)
