@@ -14,8 +14,8 @@ import java.util.HashMap;
 
 public class Quote extends AbstractCommand<MessageReceivedEvent>
 {
-	private static HashMap<String, Integer> reactionPages = new HashMap<String, Integer>();
-	private static HashMap<String, String> reactionMessages = new HashMap<String, String>();
+	private static HashMap<String, Integer> listPages = new HashMap<>();
+	private static HashMap<String, String> listMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -49,7 +49,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
 						ResultSet rs = pst.executeQuery();
 
-						ArrayList<String> list = new ArrayList<String>();
+						ArrayList<String> list = new ArrayList<>();
 
 						while (rs.next())
 						{
@@ -59,11 +59,11 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 							}
 						}
 
-						IMessage m = Util.buildPage(list, 10, page, true, event.getChannel());
+						IMessage m = Util.buildPage(list, 10, page, true, event.getChannel(), event.getAuthor());
 
-						reactionMessages.put(event.getAuthor().getStringID(), m.getStringID());
+						listMessages.put(event.getAuthor().getStringID(), m.getStringID());
 						waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-						reactionPages.put(event.getAuthor().getStringID(), page);
+						listPages.put(event.getAuthor().getStringID(), page);
 
 						Util.sqlCon.abort(command ->
 						{
@@ -168,9 +168,9 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event) throws Exception
 	{
-		if (reactionMessages.containsKey(event.getUser().getStringID()))
+		if (listMessages.containsKey(event.getUser().getStringID()))
 		{
-			if (event.getMessage().getStringID().equals(reactionMessages.get(event.getUser().getStringID())))
+			if (event.getMessage().getStringID().equals(listMessages.get(event.getUser().getStringID())))
 			{
 				if (event.getReaction().getEmoji().toString().equals("▶"))
 				{
@@ -179,7 +179,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 					PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
 					ResultSet rs = pst.executeQuery();
 
-					ArrayList<String> list = new ArrayList<String>();
+					ArrayList<String> list = new ArrayList<>();
 
 					while (rs.next())
 					{
@@ -189,11 +189,11 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					IMessage m = Util.buildPage(list, 10, reactionPages.get(event.getUser().getStringID()) + 1, true, event.getChannel());
+					IMessage m = Util.buildPage(list, 10, listPages.get(event.getUser().getStringID()) + 1, true, event.getChannel(), event.getUser());
 
-					reactionMessages.put(event.getUser().getStringID(), m.getStringID());
+					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					reactionPages.put(event.getUser().getStringID(), reactionPages.get(event.getUser().getStringID()) + 1);
+					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) + 1);
 
 					Util.sqlCon.abort(command ->
 					{
@@ -207,7 +207,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 					PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
 					ResultSet rs = pst.executeQuery();
 
-					ArrayList<String> list = new ArrayList<String>();
+					ArrayList<String> list = new ArrayList<>();
 
 					while (rs.next())
 					{
@@ -217,11 +217,11 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					IMessage m = Util.buildPage(list, 10, reactionPages.get(event.getUser().getStringID()) - 1, true, event.getChannel());
+					IMessage m = Util.buildPage(list, 10, listPages.get(event.getUser().getStringID()) - 1, true, event.getChannel(), event.getUser());
 
-					reactionMessages.put(event.getUser().getStringID(), m.getStringID());
+					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					reactionPages.put(event.getUser().getStringID(), reactionPages.get(event.getUser().getStringID()) - 1);
+					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) - 1);
 
 					Util.sqlCon.abort(command ->
 					{

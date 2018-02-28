@@ -4,6 +4,7 @@ import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -19,9 +20,11 @@ import java.util.concurrent.TimeUnit;
 
 public class Notify extends AbstractCommand<MessageReceivedEvent>
 {
-	private static HashMap<String, String> confirmationMaps = new HashMap<String, String>();
-	private static HashMap<String, String> confirmationSuggestionMaps = new HashMap<String, String>();
-	private static HashMap<String, String> confirmationMessages = new HashMap<String, String>();
+	private static HashMap<String, String> confirmationMaps = new HashMap<>();
+	private static HashMap<String, String> confirmationSuggestionMaps = new HashMap<>();
+	private static HashMap<String, String> confirmationMessages = new HashMap<>();
+	private static HashMap<String, Integer> listPages = new HashMap<>();
+	private static HashMap<String, String> listMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -80,16 +83,36 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							{
 								if (json.getJSONArray("notifications").length() != 0)
 								{
-									StringBuilder mapsBuilder = new StringBuilder();
-
-									for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+									if (args.length == 2 || NumberUtils.isCreatable(args[2]))
 									{
-										mapsBuilder = mapsBuilder.append(json.getJSONArray("notifications").getString(i) + " | ");
+										int page;
+
+										if (args.length == 2)
+										{
+											page = 1;
+										}
+										else
+										{
+											page = Integer.parseInt(args[2]);
+										}
+
+										ArrayList<String> notifications = new ArrayList<String>();
+
+										for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+										{
+											notifications.add(json.getJSONArray("notifications").getString(i));
+										}
+
+										IMessage m = Util.buildPage(notifications, 10, page, false, event.getChannel(), event.getAuthor());
+
+										listMessages.put(event.getAuthor().getStringID(), m.getStringID());
+										waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+										listPages.put(event.getAuthor().getStringID(), page);
 									}
-
-									String maps = mapsBuilder.toString().substring(0, mapsBuilder.toString().length() - 3);
-
-									Util.msg(event.getChannel(), event.getAuthor(), "You currently have notifications set for the following maps: **" + maps.toString().replace("_", "\\_") + "**");
+									else
+									{
+										Util.msg(event.getChannel(), event.getAuthor(), "Page numbers need to be numerical!");
+									}
 								}
 								else
 								{
@@ -279,9 +302,9 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event) throws Exception
 	{
-		if (confirmationMessages.containsKey(event.getUser().getStringID()))
+		if (confirmationMessages.containsKey(event.getUser().getStringID()) || listMessages.containsKey(event.getUser().getStringID()))
 		{
-			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())))
+			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())) || event.getMessage().getStringID().equals(listMessages.get(event.getUser().getStringID())))
 			{
 				String guildID = event.getGuild().getStringID();
 				String fileName = "data/services/server-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
@@ -409,6 +432,42 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						json.getJSONArray("notifications").remove(index);
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
+				}
+
+				else if (event.getReaction().getEmoji().toString().equals("▶"))
+				{
+					ArrayList<String> notifications = new ArrayList<>();
+
+					json = new JSONObject(Util.getFileContents(file));
+
+					for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+					{
+						notifications.add(json.getJSONArray("notifications").getString(i));
+					}
+
+					IMessage m = Util.buildPage(notifications, 10, listPages.get(event.getUser().getStringID()) + 1, false, event.getChannel(), event.getUser());
+
+					listMessages.put(event.getUser().getStringID(), m.getStringID());
+					waitForReaction(m.getStringID(), event.getUser().getStringID());
+					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) + 1);
+				}
+
+				else if (event.getReaction().getEmoji().toString().equals("◀"))
+				{
+					ArrayList<String> notifications = new ArrayList<>();
+
+					json = new JSONObject(Util.getFileContents(file));
+
+					for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+					{
+						notifications.add(json.getJSONArray("notifications").getString(i));
+					}
+
+					IMessage m = Util.buildPage(notifications, 10, listPages.get(event.getUser().getStringID()) - 1, false, event.getChannel(), event.getUser());
+
+					listMessages.put(event.getUser().getStringID(), m.getStringID());
+					waitForReaction(m.getStringID(), event.getUser().getStringID());
+					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) - 1);
 				}
 			}
 		}

@@ -563,7 +563,7 @@ public class Util
 		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
 	}
 
-	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, IChannel channel)
+	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, IChannel channel, IUser user)
 	{
 		try
 		{
@@ -590,7 +590,7 @@ public class Util
 
 			list.append("```");
 
-			IMessage m = Util.msg(channel, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+			IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
 
 			Executors.newScheduledThreadPool(1).execute(() ->
 			{
