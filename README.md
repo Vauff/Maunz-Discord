@@ -10,42 +10,44 @@ Italic ones are permission restricted commands to either just Vauff or guild adm
 
 *about - Gives information about Maunz such as version and uptime.
 
-*minecraft \<username> - Gives you full information about any Minecraft account.
-
 *benchmark \<gpu/cpu> - Provides complete benchmark information on a GPU or CPU powered by PassMark.
 
-*blacklist [all/channel] \<all/command> - Allows you to blacklist the usage of either all commands or specific commands in a channel
+*blacklist [all/channel] \<all/command> - Allows you to blacklist the usage of either all commands or specific commands in a channel.
 
-*changelog [version] - Tells you the changelog of the Maunz version you specify.
+*changelog [version] - Shows you the changelog of the Maunz version you specify.
 
-_*disable_ - Disables Maunz.
+_*disable_ - Disables Maunz either in a specific guild or globally.
 
-_*enable_ - Enables Maunz.
+*discord - Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.
 
-*help [command] - Links you to the README or gives command help if a command is given. Please note that command specific help defaults to channel syntax by default.
+_*enable_ - Enables Maunz either in a specific guild or globally.
 
-*isitdown \<hostname> - Tells you if the given website is down or not.
+*help [command/page] - Links you to the README or gives command help if a command is given.
+
+*isitdown \<hostname> - Tells you if the given hostname is down or not.
 
 *map - Tells you which map a server is playing outside of its standard map tracking channel.
+
+*minecraft \<uuid/username> - Gives you full information about any Minecraft account.
 
 *notify \<list/wipe/mapname> - Lets you list, wipe, add or remove your server map notifications.
 
 *ping - Makes Maunz respond to you with pong. Very useful for testing your connection!
 
-*players - Lists the current players online on a server (in a PM).
+*players - Lists the current players online on a server.
 
-*quote <view/list/add> <quoteid>/[page] - Allows you to view chat quotes.
+*quote \<view/list/add> \<quoteid>/[page] - Allows you to view chat quotes.
 
 *reddit \<subreddit> - Links you to a subreddit that you provide.
 
 _*restart_ - Restarts Maunz.
 
-_*say [channel] <message>_ - Makes Maunz say whatever you want her to!
+_*say [channel] \<message>_ - Makes Maunz say whatever you want her to!
 
 _*services_ - Opens an interface for enabling specific services on a guild.
 
 *source - Links you to the GitHub page of Maunz, you can submit issues/pull requests here.
 
-*steam \<steamid> - Links you to a Steam profile based on a Steam ID.
+*steam \<steamid> - Gives full information on a Steam account for the given input.
 
 _*stop_ - Stops Maunz.

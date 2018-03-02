@@ -444,7 +444,7 @@ public class Util
 	}
 
 	/**
-	 * Generic method for adding reactions to a message, used so a no permission message can be sent if required
+	 * Generic method for adding a reaction to a message, used so a no permission message can be sent if required
 	 *
 	 * @param m        The message to add the emojis to
 	 * @param reaction A string that contains a reaction that should be added to a given IMessage
@@ -563,11 +563,28 @@ public class Util
 		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
 	}
 
-	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, IChannel channel, IUser user)
+	/**
+	 * Builds a modular page message for the given parameters
+	 *
+	 * @param entries         An ArrayList<String> that contains all the entries that should be in the page builder
+	 * @param pageSize        How many entries should be in a specific page
+	 * @param pageNumber      Which page the method should build and send to the provided IChannel
+	 * @param numberedEntries Whether the entries in a list should be prefixed with their corresponding number in the list or not
+	 * @param channel         The IChannel that the page message should be sent to
+	 * @param user            The IUser that triggered the commands execution in the first place
+	 * @return The IMessage object for the sent page message
+	 */
+	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
 	{
 		try
 		{
-			StringBuilder list = new StringBuilder().append("```");
+			StringBuilder list = new StringBuilder();
+
+			if (codeBlock)
+			{
+				list.append("```" + System.lineSeparator());
+			}
+
 
 			for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
 			{
@@ -588,7 +605,10 @@ public class Util
 				}
 			}
 
-			list.append("```");
+			if (codeBlock)
+			{
+				list.append("```");
+			}
 
 			IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
 

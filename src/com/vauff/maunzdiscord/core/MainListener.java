@@ -5,6 +5,7 @@ import com.vauff.maunzdiscord.commands.Benchmark;
 import com.vauff.maunzdiscord.commands.Blacklist;
 import com.vauff.maunzdiscord.commands.Changelog;
 import com.vauff.maunzdiscord.commands.Disable;
+import com.vauff.maunzdiscord.commands.Discord;
 import com.vauff.maunzdiscord.commands.Enable;
 import com.vauff.maunzdiscord.commands.Help;
 import com.vauff.maunzdiscord.commands.IsItDown;
@@ -55,6 +56,7 @@ public class MainListener
 			commands.add(new Blacklist());
 			commands.add(new Changelog());
 			commands.add(new Disable());
+			commands.add(new Discord());
 			commands.add(new Enable());
 			commands.add(new Help());
 			commands.add(new IsItDown());

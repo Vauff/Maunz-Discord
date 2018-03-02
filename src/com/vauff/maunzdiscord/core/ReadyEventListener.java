@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
+import com.vauff.maunzdiscord.commands.Help;
 import com.vauff.maunzdiscord.features.ServerTimer;
 import com.vauff.maunzdiscord.features.StatsTimer;
 import com.vauff.maunzdiscord.features.UptimeTimer;
@@ -61,6 +62,8 @@ public class ReadyEventListener
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				}
 			}
+
+			Help.setupCmdHelp();
 
 			Main.client.getDispatcher().registerListener(new MainListener());
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
