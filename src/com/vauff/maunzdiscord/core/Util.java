@@ -570,6 +570,7 @@ public class Util
 	 * @param pageSize        How many entries should be in a specific page
 	 * @param pageNumber      Which page the method should build and send to the provided IChannel
 	 * @param numberedEntries Whether the entries in a list should be prefixed with their corresponding number in the list or not
+	 * @param codeBlock       Whether to surround the entries in a code block or not
 	 * @param channel         The IChannel that the page message should be sent to
 	 * @param user            The IUser that triggered the commands execution in the first place
 	 * @return The IMessage object for the sent page message
