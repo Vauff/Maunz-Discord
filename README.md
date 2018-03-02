@@ -12,7 +12,7 @@ Italic ones are permission restricted commands to either just Vauff or guild adm
 
 *benchmark \<gpu/cpu> - Provides complete benchmark information on a GPU or CPU powered by PassMark.
 
-*blacklist [all/channel] \<all/command> - Allows you to blacklist the usage of either all commands or specific commands in a channel.
+*blacklist [all/channel]/\<list> \<all/command>/[page] - Allows you to blacklist the usage of either all commands or specific commands in a channel.
 
 *changelog [version] - Shows you the changelog of the Maunz version you specify.
 
@@ -30,7 +30,7 @@ _*enable_ - Enables Maunz either in a specific guild or globally.
 
 *minecraft \<uuid/username> - Gives you full information about any Minecraft account.
 
-*notify \<list/wipe/mapname> - Lets you list, wipe, add or remove your server map notifications.
+*notify \<list/wipe/mapname> [page] - Lets you list, wipe, add or remove your server map notifications.
 
 *ping - Makes Maunz respond to you with pong. Very useful for testing your connection!
 

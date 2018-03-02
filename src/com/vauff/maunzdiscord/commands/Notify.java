@@ -96,7 +96,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 											page = Integer.parseInt(args[2]);
 										}
 
-										ArrayList<String> notifications = new ArrayList<String>();
+										ArrayList<String> notifications = new ArrayList<>();
 
 										for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
 										{

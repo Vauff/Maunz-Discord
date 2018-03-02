@@ -76,7 +76,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 	{
 		cmdHelp.put("about", "**\\*about** - Gives information about Maunz such as version and uptime.");
 		cmdHelp.put("benchmark", "**\\*benchmark <gpu/cpu>** - Provides complete benchmark information on a GPU or CPU powered by PassMark.");
-		cmdHelp.put("blacklist", "**\\*blacklist [all/channel] <all/command>** - Allows you to blacklist the usage of either all commands or specific commands in a channel, only usable by guild administrators and the bot owner.");
+		cmdHelp.put("blacklist", "**\\*blacklist [all/channel]/<list> <all/command>/[page]** - Allows you to blacklist the usage of either all commands or specific commands in a channel, only usable by guild administrators and the bot owner.");
 		cmdHelp.put("changelog", "**\\*changelog [version]** - Shows you the changelog of the Maunz version you specify.");
 		cmdHelp.put("disable", "**\\*disable** - Disables Maunz either in a specific guild or globally, only usable by guild administrators and the bot owner.");
 		cmdHelp.put("discord", "**\\*discord** - Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.");
@@ -85,7 +85,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		cmdHelp.put("isitdown", "**\\*isitdown <hostname>** - Tells you if the given hostname is down or not.");
 		cmdHelp.put("map", "**\\*map** - Tells you which map a server is playing outside of its standard map tracking channel.");
 		cmdHelp.put("minecraft", "**\\*minecraft <uuid/username>** - Gives you full information about any Minecraft account.");
-		cmdHelp.put("notify", "**\\*notify <list/wipe/mapname>** - Lets you list, wipe, add or remove your server map notifications.");
+		cmdHelp.put("notify", "**\\*notify <list/wipe/mapname> [page]** - Lets you list, wipe, add or remove your server map notifications.");
 		cmdHelp.put("ping", "**\\*ping** - Makes Maunz respond to you with pong. Very useful for testing your connection!");
 		cmdHelp.put("players", "**\\*players** - Lists the current players online on a server.");
 		cmdHelp.put("quote", "**\\*quote <view/list/add> <quoteid>/[page]** - Allows you to view chat quotes.");
