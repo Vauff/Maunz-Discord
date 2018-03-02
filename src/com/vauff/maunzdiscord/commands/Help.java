@@ -9,6 +9,8 @@ import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Help extends AbstractCommand<MessageReceivedEvent>
 {
@@ -24,10 +26,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		if (args.length == 1)
 		{
 			ArrayList<String> helpEntries = new ArrayList<String>();
+			SortedSet<String> sortedHelpEntries = new TreeSet<String>(cmdHelp.keySet());
 
-			for (String helpEntry : cmdHelp.values())
+			for (String key : sortedHelpEntries)
 			{
-				helpEntries.add(helpEntry);
+				helpEntries.add(cmdHelp.get(key));
 			}
 
 			IMessage m = Util.buildPage(helpEntries, 10, 1, false, false, event.getChannel(), event.getAuthor());
@@ -41,10 +44,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		{
 			int page = Integer.parseInt(args[1]);
 			ArrayList<String> helpEntries = new ArrayList<String>();
+			SortedSet<String> sortedHelpEntries = new TreeSet<String>(cmdHelp.keySet());
 
-			for (String helpEntry : cmdHelp.values())
+			for (String key : sortedHelpEntries)
 			{
-				helpEntries.add(helpEntry);
+				helpEntries.add(cmdHelp.get(key));
 			}
 
 			IMessage m = Util.buildPage(helpEntries, 10, page, false, false, event.getChannel(), event.getAuthor());
@@ -110,10 +114,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				if (event.getReaction().getEmoji().toString().equals("▶"))
 				{
 					ArrayList<String> helpEntries = new ArrayList<String>();
+					SortedSet<String> sortedHelpEntries = new TreeSet<String>(cmdHelp.keySet());
 
-					for (String helpEntry : cmdHelp.values())
+					for (String key : sortedHelpEntries)
 					{
-						helpEntries.add(helpEntry);
+						helpEntries.add(cmdHelp.get(key));
 					}
 
 					IMessage m = Util.buildPage(helpEntries, 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
@@ -126,10 +131,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				else if (event.getReaction().getEmoji().toString().equals("◀"))
 				{
 					ArrayList<String> helpEntries = new ArrayList<String>();
+					SortedSet<String> sortedHelpEntries = new TreeSet<String>(cmdHelp.keySet());
 
-					for (String helpEntry : cmdHelp.values())
+					for (String key : sortedHelpEntries)
 					{
-						helpEntries.add(helpEntry);
+						helpEntries.add(cmdHelp.get(key));
 					}
 
 					IMessage m = Util.buildPage(helpEntries, 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());

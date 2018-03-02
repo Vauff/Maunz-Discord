@@ -572,73 +572,80 @@ public class Util
 	 * @param numberedEntries Whether the entries in a list should be prefixed with their corresponding number in the list or not
 	 * @param codeBlock       Whether to surround the entries in a code block or not
 	 * @param channel         The IChannel that the page message should be sent to
-	 * @param user            The IUser that triggered the commands execution in the first place
-	 * @return The IMessage object for the sent page message
+	 * @param user            The IUser that triggered the command's execution in the first place
+	 * @return The IMessage object for the sent page message if an exception isn't thrown, null otherwise
 	 */
 	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
 	{
 		try
 		{
-			StringBuilder list = new StringBuilder();
-
-			if (codeBlock)
+			if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 			{
-				list.append("```" + System.lineSeparator());
+				return Util.msg(channel, user, "That page doesn't exist!");
 			}
-
-
-			for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
+			else
 			{
-				if (i > entries.size() - 1)
+				StringBuilder list = new StringBuilder();
+
+				if (codeBlock)
 				{
-					break;
+					list.append("```" + System.lineSeparator());
 				}
-				else
+
+
+				for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
 				{
-					if (numberedEntries)
+					if (i > entries.size() - 1)
 					{
-						list.append((i + 1) + " - " + entries.get(i) + System.lineSeparator());
+						break;
 					}
 					else
 					{
-						list.append(entries.get(i) + System.lineSeparator());
+						if (numberedEntries)
+						{
+							list.append((i + 1) + " - " + entries.get(i) + System.lineSeparator());
+						}
+						else
+						{
+							list.append(entries.get(i) + System.lineSeparator());
+						}
 					}
 				}
-			}
 
-			if (codeBlock)
-			{
-				list.append("```");
-			}
-
-			IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
-
-			Executors.newScheduledThreadPool(1).execute(() ->
-			{
-				try
+				if (codeBlock)
 				{
-					if (pageNumber != 1)
-					{
-						m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
-						Thread.sleep(250);
-					}
-
-					m.addReaction(EmojiManager.getForAlias(":x:"));
-					Thread.sleep(250);
-
-					if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-					{
-						m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
-						Thread.sleep(250);
-					}
+					list.append("```");
 				}
-				catch (Exception e)
+
+				IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+
+				Executors.newScheduledThreadPool(1).execute(() ->
 				{
-					Main.log.error("", e);
-				}
-			});
+					try
+					{
+						if (pageNumber != 1)
+						{
+							m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
+							Thread.sleep(250);
+						}
 
-			return m;
+						m.addReaction(EmojiManager.getForAlias(":x:"));
+						Thread.sleep(250);
+
+						if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+						{
+							m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
+							Thread.sleep(250);
+						}
+					}
+					catch (Exception e)
+					{
+						Main.log.error("", e);
+					}
+				});
+
+				return m;
+			}
 		}
 		catch (Exception e)
 		{
