@@ -1,16 +1,15 @@
 package com.vauff.maunzdiscord.commands.servicesmenu.edit;
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
-
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IChannel;
+
+import java.io.File;
 
 public class ServerTrackingEditChannel extends AbstractMenuPage
 {
@@ -28,9 +27,9 @@ public class ServerTrackingEditChannel extends AbstractMenuPage
 	}
 
 	@Override
-	public String getText()
+	public String getText(IChannel channel)
 	{
-		return (retry ? "The given channel either didn't exist or was in another guild\n\n" : "") + "Please mention the channel you would like to send server tracking updates in";
+		return (retry ? "The given channel either didn't exist or was in another guild\n\n" : "") + "Please mention the channel (e.g. " + channel.mention() + ") you would like to send server tracking updates in";
 	}
 
 	@Override

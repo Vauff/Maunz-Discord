@@ -2,8 +2,8 @@ package com.vauff.maunzdiscord.commands.servicesmenu.delete;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.obj.IChannel;
 
 public class DeleteConfirmationPage extends AbstractMenuPage
 {
@@ -23,7 +23,7 @@ public class DeleteConfirmationPage extends AbstractMenuPage
 	}
 
 	@Override
-	public final String getText()
+	public final String getText(IChannel channel)
 	{
 		return "Are you sure you would like to delete this service?\n\n**WARNING:** This will delete your service data **permanently**";
 	}

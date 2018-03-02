@@ -3,7 +3,6 @@ package com.vauff.maunzdiscord.commands.servicesmenu.edit;
 import com.vauff.maunzdiscord.commands.servicesmenu.AbstractServiceActionPage;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class EditServicePage extends AbstractServiceActionPage
@@ -19,11 +18,6 @@ public class EditServicePage extends AbstractServiceActionPage
 			if (services.contains("server-tracking"))
 			{
 				addChild(i++, new ServerTrackingEditPage(trigger, cmd));
-			}
-
-			if (services.contains("csgo-updates"))
-			{
-				addChild(i, new CSGOUpdatesEditPage(trigger, cmd));
 			}
 		}
 	}

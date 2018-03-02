@@ -1,5 +1,18 @@
 package com.vauff.maunzdiscord.features;
 
+import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
+import com.github.koraktor.steamcondenser.steam.SteamPlayer;
+import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
+import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Util;
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
+
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URL;
@@ -8,23 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
-
-import org.apache.commons.io.FileUtils;
-
-import org.json.JSONObject;
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
-
-import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.Util;
-
-import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
-import com.github.koraktor.steamcondenser.steam.SteamPlayer;
-import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
-
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.EmbedBuilder;
 
 /**
  * A timer to send notifications of maps currently being played on given servers
@@ -130,6 +126,7 @@ public class ServerTimer
 								String serverInfo = server.toString();
 								long timestamp = 0;
 								String map = serverInfo.split("mapName: ")[1].split("Players:")[0].replace("\n", "");
+								String serverName = serverInfo.split("serverName: ")[1].split("  secure: ")[0].replace("\n", "");
 								int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace("\n", ""));
 								int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace("\n", ""));
 								String url = "http://158.69.59.239/mapimgs/" + map + ".jpg";
@@ -157,10 +154,9 @@ public class ServerTimer
 									{
 									}
 
-									EmbedObject channelEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
-									EmbedObject pmEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nGuild Name: **" + Main.client.getGuildByID(Long.parseLong(file.getName())).getName() + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+									EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withTitle(serverName).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 
-									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), channelEmbed);
+									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), embed);
 
 									for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
 									{
@@ -189,7 +185,7 @@ public class ServerTimer
 												{
 													try
 													{
-														Util.msg(Main.client.getOrCreatePMChannel(user), pmEmbed);
+														Util.msg(Main.client.getOrCreatePMChannel(user), embed);
 													}
 													catch (NullPointerException e)
 													{
@@ -236,6 +232,11 @@ public class ServerTimer
 								if (timestamp != 0)
 								{
 									json.put("timestamp", timestamp);
+								}
+
+								if (!serverName.equals(""))
+								{
+									json.put("serverName", serverName);
 								}
 
 								json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());

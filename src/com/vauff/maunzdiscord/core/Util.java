@@ -1,5 +1,17 @@
 package com.vauff.maunzdiscord.core;
 
+import com.vdurmont.emoji.EmojiManager;
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.MissingPermissionsException;
+
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -11,35 +23,16 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.FileUtils;
-
-import com.vdurmont.emoji.EmojiManager;
-
-import org.json.JSONObject;
-
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.MissingPermissionsException;
+import java.util.concurrent.Executors;
 
 /**
  * A class holding several static utility methods
  */
 public class Util
 {
-	/**
-	 * true if the bot is in development mode, false otherwise.
-	 * Used to determine the Discord API token and handle differences in the live and dev version
-	 */
-	public static boolean devMode;
 	/**
 	 * The Discord API token of the bot, gets set in {@link Main#main(String[])}
 	 */
@@ -294,11 +287,11 @@ public class Util
 	 * @param author  The author
 	 * @param message The message
 	 */
-	public static void msg(IChannel channel, IUser author, String message)
+	public static IMessage msg(IChannel channel, IUser author, String message)
 	{
 		try
 		{
-			channel.sendMessage(message);
+			return channel.sendMessage(message);
 		}
 		catch (MissingPermissionsException e)
 		{
@@ -310,10 +303,13 @@ public class Util
 			{
 				Main.log.error(e);
 			}
+
+			return null;
 		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
+			return null;
 		}
 	}
 
@@ -323,15 +319,16 @@ public class Util
 	 * @param channel The channel
 	 * @param message The message
 	 */
-	public static void msg(IChannel channel, String message)
+	public static IMessage msg(IChannel channel, String message)
 	{
 		try
 		{
-			channel.sendMessage(message);
+			return channel.sendMessage(message);
 		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
+			return null;
 		}
 	}
 
@@ -342,11 +339,11 @@ public class Util
 	 * @param author  The author
 	 * @param message The embed
 	 */
-	public static void msg(IChannel channel, IUser author, EmbedObject message)
+	public static IMessage msg(IChannel channel, IUser author, EmbedObject message)
 	{
 		try
 		{
-			channel.sendMessage("", message, false);
+			return channel.sendMessage("", message, false);
 		}
 		catch (MissingPermissionsException e)
 		{
@@ -362,10 +359,13 @@ public class Util
 			{
 				Main.log.error(e);
 			}
+
+			return null;
 		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
+			return null;
 		}
 	}
 
@@ -375,11 +375,11 @@ public class Util
 	 * @param channel The channel
 	 * @param message The embed
 	 */
-	public static void msg(IChannel channel, EmbedObject message)
+	public static IMessage msg(IChannel channel, EmbedObject message)
 	{
 		try
 		{
-			channel.sendMessage("", message, false);
+			return channel.sendMessage("", message, false);
 		}
 		catch (MissingPermissionsException e)
 		{
@@ -391,10 +391,13 @@ public class Util
 			{
 				Main.log.error(e);
 			}
+
+			return null;
 		}
 		catch (Exception e)
 		{
 			Main.log.error("", e);
+			return null;
 		}
 	}
 
@@ -412,7 +415,7 @@ public class Util
 		try
 		{
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.91 Safari/537.36");
+			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36");
 			image = ImageIO.read(connection.getInputStream());
 
 			final int pixels = image.getWidth() * image.getHeight();
@@ -441,37 +444,49 @@ public class Util
 	}
 
 	/**
-	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
+	 * Generic method for adding a reaction to a message, used so a no permission message can be sent if required
 	 *
-	 * @param m           The message to add the emojis to
-	 * @param cancellable Whether an x emoji should be added at the end or not
-	 * @param i           The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
+	 * @param m        The message to add the emojis to
+	 * @param reaction A string that contains a reaction that should be added to a given IMessage
 	 */
-	public static void addNumberedReactions(IMessage m, boolean cancellable, int i)
+	public static void addReaction(IMessage m, String reaction)
 	{
 		try
 		{
-			String[] reactions = {
-					"one",
-					"two",
-					"three",
-					"four",
-					"five",
-					"six",
-					"seven",
-					"eight",
-					"nine"
-			};
-
-			for (int j = 0; j < i; j++)
+			m.addReaction(EmojiManager.getForAlias(":" + reaction + ":"));
+			Thread.sleep(250);
+		}
+		catch (MissingPermissionsException e)
+		{
+			if (e.getMissingPermissions().contains(Permissions.ADD_REACTIONS))
 			{
-				m.addReaction(EmojiManager.getForAlias(":" + reactions[j] + ":"));
-				Thread.sleep(250);
+				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 			}
-
-			if (cancellable)
+			else
 			{
-				m.addReaction(EmojiManager.getForAlias(":x:"));
+				Main.log.error(e);
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+	}
+
+	/**
+	 * Generic method for adding reactions to a message, used so a no permission message can be sent if required
+	 *
+	 * @param m         The message to add the emojis to
+	 * @param reactions An ArrayList<String> that contains a list of reactions that should be added to a given IMessage
+	 */
+	public static void addReactions(IMessage m, ArrayList<String> reactions)
+	{
+		try
+		{
+			for (String reaction : reactions)
+			{
+				m.addReaction(EmojiManager.getForAlias(":" + reaction + ":"));
+				Thread.sleep(250);
 			}
 		}
 		catch (MissingPermissionsException e)
@@ -492,6 +507,49 @@ public class Util
 	}
 
 	/**
+	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
+	 *
+	 * @param m           The message to add the emojis to
+	 * @param cancellable Whether an x emoji should be added at the end or not
+	 * @param i           The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
+	 */
+	public static void addNumberedReactions(IMessage m, boolean cancellable, int i)
+	{
+		try
+		{
+			ArrayList<String> finalReactions = new ArrayList<String>();
+			String[] reactions = {
+					"one",
+					"two",
+					"three",
+					"four",
+					"five",
+					"six",
+					"seven",
+					"eight",
+					"nine"
+			};
+
+			for (int j = 0; j < i; j++)
+			{
+				finalReactions.add(reactions[j]);
+				Thread.sleep(250);
+			}
+
+			if (cancellable)
+			{
+				finalReactions.add("x");
+			}
+
+			addReactions(m, finalReactions);
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+		}
+	}
+
+	/**
 	 * Checks whether the bot is enabled for a specified guild
 	 *
 	 * @param guild The guild for which to check if the bot is enabled
@@ -503,5 +561,96 @@ public class Util
 		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
 
 		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
+	}
+
+	/**
+	 * Builds a modular page message for the given parameters
+	 *
+	 * @param entries         An ArrayList<String> that contains all the entries that should be in the page builder
+	 * @param pageSize        How many entries should be in a specific page
+	 * @param pageNumber      Which page the method should build and send to the provided IChannel
+	 * @param numberedEntries Whether the entries in a list should be prefixed with their corresponding number in the list or not
+	 * @param codeBlock       Whether to surround the entries in a code block or not
+	 * @param channel         The IChannel that the page message should be sent to
+	 * @param user            The IUser that triggered the command's execution in the first place
+	 * @return The IMessage object for the sent page message if an exception isn't thrown, null otherwise
+	 */
+	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
+	{
+		try
+		{
+			if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
+			{
+				return Util.msg(channel, user, "That page doesn't exist!");
+			}
+			else
+			{
+				StringBuilder list = new StringBuilder();
+
+				if (codeBlock)
+				{
+					list.append("```" + System.lineSeparator());
+				}
+
+
+				for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
+				{
+					if (i > entries.size() - 1)
+					{
+						break;
+					}
+					else
+					{
+						if (numberedEntries)
+						{
+							list.append((i + 1) + " - " + entries.get(i) + System.lineSeparator());
+						}
+						else
+						{
+							list.append(entries.get(i) + System.lineSeparator());
+						}
+					}
+				}
+
+				if (codeBlock)
+				{
+					list.append("```");
+				}
+
+				IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+
+				Executors.newScheduledThreadPool(1).execute(() ->
+				{
+					try
+					{
+						if (pageNumber != 1)
+						{
+							m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
+							Thread.sleep(250);
+						}
+
+						m.addReaction(EmojiManager.getForAlias(":x:"));
+						Thread.sleep(250);
+
+						if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+						{
+							m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
+							Thread.sleep(250);
+						}
+					}
+					catch (Exception e)
+					{
+						Main.log.error("", e);
+					}
+				});
+
+				return m;
+			}
+		}
+		catch (Exception e)
+		{
+			Main.log.error("", e);
+			return null;
+		}
 	}
 }

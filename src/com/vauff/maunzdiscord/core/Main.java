@@ -1,24 +1,19 @@
 package com.vauff.maunzdiscord.core;
 
-import java.io.File;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.vauff.maunzdiscord.features.CsgoUpdateBot;
-
 import org.json.JSONObject;
-
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
 
+import java.io.File;
+
 public class Main
 {
 	public static IDiscordClient client;
-	public static CsgoUpdateBot bot;
-	public static String version = "2.3.4";
+	public static String version = "2.4";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -40,7 +35,6 @@ public class Main
 				file.createNewFile();
 				json.put("enabled", true);
 				json.put("discordToken", "");
-				json.put("discordDevToken", "");
 				json.put("botOwnerID", 0L);
 				json.put("cleverbotAPIKey", "");
 				json.put("database", new JSONObject());
@@ -55,51 +49,19 @@ public class Main
 			logFile.renameTo(oldLogFile);
 			log = LogManager.getLogger(Main.class);
 
-			if (args.length >= 1 && args[0].equals("-dev"))
+			if (!json.getString("discordToken").equals(""))
 			{
-				if (!json.getString("discordDevToken").equals(""))
-				{
-					log.info("Starting Maunz-Discord v" + version + " in dev mode");
-					Util.token = json.getString("discordDevToken");
-					Util.devMode = true;
-					CsgoUpdateBot.listeningNick = "Vauff";
-				}
-				else
-				{
-					log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordDevToken option in config.json");
-					System.exit(1);
-				}
+				log.info("Starting Maunz-Discord v" + version);
+				Util.token = json.getString("discordToken");
 			}
 			else
 			{
-				if (!json.getString("discordToken").equals(""))
-				{
-					log.info("Starting Maunz-Discord v" + version);
-					Util.token = json.getString("discordToken");
-					Util.devMode = false;
-					CsgoUpdateBot.listeningNick = "SteamDB";
-				}
-				else
-				{
-					log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordToken option in config.json");
-					System.exit(1);
-				}
+				log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordToken option in config.json");
+				System.exit(1);
 			}
 
 			client = new ClientBuilder().withToken(Util.token).login();
 			client.getDispatcher().registerListener(new ReadyEventListener());
-
-			bot = new CsgoUpdateBot();
-			bot.connect("irc.freenode.net");
-
-			if (Util.devMode)
-			{
-				bot.joinChannel("#maunztesting");
-			}
-			else
-			{
-				bot.joinChannel("#steamdb-announce");
-			}
 		}
 		catch (Exception e)
 		{

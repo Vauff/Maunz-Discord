@@ -1,5 +1,16 @@
 package com.vauff.maunzdiscord.commands;
 
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+import sx.blah.discord.handle.obj.IMessage;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,26 +18,13 @@ import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Util;
-
-import com.vdurmont.emoji.EmojiManager;
-
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IMessage;
-
 public class Notify extends AbstractCommand<MessageReceivedEvent>
 {
-	private static HashMap<String, String> confirmationMaps = new HashMap<String, String>();
-	private static HashMap<String, String> confirmationSuggestionMaps = new HashMap<String, String>();
-	private static HashMap<String, String> confirmationMessages = new HashMap<String, String>();
+	private static HashMap<String, String> confirmationMaps = new HashMap<>();
+	private static HashMap<String, String> confirmationSuggestionMaps = new HashMap<>();
+	private static HashMap<String, String> confirmationMessages = new HashMap<>();
+	private static HashMap<String, Integer> listPages = new HashMap<>();
+	private static HashMap<String, String> listMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -85,16 +83,36 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							{
 								if (json.getJSONArray("notifications").length() != 0)
 								{
-									StringBuilder mapsBuilder = new StringBuilder();
-
-									for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+									if (args.length == 2 || NumberUtils.isCreatable(args[2]))
 									{
-										mapsBuilder = mapsBuilder.append(json.getJSONArray("notifications").getString(i) + " | ");
+										int page;
+
+										if (args.length == 2)
+										{
+											page = 1;
+										}
+										else
+										{
+											page = Integer.parseInt(args[2]);
+										}
+
+										ArrayList<String> notifications = new ArrayList<>();
+
+										for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+										{
+											notifications.add(json.getJSONArray("notifications").getString(i));
+										}
+
+										IMessage m = Util.buildPage(notifications, 10, page, false, true, event.getChannel(), event.getAuthor());
+
+										listMessages.put(event.getAuthor().getStringID(), m.getStringID());
+										waitForReaction(m.getStringID(), event.getAuthor().getStringID());
+										listPages.put(event.getAuthor().getStringID(), page);
 									}
-
-									String maps = mapsBuilder.toString().substring(0, mapsBuilder.toString().length() - 3);
-
-									Util.msg(event.getChannel(), event.getAuthor(), "You currently have notifications set for the following maps: **" + maps.toString().replace("_", "\\_") + "**");
+									else
+									{
+										Util.msg(event.getChannel(), event.getAuthor(), "Page numbers need to be numerical!");
+									}
 								}
 								else
 								{
@@ -110,14 +128,17 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								IMessage m = event.getChannel().sendMessage("Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+								IMessage m = Util.msg(event.getChannel(), event.getAuthor(), "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 
 								waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 								confirmationMaps.put(event.getAuthor().getStringID(), "wipe");
 								confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
-								m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
-								Thread.sleep(250);
-								m.addReaction(EmojiManager.getForAlias(":x:"));
+
+								ArrayList<String> reactions = new ArrayList<String>();
+
+								reactions.add("white_check_mark");
+								reactions.add("x");
+								Util.addReactions(m, reactions);
 
 								Executors.newScheduledThreadPool(1).schedule(() ->
 								{
@@ -220,17 +241,20 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 										if (mapSuggestion.equals(""))
 										{
-											m = event.getChannel().sendMessage("The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+											m = Util.msg(event.getChannel(), event.getAuthor(), "The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
-											m.addReaction(EmojiManager.getForAlias(":white_check_mark:"));
-											Thread.sleep(250);
-											m.addReaction(EmojiManager.getForAlias(":x:"));
+
+											ArrayList<String> reactions = new ArrayList<String>();
+
+											reactions.add("white_check_mark");
+											reactions.add("x");
+											Util.addReactions(m, reactions);
 										}
 										else
 										{
-											m = event.getChannel().sendMessage("The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + argument.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
+											m = Util.msg(event.getChannel(), event.getAuthor(), "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + argument.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
 											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationSuggestionMaps.put(event.getAuthor().getStringID(), mapSuggestion);
@@ -278,9 +302,9 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event) throws Exception
 	{
-		if (confirmationMessages.containsKey(event.getUser().getStringID()))
+		if (confirmationMessages.containsKey(event.getUser().getStringID()) || listMessages.containsKey(event.getUser().getStringID()))
 		{
-			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())))
+			if (event.getMessage().getStringID().equals(confirmationMessages.get(event.getUser().getStringID())) || event.getMessage().getStringID().equals(listMessages.get(event.getUser().getStringID())))
 			{
 				String guildID = event.getGuild().getStringID();
 				String fileName = "data/services/server-tracking/" + guildID + "/" + event.getUser().getStringID() + ".json";
@@ -329,7 +353,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					}
 					else
 					{
-						Util.msg(event.getChannel(), event.getUser(), "No problem, I won't add **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications");
+						Util.msg(event.getChannel(), event.getUser(), "No problem, I won't add or remove **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to/from your map notifications");
 					}
 
 					confirmationMaps.remove(event.getUser().getStringID());
@@ -408,6 +432,42 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						json.getJSONArray("notifications").remove(index);
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
+				}
+
+				else if (event.getReaction().getEmoji().toString().equals("▶"))
+				{
+					ArrayList<String> notifications = new ArrayList<>();
+
+					json = new JSONObject(Util.getFileContents(file));
+
+					for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+					{
+						notifications.add(json.getJSONArray("notifications").getString(i));
+					}
+
+					IMessage m = Util.buildPage(notifications, 10, listPages.get(event.getUser().getStringID()) + 1, false, true, event.getChannel(), event.getUser());
+
+					listMessages.put(event.getUser().getStringID(), m.getStringID());
+					waitForReaction(m.getStringID(), event.getUser().getStringID());
+					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) + 1);
+				}
+
+				else if (event.getReaction().getEmoji().toString().equals("◀"))
+				{
+					ArrayList<String> notifications = new ArrayList<>();
+
+					json = new JSONObject(Util.getFileContents(file));
+
+					for (int i = 0; i < json.getJSONArray("notifications").length(); i++)
+					{
+						notifications.add(json.getJSONArray("notifications").getString(i));
+					}
+
+					IMessage m = Util.buildPage(notifications, 10, listPages.get(event.getUser().getStringID()) - 1, false, true, event.getChannel(), event.getUser());
+
+					listMessages.put(event.getUser().getStringID(), m.getStringID());
+					waitForReaction(m.getStringID(), event.getUser().getStringID());
+					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) - 1);
 				}
 			}
 		}

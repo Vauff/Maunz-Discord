@@ -1,14 +1,12 @@
 package com.vauff.maunzdiscord.commands;
 
-import java.io.File;
-
-import org.json.JSONObject;
-
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
-
+import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+
+import java.io.File;
 
 public class Players extends AbstractCommand<MessageReceivedEvent>
 {
@@ -32,7 +30,8 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 					{
 						if (ServerTimer.serverPlayers.containsKey(json.getString("serverIP") + ":" + json.getInt("serverPort")))
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "Sending the online player list to you in a PM!");
+							boolean sizeIsSmall = ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")).size() <= 8;
+
 							playersList.append("```-- Players Online: " + json.getString("players") + " --" + System.lineSeparator() + System.lineSeparator());
 
 							for (String player : ServerTimer.serverPlayers.get(json.getString("serverIP") + ":" + json.getInt("serverPort")))
@@ -44,7 +43,21 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 							}
 
 							playersList.append("```");
-							Util.msg(event.getAuthor().getOrCreatePMChannel(), event.getAuthor(), playersList.toString());
+
+							if (Util.msg((!sizeIsSmall ? event.getAuthor().getOrCreatePMChannel() : event.getChannel()), event.getAuthor(), playersList.toString()) == null)
+							{
+								if (!sizeIsSmall)
+								{
+									Util.msg(event.getChannel(), event.getAuthor(), "An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked");
+								}
+							}
+							else
+							{
+								if (!sizeIsSmall)
+								{
+									Util.msg(event.getChannel(), event.getAuthor(), "Sending the online player list to you in a PM!");
+								}
+							}
 						}
 						else
 						{

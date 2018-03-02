@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands.servicesmenu.delete;
 
 import com.vauff.maunzdiscord.commands.servicesmenu.AbstractServiceActionPage;
 import com.vauff.maunzdiscord.core.AbstractCommand;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class DeleteServicePage extends AbstractServiceActionPage
@@ -18,12 +17,6 @@ public class DeleteServicePage extends AbstractServiceActionPage
 			if (services.contains("server-tracking"))
 			{
 				addChild(i++, new ServerTrackingDeletePage(trigger, cmd, "Server Tracking"));
-			}
-
-			if (services.contains("csgo-updates"))
-			{
-
-				addChild(i, new CSGONotificationsDeletePage(trigger, cmd, "CS:GO Update Notifications"));
 			}
 		}
 	}

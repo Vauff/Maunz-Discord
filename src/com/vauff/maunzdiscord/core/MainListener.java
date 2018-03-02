@@ -1,22 +1,39 @@
 package com.vauff.maunzdiscord.core;
 
-import java.io.File;
-import java.util.LinkedList;
-
-import com.vauff.maunzdiscord.commands.*;
+import com.vauff.maunzdiscord.commands.About;
+import com.vauff.maunzdiscord.commands.Benchmark;
+import com.vauff.maunzdiscord.commands.Blacklist;
+import com.vauff.maunzdiscord.commands.Changelog;
+import com.vauff.maunzdiscord.commands.Disable;
+import com.vauff.maunzdiscord.commands.Discord;
+import com.vauff.maunzdiscord.commands.Enable;
+import com.vauff.maunzdiscord.commands.Help;
+import com.vauff.maunzdiscord.commands.IsItDown;
+import com.vauff.maunzdiscord.commands.Map;
+import com.vauff.maunzdiscord.commands.Minecraft;
+import com.vauff.maunzdiscord.commands.Notify;
+import com.vauff.maunzdiscord.commands.Ping;
+import com.vauff.maunzdiscord.commands.Players;
+import com.vauff.maunzdiscord.commands.Quote;
+import com.vauff.maunzdiscord.commands.Reddit;
+import com.vauff.maunzdiscord.commands.Restart;
+import com.vauff.maunzdiscord.commands.Say;
+import com.vauff.maunzdiscord.commands.Source;
+import com.vauff.maunzdiscord.commands.Steam;
+import com.vauff.maunzdiscord.commands.Stop;
 import com.vauff.maunzdiscord.commands.servicesmenu.Services;
 import com.vauff.maunzdiscord.features.Intelligence;
-
 import org.apache.commons.io.FileUtils;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
+
+import java.io.File;
+import java.util.LinkedList;
 
 public class MainListener
 {
@@ -35,15 +52,16 @@ public class MainListener
 			JSONObject json = new JSONObject(Util.getFileContents("config.json"));
 
 			commands.add(new About());
-			commands.add(new AccInfo());
 			commands.add(new Benchmark());
 			commands.add(new Blacklist());
 			commands.add(new Changelog());
 			commands.add(new Disable());
+			commands.add(new Discord());
 			commands.add(new Enable());
 			commands.add(new Help());
 			commands.add(new IsItDown());
 			commands.add(new Map());
+			commands.add(new Minecraft());
 			commands.add(new Notify());
 			commands.add(new Ping());
 			commands.add(new Players());
@@ -113,7 +131,23 @@ public class MainListener
 
 							if (!blacklisted)
 							{
-								cmd.exe(event);
+								event.getChannel().setTypingStatus(true);
+								Thread.sleep(250);
+
+								try
+								{
+									cmd.exe(event);
+								}
+								catch (Exception e)
+								{
+									Main.log.error("", e);
+								}
+
+								event.getChannel().setTypingStatus(false);
+							}
+							else
+							{
+								Util.msg(event.getAuthor().getOrCreatePMChannel(), ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + event.getChannel().mention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
 							}
 						}
 					}

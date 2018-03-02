@@ -1,14 +1,15 @@
 package com.vauff.maunzdiscord.core;
 
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IMessage;
+
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 public abstract class AbstractMenuPage
 {
@@ -58,9 +59,10 @@ public abstract class AbstractMenuPage
 	/**
 	 * Any \n in the returned string will be replaced with a call to {@link java.lang.System.lineSeparator()}
 	 *
+	 * @param channel The IChannel that the trigger originated in
 	 * @return An optional text that is being shown between {@code getTitle()} and {@code getItems()}
 	 */
-	public String getText()
+	public String getText(IChannel channel)
 	{
 		return null;
 	}
@@ -108,7 +110,7 @@ public abstract class AbstractMenuPage
 		}
 
 		ACTIVE.put(trigger.getAuthor().getLongID(), this);
-		menu = trigger.getChannel().sendMessage(getTitle() + System.lineSeparator() + System.lineSeparator() + (getText() != null ? getText().replaceAll("\n", System.lineSeparator()) + System.lineSeparator() + System.lineSeparator() : "") + items);
+		menu = Util.msg(trigger.getChannel(), trigger.getAuthor(), getTitle() + System.lineSeparator() + System.lineSeparator() + (getText(trigger.getChannel()) != null ? getText(trigger.getChannel()).replaceAll("\n", System.lineSeparator()) + System.lineSeparator() + System.lineSeparator() : "") + items);
 		Util.addNumberedReactions(menu, true, getAmount());
 
 		removeTimer = Executors.newScheduledThreadPool(1).schedule(() ->
@@ -136,7 +138,10 @@ public abstract class AbstractMenuPage
 			removeTimer.cancel(false);
 		}
 
-		menu.delete();
+		if (menu != null)
+		{
+			menu.delete();
+		}
 	}
 
 	/**

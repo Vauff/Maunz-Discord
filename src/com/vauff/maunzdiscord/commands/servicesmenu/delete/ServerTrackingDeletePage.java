@@ -1,11 +1,10 @@
 package com.vauff.maunzdiscord.commands.servicesmenu.delete;
 
-import java.io.File;
-
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+
+import java.io.File;
 
 public class ServerTrackingDeletePage extends DeleteConfirmationPage
 {
@@ -16,9 +15,12 @@ public class ServerTrackingDeletePage extends DeleteConfirmationPage
 		addChild(0, (event) ->
 		{
 			File folder = new File(Util.getJarLocation() + "data/services/server-tracking/" + trigger.getGuild().getStringID() + "/");
-			File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + trigger.getGuild().getStringID() + "/serverInfo.json");
 
-			file.delete();
+			for (File file : folder.listFiles())
+			{
+				file.delete();
+			}
+
 			folder.delete();
 			Util.msg(trigger.getChannel(), "Successfully deleted the server tracking service!");
 		});

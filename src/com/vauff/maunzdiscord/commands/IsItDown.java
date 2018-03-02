@@ -1,7 +1,9 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import org.jsoup.Jsoup;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 import java.io.IOException;
@@ -54,7 +56,7 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 					return;
 				}
 
-				isUp = pingHost(host, port);
+				isUp = pingHost(host, port, cleanedUri);
 
 				Util.msg(event.getChannel(), event.getAuthor(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
 
@@ -80,18 +82,24 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 	 * @param port The port to ping the host at
 	 * @return true if the connection was successful, false otherwise (aka the socket could not connect to the host/port after timeout amount of milliseconds
 	 */
-	private static boolean pingHost(String host, int port)
+	private static boolean pingHost(String host, int port, String uri)
 	{
 		Socket socket = new Socket();
 
 		try
 		{
 			socket.connect(new InetSocketAddress(host, port), 4000);
+
+			if (port == 80 || port == 443)
+			{
+				Jsoup.connect((port == 80 ? "http" : "https") + "://" + uri).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36").get();
+			}
+
 			return true;
 		}
 		catch (IOException e)
 		{
-			return false; // Either timeout, unreachable or failed DNS lookup.
+			return false; // Either timeout, unreachable failed DNS lookup, or bad HTTP status code.
 		}
 		finally
 		{
@@ -101,7 +109,7 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				Main.log.error("", e);
 			}
 		}
 	}

@@ -1,12 +1,11 @@
 package com.vauff.maunzdiscord.commands;
 
-import java.util.ArrayList;
-
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+
+import java.util.ArrayList;
 
 public class Restart extends AbstractCommand<MessageReceivedEvent>
 {
@@ -20,11 +19,6 @@ public class Restart extends AbstractCommand<MessageReceivedEvent>
 			command.add("java");
 			command.add("-jar");
 			command.add("Maunz-Discord.jar");
-
-			if (Util.devMode)
-			{
-				command.add("-dev");
-			}
 
 			Main.log.info("Maunz is restarting...");
 			new ProcessBuilder(command).start();

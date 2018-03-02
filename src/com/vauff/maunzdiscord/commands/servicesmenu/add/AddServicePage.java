@@ -4,7 +4,6 @@ import com.vauff.maunzdiscord.commands.servicesmenu.AbstractServiceActionPage;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
 import com.vauff.maunzdiscord.core.Util;
-
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class AddServicePage extends AbstractServiceActionPage
@@ -13,7 +12,7 @@ public class AddServicePage extends AbstractServiceActionPage
 	{
 		super(trigger, cmd);
 
-		if (services.size() != 2)
+		if (services.size() != 1)
 		{
 			int i = 0;
 
@@ -27,27 +26,17 @@ public class AddServicePage extends AbstractServiceActionPage
 					waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
 				});
 			}
-
-			if (!services.contains("csgo-updates"))
-			{
-				addChild(i, (event) ->
-				{
-					AbstractMenuPage page = new CSGOUpdatesAddChannel(trigger, cmd, false);
-
-					show(page);
-					waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
-				});
-			}
 		}
 	}
 
 	@Override
 	public void show()
 	{
-		if (services.size() == 2)
+		if (services.size() == 1)
 		{
 			Util.msg(trigger.getChannel(), "There are no more services to add!");
 			end();
+			return;
 		}
 
 		super.show();
@@ -67,11 +56,6 @@ public class AddServicePage extends AbstractServiceActionPage
 		if (!services.contains("server-tracking"))
 		{
 			add += "Server Tracking,";
-		}
-
-		if (!services.contains("csgo-updates"))
-		{
-			add += "CS:GO Update Notifications";
 		}
 
 		return add.split(",");

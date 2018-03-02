@@ -1,15 +1,14 @@
 package com.vauff.maunzdiscord.commands.servicesmenu;
 
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.AbstractMenuPage;
+import com.vauff.maunzdiscord.core.Util;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.AbstractMenuPage;
-import com.vauff.maunzdiscord.core.Util;
-
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public abstract class AbstractServiceActionPage extends AbstractMenuPage
 {
@@ -20,7 +19,7 @@ public abstract class AbstractServiceActionPage extends AbstractMenuPage
 	{
 		super(trigger, cmd);
 
-		List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "data/services/server-tracking/", Util.getJarLocation() + "data/services/csgo-updates/"));
+		List<String> fileLocationList = new ArrayList<String>(Arrays.asList(Util.getJarLocation() + "data/services/server-tracking/"));
 
 		for (String fileLocation : fileLocationList)
 		{
@@ -43,11 +42,6 @@ public abstract class AbstractServiceActionPage extends AbstractMenuPage
 		if (services.contains("server-tracking"))
 		{
 			add += "Server Tracking,";
-		}
-
-		if (services.contains("csgo-updates"))
-		{
-			add += "CS:GO Update Notifications";
 		}
 
 		return add.split(",");

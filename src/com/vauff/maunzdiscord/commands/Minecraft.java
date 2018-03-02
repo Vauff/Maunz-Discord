@@ -1,19 +1,16 @@
 package com.vauff.maunzdiscord.commands;
 
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
+import org.apache.commons.lang3.StringUtils;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import sx.blah.discord.util.EmbedBuilder;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Util;
-
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
-
-public class AccInfo extends AbstractCommand<MessageReceivedEvent>
+public class Minecraft extends AbstractCommand<MessageReceivedEvent>
 {
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -24,7 +21,7 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 
 			if (args.length == 1)
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "Provide a Minecraft username for me please!");
+				Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a username! **Usage: *minecraft <username>**");
 			}
 			else
 			{
@@ -76,10 +73,15 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 						uuid = new StringBuilder(uuid).insert(uuid.length() - 12, "-").toString();
 
 						String headURL = "https://cravatar.eu/helmavatar/" + status[1] + "/120";
-						EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(headURL))).withThumbnail(headURL).appendField("Name", status[1], true).withFooterText("Powered by axis.iaero.me").appendField("Account Status", "Premium", true).appendField("Migrated", StringUtils.capitalize(status[2]), true).appendField("UUID", uuid, true).appendField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true).appendField("Raw Skin", "https://minotar.net/skin/" + status[1], true).build();
-						Util.msg(event.getChannel(), event.getAuthor(), embed);
+						Util.msg(event.getChannel(), event.getAuthor(), new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(headURL))).withThumbnail(headURL).withFooterIcon("https://i.imgur.com/4o6K42Z.png").appendField("Name", status[1], true).withFooterText("Powered by axis.iaero.me").appendField("Account Status", "Premium", true).appendField("Migrated", StringUtils.capitalize(status[2]), true).appendField("UUID", uuid, true).appendField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true).appendField("Raw Skin", "https://minotar.net/skin/" + status[1], true).build());
 					}
 				}
+
+				if (args[0].equalsIgnoreCase("*accinfo"))
+				{
+					Util.msg(event.getChannel(), event.getAuthor(), "**\\*accinfo** has been deprecated in favour of **\\*minecraft**, please make sure to use that in the future instead");
+				}
+
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e)
@@ -91,6 +93,9 @@ public class AccInfo extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*accinfo" };
+		return new String[] {
+				"*minecraft",
+				"*accinfo"
+		};
 	}
 }

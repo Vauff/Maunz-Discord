@@ -1,25 +1,22 @@
 package com.vauff.maunzdiscord.core;
 
+import com.vauff.maunzdiscord.commands.Help;
+import com.vauff.maunzdiscord.features.ServerTimer;
+import com.vauff.maunzdiscord.features.StatsTimer;
+import com.vauff.maunzdiscord.features.UptimeTimer;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.obj.IGuild;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.time.StopWatch;
-
-import com.vauff.maunzdiscord.features.UptimeTimer;
-import com.vauff.maunzdiscord.features.ServerTimer;
-import com.vauff.maunzdiscord.features.StatsTimer;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
-import sx.blah.discord.handle.obj.IGuild;
 
 public class ReadyEventListener
 {
@@ -41,7 +38,6 @@ public class ReadyEventListener
 			folderList.add(new File(Util.getJarLocation() + "data/services/"));
 			folderList.add(new File(Util.getJarLocation() + "data/guilds/"));
 			folderList.add(new File(Util.getJarLocation() + "data/services/server-tracking/"));
-			folderList.add(new File(Util.getJarLocation() + "data/services/csgo-updates/"));
 
 			for (File folder : folderList)
 			{
@@ -66,6 +62,8 @@ public class ReadyEventListener
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				}
 			}
+
+			Help.setupCmdHelp();
 
 			Main.client.getDispatcher().registerListener(new MainListener());
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
