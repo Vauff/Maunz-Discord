@@ -154,7 +154,8 @@ public class ServerTimer
 									{
 									}
 
-									EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withTitle(serverName).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+									EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+									EmbedObject pmEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withTitle(serverName).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 
 									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), embed);
 
@@ -185,7 +186,7 @@ public class ServerTimer
 												{
 													try
 													{
-														Util.msg(Main.client.getOrCreatePMChannel(user), embed);
+														Util.msg(Main.client.getOrCreatePMChannel(user), pmEmbed);
 													}
 													catch (NullPointerException e)
 													{

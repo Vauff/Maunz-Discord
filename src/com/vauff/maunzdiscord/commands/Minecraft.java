@@ -21,7 +21,7 @@ public class Minecraft extends AbstractCommand<MessageReceivedEvent>
 
 			if (args.length == 1)
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a username! **Usage: *minecraft <username>**");
+				Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a username! **Usage: *minecraft <uuid/username>**");
 			}
 			else
 			{
