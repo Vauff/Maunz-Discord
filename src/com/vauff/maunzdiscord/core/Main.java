@@ -13,7 +13,7 @@ import java.io.File;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "2.4";
+	public static String version = "2.4.1";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
