@@ -207,7 +207,7 @@ public class ServerTimer
 									{
 										String dbMap = json.getJSONArray("mapDatabase").getString(i);
 
-										if (dbMap.toString().equals(map))
+										if (dbMap.equalsIgnoreCase(map))
 										{
 											mapFound = true;
 										}
@@ -217,7 +217,6 @@ public class ServerTimer
 									{
 										json.append("mapDatabase", map);
 									}
-
 								}
 
 								if (!map.equals(""))

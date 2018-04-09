@@ -629,7 +629,6 @@ public class Util
 							Thread.sleep(250);
 						}
 
-						m.addReaction(EmojiManager.getForAlias(":x:"));
 						Thread.sleep(250);
 
 						if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))

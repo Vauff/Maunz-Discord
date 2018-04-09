@@ -28,7 +28,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 
 				if (json.getBoolean("enabled"))
 				{
-					if (!(json.getInt("downtimeTimer") >= 3))
+					if (!(json.getInt("downtimeTimer") >= json.getInt("failedConnectionsThreshold")))
 					{
 						if (!json.getString("lastMap").equals("N/A"))
 						{
