@@ -1,7 +1,6 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import org.jsoup.Jsoup;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -59,7 +58,6 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 				isUp = pingHost(host, port, cleanedUri);
 
 				Util.msg(event.getChannel(), event.getAuthor(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
-
 			}
 			catch (Exception e)
 			{
@@ -82,7 +80,7 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 	 * @param port The port to ping the host at
 	 * @return true if the connection was successful, false otherwise (aka the socket could not connect to the host/port after timeout amount of milliseconds
 	 */
-	private static boolean pingHost(String host, int port, String uri)
+	private static boolean pingHost(String host, int port, String uri) throws Exception
 	{
 		Socket socket = new Socket();
 
@@ -99,18 +97,11 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 		}
 		catch (IOException e)
 		{
-			return false; // Either timeout, unreachable failed DNS lookup, or bad HTTP status code.
+			return false; // Either timeout, unreachable, failed DNS lookup, or bad HTTP status code.
 		}
 		finally
 		{
-			try
-			{
-				socket.close();
-			}
-			catch (IOException e)
-			{
-				Main.log.error("", e);
-			}
+			socket.close();
 		}
 	}
 

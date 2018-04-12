@@ -12,6 +12,7 @@ public class Stop extends AbstractCommand<MessageReceivedEvent>
 	{
 		if (Util.hasPermission(event.getAuthor()))
 		{
+			Util.msg(event.getChannel(), event.getAuthor(), "Maunz is stopping...");
 			Main.log.info("Maunz is stopping...");
 			System.exit(0);
 		}

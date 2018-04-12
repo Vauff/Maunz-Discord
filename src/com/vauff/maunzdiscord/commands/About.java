@@ -24,7 +24,7 @@ public class About extends AbstractCommand<MessageReceivedEvent>
 	 *
 	 * @return The time in the format as defined by {@link Util#getTime()}
 	 */
-	private String getBuildDate()
+	private String getBuildDate() throws Exception
 	{
 		try
 		{
@@ -35,11 +35,6 @@ public class About extends AbstractCommand<MessageReceivedEvent>
 		catch (ClassCastException e)
 		{
 			return "N/A";
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-			return "Error";
 		}
 	}
 

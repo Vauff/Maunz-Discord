@@ -26,7 +26,7 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 
 				if (json.getBoolean("enabled"))
 				{
-					if (!(json.getInt("downtimeTimer") >= 3))
+					if (!(json.getInt("downtimeTimer") >= json.getInt("failedConnectionsThreshold")))
 					{
 						if (ServerTimer.serverPlayers.containsKey(json.getString("serverIP") + ":" + json.getInt("serverPort")))
 						{

@@ -31,6 +31,7 @@ public class Say extends AbstractCommand<MessageReceivedEvent>
 								try
 								{
 									Util.msg(channel, Util.addArgs(args, 2));
+									Util.msg(event.getChannel(), event.getAuthor(), "Successfully sent message!");
 								}
 								catch (DiscordException e)
 								{
@@ -51,6 +52,7 @@ public class Say extends AbstractCommand<MessageReceivedEvent>
 					else
 					{
 						Util.msg(event.getChannel(), Util.addArgs(args, 1));
+						Util.msg(event.getChannel(), event.getAuthor(), "Successfully sent message!");
 					}
 				}
 				else

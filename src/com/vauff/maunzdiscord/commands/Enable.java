@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Enable extends AbstractCommand<MessageReceivedEvent>
 {
-	private static HashMap<String, String> menuMessages = new HashMap<String, String>();
+	private static HashMap<String, String> menuMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception

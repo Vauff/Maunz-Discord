@@ -30,12 +30,12 @@ public class ServerTimer
 	/**
 	 * Holds extended information about servers (for instance online players)
 	 */
-	public static HashMap<String, Set<String>> serverPlayers = new HashMap<String, Set<String>>();
+	public static HashMap<String, Set<String>> serverPlayers = new HashMap<>();
 
 	/**
 	 * Holds SourceServers that have already been queried during a session to prevent querying the same server twice in one session
 	 */
-	public static HashMap<String, SourceServer> servers = new HashMap<String, SourceServer>();
+	public static HashMap<String, SourceServer> servers = new HashMap<>();
 
 	/**
 	 * Checks the servers in {@link Util#getJarLocation()}/services/map-tracking for new maps being played and sends them to a channel

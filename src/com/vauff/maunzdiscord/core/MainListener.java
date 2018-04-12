@@ -24,6 +24,7 @@ import com.vauff.maunzdiscord.commands.Stop;
 import com.vauff.maunzdiscord.commands.servicesmenu.Services;
 import com.vauff.maunzdiscord.features.Intelligence;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -131,8 +132,11 @@ public class MainListener
 
 							if (!blacklisted)
 							{
-								event.getChannel().setTypingStatus(true);
-								Thread.sleep(250);
+								if (!(cmd instanceof Intelligence))
+								{
+									event.getChannel().setTypingStatus(true);
+									Thread.sleep(250);
+								}
 
 								try
 								{
@@ -140,6 +144,14 @@ public class MainListener
 								}
 								catch (Exception e)
 								{
+									String message = ":exclamation:  |  **Uh oh, an error occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at <https://goo.gl/igb7hc> with the stacktrace provided below" + System.lineSeparator() + "```" + System.lineSeparator() + ExceptionUtils.getStackTrace(e);
+
+									if (message.length() > 1997)
+									{
+										message = message.substring(0, Math.min(message.length(), 1997));
+									}
+
+									Util.msg(event.getChannel(), event.getAuthor(), message + "```");
 									Main.log.error("", e);
 								}
 
@@ -151,7 +163,6 @@ public class MainListener
 							}
 						}
 					}
-
 				}
 			}
 

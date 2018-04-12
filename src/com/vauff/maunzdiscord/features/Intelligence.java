@@ -12,15 +12,19 @@ import java.util.TimerTask;
 
 public class Intelligence extends AbstractCommand<MessageReceivedEvent>
 {
-	public static HashMap<String, CleverbotSession> sessions = new HashMap<String, CleverbotSession>();
-	public static HashMap<String, Timer> sessionTimers = new HashMap<String, Timer>();
+	public static HashMap<String, CleverbotSession> sessions = new HashMap<>();
+	public static HashMap<String, Timer> sessionTimers = new HashMap<>();
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
 	{
-		try
+		String[] args = event.getMessage().getContent().split(" ");
+
+		if (args.length != 1)
 		{
-			String[] message = event.getMessage().getContent().split(" ");
+			event.getChannel().setTypingStatus(true);
+			Thread.sleep(250);
+
 			ChatterBotSession chatSession;
 			CleverbotSession session;
 
@@ -66,17 +70,16 @@ public class Intelligence extends AbstractCommand<MessageReceivedEvent>
 			}
 
 			chatSession = session.getSession();
-			Util.msg(event.getChannel(), event.getAuthor(), event.getAuthor().mention() + " " + chatSession.think(Util.addArgs(message, 1).replaceAll("\\<\\@[0-9]+\\>", "")));
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
+			Util.msg(event.getChannel(), event.getAuthor(), event.getAuthor().mention() + " " + chatSession.think(Util.addArgs(args, 1).replaceAll("\\<\\@[0-9]+\\>", "")));
 		}
 	}
 
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "<@" + Main.client.getOurUser().getLongID() + ">" };
+		return new String[] {
+				"<@" + Main.client.getOurUser().getLongID() + ">",
+				"<@!" + Main.client.getOurUser().getLongID() + ">"
+		};
 	}
 }
