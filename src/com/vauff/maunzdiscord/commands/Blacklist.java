@@ -319,7 +319,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event)
+	public void onReactionAdd(ReactionAddEvent event) throws Exception
 	{
 		if (listMessages.containsKey(event.getUser().getStringID()))
 		{

@@ -88,7 +88,7 @@ public abstract class AbstractMenuPage
 	 *
 	 * @param page The page to show
 	 */
-	public final void show(AbstractMenuPage page)
+	public final void show(AbstractMenuPage page) throws Exception
 	{
 		AbstractCommand.AWAITED.remove(trigger.getAuthor().getStringID());
 		removeTimer.cancel(false);
@@ -100,7 +100,7 @@ public abstract class AbstractMenuPage
 	 * Sends this menu to the chat. Does NOT take care of canceling and deleting the previous timer + menu.
 	 * Don't call unless it's the start page
 	 */
-	public void show()
+	public void show() throws Exception
 	{
 		String items = "";
 

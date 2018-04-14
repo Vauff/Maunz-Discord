@@ -9,7 +9,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 
 public class StartPage extends AbstractMenuPage
 {
-	public StartPage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd)
+	public StartPage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd) throws Exception
 	{
 		super(trigger, cmd);
 

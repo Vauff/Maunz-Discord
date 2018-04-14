@@ -15,13 +15,10 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,30 +39,23 @@ public class Util
 
 	/**
 	 * @return The path at which the running jar file is located
+	 * @throws Exception
 	 */
-	public static String getJarLocation()
+	public static String getJarLocation() throws Exception
 	{
-		try
+		String path = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+
+		if (path.endsWith(".jar"))
 		{
-			String path = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-
-			if (path.endsWith(".jar"))
-			{
-				path = path.substring(0, path.lastIndexOf("/"));
-			}
-
-			if (!path.endsWith("/"))
-			{
-				path += "/";
-			}
-
-			return path;
+			path = path.substring(0, path.lastIndexOf("/"));
 		}
-		catch (URISyntaxException e)
+
+		if (!path.endsWith("/"))
 		{
-			Main.log.error("", e);
-			return null;
+			path += "/";
 		}
+
+		return path;
 	}
 
 	/**
@@ -73,9 +63,9 @@ public class Util
 	 *
 	 * @param arg The path of the file, relative to {@link Util#getJarLocation()}
 	 * @return The content of the file
-	 * @throws IOException If {@link FileUtils#readFileToString(File)} throws an IOException
+	 * @throws Exception
 	 */
-	public static String getFileContents(String arg) throws IOException
+	public static String getFileContents(String arg) throws Exception
 	{
 		File file = new File(getJarLocation() + arg);
 
@@ -87,18 +77,11 @@ public class Util
 	 *
 	 * @param arg The path of the file
 	 * @return The content of the file, or an empty string if an exception has been caught
+	 * @throws Exception
 	 */
-	public static String getFileContents(File arg)
+	public static String getFileContents(File arg) throws Exception
 	{
-		try
-		{
-			return FileUtils.readFileToString(arg, "UTF-8");
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-			return "";
-		}
+		return FileUtils.readFileToString(arg, "UTF-8");
 	}
 
 	/**
@@ -238,19 +221,14 @@ public class Util
 
 	/**
 	 * Connects to the Chat-Quotes database
+	 *
+	 * @throws Exception
 	 */
 	public static void sqlConnect() throws Exception
 	{
-		try
-		{
-			JSONObject json = new JSONObject(Util.getFileContents("config.json"));
+		JSONObject json = new JSONObject(Util.getFileContents("config.json"));
 
-			sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getJSONObject("database").getString("hostname") + "/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getJSONObject("database").getString("username"), json.getJSONObject("database").getString("password"));
-		}
-		catch (SQLException e)
-		{
-			Main.log.error(e.getMessage(), e);
-		}
+		sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getJSONObject("database").getString("hostname") + "/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getJSONObject("database").getString("username"), json.getJSONObject("database").getString("password"));
 	}
 
 	/**
@@ -258,8 +236,9 @@ public class Util
 	 *
 	 * @param user The user to check
 	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json, false otherwise
+	 * @throws Exception
 	 */
-	public static boolean hasPermission(IUser user)
+	public static boolean hasPermission(IUser user) throws Exception
 	{
 		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
@@ -272,8 +251,9 @@ public class Util
 	 * @param user  The user to check
 	 * @param guild The guild to check for permissions in
 	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json or the user is a guild administrator, false otherwise
+	 * @throws Exception
 	 */
-	public static boolean hasPermission(IUser user, IGuild guild)
+	public static boolean hasPermission(IUser user, IGuild guild) throws Exception
 	{
 		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
@@ -306,11 +286,6 @@ public class Util
 
 			return null;
 		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-			return null;
-		}
 	}
 
 	/**
@@ -321,15 +296,7 @@ public class Util
 	 */
 	public static IMessage msg(IChannel channel, String message)
 	{
-		try
-		{
-			return channel.sendMessage(message);
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-			return null;
-		}
+		return channel.sendMessage(message);
 	}
 
 	/**
@@ -362,11 +329,6 @@ public class Util
 
 			return null;
 		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-			return null;
-		}
 	}
 
 	/**
@@ -392,11 +354,6 @@ public class Util
 				Main.log.error(e);
 			}
 
-			return null;
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
 			return null;
 		}
 	}
@@ -448,8 +405,9 @@ public class Util
 	 *
 	 * @param m        The message to add the emojis to
 	 * @param reaction A string that contains a reaction that should be added to a given IMessage
+	 * @throws Exception
 	 */
-	public static void addReaction(IMessage m, String reaction)
+	public static void addReaction(IMessage m, String reaction) throws Exception
 	{
 		try
 		{
@@ -467,10 +425,6 @@ public class Util
 				Main.log.error(e);
 			}
 		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-		}
 	}
 
 	/**
@@ -478,8 +432,9 @@ public class Util
 	 *
 	 * @param m         The message to add the emojis to
 	 * @param reactions An ArrayList<String> that contains a list of reactions that should be added to a given IMessage
+	 * @throws Exception
 	 */
-	public static void addReactions(IMessage m, ArrayList<String> reactions)
+	public static void addReactions(IMessage m, ArrayList<String> reactions) throws Exception
 	{
 		try
 		{
@@ -500,10 +455,6 @@ public class Util
 				Main.log.error(e);
 			}
 		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-		}
 	}
 
 	/**
@@ -512,41 +463,35 @@ public class Util
 	 * @param m           The message to add the emojis to
 	 * @param cancellable Whether an x emoji should be added at the end or not
 	 * @param i           The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
+	 * @throws Exception
 	 */
-	public static void addNumberedReactions(IMessage m, boolean cancellable, int i)
+	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
 	{
-		try
+		ArrayList<String> finalReactions = new ArrayList<String>();
+		String[] reactions = {
+				"one",
+				"two",
+				"three",
+				"four",
+				"five",
+				"six",
+				"seven",
+				"eight",
+				"nine"
+		};
+
+		for (int j = 0; j < i; j++)
 		{
-			ArrayList<String> finalReactions = new ArrayList<String>();
-			String[] reactions = {
-					"one",
-					"two",
-					"three",
-					"four",
-					"five",
-					"six",
-					"seven",
-					"eight",
-					"nine"
-			};
-
-			for (int j = 0; j < i; j++)
-			{
-				finalReactions.add(reactions[j]);
-				Thread.sleep(250);
-			}
-
-			if (cancellable)
-			{
-				finalReactions.add("x");
-			}
-
-			addReactions(m, finalReactions);
+			finalReactions.add(reactions[j]);
+			Thread.sleep(250);
 		}
-		catch (Exception e)
+
+		if (cancellable)
 		{
-			Main.log.error("", e);
+			finalReactions.add("x");
 		}
+
+		addReactions(m, finalReactions);
 	}
 
 	/**
@@ -555,7 +500,7 @@ public class Util
 	 * @param guild The guild for which to check if the bot is enabled
 	 * @return true if the bot is enabled for the guild, false otherwise
 	 */
-	public static boolean isEnabled(IGuild guild)
+	public static boolean isEnabled(IGuild guild) throws Exception
 	{
 		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
@@ -577,79 +522,71 @@ public class Util
 	 */
 	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
 	{
-		try
+		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
-			if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
+			return Util.msg(channel, user, "That page doesn't exist!");
+		}
+		else
+		{
+			StringBuilder list = new StringBuilder();
+
+			if (codeBlock)
 			{
-				return Util.msg(channel, user, "That page doesn't exist!");
+				list.append("```" + System.lineSeparator());
 			}
-			else
+
+
+			for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
 			{
-				StringBuilder list = new StringBuilder();
-
-				if (codeBlock)
+				if (i > entries.size() - 1)
 				{
-					list.append("```" + System.lineSeparator());
+					break;
 				}
-
-
-				for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
+				else
 				{
-					if (i > entries.size() - 1)
+					if (numberedEntries)
 					{
-						break;
+						list.append((i + 1) + " - " + entries.get(i) + System.lineSeparator());
 					}
 					else
 					{
-						if (numberedEntries)
-						{
-							list.append((i + 1) + " - " + entries.get(i) + System.lineSeparator());
-						}
-						else
-						{
-							list.append(entries.get(i) + System.lineSeparator());
-						}
+						list.append(entries.get(i) + System.lineSeparator());
 					}
 				}
-
-				if (codeBlock)
-				{
-					list.append("```");
-				}
-
-				IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
-
-				Executors.newScheduledThreadPool(1).execute(() ->
-				{
-					try
-					{
-						if (pageNumber != 1)
-						{
-							m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
-							Thread.sleep(250);
-						}
-
-						Thread.sleep(250);
-
-						if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-						{
-							m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
-							Thread.sleep(250);
-						}
-					}
-					catch (Exception e)
-					{
-						Main.log.error("", e);
-					}
-				});
-
-				return m;
 			}
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-			return null;
+
+			if (codeBlock)
+			{
+				list.append("```");
+			}
+
+			IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+
+			Executors.newScheduledThreadPool(1).execute(() ->
+			{
+				try
+				{
+					if (pageNumber != 1)
+					{
+						m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
+						Thread.sleep(250);
+					}
+
+					Thread.sleep(250);
+
+					if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+					{
+						m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
+						Thread.sleep(250);
+					}
+				}
+				catch (Exception e)
+				{
+					Main.log.error("", e);
+				}
+			});
+
+			return m;
 		}
 	}
 }

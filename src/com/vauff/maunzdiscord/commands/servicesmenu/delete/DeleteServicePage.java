@@ -6,7 +6,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 
 public class DeleteServicePage extends AbstractServiceActionPage
 {
-	public DeleteServicePage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd)
+	public DeleteServicePage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd) throws Exception
 	{
 		super(trigger, cmd);
 

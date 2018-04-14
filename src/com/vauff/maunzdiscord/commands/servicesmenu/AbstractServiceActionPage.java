@@ -15,7 +15,7 @@ public abstract class AbstractServiceActionPage extends AbstractMenuPage
 	protected List<String> services = new ArrayList<String>();
 	protected boolean guildHasService = false;
 
-	public AbstractServiceActionPage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd)
+	public AbstractServiceActionPage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd) throws Exception
 	{
 		super(trigger, cmd);
 

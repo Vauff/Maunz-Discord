@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands.servicesmenu.delete;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
@@ -14,7 +15,16 @@ public class ServerTrackingDeletePage extends DeleteConfirmationPage
 
 		addChild(0, (event) ->
 		{
-			File folder = new File(Util.getJarLocation() + "data/services/server-tracking/" + trigger.getGuild().getStringID() + "/");
+			File folder = null;
+
+			try
+			{
+				folder = new File(Util.getJarLocation() + "data/services/server-tracking/" + trigger.getGuild().getStringID() + "/");
+			}
+			catch (Exception e)
+			{
+				Main.log.error("", e);
+			}
 
 			for (File file : folder.listFiles())
 			{

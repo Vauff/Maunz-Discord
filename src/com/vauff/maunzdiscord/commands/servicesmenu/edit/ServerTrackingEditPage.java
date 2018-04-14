@@ -22,9 +22,10 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 
 		addChild(0, (event) ->
 		{
+			json.put("enabled", !json.getBoolean("enabled"));
+
 			try
 			{
-				json.put("enabled", !json.getBoolean("enabled"));
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				show(this);
 			}
@@ -35,9 +36,10 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 		});
 		addChild(1, (event) ->
 		{
+			json.put("mapCharacterLimit", !json.getBoolean("mapCharacterLimit"));
+
 			try
 			{
-				json.put("mapCharacterLimit", !json.getBoolean("mapCharacterLimit"));
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				show(this);
 			}
@@ -50,20 +52,36 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 		{
 			AbstractMenuPage page = new ServerTrackingEditIP(trigger, cmd);
 
-			show(page);
+			try
+			{
+				show(page);
+			}
+			catch (Exception e)
+			{
+				Main.log.error("", e);
+			}
+
 			waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
 		});
 		addChild(3, (event) ->
 		{
 			AbstractMenuPage page = new ServerTrackingEditChannel(trigger, cmd);
 
-			show(page);
+			try
+			{
+				show(page);
+			}
+			catch (Exception e)
+			{
+				Main.log.error("", e);
+			}
+
 			waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
 		});
 	}
 
 	@Override
-	public void show()
+	public void show() throws Exception
 	{
 		file = new File(Util.getJarLocation() + "data/services/server-tracking/" + trigger.getGuild().getStringID() + "/serverInfo.json");
 		json = new JSONObject(Util.getFileContents(file));

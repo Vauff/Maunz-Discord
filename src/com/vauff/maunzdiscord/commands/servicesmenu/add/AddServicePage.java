@@ -3,12 +3,13 @@ package com.vauff.maunzdiscord.commands.servicesmenu.add;
 import com.vauff.maunzdiscord.commands.servicesmenu.AbstractServiceActionPage;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 public class AddServicePage extends AbstractServiceActionPage
 {
-	public AddServicePage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd)
+	public AddServicePage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd) throws Exception
 	{
 		super(trigger, cmd);
 
@@ -22,7 +23,15 @@ public class AddServicePage extends AbstractServiceActionPage
 				{
 					AbstractMenuPage page = new ServerTrackingAddChannel(trigger, cmd, false);
 
-					show(page);
+					try
+					{
+						show(page);
+					}
+					catch (Exception e)
+					{
+						Main.log.error("", e);
+					}
+
 					waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
 				});
 			}
@@ -30,7 +39,7 @@ public class AddServicePage extends AbstractServiceActionPage
 	}
 
 	@Override
-	public void show()
+	public void show() throws Exception
 	{
 		if (services.size() == 1)
 		{

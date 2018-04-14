@@ -1,10 +1,12 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import org.json.JSONObject;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
+import org.jsoup.UnsupportedMimeTypeException;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.util.EmbedBuilder;
@@ -38,9 +40,13 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 							{
 								Jsoup.connect(url).get();
 							}
-							catch (Exception e)
+							catch (HttpStatusException e)
 							{
 								url = "https://image.gametracker.com/images/maps/160x120/csgo/" + json.getString("lastMap") + ".jpg";
+							}
+							catch (UnsupportedMimeTypeException e)
+							{
+								// This is to be expected normally because JSoup can't parse a URL serving only a static image
 							}
 
 							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(json.getLong("timestamp")).withThumbnail(url).withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();

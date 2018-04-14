@@ -7,7 +7,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 
 public class EditServicePage extends AbstractServiceActionPage
 {
-	public EditServicePage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd)
+	public EditServicePage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd) throws Exception
 	{
 		super(trigger, cmd);
 
@@ -23,7 +23,7 @@ public class EditServicePage extends AbstractServiceActionPage
 	}
 
 	@Override
-	public void show()
+	public void show() throws Exception
 	{
 		if (!guildHasService)
 		{

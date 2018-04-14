@@ -6,6 +6,7 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -70,7 +71,15 @@ public class Intelligence extends AbstractCommand<MessageReceivedEvent>
 			}
 
 			chatSession = session.getSession();
-			Util.msg(event.getChannel(), event.getAuthor(), event.getAuthor().mention() + " " + chatSession.think(Util.addArgs(args, 1).replaceAll("\\<\\@[0-9]+\\>", "")));
+
+			try
+			{
+				Util.msg(event.getChannel(), event.getAuthor(), event.getAuthor().mention() + " " + chatSession.think(Util.addArgs(args, 1).replaceAll("\\<\\@[0-9]+\\>", "")));
+			}
+			catch (SocketTimeoutException e)
+			{
+				Util.msg(event.getChannel(), event.getAuthor(), event.getAuthor().mention() + " The connection to Cleverbot timed out, please try sending your message again");
+			}
 		}
 	}
 

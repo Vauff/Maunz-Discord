@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
+import org.jsoup.UnsupportedMimeTypeException;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
@@ -150,8 +151,9 @@ public class ServerTimer
 									{
 										url = "https://image.gametracker.com/images/maps/160x120/csgo/" + map + ".jpg";
 									}
-									catch (Exception e)
+									catch (UnsupportedMimeTypeException e)
 									{
+										// This is to be expected normally because JSoup can't parse a URL serving only a static image
 									}
 
 									EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
