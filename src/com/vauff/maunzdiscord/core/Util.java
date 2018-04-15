@@ -9,6 +9,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 
 import javax.imageio.ImageIO;
@@ -281,9 +282,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error(e);
+				Main.log.error("", e);
 			}
 
+			return null;
+		}
+		catch (DiscordException e)
+		{
+			Main.log.error("", e);
 			return null;
 		}
 	}
@@ -296,7 +302,15 @@ public class Util
 	 */
 	public static IMessage msg(IChannel channel, String message)
 	{
-		return channel.sendMessage(message);
+		try
+		{
+			return channel.sendMessage(message);
+		}
+		catch (DiscordException e)
+		{
+			Main.log.error("", e);
+			return null;
+		}
 	}
 
 	/**
@@ -324,9 +338,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error(e);
+				Main.log.error("", e);
 			}
 
+			return null;
+		}
+		catch (DiscordException e)
+		{
+			Main.log.error("", e);
 			return null;
 		}
 	}
@@ -351,9 +370,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error(e);
+				Main.log.error("", e);
 			}
 
+			return null;
+		}
+		catch (DiscordException e)
+		{
+			Main.log.error("", e);
 			return null;
 		}
 	}
