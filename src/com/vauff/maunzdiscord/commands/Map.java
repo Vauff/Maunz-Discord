@@ -1,7 +1,6 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import org.json.JSONObject;
 import org.jsoup.HttpStatusException;

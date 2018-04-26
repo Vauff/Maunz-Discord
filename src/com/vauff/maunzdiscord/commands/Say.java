@@ -52,7 +52,6 @@ public class Say extends AbstractCommand<MessageReceivedEvent>
 					else
 					{
 						Util.msg(event.getChannel(), Util.addArgs(args, 1));
-						Util.msg(event.getChannel(), event.getAuthor(), "Successfully sent message!");
 					}
 				}
 				else
