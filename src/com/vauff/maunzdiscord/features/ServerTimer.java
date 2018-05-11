@@ -7,6 +7,7 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -16,6 +17,7 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
 import java.io.File;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.ArrayList;
@@ -131,7 +133,7 @@ public class ServerTimer
 								String serverName = serverInfo.split("serverName: ")[1].split("  secure: ")[0].replace("\n", "");
 								int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace("\n", ""));
 								int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace("\n", ""));
-								String url = "http://158.69.59.239/mapimgs/" + map + ".jpg";
+								String url = "http://158.69.59.239/mapimgs/" + StringUtils.substring(map, 0, 31) + ".jpg";
 
 								if (currentPlayers > maxPlayers)
 								{
@@ -148,9 +150,9 @@ public class ServerTimer
 									{
 										Jsoup.connect(url).get();
 									}
-									catch (HttpStatusException e)
+									catch (HttpStatusException | ConnectException e)
 									{
-										url = "https://image.gametracker.com/images/maps/160x120/csgo/" + map + ".jpg";
+										url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(map, 0, 31) + ".jpg";
 									}
 									catch (UnsupportedMimeTypeException e)
 									{

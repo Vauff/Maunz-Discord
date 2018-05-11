@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -33,7 +34,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 					{
 						if (!json.getString("lastMap").equals("N/A"))
 						{
-							String url = "http://158.69.59.239/mapimgs/" + json.getString("lastMap") + ".jpg";
+							String url = "http://158.69.59.239/mapimgs/" + StringUtils.substring(json.getString("lastMap"), 0, 31) + ".jpg";
 
 							try
 							{
@@ -41,7 +42,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 							}
 							catch (HttpStatusException e)
 							{
-								url = "https://image.gametracker.com/images/maps/160x120/csgo/" + json.getString("lastMap") + ".jpg";
+								url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(json.getString("lastMap"), 0, 31) + ".jpg";
 							}
 							catch (UnsupportedMimeTypeException e)
 							{

@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.commands.servicesmenu.add;
 import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -60,6 +61,7 @@ public class ServerTrackingAddIP extends AbstractMenuPage
 		catch (Exception e)
 		{
 			serverOnline = false;
+			Logger.log.error("", e);
 		}
 
 		if (serverOnline)
