@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.features;
 import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import org.apache.commons.io.FileUtils;
@@ -62,7 +63,7 @@ public class ServerTimer
 							}
 							catch (NullPointerException e)
 							{
-								Main.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the server tracking service loop will move on to the next guild");
+								Logger.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the server tracking service loop will move on to the next guild");
 								continue;
 							}
 
@@ -101,7 +102,7 @@ public class ServerTimer
 								}
 								catch (NullPointerException | TimeoutException | SteamCondenserException e)
 								{
-									Main.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
+									Logger.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
 									json.put("downtimeTimer", json.getInt("downtimeTimer") + 1);
 
 									if (json.getInt("downtimeTimer") == json.getInt("failedConnectionsThreshold"))
@@ -174,7 +175,7 @@ public class ServerTimer
 											}
 											catch (NullPointerException e)
 											{
-												Main.log.error("", e);
+												Logger.log.error("", e);
 												// This means that either a bad user ID was
 												// provided by the notification file, or the
 												// users account doesn't exist anymore
@@ -192,7 +193,7 @@ public class ServerTimer
 													}
 													catch (NullPointerException e)
 													{
-														Main.log.error("", e);
+														Logger.log.error("", e);
 														// This means that the provided user has
 														// left the guild, due to API limits bots
 														// can't PM someone with no shared guilds
@@ -254,7 +255,7 @@ public class ServerTimer
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 		}
 	};

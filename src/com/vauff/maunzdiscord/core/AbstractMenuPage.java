@@ -155,7 +155,7 @@ public abstract class AbstractMenuPage
 	{
 		if (item < -1 || item > 8)
 		{
-			Main.log.warn("Tried to add a child with index " + item + ". Index needs to be between including -1 and 8");
+			Logger.log.warn("Tried to add a child with index " + item + ". Index needs to be between including -1 and 8");
 			return;
 		}
 
@@ -174,7 +174,7 @@ public abstract class AbstractMenuPage
 		}
 		else
 		{
-			Main.log.warn("A menu item was selected (" + item + ") but a corresponding page or function could not be found.");
+			Logger.log.warn("A menu item was selected (" + item + ") but a corresponding page or function could not be found.");
 		}
 	}
 
@@ -192,7 +192,7 @@ public abstract class AbstractMenuPage
 	{
 		if (i < 0 || i > 8)
 		{
-			Main.log.warn("i was " + i + " when calling addChild on a menu page. Page was not added.");
+			Logger.log.warn("i was " + i + " when calling addChild on a menu page. Page was not added.");
 			return;
 		}
 
@@ -213,7 +213,7 @@ public abstract class AbstractMenuPage
 	{
 		if (i < 0 || i > 8)
 		{
-			Main.log.warn("index was " + i + " when calling addChild on a menu page, but needs to be between 0 and 8. Page was not added.");
+			Logger.log.warn("index was " + i + " when calling addChild on a menu page, but needs to be between 0 and 8. Page was not added.");
 			return;
 		}
 

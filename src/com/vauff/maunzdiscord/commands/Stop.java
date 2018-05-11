@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -13,7 +14,7 @@ public class Stop extends AbstractCommand<MessageReceivedEvent>
 		if (Util.hasPermission(event.getAuthor()))
 		{
 			Util.msg(event.getChannel(), event.getAuthor(), "Maunz is stopping...");
-			Main.log.info("Maunz is stopping...");
+			Logger.log.info("Maunz is stopping...");
 			System.exit(0);
 		}
 		else

@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.features;
 
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 
 import java.util.ArrayList;
@@ -23,14 +24,14 @@ public class UptimeTimer
 					command.add("-jar");
 					command.add("Maunz-Discord.jar");
 
-					Main.log.info("Maunz is restarting...");
+					Logger.log.info("Maunz is restarting...");
 					new ProcessBuilder(command).start();
 					System.exit(0);
 				}
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 		}
 	};

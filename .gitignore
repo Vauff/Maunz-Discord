@@ -4,8 +4,8 @@
 /.settings
 /.idea
 /*.iml
-/maunzdiscord.log
-/maunzdiscord-old.log
+/maunz.log
+/maunz-old.log
 /target/
 /out/
 /resources/META-INF/

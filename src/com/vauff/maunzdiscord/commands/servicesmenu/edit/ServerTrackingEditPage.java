@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands.servicesmenu.edit;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import org.apache.commons.io.FileUtils;
@@ -31,7 +32,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 		});
 		addChild(1, (event) ->
@@ -45,7 +46,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 		});
 		addChild(2, (event) ->
@@ -58,7 +59,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
@@ -73,7 +74,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());

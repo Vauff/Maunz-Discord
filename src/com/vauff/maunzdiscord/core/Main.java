@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.core;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -14,15 +13,14 @@ public class Main
 {
 	public static IDiscordClient client;
 	public static String version = "2.5";
-	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
 	{
 		try
 		{
 			File file = new File(Util.getJarLocation() + "config.json");
-			File logFile = new File("maunzdiscord.log");
-			File oldLogFile = new File("maunzdiscord-old.log");
+			File logFile = new File("maunz.log");
+			File oldLogFile = new File("maunz-old.log");
 			JSONObject json;
 
 			if (file.exists())
@@ -44,19 +42,19 @@ public class Main
 				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 			}
 
-			Thread.sleep(3000);
+			Thread.sleep(2000);
 			oldLogFile.delete();
 			logFile.renameTo(oldLogFile);
-			log = LogManager.getLogger(Main.class);
+			Logger.log = LogManager.getLogger(Main.class);
 
 			if (!json.getString("discordToken").equals(""))
 			{
-				log.info("Starting Maunz-Discord v" + version);
+				Logger.log.info("Starting Maunz-Discord v" + version);
 				Util.token = json.getString("discordToken");
 			}
 			else
 			{
-				log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordToken option in config.json");
+				Logger.log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordToken option in config.json");
 				System.exit(1);
 			}
 
@@ -65,7 +63,7 @@ public class Main
 		}
 		catch (Exception e)
 		{
-			log.error("", e);
+			Logger.log.error("", e);
 		}
 	}
 }

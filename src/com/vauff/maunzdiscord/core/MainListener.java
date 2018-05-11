@@ -76,7 +76,7 @@ public class MainListener
 
 			if (json.getJSONObject("database").getString("hostname").equals("") || json.getJSONObject("database").getString("username").equals("") || json.getJSONObject("database").getString("password").equals(""))
 			{
-				Main.log.warn("The quote command is disabled due to 1 or more values in the database section of config.json not being supplied");
+				Logger.log.warn("The quote command is disabled due to 1 or more values in the database section of config.json not being supplied");
 			}
 			else
 			{
@@ -85,7 +85,7 @@ public class MainListener
 
 			if (json.getString("cleverbotAPIKey").equals(""))
 			{
-				Main.log.warn("Maunz intelligence is disabled due to cleverbotAPIKey not being supplied in the config.json");
+				Logger.log.warn("Maunz intelligence is disabled due to cleverbotAPIKey not being supplied in the config.json");
 			}
 			else
 			{
@@ -94,7 +94,7 @@ public class MainListener
 		}
 		catch (Exception e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 		}
 	}
 
@@ -107,17 +107,29 @@ public class MainListener
 
 			for (AbstractCommand<MessageReceivedEvent> cmd : commands)
 			{
-				if (Util.isEnabled(event.getGuild()) || cmd instanceof Enable || cmd instanceof Disable)
+				boolean enabled;
+
+				if (event.getChannel().isPrivate())
+				{
+					enabled = Util.isEnabled();
+				}
+				else
+				{
+					enabled = Util.isEnabled(event.getGuild());
+				}
+
+				if (enabled || cmd instanceof Enable || cmd instanceof Disable)
 				{
 					for (String s : cmd.getAliases())
 					{
 						if (cmdName.equalsIgnoreCase(s))
 						{
-							JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json")));
 							boolean blacklisted = false;
 
-							if (!Util.hasPermission(event.getAuthor(), event.getGuild()))
+							if (!Util.hasPermission(event.getAuthor(), event.getGuild()) && !event.getChannel().isPrivate())
 							{
+								JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json")));
+
 								for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
 								{
 									String entry = json.getJSONArray("blacklist").getString(i);
@@ -152,7 +164,7 @@ public class MainListener
 									}
 
 									Util.msg(event.getChannel(), event.getAuthor(), message + "```");
-									Main.log.error("", e);
+									Logger.log.error("", e);
 								}
 
 								event.getChannel().setTypingStatus(false);
@@ -181,7 +193,7 @@ public class MainListener
 		}
 		catch (Exception e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 		}
 	}
 
@@ -237,7 +249,7 @@ public class MainListener
 								index = 8;
 								break;
 							default:
-								Main.log.warn("Emoji added that is not part of the menu. Awaiting new input.");
+								Logger.log.warn("Emoji added that is not part of the menu. Awaiting new input.");
 								return;
 						}
 
@@ -246,13 +258,13 @@ public class MainListener
 				}
 				catch (Exception e)
 				{
-					Main.log.error("", e);
+					Logger.log.error("", e);
 				}
 			}
 		}
 		catch (Exception e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 		}
 	}
 
@@ -276,7 +288,7 @@ public class MainListener
 		}
 		catch (Exception e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 		}
 	}
 }

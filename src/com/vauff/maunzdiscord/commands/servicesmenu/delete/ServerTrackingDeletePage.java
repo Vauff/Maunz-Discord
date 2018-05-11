@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands.servicesmenu.delete;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -23,7 +24,7 @@ public class ServerTrackingDeletePage extends DeleteConfirmationPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			for (File file : folder.listFiles())

@@ -282,14 +282,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			return null;
 		}
 		catch (DiscordException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -308,7 +308,7 @@ public class Util
 		}
 		catch (DiscordException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -338,14 +338,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			return null;
 		}
 		catch (DiscordException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -370,14 +370,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			return null;
 		}
 		catch (DiscordException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -446,7 +446,7 @@ public class Util
 			}
 			else
 			{
-				Main.log.error(e);
+				Logger.log.error(e);
 			}
 		}
 	}
@@ -476,7 +476,7 @@ public class Util
 			}
 			else
 			{
-				Main.log.error(e);
+				Logger.log.error(e);
 			}
 		}
 	}
@@ -519,10 +519,22 @@ public class Util
 	}
 
 	/**
-	 * Checks whether the bot is enabled for a specified guild
+	 * Checks whether the bot is enabled globally
+	 *
+	 * @return true if the bot is enabled globally, false otherwise
+	 */
+	public static boolean isEnabled() throws Exception
+	{
+		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+
+		return botJson.getBoolean("enabled");
+	}
+
+	/**
+	 * Checks whether the bot is enabled for both a specified guild and globally
 	 *
 	 * @param guild The guild for which to check if the bot is enabled
-	 * @return true if the bot is enabled for the guild, false otherwise
+	 * @return true if the bot is enabled for the guild and globally, false otherwise
 	 */
 	public static boolean isEnabled(IGuild guild) throws Exception
 	{
@@ -606,7 +618,7 @@ public class Util
 				}
 				catch (Exception e)
 				{
-					Main.log.error("", e);
+					Logger.log.error("", e);
 				}
 			});
 

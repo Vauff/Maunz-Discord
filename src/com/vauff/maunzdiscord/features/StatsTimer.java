@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.features;
 
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.StatusType;
@@ -32,7 +33,7 @@ public class StatsTimer
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 		}
 	};
