@@ -287,12 +287,12 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								Util.msg(event.getChannel(), event.getAuthor(), "The command **" + args[1] + "** doesn't exist!");
+								Util.msg(event.getChannel(), event.getAuthor(), "The command **" + args[2] + "** doesn't exist!");
 							}
 						}
 						else
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "You need to specify a channel to blacklist (or \"all\")! **Usage: *blacklist [all/channel]/<list> <all/command>/[page]**");
+							Util.msg(event.getChannel(), event.getAuthor(), "The channel **" + args[1] + "** doesn't exist!");
 						}
 					}
 				}
