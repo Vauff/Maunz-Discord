@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.concurrent.Executors;
 
 /**
  * A class holding several static utility methods
@@ -556,7 +555,7 @@ public class Util
 	 * @param user            The IUser that triggered the command's execution in the first place
 	 * @return The IMessage object for the sent page message if an exception isn't thrown, null otherwise
 	 */
-	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
+	public static IMessage buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
@@ -596,31 +595,37 @@ public class Util
 				list.append("```");
 			}
 
-			IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+			IMessage m;
 
-			Executors.newScheduledThreadPool(1).execute(() ->
+			if (pageNumber == 1 && (int) Math.ceil((float) entries.size() / (float) pageSize) == 1)
 			{
-				try
-				{
-					if (pageNumber != 1)
-					{
-						m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
-						Thread.sleep(250);
-					}
+				m = Util.msg(channel, user, "--- **" + title + "** ---" + System.lineSeparator() + list.toString());
+			}
+			else
+			{
+				m = Util.msg(channel, user, "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+			}
 
+			try
+			{
+				if (pageNumber != 1)
+				{
+					m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
 					Thread.sleep(250);
+				}
 
-					if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-					{
-						m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
-						Thread.sleep(250);
-					}
-				}
-				catch (Exception e)
+				Thread.sleep(250);
+
+				if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
 				{
-					Logger.log.error("", e);
+					m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
+					Thread.sleep(250);
 				}
-			});
+			}
+			catch (Exception e)
+			{
+				Logger.log.error("", e);
+			}
 
 			return m;
 		}

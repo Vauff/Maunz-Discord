@@ -59,7 +59,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 							}
 						}
 
-						IMessage m = Util.buildPage(list, 10, page, true, true, event.getChannel(), event.getAuthor());
+						IMessage m = Util.buildPage(list, "Quotes List", 10, page, true, true, event.getChannel(), event.getAuthor());
 
 						listMessages.put(event.getAuthor().getStringID(), m.getStringID());
 						waitForReaction(m.getStringID(), event.getAuthor().getStringID());
@@ -189,7 +189,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					IMessage m = Util.buildPage(list, 10, listPages.get(event.getUser().getStringID()) + 1, true, true, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().getStringID()) + 1, true, true, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
@@ -217,7 +217,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					IMessage m = Util.buildPage(list, 10, listPages.get(event.getUser().getStringID()) - 1, true, true, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().getStringID()) - 1, true, true, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());

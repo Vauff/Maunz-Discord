@@ -103,7 +103,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 											notifications.add(json.getJSONArray("notifications").getString(i));
 										}
 
-										IMessage m = Util.buildPage(notifications, 10, page, false, true, event.getChannel(), event.getAuthor());
+										IMessage m = Util.buildPage(notifications, "Notification List", 10, page, false, true, event.getChannel(), event.getAuthor());
 
 										listMessages.put(event.getAuthor().getStringID(), m.getStringID());
 										waitForReaction(m.getStringID(), event.getAuthor().getStringID());
@@ -445,7 +445,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						notifications.add(json.getJSONArray("notifications").getString(i));
 					}
 
-					IMessage m = Util.buildPage(notifications, 10, listPages.get(event.getUser().getStringID()) + 1, false, true, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().getStringID()) + 1, false, true, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
@@ -463,7 +463,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						notifications.add(json.getJSONArray("notifications").getString(i));
 					}
 
-					IMessage m = Util.buildPage(notifications, 10, listPages.get(event.getUser().getStringID()) - 1, false, true, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().getStringID()) - 1, false, true, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());

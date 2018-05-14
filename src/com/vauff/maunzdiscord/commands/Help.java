@@ -33,7 +33,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				helpEntries.add(cmdHelp.get(key));
 			}
 
-			IMessage m = Util.buildPage(helpEntries, 10, 1, false, false, event.getChannel(), event.getAuthor());
+			IMessage m = Util.buildPage(helpEntries, "Command List", 10, 1, false, false, event.getChannel(), event.getAuthor());
 
 			listMessages.put(event.getAuthor().getStringID(), m.getStringID());
 			waitForReaction(m.getStringID(), event.getAuthor().getStringID());
@@ -51,7 +51,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				helpEntries.add(cmdHelp.get(key));
 			}
 
-			IMessage m = Util.buildPage(helpEntries, 10, page, false, false, event.getChannel(), event.getAuthor());
+			IMessage m = Util.buildPage(helpEntries, "Command List", 10, page, false, false, event.getChannel(), event.getAuthor());
 
 			listMessages.put(event.getAuthor().getStringID(), m.getStringID());
 			waitForReaction(m.getStringID(), event.getAuthor().getStringID());
@@ -121,7 +121,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 						helpEntries.add(cmdHelp.get(key));
 					}
 
-					IMessage m = Util.buildPage(helpEntries, 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
@@ -138,7 +138,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 						helpEntries.add(cmdHelp.get(key));
 					}
 
-					IMessage m = Util.buildPage(helpEntries, 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());

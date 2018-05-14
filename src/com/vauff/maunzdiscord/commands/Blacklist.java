@@ -77,7 +77,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 									blacklistArray.add(channel + " **|** " + command);
 								}
 
-								IMessage m = Util.buildPage(blacklistArray, 10, page, false, false, event.getChannel(), event.getAuthor());
+								IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, page, false, false, event.getChannel(), event.getAuthor());
 
 								listMessages.put(event.getAuthor().getStringID(), m.getStringID());
 								waitForReaction(m.getStringID(), event.getAuthor().getStringID());
@@ -355,7 +355,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						blacklistArray.add(channel + " **|** " + command);
 					}
 
-					IMessage m = Util.buildPage(blacklistArray, 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
@@ -389,7 +389,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						blacklistArray.add(channel + " **|** " + command);
 					}
 
-					IMessage m = Util.buildPage(blacklistArray, 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
