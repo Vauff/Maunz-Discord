@@ -90,7 +90,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel]/<list> <all/command>/[page]** to create or remove one");
+							Util.msg(event.getChannel(), event.getAuthor(), "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel] \\<all/command>** to add one");
 						}
 					}
 
@@ -298,7 +298,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify a command to blacklist (or \"all\")! **Usage: *blacklist [all/channel]/<list> <all/command>/[page]**");
+					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify arguments! See **\\*help blacklist**");
 				}
 			}
 			else

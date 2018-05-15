@@ -78,7 +78,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 				case "view":
 					if (args.length == 2)
 					{
-						Util.msg(event.getChannel(), event.getAuthor(), "You need to give me a quote ID! **Usage: *quote view <quoteid>**");
+						Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a quote ID! **Usage: \\*quote view <quoteid>**");
 					}
 					else
 					{
@@ -149,7 +149,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 
 					break;
 				default:
-					Util.msg(event.getChannel(), event.getAuthor(), "The argument **" + args[1] + "** was not recognized! **Usage: *quote <view/list/add> <quoteid>/[page]**");
+					Util.msg(event.getChannel(), event.getAuthor(), "The argument **" + args[1] + "** was not recognized! See **\\*help quote**");
 
 					break;
 			}

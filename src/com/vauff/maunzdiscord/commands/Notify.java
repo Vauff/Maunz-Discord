@@ -54,7 +54,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 				if (args.length == 1)
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify an argument! **Usage: *notify <list/wipe/mapname>**");
+					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify an argument! See **\\*help notify**");
 				}
 				else
 				{
@@ -77,7 +77,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						{
 							if (!file.exists())
 							{
-								Util.msg(event.getChannel(), event.getAuthor(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
+								Util.msg(event.getChannel(), event.getAuthor(), "You do not have any map notifications set! Use **\\*notify <mapname>** to add one");
 							}
 							else
 							{
@@ -116,7 +116,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								}
 								else
 								{
-									Util.msg(event.getChannel(), event.getAuthor(), "You do not have any map notifications set! Use ***notify <map>** to add or remove one");
+									Util.msg(event.getChannel(), event.getAuthor(), "\"You do not have any map notifications set! Use **\\\\*notify <mapname>** to add one");
 								}
 							}
 						}
