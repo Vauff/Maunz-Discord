@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.core;
 
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
+import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEditEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
@@ -20,8 +22,8 @@ public class Logger
 	{
 		if (event.getClass().equals(MessageReceivedEvent.class) || event.getClass().equals(MessageSendEvent.class))
 		{
-			String userName = event.getAuthor().getName();
-			String userId = event.getAuthor().getStringID();
+			String authorName = event.getAuthor().getName();
+			String authorId = event.getAuthor().getStringID();
 			String channelName = event.getChannel().getName();
 			String channelId = event.getChannel().getStringID();
 			String messageID = event.getMessage().getStringID();
@@ -32,11 +34,21 @@ public class Logger
 				String guildName = event.getGuild().getName();
 				String guildId = event.getGuild().getStringID();
 
-				msg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") |";
+				msg = messageID + " | " + authorName + " (" + authorId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") |";
 			}
 			else
 			{
-				msg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") |";
+				String recipientName = event.getChannel().getUsersHere().get(0).getName();
+				String recipientId = event.getChannel().getUsersHere().get(0).getStringID();
+
+				if (recipientId.equals(authorId))
+				{
+					msg = messageID + " | " + authorName + " (" + authorId + ") | PM (" + channelId + ") |";
+				}
+				else
+				{
+					msg = messageID + " | " + authorName + " (" + authorId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") |";
+				}
 			}
 
 			if (event.getMessage().getContent() != "")
@@ -116,5 +128,17 @@ public class Logger
 		}
 
 		Logger.log.debug(userName + " (" + userId + ") removed the reaction " + reaction + " from the message ID " + messageID);
+	}
+
+	@EventSubscriber
+	public void onGuildCreate(GuildCreateEvent event)
+	{
+		Logger.log.debug("Joined guild " + event.getGuild().getName() + " (" + event.getGuild().getStringID() + ")");
+	}
+
+	@EventSubscriber
+	public void onGuildLeave(GuildLeaveEvent event)
+	{
+		Logger.log.debug("Left guild " + event.getGuild().getName() + " (" + event.getGuild().getStringID() + ")");
 	}
 }
