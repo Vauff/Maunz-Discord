@@ -65,7 +65,7 @@ public class ReadyEventListener
 
 			Help.setupCmdHelp();
 
-			Main.client.getDispatcher().registerListener(new Logger());
+			Main.client.getDispatcher().registerListener(Executors.newScheduledThreadPool(1), new Logger());
 			Main.client.getDispatcher().registerListener(new MainListener());
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(UptimeTimer.timer, 600, 60, TimeUnit.SECONDS);
