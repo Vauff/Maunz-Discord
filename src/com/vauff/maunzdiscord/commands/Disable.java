@@ -33,7 +33,7 @@ public class Disable extends AbstractCommand<MessageReceivedEvent>
 				menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
 				Util.addNumberedReactions(m, true, 2);
 
-				Executors.newScheduledThreadPool(1).schedule(() ->
+				Executors.newScheduledThreadPool(0).schedule(() ->
 				{
 					if (!m.isDeleted())
 					{

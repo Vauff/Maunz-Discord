@@ -140,7 +140,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								reactions.add("x");
 								Util.addReactions(m, reactions);
 
-								Executors.newScheduledThreadPool(1).schedule(() ->
+								Executors.newScheduledThreadPool(0).schedule(() ->
 								{
 									if (!m.isDeleted())
 									{
@@ -262,7 +262,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 											Util.addNumberedReactions(m, true, 2);
 										}
 
-										Executors.newScheduledThreadPool(1).schedule(() ->
+										Executors.newScheduledThreadPool(0).schedule(() ->
 										{
 											if (!m.isDeleted())
 											{
