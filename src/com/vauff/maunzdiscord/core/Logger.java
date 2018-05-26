@@ -93,8 +93,8 @@ public class Logger
 	@EventSubscriber
 	public void onReactionAdd(ReactionAddEvent event)
 	{
-		String userName = event.getAuthor().getName();
-		String userId = event.getAuthor().getStringID();
+		String userName = event.getUser().getName();
+		String userId = event.getUser().getStringID();
 		String messageID = event.getMessage().getStringID();
 		String reaction;
 
@@ -113,8 +113,8 @@ public class Logger
 	@EventSubscriber
 	public void onReactionRemove(ReactionRemoveEvent event)
 	{
-		String userName = event.getAuthor().getName();
-		String userId = event.getAuthor().getStringID();
+		String userName = event.getUser().getName();
+		String userId = event.getUser().getStringID();
 		String messageID = event.getMessage().getStringID();
 		String reaction;
 
