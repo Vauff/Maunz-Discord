@@ -22,7 +22,14 @@ public class StatsTimer
 			{
 				if (!showingGuilds)
 				{
-					Main.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, Main.client.getGuilds().size() + " guilds");
+					if (Main.client.getGuilds().size() == 1)
+					{
+						Main.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, Main.client.getGuilds().size() + " guild");
+					}
+					else
+					{
+						Main.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, Main.client.getGuilds().size() + " guilds");
+					}
 					showingGuilds = true;
 				}
 				else
