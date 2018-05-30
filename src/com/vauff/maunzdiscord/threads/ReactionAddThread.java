@@ -1,4 +1,4 @@
-package com.vauff.maunzdiscord.core.threads;
+package com.vauff.maunzdiscord.threads;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
