@@ -116,7 +116,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								}
 								else
 								{
-									Util.msg(event.getChannel(), event.getAuthor(), "\"You do not have any map notifications set! Use **\\\\*notify <mapname>** to add one");
+									Util.msg(event.getChannel(), event.getAuthor(), "You do not have any map notifications set! Use **\\*notify <mapname>** to add one");
 								}
 							}
 						}
@@ -254,7 +254,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										}
 										else
 										{
-											m = Util.msg(event.getChannel(), event.getAuthor(), "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + argument.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + mapSuggestion.replace("_", "\\_"));
+											m = Util.msg(event.getChannel(), event.getAuthor(), "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + mapSuggestion.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + argument.replace("_", "\\_"));
 											waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationSuggestionMaps.put(event.getAuthor().getStringID(), mapSuggestion);
@@ -363,28 +363,6 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 				else if (event.getReaction().getEmoji().toString().equals("1⃣"))
 				{
-					Util.msg(event.getChannel(), event.getUser(), "Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
-
-					if (file.exists())
-					{
-						json = new JSONObject(Util.getFileContents(file));
-						json.put("lastName", event.getUser().getName());
-						json.getJSONArray("notifications").put(confirmationMaps.get(event.getUser().getStringID()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-					else
-					{
-						file.createNewFile();
-						json = new JSONObject();
-						json.put("lastName", event.getUser().getName());
-						json.put("notifications", new JSONArray());
-						json.getJSONArray("notifications").put(confirmationMaps.get(event.getUser().getStringID()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-				}
-
-				else if (event.getReaction().getEmoji().toString().equals("2⃣"))
-				{
 					boolean mapSet = false;
 					int index = 0;
 
@@ -430,6 +408,28 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						Util.msg(event.getChannel(), event.getUser(), "Removing **" + confirmationSuggestionMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** from your map notifications!");
 						json.put("lastName", event.getUser().getName());
 						json.getJSONArray("notifications").remove(index);
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					}
+				}
+
+				else if (event.getReaction().getEmoji().toString().equals("2⃣"))
+				{
+					Util.msg(event.getChannel(), event.getUser(), "Adding **" + confirmationMaps.get(event.getUser().getStringID()).replace("_", "\\_") + "** to your map notifications!");
+
+					if (file.exists())
+					{
+						json = new JSONObject(Util.getFileContents(file));
+						json.put("lastName", event.getUser().getName());
+						json.getJSONArray("notifications").put(confirmationMaps.get(event.getUser().getStringID()));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					}
+					else
+					{
+						file.createNewFile();
+						json = new JSONObject();
+						json.put("lastName", event.getUser().getName());
+						json.put("notifications", new JSONArray());
+						json.getJSONArray("notifications").put(confirmationMaps.get(event.getUser().getStringID()));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 					}
 				}
