@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 import java.io.File;
+import java.util.Random;
 
 public class MessageReceivedThread implements Runnable
 {
@@ -92,15 +93,11 @@ public class MessageReceivedThread implements Runnable
 								}
 								catch (Exception e)
 								{
-									String message = ":exclamation:  |  **Uh oh, an error occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at <https://goo.gl/igb7hc> with the stacktrace provided below" + System.lineSeparator() + "```" + System.lineSeparator() + ExceptionUtils.getStackTrace(e);
+									Random rnd = new Random();
+									int code = 100000 + rnd.nextInt(900000);
 
-									if (message.length() > 1997)
-									{
-										message = message.substring(0, Math.min(message.length(), 1997));
-									}
-
-									Util.msg(event.getChannel(), event.getAuthor(), message + "```");
-									Logger.log.error("", e);
+									Util.msg(event.getChannel(), event.getAuthor(), ":exclamation:  |  **Uh oh, an error occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
+									Logger.log.error(code, e);
 								}
 
 								event.getChannel().setTypingStatus(false);

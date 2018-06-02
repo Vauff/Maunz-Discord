@@ -134,7 +134,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								confirmationMaps.put(event.getAuthor().getStringID(), "wipe");
 								confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 
-								ArrayList<String> reactions = new ArrayList<String>();
+								ArrayList<String> reactions = new ArrayList<>();
 
 								reactions.add("white_check_mark");
 								reactions.add("x");
@@ -218,7 +218,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 									{
 										String mapSuggestion = "";
 										IMessage m;
-										ArrayList<String> mapDatabase = new ArrayList<String>();
+										ArrayList<String> mapDatabase = new ArrayList<>();
 
 										for (int i = 0; i < serverInfoJson.getJSONArray("mapDatabase").length(); i++)
 										{
@@ -246,7 +246,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 											confirmationMaps.put(event.getAuthor().getStringID(), argument);
 											confirmationMessages.put(event.getAuthor().getStringID(), m.getStringID());
 
-											ArrayList<String> reactions = new ArrayList<String>();
+											ArrayList<String> reactions = new ArrayList<>();
 
 											reactions.add("white_check_mark");
 											reactions.add("x");
