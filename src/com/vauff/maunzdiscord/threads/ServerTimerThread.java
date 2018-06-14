@@ -73,31 +73,23 @@ public class ServerTimerThread implements Runnable
 
 						try
 						{
-							if (ServerTimer.servers.containsKey(json.getString("serverIP") + ":" + json.getInt("serverPort")))
+							server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
+							server.initialize();
+
+							try
 							{
-								server = ServerTimer.servers.get(json.getString("serverIP") + ":" + json.getInt("serverPort"));
+								ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server.getPlayers().keySet());
 							}
-							else
+							catch (NullPointerException e)
 							{
-								server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
-								server.initialize();
-								ServerTimer.servers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server);
+								Set<String> keySet = new HashSet<String>();
 
-								try
+								for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
 								{
-									ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server.getPlayers().keySet());
+									keySet.add(player.getName());
 								}
-								catch (NullPointerException e)
-								{
-									Set<String> keySet = new HashSet<String>();
 
-									for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
-									{
-										keySet.add(player.getName());
-									}
-
-									ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), keySet);
-								}
+								ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), keySet);
 							}
 						}
 						catch (NullPointerException | TimeoutException | SteamCondenserException e)
