@@ -305,6 +305,11 @@ public class Util
 		{
 			return channel.sendMessage(message);
 		}
+		catch (MissingPermissionsException e)
+		{
+			Main.log.error("", e);
+			return null;
+		}
 		catch (DiscordException e)
 		{
 			Logger.log.error("", e);
