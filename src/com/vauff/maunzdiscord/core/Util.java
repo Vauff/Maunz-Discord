@@ -307,7 +307,7 @@ public class Util
 		}
 		catch (MissingPermissionsException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 		catch (DiscordException e)

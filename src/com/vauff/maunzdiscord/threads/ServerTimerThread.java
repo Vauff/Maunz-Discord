@@ -70,46 +70,58 @@ public class ServerTimerThread implements Runnable
 					if (Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName()))))
 					{
 						SourceServer server;
+						int attempts = 0;
 
-						try
+						while (true)
 						{
-							server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
-							server.initialize();
-
 							try
 							{
-								ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server.getPlayers().keySet());
-							}
-							catch (NullPointerException e)
-							{
-								Set<String> keySet = new HashSet<String>();
+								System.out.println("hi");
+								server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
+								server.initialize();
 
-								for (SteamPlayer player : new ArrayList<SteamPlayer>(server.getPlayers().values()))
+								try
 								{
-									keySet.add(player.getName());
+									ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server.getPlayers().keySet());
+								}
+								catch (NullPointerException e)
+								{
+									Set<String> keySet = new HashSet<>();
+
+									for (SteamPlayer player : new ArrayList<>(server.getPlayers().values()))
+									{
+										keySet.add(player.getName());
+									}
+
+									ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), keySet);
 								}
 
-								ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), keySet);
+								break;
 							}
-						}
-						catch (NullPointerException | TimeoutException | SteamCondenserException e)
-						{
-							Logger.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
-							json.put("downtimeTimer", json.getInt("downtimeTimer") + 1);
-
-							if (json.getInt("downtimeTimer") == json.getInt("failedConnectionsThreshold"))
+							catch (NullPointerException | TimeoutException | SteamCondenserException e)
 							{
-								Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has gone offline");
-							}
+								attempts++;
 
-							if (json.getInt("downtimeTimer") == 4320)
-							{
-								Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
-								json.put("enabled", false);
-							}
+								if (attempts >= 5 || json.getInt("downtimeTimer") >= 1)
+								{
+									Logger.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
+									json.put("downtimeTimer", json.getInt("downtimeTimer") + 1);
 
-							FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
-							return;
+									if (json.getInt("downtimeTimer") == json.getInt("failedConnectionsThreshold"))
+									{
+										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has gone offline");
+									}
+
+									if (json.getInt("downtimeTimer") == 4320)
+									{
+										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+										json.put("enabled", false);
+									}
+
+									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+									return;
+								}
+							}
 						}
 
 						if (json.getInt("downtimeTimer") >= 3)
