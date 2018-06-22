@@ -167,18 +167,19 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 									{
 										mapSet = true;
 										index = i;
+										break;
 									}
-
 								}
 							}
 
 							for (int i = 0; i < serverInfoJson.getJSONArray("mapDatabase").length(); i++)
 							{
-								String map = serverInfoJson.getJSONArray("mapDatabase").getString(i);
+								String map = serverInfoJson.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
 
 								if (map.equalsIgnoreCase(argument))
 								{
 									mapExists = true;
+									break;
 								}
 							}
 
@@ -222,7 +223,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 
 										for (int i = 0; i < serverInfoJson.getJSONArray("mapDatabase").length(); i++)
 										{
-											mapDatabase.add(serverInfoJson.getJSONArray("mapDatabase").getString(i));
+											mapDatabase.add(serverInfoJson.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName"));
 										}
 
 										Collections.sort(mapDatabase, String.CASE_INSENSITIVE_ORDER);

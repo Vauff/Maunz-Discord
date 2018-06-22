@@ -32,6 +32,8 @@ _*enable_ - Enables Maunz either in a specific guild or globally.
 
 *map - Tells you which map a server is playing outside of its standard map tracking channel.
 
+*map [mapname] - Gives you information on a specific map such as last time played.
+
 *minecraft \<uuid/username> - Gives you full information about any Minecraft account.
 
 *notify list [page] - Lists your current map notifications.

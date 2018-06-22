@@ -8,7 +8,6 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.Intelligence;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 

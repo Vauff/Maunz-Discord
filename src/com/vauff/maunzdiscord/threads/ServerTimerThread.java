@@ -76,7 +76,6 @@ public class ServerTimerThread implements Runnable
 						{
 							try
 							{
-								System.out.println("hi");
 								server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
 								server.initialize();
 
@@ -204,7 +203,6 @@ public class ServerTimerThread implements Runnable
 											}
 										}
 									}
-
 								}
 							}
 
@@ -212,17 +210,23 @@ public class ServerTimerThread implements Runnable
 
 							for (int i = 0; i < json.getJSONArray("mapDatabase").length(); i++)
 							{
-								String dbMap = json.getJSONArray("mapDatabase").getString(i);
+								String dbMap = json.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
 
 								if (dbMap.equalsIgnoreCase(map))
 								{
 									mapFound = true;
+									json.getJSONArray("mapDatabase").getJSONObject(i).put("lastPlayed", timestamp);
+									break;
 								}
 							}
 
 							if (!mapFound)
 							{
-								json.append("mapDatabase", map);
+								JSONObject object = new JSONObject();
+								object.put("mapName", map);
+								object.put("firstPlayed", timestamp);
+								object.put("lastPlayed", timestamp);
+								json.append("mapDatabase", object);
 							}
 						}
 
