@@ -93,8 +93,25 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 							{
 								mapExists = true;
 								formattedMap = map;
-								lastPlayed = Util.getTime(json.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
-								firstPlayed = Util.getTime(json.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed"));
+
+								if (json.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed") != 0)
+								{
+									lastPlayed = Util.getTime(json.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
+								}
+								else
+								{
+									lastPlayed = "N/A";
+								}
+
+								if (json.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed") != 0)
+								{
+									firstPlayed = Util.getTime(json.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed"));
+								}
+								else
+								{
+									firstPlayed = "N/A";
+								}
+
 								break;
 							}
 						}
@@ -116,7 +133,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 								// This is to be expected normally because JSoup can't parse a URL serving only a static image
 							}
 
-							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withThumbnail(url).withDescription("**" + formattedMap + "**").appendField("Last Played", lastPlayed, true).appendField("First Played", firstPlayed, true).build();
+							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withThumbnail(url).withDescription("**" + formattedMap + "**").appendField("Last Played", lastPlayed, false).appendField("First Played", firstPlayed, false).build();
 							Util.msg(event.getChannel(), event.getAuthor(), embed);
 						}
 						else
@@ -138,8 +155,34 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 								if (StringUtils.containsIgnoreCase(map, argument))
 								{
 									formattedMap = map;
-									lastPlayed = Util.getTime(json.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
-									firstPlayed = Util.getTime(json.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed"));
+									break;
+								}
+							}
+
+							for (int i = 0; i < json.getJSONArray("mapDatabase").length(); i++)
+							{
+								String map = json.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
+
+								if (map.equalsIgnoreCase(formattedMap))
+								{
+									if (json.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed") != 0)
+									{
+										lastPlayed = Util.getTime(json.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
+									}
+									else
+									{
+										lastPlayed = "N/A";
+									}
+
+									if (json.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed") != 0)
+									{
+										firstPlayed = Util.getTime(json.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed"));
+									}
+									else
+									{
+										firstPlayed = "N/A";
+									}
+
 									break;
 								}
 							}
@@ -161,7 +204,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 									// This is to be expected normally because JSoup can't parse a URL serving only a static image
 								}
 
-								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withThumbnail(url).withDescription("**" + formattedMap + "**").appendField("Last Played", lastPlayed, true).appendField("First Played", firstPlayed, true).build();
+								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withThumbnail(url).withDescription("**" + formattedMap + "**").appendField("Last Played", lastPlayed, false).appendField("First Played", firstPlayed, false).build();
 								Util.msg(event.getChannel(), event.getAuthor(), embed);
 							}
 							else
