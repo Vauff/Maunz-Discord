@@ -184,22 +184,15 @@ public class ServerTimerThread implements Runnable
 										// users account doesn't exist anymore
 									}
 
-									for (int i = 0; i < notificationJson.getJSONArray("notifications").length(); i++)
+									if (Main.client.getGuildByID(Long.parseLong(file.getName())).getUsers().contains(user))
 									{
-										String mapNotification = notificationJson.getJSONArray("notifications").getString(i);
-
-										if (mapNotification.equalsIgnoreCase(map))
+										for (int i = 0; i < notificationJson.getJSONArray("notifications").length(); i++)
 										{
-											try
+											String mapNotification = notificationJson.getJSONArray("notifications").getString(i);
+
+											if (mapNotification.equalsIgnoreCase(map))
 											{
 												Util.msg(Main.client.getOrCreatePMChannel(user), pmEmbed);
-											}
-											catch (NullPointerException e)
-											{
-												Logger.log.error("", e);
-												// This means that the provided user has
-												// left the guild, due to API limits bots
-												// can't PM someone with no shared guilds
 											}
 										}
 									}
