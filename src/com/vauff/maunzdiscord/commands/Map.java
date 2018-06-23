@@ -35,15 +35,6 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 					String[] args = event.getMessage().getContent().split(" ");
 					String argument;
 
-					if (json.getBoolean("mapCharacterLimit"))
-					{
-						argument = StringUtils.substring(args[1], 0, 31);
-					}
-					else
-					{
-						argument = args[1];
-					}
-
 					if (args.length == 1)
 					{
 						if (!(json.getInt("downtimeTimer") >= json.getInt("failedConnectionsThreshold")))
@@ -80,6 +71,15 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 					}
 					else
 					{
+						if (json.getBoolean("mapCharacterLimit"))
+						{
+							argument = StringUtils.substring(args[1], 0, 31);
+						}
+						else
+						{
+							argument = args[1];
+						}
+
 						boolean mapExists = false;
 						String formattedMap = "";
 						String lastPlayed = "";
