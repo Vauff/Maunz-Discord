@@ -18,6 +18,8 @@ _*blacklist list [page]_ - Lists the currently blacklisted commands/channels
 
 *changelog [version] - Shows you the changelog of the Maunz version you specify.
 
+*colour [link] - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.
+
 _*disable_ - Disables Maunz either in a specific guild or globally.
 
 *discord - Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.

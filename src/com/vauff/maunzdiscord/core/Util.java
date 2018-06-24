@@ -393,7 +393,7 @@ public class Util
 	 * @return The average color of the picture.
 	 * If the URL does not contain a picture an RGB color value of 0, 154, 255 will be returned
 	 */
-	public static Color averageColorFromURL(URL url)
+	public static Color averageColorFromURL(URL url, boolean handleExceptions)
 	{
 		BufferedImage image = null;
 
@@ -424,7 +424,14 @@ public class Util
 		}
 		catch (Exception e)
 		{
-			return new Color(0, 154, 255);
+			if (handleExceptions)
+			{
+				return new Color(0, 154, 255);
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
 

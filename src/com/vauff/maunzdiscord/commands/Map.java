@@ -56,7 +56,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 									// This is to be expected normally because JSoup can't parse a URL serving only a static image
 								}
 
-								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(json.getLong("timestamp")).withThumbnail(url).withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(json.getLong("timestamp")).withThumbnail(url).withDescription("Currently Playing: **" + json.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + json.getString("players") + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 								Util.msg(event.getChannel(), event.getAuthor(), embed);
 							}
 							else
@@ -133,7 +133,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 								// This is to be expected normally because JSoup can't parse a URL serving only a static image
 							}
 
-							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withThumbnail(url).withDescription("**" + formattedMap + "**").appendField("Last Played", lastPlayed, false).appendField("First Played", firstPlayed, false).build();
+							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withThumbnail(url).withDescription("**" + formattedMap + "**").appendField("Last Played", lastPlayed, false).appendField("First Played", firstPlayed, false).build();
 							Util.msg(event.getChannel(), event.getAuthor(), embed);
 						}
 						else
@@ -204,7 +204,7 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 									// This is to be expected normally because JSoup can't parse a URL serving only a static image
 								}
 
-								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withThumbnail(url).withDescription("**" + formattedMap + "**").appendField("Last Played", lastPlayed, false).appendField("First Played", firstPlayed, false).build();
+								EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withThumbnail(url).withDescription("**" + formattedMap + "**").appendField("Last Played", lastPlayed, false).appendField("First Played", firstPlayed, false).build();
 								Util.msg(event.getChannel(), event.getAuthor(), embed);
 							}
 							else
