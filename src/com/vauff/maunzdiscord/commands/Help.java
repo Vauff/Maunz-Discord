@@ -97,12 +97,15 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		cmdHelp.put("blacklist2", "**\\*blacklist list [page]** - Lists the currently blacklisted commands/channels, only usable by guild administrators and the bot owner.");
 		cmdHelp.put("changelog", "**\\*changelog [version]** - Shows you the changelog of the Maunz version you specify.");
 		cmdHelp.put("disable", "**\\*disable** - Disables Maunz either in a specific guild or globally, only usable by guild administrators and the bot owner.");
+		cmdHelp.put("colour", "**\\*colour [link]** - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.");
+		cmdHelp.put("color", "**\\*colour [link]** - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.");
 		cmdHelp.put("discord", "**\\*discord** - Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.");
 		cmdHelp.put("enable", "**\\*enable** - Enables Maunz either in a specific guild or globally, only usable by guild administrators and the bot owner.");
 		cmdHelp.put("help", "**\\*help [page]** - Lists all the available bot commands and the syntax for using each.");
 		cmdHelp.put("help2", "**\\*help <command>** - Gives you help on how to use a specific command.");
 		cmdHelp.put("isitdown", "**\\*isitdown <hostname>** - Tells you if the given hostname is down or not.");
 		cmdHelp.put("map", "**\\*map** - Tells you which map a server is playing outside of its standard map tracking channel.");
+		cmdHelp.put("map2", "**\\*map [mapname]** - Gives you information on a specific map such as last time played.");
 		cmdHelp.put("minecraft", "**\\*minecraft <uuid/username>** - Gives you full information about any Minecraft account.");
 		cmdHelp.put("notify", "**\\*notify list [page]** - Lists your current map notifications.");
 		cmdHelp.put("notify2", "**\\*notify wipe** - Wipes ALL of your map notifications.");

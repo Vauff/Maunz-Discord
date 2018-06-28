@@ -51,7 +51,7 @@ public class Logger
 				}
 			}
 
-			if (event.getMessage().getContent() != "")
+			if (!event.getMessage().getContent().equals(""))
 			{
 				msg += " " + event.getMessage().getContent();
 			}
