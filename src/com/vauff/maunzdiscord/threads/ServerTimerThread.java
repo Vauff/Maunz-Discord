@@ -120,6 +120,10 @@ public class ServerTimerThread implements Runnable
 									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
 									return;
 								}
+								else
+								{
+									Thread.sleep(1000);
+								}
 							}
 						}
 
