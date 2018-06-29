@@ -23,7 +23,6 @@ import com.vauff.maunzdiscord.commands.Source;
 import com.vauff.maunzdiscord.commands.Steam;
 import com.vauff.maunzdiscord.commands.Stop;
 import com.vauff.maunzdiscord.commands.servicesmenu.Services;
-import com.vauff.maunzdiscord.features.Intelligence;
 import com.vauff.maunzdiscord.threads.MessageReceivedThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
 import org.apache.commons.io.FileUtils;
@@ -83,15 +82,6 @@ public class MainListener
 			else
 			{
 				commands.add(new Quote());
-			}
-
-			if (json.getString("cleverbotAPIKey").equals(""))
-			{
-				Logger.log.warn("Maunz intelligence is disabled due to cleverbotAPIKey not being supplied in the config.json");
-			}
-			else
-			{
-				commands.add(new Intelligence());
 			}
 		}
 		catch (Exception e)

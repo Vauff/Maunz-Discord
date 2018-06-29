@@ -7,7 +7,6 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.features.Intelligence;
 import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
@@ -80,11 +79,8 @@ public class MessageReceivedThread implements Runnable
 
 							if (!blacklisted)
 							{
-								if (!(cmd instanceof Intelligence))
-								{
-									event.getChannel().setTypingStatus(true);
-									Thread.sleep(250);
-								}
+								event.getChannel().setTypingStatus(true);
+								Thread.sleep(250);
 
 								try
 								{
