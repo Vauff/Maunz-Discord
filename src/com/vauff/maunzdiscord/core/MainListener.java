@@ -34,6 +34,7 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class MainListener
@@ -41,7 +42,17 @@ public class MainListener
 	/**
 	 * Holds all commands
 	 */
-	public static LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<AbstractCommand<MessageReceivedEvent>>();
+	public static LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<>();
+
+	/**
+	 * Holds the timestamp of the last time a user used a command
+	 */
+	public static HashMap<String, Long> cooldownTimestamps = new HashMap<>();
+
+	/**
+	 * Holds the timestamp of the last time a user was given the command cooldown message
+	 */
+	public static HashMap<String, Long> cooldownMessageTimestamps = new HashMap<>();
 
 	/**
 	 * Sets up all commands

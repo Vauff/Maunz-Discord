@@ -42,23 +42,40 @@ public class MessageReceivedThread implements Runnable
 
 			for (AbstractCommand<MessageReceivedEvent> cmd : MainListener.commands)
 			{
-				boolean enabled;
-
-				if (event.getChannel().isPrivate())
+				for (String s : cmd.getAliases())
 				{
-					enabled = Util.isEnabled();
-				}
-				else
-				{
-					enabled = Util.isEnabled(event.getGuild());
-				}
-
-				if (enabled || cmd instanceof Enable || cmd instanceof Disable)
-				{
-					for (String s : cmd.getAliases())
+					if (cmdName.equalsIgnoreCase(s))
 					{
-						if (cmdName.equalsIgnoreCase(s))
+						boolean enabled;
+
+						if (event.getChannel().isPrivate())
 						{
+							enabled = Util.isEnabled();
+						}
+						else
+						{
+							enabled = Util.isEnabled(event.getGuild());
+						}
+
+						if (enabled || cmd instanceof Enable || cmd instanceof Disable)
+						{
+							if (MainListener.cooldownTimestamps.containsKey(event.getAuthor().getStringID()) && (MainListener.cooldownTimestamps.get(event.getAuthor().getStringID()) + 2000L) > System.currentTimeMillis())
+							{
+								if (MainListener.cooldownMessageTimestamps.containsKey(event.getAuthor().getStringID()) && (MainListener.cooldownMessageTimestamps.get(event.getAuthor().getStringID()) + 10000L) < System.currentTimeMillis())
+								{
+									Util.msg(event.getChannel(), event.getAuthor(), event.getAuthor().mention() + " Slow down!");
+									MainListener.cooldownMessageTimestamps.put(event.getAuthor().getStringID(), System.currentTimeMillis());
+								}
+								else if (!MainListener.cooldownMessageTimestamps.containsKey(event.getAuthor().getStringID()))
+								{
+									Util.msg(event.getChannel(), event.getAuthor(), event.getAuthor().mention() + " Slow down!");
+									MainListener.cooldownMessageTimestamps.put(event.getAuthor().getStringID(), System.currentTimeMillis());
+								}
+
+								return;
+							}
+
+							MainListener.cooldownTimestamps.put(event.getAuthor().getStringID(), System.currentTimeMillis());
 							boolean blacklisted = false;
 
 							if (!Util.hasPermission(event.getAuthor(), event.getGuild()) && !event.getChannel().isPrivate())
