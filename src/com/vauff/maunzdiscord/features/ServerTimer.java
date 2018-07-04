@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -68,6 +69,13 @@ public class ServerTimer
 
 							if (Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName()))))
 							{
+								boolean channelExists = true;
+
+								if (Objects.isNull(Main.client.getChannelByID(json.getLong("serverTrackingChannelID"))))
+								{
+									channelExists = false;
+								}
+
 								SourceServer server;
 
 								try
@@ -104,14 +112,18 @@ public class ServerTimer
 									Main.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
 									json.put("downtimeTimer", json.getInt("downtimeTimer") + 1);
 
-									if (json.getInt("downtimeTimer") == json.getInt("failedConnectionsThreshold"))
+									if (json.getInt("downtimeTimer") == json.getInt("failedConnectionsThreshold") && channelExists)
 									{
 										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has gone offline");
 									}
 
 									if (json.getInt("downtimeTimer") == 4320)
 									{
-										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+										if (channelExists)
+										{
+											Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+										}
+
 										json.put("enabled", false);
 									}
 
@@ -119,7 +131,7 @@ public class ServerTimer
 									continue;
 								}
 
-								if (json.getInt("downtimeTimer") >= 3)
+								if (json.getInt("downtimeTimer") >= 3 && channelExists)
 								{
 									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has come back online");
 								}
@@ -159,7 +171,10 @@ public class ServerTimer
 									EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 									EmbedObject pmEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url))).withTimestamp(timestamp).withThumbnail(url).withTitle(serverName).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
 
-									Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), embed);
+									if (channelExists)
+									{
+										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), embed);
+									}
 
 									for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
 									{
