@@ -9,6 +9,7 @@ import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
@@ -55,24 +56,41 @@ public class ServerTimerThread implements Runnable
 			if (file.isDirectory())
 			{
 				JSONObject json = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/serverInfo.json"));
+				int serverNumber = 0;
 
-				if (json.getBoolean("enabled"))
+				try
 				{
+					Main.client.getGuildByID(Long.parseLong(file.getName())).getStringID();
+				}
+				catch (NullPointerException e)
+				{
+					Logger.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the server tracking loop will skip this guild");
+					return;
+				}
+
+				parentloop:
+				while (true)
+				{
+					JSONObject object;
+					String objectName = "server" + serverNumber;
+
 					try
 					{
-						Main.client.getGuildByID(Long.parseLong(file.getName())).getStringID();
+						object = json.getJSONObject(objectName);
 					}
-					catch (NullPointerException e)
+					catch (JSONException e)
 					{
-						Logger.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the server tracking loop will skip this guild");
-						return;
+						FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+						break;
 					}
 
-					if (Util.isEnabled(Main.client.getGuildByID(Long.parseLong(file.getName()))))
+					serverNumber++;
+
+					if (object.getBoolean("enabled"))
 					{
 						boolean channelExists = true;
 
-						if (Objects.isNull(Main.client.getChannelByID(json.getLong("serverTrackingChannelID"))))
+						if (Objects.isNull(Main.client.getChannelByID(object.getLong("serverTrackingChannelID"))))
 						{
 							channelExists = false;
 						}
@@ -84,12 +102,12 @@ public class ServerTimerThread implements Runnable
 						{
 							try
 							{
-								server = new SourceServer(InetAddress.getByName(json.getString("serverIP")), json.getInt("serverPort"));
+								server = new SourceServer(InetAddress.getByName(object.getString("serverIP")), object.getInt("serverPort"));
 								server.initialize();
 
 								try
 								{
-									ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), server.getPlayers().keySet());
+									ServerTimer.serverPlayers.put(object.getString("serverIP") + ":" + object.getInt("serverPort"), server.getPlayers().keySet());
 								}
 								catch (NullPointerException e)
 								{
@@ -100,7 +118,7 @@ public class ServerTimerThread implements Runnable
 										keySet.add(player.getName());
 									}
 
-									ServerTimer.serverPlayers.put(json.getString("serverIP") + ":" + json.getInt("serverPort"), keySet);
+									ServerTimer.serverPlayers.put(object.getString("serverIP") + ":" + object.getInt("serverPort"), keySet);
 								}
 
 								break;
@@ -109,28 +127,27 @@ public class ServerTimerThread implements Runnable
 							{
 								attempts++;
 
-								if (attempts >= 5 || json.getInt("downtimeTimer") >= 1)
+								if (attempts >= 5 || object.getInt("downtimeTimer") >= 1)
 								{
-									Logger.log.error("Failed to connect to the server " + json.getString("serverIP") + ":" + json.getInt("serverPort") + ", automatically retrying in 1 minute");
-									json.put("downtimeTimer", json.getInt("downtimeTimer") + 1);
+									Logger.log.error("Failed to connect to the server " + object.getString("serverIP") + ":" + object.getInt("serverPort") + ", automatically retrying in 1 minute");
+									object.put("downtimeTimer", object.getInt("downtimeTimer") + 1);
 
-									if (json.getInt("downtimeTimer") == json.getInt("failedConnectionsThreshold") && channelExists)
+									if (object.getInt("downtimeTimer") == object.getInt("failedConnectionsThreshold") && channelExists)
 									{
-										Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has gone offline");
+										Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), "The server has gone offline");
 									}
 
-									if (json.getInt("downtimeTimer") == 4320)
+									if (object.getInt("downtimeTimer") == 4320)
 									{
 										if (channelExists)
 										{
-											Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+											Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										}
 
-										json.put("enabled", false);
+										object.put("enabled", false);
 									}
 
-									FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
-									return;
+									break parentloop;
 								}
 								else
 								{
@@ -139,9 +156,9 @@ public class ServerTimerThread implements Runnable
 							}
 						}
 
-						if (json.getInt("downtimeTimer") >= 3 && channelExists)
+						if (object.getInt("downtimeTimer") >= object.getInt("failedConnectionsThreshold") && channelExists)
 						{
-							Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), "The server has come back online");
+							Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), "The server has come back online");
 						}
 
 						String serverInfo = server.toString();
@@ -159,7 +176,7 @@ public class ServerTimerThread implements Runnable
 
 						String players = currentPlayers + "/" + maxPlayers;
 
-						if (!map.equals("") && !json.getString("lastMap").equalsIgnoreCase(map))
+						if (!map.equals("") && !object.getString("lastMap").equalsIgnoreCase(map))
 						{
 							timestamp = System.currentTimeMillis();
 
@@ -176,13 +193,10 @@ public class ServerTimerThread implements Runnable
 								// This is to be expected normally because JSoup can't parse a URL serving only a static image
 							}
 
-							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
-							EmbedObject pmEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(timestamp).withThumbnail(url).withTitle(serverName).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**").build();
+							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**").build();
+							EmbedObject pmEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(timestamp).withThumbnail(url).withTitle(serverName).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**").build();
 
-							if (channelExists)
-							{
-								Util.msg(Main.client.getChannelByID(json.getLong("serverTrackingChannelID")), embed);
-							}
+							Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), embed);
 
 							for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
 							{
@@ -205,14 +219,23 @@ public class ServerTimerThread implements Runnable
 
 									if (Main.client.getGuildByID(Long.parseLong(file.getName())).getUsers().contains(user))
 									{
-										for (int i = 0; i < notificationJson.getJSONArray("notifications").length(); i++)
+										try
 										{
-											String mapNotification = notificationJson.getJSONArray("notifications").getString(i);
-
-											if (mapNotification.equalsIgnoreCase(map))
+											for (int i = 0; i < notificationJson.getJSONObject("notifications").getJSONArray(objectName).length(); i++)
 											{
-												Util.msg(Main.client.getOrCreatePMChannel(user), pmEmbed);
+												String mapNotification = notificationJson.getJSONObject("notifications").getJSONArray(objectName).getString(i);
+
+												if (mapNotification.equalsIgnoreCase(map))
+												{
+													Util.msg(Main.client.getOrCreatePMChannel(user), pmEmbed);
+												}
 											}
+										}
+										catch (JSONException e)
+										{
+											// This means that the user being processed
+											// doesn't have any notifications set for the
+											// given server, it can be safely ignored
 										}
 									}
 								}
@@ -220,51 +243,50 @@ public class ServerTimerThread implements Runnable
 
 							boolean mapFound = false;
 
-							for (int i = 0; i < json.getJSONArray("mapDatabase").length(); i++)
+							for (int i = 0; i < object.getJSONArray("mapDatabase").length(); i++)
 							{
-								String dbMap = json.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
+								String dbMap = object.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
 
 								if (dbMap.equalsIgnoreCase(map))
 								{
 									mapFound = true;
-									json.getJSONArray("mapDatabase").getJSONObject(i).put("lastPlayed", timestamp);
+									object.getJSONArray("mapDatabase").getJSONObject(i).put("lastPlayed", timestamp);
 									break;
 								}
 							}
 
 							if (!mapFound)
 							{
-								JSONObject object = new JSONObject();
-								object.put("mapName", map);
-								object.put("firstPlayed", timestamp);
-								object.put("lastPlayed", timestamp);
-								json.append("mapDatabase", object);
+								JSONObject mapObject = new JSONObject();
+								mapObject.put("mapName", map);
+								mapObject.put("firstPlayed", timestamp);
+								mapObject.put("lastPlayed", timestamp);
+								object.append("mapDatabase", mapObject);
 							}
 						}
 
 						if (!map.equals(""))
 						{
-							json.put("lastMap", map);
+							object.put("lastMap", map);
 						}
 
 						if (!players.equals(""))
 						{
-							json.put("players", players);
+							object.put("players", players);
 						}
 
 						if (timestamp != 0)
 						{
-							json.put("timestamp", timestamp);
+							object.put("timestamp", timestamp);
 						}
 
 						if (!serverName.equals(""))
 						{
-							json.put("serverName", serverName);
+							object.put("serverName", serverName);
 						}
 
 						json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());
-						json.put("downtimeTimer", 0);
-						FileUtils.writeStringToFile(new File(Util.getJarLocation() + "/data/services/server-tracking/" + file.getName() + "/serverInfo.json"), json.toString(2), "UTF-8");
+						object.put("downtimeTimer", 0);
 						server.disconnect();
 					}
 				}

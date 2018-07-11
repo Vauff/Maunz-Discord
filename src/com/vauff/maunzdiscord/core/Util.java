@@ -502,7 +502,7 @@ public class Util
 	 */
 	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
 	{
-		ArrayList<String> finalReactions = new ArrayList<String>();
+		ArrayList<String> finalReactions = new ArrayList<>();
 		String[] reactions = {
 				"one",
 				"two",
@@ -640,6 +640,50 @@ public class Util
 			}
 
 			return m;
+		}
+	}
+
+	public static int emojiToInt(String emoji)
+	{
+		if (emoji.equals("1⃣"))
+		{
+			return 1;
+		}
+		else if (emoji.equals("2⃣"))
+		{
+			return 2;
+		}
+		else if (emoji.equals("3⃣"))
+		{
+			return 3;
+		}
+		else if (emoji.equals("4⃣"))
+		{
+			return 4;
+		}
+		else if (emoji.equals("5⃣"))
+		{
+			return 5;
+		}
+		else if (emoji.equals("6⃣"))
+		{
+			return 6;
+		}
+		else if (emoji.equals("7⃣"))
+		{
+			return 7;
+		}
+		else if (emoji.equals("8⃣"))
+		{
+			return 8;
+		}
+		else if (emoji.equals("9⃣"))
+		{
+			return 9;
+		}
+		else
+		{
+			return 0;
 		}
 	}
 }
