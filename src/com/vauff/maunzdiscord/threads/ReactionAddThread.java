@@ -3,8 +3,11 @@ package com.vauff.maunzdiscord.threads;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
 import com.vauff.maunzdiscord.core.Logger;
+import com.vauff.maunzdiscord.core.Util;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
+
+import java.util.Random;
 
 public class ReactionAddThread implements Runnable
 {
@@ -87,7 +90,11 @@ public class ReactionAddThread implements Runnable
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Random rnd = new Random();
+			int code = 100000 + rnd.nextInt(900000);
+
+			Util.msg(event.getChannel(), event.getAuthor(), ":exclamation:  |  **Uh oh, an error occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
+			Logger.log.error(code, e);
 		}
 	}
 }
