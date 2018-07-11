@@ -3,10 +3,13 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.obj.IMessage;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 {
 	private static HashMap<String, Integer> listPages = new HashMap<>();
 	private static HashMap<String, String> listMessages = new HashMap<>();
+	private static Connection sqlCon;
 
 	@Override
 	public void exe(MessageReceivedEvent event) throws Exception
@@ -50,9 +54,9 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 								page = Integer.parseInt(args[2]);
 							}
 
-							Util.sqlConnect();
+							sqlConnect();
 
-							PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
+							PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
 							ResultSet rs = pst.executeQuery();
 
 							ArrayList<String> list = new ArrayList<>();
@@ -71,7 +75,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 							waitForReaction(m.getStringID(), event.getAuthor().getStringID());
 							listPages.put(event.getAuthor().getStringID(), page);
 
-							Util.sqlCon.abort(command ->
+							sqlCon.abort(command ->
 							{
 							});
 						}
@@ -90,8 +94,8 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						{
 							if (NumberUtils.isCreatable(args[2]))
 							{
-								Util.sqlConnect();
-								PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes WHERE id='" + args[2] + "'");
+								sqlConnect();
+								PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes WHERE id='" + args[2] + "'");
 								ResultSet rs = pst.executeQuery();
 
 								if (!rs.next())
@@ -139,7 +143,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 
 								rs.close();
 								pst.close();
-								Util.sqlCon.abort(command ->
+								sqlCon.abort(command ->
 								{
 								});
 							}
@@ -181,9 +185,9 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 			{
 				if (event.getReaction().getEmoji().toString().equals("▶"))
 				{
-					Util.sqlConnect();
+					sqlConnect();
 
-					PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
+					PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
 					ResultSet rs = pst.executeQuery();
 
 					ArrayList<String> list = new ArrayList<>();
@@ -202,16 +206,16 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
 					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) + 1);
 
-					Util.sqlCon.abort(command ->
+					sqlCon.abort(command ->
 					{
 					});
 				}
 
 				else if (event.getReaction().getEmoji().toString().equals("◀"))
 				{
-					Util.sqlConnect();
+					sqlConnect();
 
-					PreparedStatement pst = Util.sqlCon.prepareStatement("SELECT * FROM quotes;");
+					PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
 					ResultSet rs = pst.executeQuery();
 
 					ArrayList<String> list = new ArrayList<>();
@@ -230,11 +234,23 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
 					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) - 1);
 
-					Util.sqlCon.abort(command ->
+					sqlCon.abort(command ->
 					{
 					});
 				}
 			}
 		}
+	}
+
+	/**
+	 * Connects to the Chat-Quotes database
+	 *
+	 * @throws Exception
+	 */
+	private static void sqlConnect() throws Exception
+	{
+		JSONObject json = new JSONObject(Util.getFileContents("config.json"));
+
+		sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getJSONObject("database").getString("hostname") + "/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getJSONObject("database").getString("username"), json.getJSONObject("database").getString("password"));
 	}
 }

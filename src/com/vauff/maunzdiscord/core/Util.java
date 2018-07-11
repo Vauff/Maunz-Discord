@@ -35,8 +35,6 @@ public class Util
 	 */
 	public static String token;
 
-	public static Connection sqlCon;
-
 	/**
 	 * @return The path at which the running jar file is located
 	 * @throws Exception
@@ -114,65 +112,6 @@ public class Util
 	}
 
 	/**
-	 * Formats the uptime of the bot as a string
-	 *
-	 * @return The uptime of the bot formatted as the 2 top most values
-	 */
-	public static String getUptime()
-	{
-		ReadyEventListener.uptime.split();
-
-		String uptimeRaw = ReadyEventListener.uptime.toSplitString().split("\\.")[0];
-		String secondText = "seconds";
-		String minuteText = "minutes";
-		String hourText = "hours";
-		String dayText = "days";
-		int seconds = Integer.parseInt(uptimeRaw.split(":")[2]);
-		int minutes = Integer.parseInt(uptimeRaw.split(":")[1]);
-		int hours = Integer.parseInt(uptimeRaw.split(":")[0]) % 24;
-		int days = (Integer.parseInt(uptimeRaw.split(":")[0]) / 24);
-
-		if (seconds == 1)
-		{
-			secondText = "second";
-		}
-
-		if (minutes == 1)
-		{
-			minuteText = "minute";
-		}
-
-		if (hours == 1)
-		{
-			hourText = "hour";
-		}
-
-		if (days == 1)
-		{
-			dayText = "day";
-		}
-
-		if (days >= 1)
-		{
-			return days + " " + dayText + ", " + hours + " " + hourText;
-		}
-
-		else if (hours >= 1)
-		{
-			return hours + " " + hourText + ", " + minutes + " " + minuteText;
-		}
-
-		else if (minutes >= 1)
-		{
-			return minutes + " " + minuteText + ", " + seconds + " " + secondText;
-		}
-		else
-		{
-			return seconds + " " + secondText;
-		}
-	}
-
-	/**
 	 * Concatenates a string array from a given start index and leavs out the part after the last space
 	 *
 	 * @param args       The array to concatenate
@@ -217,18 +156,6 @@ public class Util
 					return "th";
 			}
 		}
-	}
-
-	/**
-	 * Connects to the Chat-Quotes database
-	 *
-	 * @throws Exception
-	 */
-	public static void sqlConnect() throws Exception
-	{
-		JSONObject json = new JSONObject(Util.getFileContents("config.json"));
-
-		sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getJSONObject("database").getString("hostname") + "/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getJSONObject("database").getString("username"), json.getJSONObject("database").getString("password"));
 	}
 
 	/**
