@@ -137,7 +137,7 @@ public class ServerTimerThread implements Runnable
 										Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), "The server has gone offline");
 									}
 
-									if (object.getInt("downtimeTimer") == 4320)
+									if (object.getInt("downtimeTimer") >= 4320)
 									{
 										if (channelExists)
 										{
@@ -147,7 +147,7 @@ public class ServerTimerThread implements Runnable
 										object.put("enabled", false);
 									}
 
-									break parentloop;
+									continue parentloop;
 								}
 								else
 								{

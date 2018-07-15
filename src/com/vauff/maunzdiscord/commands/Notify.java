@@ -238,6 +238,10 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					{
 						Util.msg(channel, user, "You don't have any map notifications to wipe!");
 					}
+					else if (file.exists() && new JSONObject(Util.getFileContents(file)).getJSONObject("notifications").isNull(objectName))
+					{
+						Util.msg(channel, user, "You don't have any map notifications to wipe!");
+					}
 					else
 					{
 						IMessage m = Util.msg(channel, user, "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
@@ -269,7 +273,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					boolean mapExists = false;
 					int index = 0;
 
-					if (file.exists())
+					if (file.exists() && !json.getJSONObject("notifications").isNull(objectName))
 					{
 						for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(objectName).length(); i++)
 						{
@@ -413,7 +417,19 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (confirmationMaps.get(event.getUser().getStringID()).equals("wipe"))
 					{
-						FileUtils.forceDelete(file);
+						json = new JSONObject(Util.getFileContents(file));
+
+						json.getJSONObject("notifications").remove(selectedServer);
+
+						if (json.getJSONObject("notifications").length() == 0)
+						{
+							FileUtils.forceDelete(file);
+						}
+						else
+						{
+							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+						}
+
 						Util.msg(event.getChannel(), event.getUser(), "Successfully wiped all of your map notifications!");
 					}
 					else
@@ -459,14 +475,17 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 					{
 						json = new JSONObject(Util.getFileContents(file));
 
-						for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
+						if (!json.getJSONObject("notifications").isNull(selectedServer))
 						{
-							String mapNotification = json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i);
-
-							if (mapNotification.equalsIgnoreCase(confirmationSuggestionMaps.get(event.getUser().getStringID())))
+							for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
 							{
-								mapSet = true;
-								index = i;
+								String mapNotification = json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i);
+
+								if (mapNotification.equalsIgnoreCase(confirmationSuggestionMaps.get(event.getUser().getStringID())))
+								{
+									mapSet = true;
+									index = i;
+								}
 							}
 						}
 					}
@@ -478,6 +497,12 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						if (file.exists())
 						{
 							json = new JSONObject(Util.getFileContents(file));
+
+							if (json.getJSONObject("notifications").isNull(selectedServer))
+							{
+								json.getJSONObject("notifications").put(selectedServer, new JSONArray());
+							}
+
 							json.put("lastName", event.getUser().getName());
 							json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationSuggestionMaps.get(event.getUser().getStringID()));
 							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
