@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.core;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -13,7 +14,7 @@ import java.io.File;
 public class Main
 {
 	public static IDiscordClient client;
-	public static String version = "2.4.7";
+	public static String version = "2.4.8";
 	public static Logger log;
 
 	public static void main(String[] args) throws DiscordException
@@ -35,7 +36,7 @@ public class Main
 				file.createNewFile();
 				json.put("enabled", true);
 				json.put("discordToken", "");
-				json.put("botOwnerID", 0L);
+				json.put("botOwners", new JSONArray());
 				json.put("cleverbotAPIKey", "");
 				json.put("database", new JSONObject());
 				json.getJSONObject("database").put("hostname", "");
