@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.core;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -33,7 +34,7 @@ public class Main
 				file.createNewFile();
 				json.put("enabled", true);
 				json.put("discordToken", "");
-				json.put("botOwnerID", 0L);
+				json.put("botOwners", new JSONArray());
 				json.put("database", new JSONObject());
 				json.getJSONObject("database").put("hostname", "");
 				json.getJSONObject("database").put("username", "");

@@ -169,7 +169,15 @@ public class Util
 	{
 		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
-		return user.getLongID() == json.getLong("botOwnerID");
+		for (int i = 0; i < json.getJSONArray("botOwners").length(); i++)
+		{
+			if (user.getLongID() == json.getJSONArray("botOwners").getLong(i))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -184,7 +192,15 @@ public class Util
 	{
 		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
-		return user.getLongID() == json.getLong("botOwnerID") ? true : (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR) || user.getPermissionsForGuild(guild).contains(Permissions.MANAGE_SERVER) ? true : false);
+		for (int i = 0; i < json.getJSONArray("botOwners").length(); i++)
+		{
+			if (user.getLongID() == json.getJSONArray("botOwners").getLong(i))
+			{
+				return true;
+			}
+		}
+
+		return (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR) || user.getPermissionsForGuild(guild).contains(Permissions.MANAGE_SERVER) ? true : false);
 	}
 
 	/**
