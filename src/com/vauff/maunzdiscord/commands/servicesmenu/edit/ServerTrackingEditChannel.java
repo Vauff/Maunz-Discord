@@ -59,8 +59,9 @@ public class ServerTrackingEditChannel extends AbstractMenuPage
 		{
 			File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 			JSONObject json = new JSONObject(Util.getFileContents(file));
+			JSONObject innerJson = json.getJSONObject("server0");
 
-			json.put("serverTrackingChannelID", Long.parseLong(message));
+			innerJson.put("serverTrackingChannelID", Long.parseLong(message));
 			FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 			show(new ServerTrackingEditPage(trigger, cmd));
 		}

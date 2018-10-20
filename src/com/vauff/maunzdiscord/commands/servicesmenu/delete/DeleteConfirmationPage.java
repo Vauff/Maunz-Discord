@@ -25,7 +25,7 @@ public class DeleteConfirmationPage extends AbstractMenuPage
 	@Override
 	public final String getText(IChannel channel)
 	{
-		return "Are you sure you would like to delete this service?\n\n**WARNING:** This will delete your service data **permanently**";
+		return "Are you sure you would like to delete this service? If you have more than one service added manually by Vauff, please be aware that this will delete all of them\n\n**WARNING:** This will delete your service data **permanently**";
 	}
 
 	@Override
