@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
+import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 import org.json.JSONException;
 import org.json.JSONObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Players extends AbstractCommand<MessageReceivedEvent>
@@ -98,7 +100,9 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 							selectionMessages.put(event.getAuthor().getStringID(), m.getStringID());
 							Util.addNumberedReactions(m, true, serverList.size());
 
-							Executors.newScheduledThreadPool(0).schedule(() ->
+							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+							msgDeleterPool.schedule(() ->
 							{
 								if (!m.isDeleted())
 								{
@@ -106,6 +110,8 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 									selectionServers.remove(event.getAuthor().getStringID());
 									selectionMessages.remove(event.getAuthor().getStringID());
 								}
+
+								msgDeleterPool.shutdown();
 							}, 120, TimeUnit.SECONDS);
 						}
 					}

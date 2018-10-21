@@ -7,7 +7,9 @@ import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.HashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -30,6 +32,7 @@ public abstract class AbstractMenuPage
 	 */
 	protected IDataHandler handler;
 	protected ScheduledFuture removeTimer;
+	protected ScheduledExecutorService removeTimerPool;
 
 	/**
 	 * @param trigger The message event that triggered this menu
@@ -92,6 +95,7 @@ public abstract class AbstractMenuPage
 	{
 		AbstractCommand.AWAITED.remove(trigger.getAuthor().getStringID());
 		removeTimer.cancel(false);
+		removeTimerPool.shutdown();
 		menu.delete();
 		page.show();
 	}
@@ -113,7 +117,8 @@ public abstract class AbstractMenuPage
 		menu = Util.msg(trigger.getChannel(), trigger.getAuthor(), getTitle() + System.lineSeparator() + System.lineSeparator() + (getText(trigger.getChannel()) != null ? getText(trigger.getChannel()).replaceAll("\n", System.lineSeparator()) + System.lineSeparator() + System.lineSeparator() : "") + items);
 		Util.addNumberedReactions(menu, true, getAmount());
 
-		removeTimer = Executors.newScheduledThreadPool(0).schedule(() ->
+		removeTimerPool = Executors.newScheduledThreadPool(1);
+		removeTimer = removeTimerPool.schedule(() ->
 		{
 			if (!menu.isDeleted())
 			{
@@ -121,6 +126,8 @@ public abstract class AbstractMenuPage
 				ACTIVE.remove(trigger.getAuthor().getLongID());
 				menu.delete();
 			}
+
+			removeTimerPool.shutdown();
 		}, 120, TimeUnit.SECONDS);
 	}
 
@@ -136,6 +143,7 @@ public abstract class AbstractMenuPage
 		if (removeTimer != null)
 		{
 			removeTimer.cancel(false);
+			removeTimerPool.shutdown();
 		}
 
 		if (menu != null)

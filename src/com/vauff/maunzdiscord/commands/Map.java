@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Map extends AbstractCommand<MessageReceivedEvent>
@@ -107,7 +108,9 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 							args.put(event.getAuthor().getStringID(), event.getMessage().getContent().split(" "));
 							Util.addNumberedReactions(m, true, serverList.size());
 
-							Executors.newScheduledThreadPool(0).schedule(() ->
+							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+							msgDeleterPool.schedule(() ->
 							{
 								if (!m.isDeleted())
 								{
@@ -115,6 +118,8 @@ public class Map extends AbstractCommand<MessageReceivedEvent>
 									selectionServers.remove(event.getAuthor().getStringID());
 									selectionMessages.remove(event.getAuthor().getStringID());
 								}
+
+								msgDeleterPool.shutdown();
 							}, 120, TimeUnit.SECONDS);
 						}
 					}

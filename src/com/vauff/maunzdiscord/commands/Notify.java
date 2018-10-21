@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Notify extends AbstractCommand<MessageReceivedEvent>
@@ -112,7 +113,9 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							messageContents.put(event.getAuthor().getStringID(), event.getMessage().getContent());
 							Util.addNumberedReactions(m, true, serverList.size());
 
-							Executors.newScheduledThreadPool(0).schedule(() ->
+							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+							msgDeleterPool.schedule(() ->
 							{
 								if (!m.isDeleted())
 								{
@@ -121,6 +124,8 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 									selectionMessages.remove(event.getAuthor().getStringID());
 									messageContents.remove(event.getAuthor().getStringID());
 								}
+
+								msgDeleterPool.shutdown();
 							}, 120, TimeUnit.SECONDS);
 						}
 					}
@@ -256,7 +261,9 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 						reactions.add("x");
 						Util.addReactions(m, reactions);
 
-						Executors.newScheduledThreadPool(0).schedule(() ->
+						ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+						msgDeleterPool.schedule(() ->
 						{
 							if (!m.isDeleted())
 							{
@@ -264,6 +271,8 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 								confirmationMaps.remove(user.getStringID());
 								confirmationMessages.remove(user.getStringID());
 							}
+
+							msgDeleterPool.shutdown();
 						}, 120, TimeUnit.SECONDS);
 					}
 				}
@@ -379,7 +388,9 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 									Util.addNumberedReactions(m, true, 2);
 								}
 
-								Executors.newScheduledThreadPool(0).schedule(() ->
+								ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+								msgDeleterPool.schedule(() ->
 								{
 									if (!m.isDeleted())
 									{
@@ -387,6 +398,8 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 										confirmationMaps.remove(user.getStringID());
 										confirmationMessages.remove(user.getStringID());
 									}
+
+									msgDeleterPool.shutdown();
 								}, 120, TimeUnit.SECONDS);
 							}
 						}
