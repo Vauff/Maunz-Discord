@@ -15,6 +15,7 @@ import java.util.TreeSet;
 public class Help extends AbstractCommand<MessageReceivedEvent>
 {
 	private static HashMap<String, String> cmdHelp = new HashMap<>();
+	private static HashMap<String, String> cmdAliases = new HashMap<>();
 	private static HashMap<String, Integer> listPages = new HashMap<>();
 	private static HashMap<String, String> listMessages = new HashMap<>();
 
@@ -25,8 +26,8 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 
 		if (args.length == 1)
 		{
-			ArrayList<String> helpEntries = new ArrayList<String>();
-			SortedSet<String> sortedHelpEntries = new TreeSet<String>(cmdHelp.keySet());
+			ArrayList<String> helpEntries = new ArrayList<>();
+			SortedSet<String> sortedHelpEntries = new TreeSet<>(cmdHelp.keySet());
 
 			for (String key : sortedHelpEntries)
 			{
@@ -43,8 +44,8 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		else if (args.length == 2 && NumberUtils.isCreatable(args[1]))
 		{
 			int page = Integer.parseInt(args[1]);
-			ArrayList<String> helpEntries = new ArrayList<String>();
-			SortedSet<String> sortedHelpEntries = new TreeSet<String>(cmdHelp.keySet());
+			ArrayList<String> helpEntries = new ArrayList<>();
+			SortedSet<String> sortedHelpEntries = new TreeSet<>(cmdHelp.keySet());
 
 			for (String key : sortedHelpEntries)
 			{
@@ -82,6 +83,27 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 
 				Util.msg(event.getChannel(), event.getAuthor(), list);
 			}
+			else if (cmdAliases.containsKey(arg))
+			{
+				String list = cmdAliases.get(arg);
+				int i = 2;
+
+				while (true)
+				{
+					if (cmdAliases.containsKey(arg + i))
+					{
+						list += System.lineSeparator() + cmdAliases.get(arg + i);
+					}
+					else
+					{
+						break;
+					}
+
+					i++;
+				}
+
+				Util.msg(event.getChannel(), event.getAuthor(), list);
+			}
 			else
 			{
 				Util.msg(event.getChannel(), event.getAuthor(), "I don't recognize the command " + args[1] + "!");
@@ -98,7 +120,6 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		cmdHelp.put("changelog", "**\\*changelog [version]** - Shows you the changelog of the Maunz version you specify.");
 		cmdHelp.put("disable", "**\\*disable** - Disables Maunz either in a specific guild or globally, only usable by guild administrators and the bot owner.");
 		cmdHelp.put("colour", "**\\*colour [link]** - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.");
-		cmdHelp.put("color", "**\\*colour [link]** - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.");
 		cmdHelp.put("discord", "**\\*discord** - Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.");
 		cmdHelp.put("enable", "**\\*enable** - Enables Maunz either in a specific guild or globally, only usable by guild administrators and the bot owner.");
 		cmdHelp.put("help", "**\\*help [page]** - Lists all the available bot commands and the syntax for using each.");
@@ -123,6 +144,13 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 		cmdHelp.put("source", "**\\*source** - Links you to the GitHub page of Maunz, you can submit issues/pull requests here.");
 		cmdHelp.put("steam", "**\\*steam <steamid>** - Gives full information on a Steam account for the given input.");
 		cmdHelp.put("stop", "**\\*stop** - Stops Maunz, only usable by the bot owner.");
+
+		cmdAliases.put("color", "**\\*colour [link]** - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.");
+		cmdAliases.put("quotes", "**\\*quote** - Links you directly to the chat quotes site.");
+		cmdAliases.put("quotes2", "**\\*quote add** - Links you to a page where you can submit chat quotes for approval.");
+		cmdAliases.put("quotes3", "**\\*quote view <quoteid>** - Views a chat quote based on ID.");
+		cmdAliases.put("quotes4", "**\\*quote list [page]** - Lists existing chat quotes sorted by ID.");
+		cmdAliases.put("invite", "**\\*discord** - Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.");
 	}
 
 	@Override
@@ -140,8 +168,8 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 			{
 				if (event.getReaction().getEmoji().toString().equals("▶"))
 				{
-					ArrayList<String> helpEntries = new ArrayList<String>();
-					SortedSet<String> sortedHelpEntries = new TreeSet<String>(cmdHelp.keySet());
+					ArrayList<String> helpEntries = new ArrayList<>();
+					SortedSet<String> sortedHelpEntries = new TreeSet<>(cmdHelp.keySet());
 
 					for (String key : sortedHelpEntries)
 					{
@@ -157,8 +185,8 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 
 				else if (event.getReaction().getEmoji().toString().equals("◀"))
 				{
-					ArrayList<String> helpEntries = new ArrayList<String>();
-					SortedSet<String> sortedHelpEntries = new TreeSet<String>(cmdHelp.keySet());
+					ArrayList<String> helpEntries = new ArrayList<>();
+					SortedSet<String> sortedHelpEntries = new TreeSet<>(cmdHelp.keySet());
 
 					for (String key : sortedHelpEntries)
 					{
