@@ -3,7 +3,7 @@ package com.vauff.maunzdiscord.commands.servicesmenu.add;
 import com.vauff.maunzdiscord.commands.servicesmenu.AbstractServiceActionPage;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
-import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
@@ -29,7 +29,7 @@ public class AddServicePage extends AbstractServiceActionPage
 					}
 					catch (Exception e)
 					{
-						Main.log.error("", e);
+						Logger.log.error("", e);
 					}
 
 					waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());

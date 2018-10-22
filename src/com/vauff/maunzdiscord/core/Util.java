@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.concurrent.Executors;
 
 /**
  * A class holding several static utility methods
@@ -35,8 +34,6 @@ public class Util
 	 * The Discord API token of the bot, gets set in {@link Main#main(String[])}
 	 */
 	public static String token;
-
-	public static Connection sqlCon;
 
 	/**
 	 * @return The path at which the running jar file is located
@@ -115,65 +112,6 @@ public class Util
 	}
 
 	/**
-	 * Formats the uptime of the bot as a string
-	 *
-	 * @return The uptime of the bot formatted as the 2 top most values
-	 */
-	public static String getUptime()
-	{
-		ReadyEventListener.uptime.split();
-
-		String uptimeRaw = ReadyEventListener.uptime.toSplitString().split("\\.")[0];
-		String secondText = "seconds";
-		String minuteText = "minutes";
-		String hourText = "hours";
-		String dayText = "days";
-		int seconds = Integer.parseInt(uptimeRaw.split(":")[2]);
-		int minutes = Integer.parseInt(uptimeRaw.split(":")[1]);
-		int hours = Integer.parseInt(uptimeRaw.split(":")[0]) % 24;
-		int days = (Integer.parseInt(uptimeRaw.split(":")[0]) / 24);
-
-		if (seconds == 1)
-		{
-			secondText = "second";
-		}
-
-		if (minutes == 1)
-		{
-			minuteText = "minute";
-		}
-
-		if (hours == 1)
-		{
-			hourText = "hour";
-		}
-
-		if (days == 1)
-		{
-			dayText = "day";
-		}
-
-		if (days >= 1)
-		{
-			return days + " " + dayText + ", " + hours + " " + hourText;
-		}
-
-		else if (hours >= 1)
-		{
-			return hours + " " + hourText + ", " + minutes + " " + minuteText;
-		}
-
-		else if (minutes >= 1)
-		{
-			return minutes + " " + minuteText + ", " + seconds + " " + secondText;
-		}
-		else
-		{
-			return seconds + " " + secondText;
-		}
-	}
-
-	/**
 	 * Concatenates a string array from a given start index and leavs out the part after the last space
 	 *
 	 * @param args       The array to concatenate
@@ -218,18 +156,6 @@ public class Util
 					return "th";
 			}
 		}
-	}
-
-	/**
-	 * Connects to the Chat-Quotes database
-	 *
-	 * @throws Exception
-	 */
-	public static void sqlConnect() throws Exception
-	{
-		JSONObject json = new JSONObject(Util.getFileContents("config.json"));
-
-		sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getJSONObject("database").getString("hostname") + "/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getJSONObject("database").getString("username"), json.getJSONObject("database").getString("password"));
 	}
 
 	/**
@@ -298,14 +224,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			return null;
 		}
 		catch (DiscordException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -324,12 +250,12 @@ public class Util
 		}
 		catch (MissingPermissionsException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 		catch (DiscordException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -359,14 +285,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			return null;
 		}
 		catch (DiscordException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -391,14 +317,14 @@ public class Util
 			}
 			else
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			return null;
 		}
 		catch (DiscordException e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -410,7 +336,7 @@ public class Util
 	 * @return The average color of the picture.
 	 * If the URL does not contain a picture an RGB color value of 0, 154, 255 will be returned
 	 */
-	public static Color averageColorFromURL(URL url)
+	public static Color averageColorFromURL(URL url, boolean handleExceptions)
 	{
 		BufferedImage image = null;
 
@@ -441,7 +367,14 @@ public class Util
 		}
 		catch (Exception e)
 		{
-			return new Color(0, 154, 255);
+			if (handleExceptions)
+			{
+				return new Color(0, 154, 255);
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
 
@@ -467,7 +400,7 @@ public class Util
 			}
 			else
 			{
-				Main.log.error(e);
+				Logger.log.error(e);
 			}
 		}
 	}
@@ -497,7 +430,7 @@ public class Util
 			}
 			else
 			{
-				Main.log.error(e);
+				Logger.log.error(e);
 			}
 		}
 	}
@@ -512,7 +445,7 @@ public class Util
 	 */
 	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
 	{
-		ArrayList<String> finalReactions = new ArrayList<String>();
+		ArrayList<String> finalReactions = new ArrayList<>();
 		String[] reactions = {
 				"one",
 				"two",
@@ -540,10 +473,22 @@ public class Util
 	}
 
 	/**
-	 * Checks whether the bot is enabled for a specified guild
+	 * Checks whether the bot is enabled globally
+	 *
+	 * @return true if the bot is enabled globally, false otherwise
+	 */
+	public static boolean isEnabled() throws Exception
+	{
+		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+
+		return botJson.getBoolean("enabled");
+	}
+
+	/**
+	 * Checks whether the bot is enabled for both a specified guild and globally
 	 *
 	 * @param guild The guild for which to check if the bot is enabled
-	 * @return true if the bot is enabled for the guild, false otherwise
+	 * @return true if the bot is enabled for the guild and globally, false otherwise
 	 */
 	public static boolean isEnabled(IGuild guild) throws Exception
 	{
@@ -565,7 +510,7 @@ public class Util
 	 * @param user            The IUser that triggered the command's execution in the first place
 	 * @return The IMessage object for the sent page message if an exception isn't thrown, null otherwise
 	 */
-	public static IMessage buildPage(ArrayList<String> entries, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
+	public static IMessage buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
@@ -605,33 +550,83 @@ public class Util
 				list.append("```");
 			}
 
-			IMessage m = Util.msg(channel, user, "--- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+			IMessage m;
 
-			Executors.newScheduledThreadPool(1).execute(() ->
+			if (pageNumber == 1 && (int) Math.ceil((float) entries.size() / (float) pageSize) == 1)
 			{
-				try
-				{
-					if (pageNumber != 1)
-					{
-						m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
-						Thread.sleep(250);
-					}
+				m = Util.msg(channel, user, "--- **" + title + "** ---" + System.lineSeparator() + list.toString());
+			}
+			else
+			{
+				m = Util.msg(channel, user, "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
+			}
 
+			try
+			{
+				if (pageNumber != 1)
+				{
+					m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
 					Thread.sleep(250);
+				}
 
-					if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-					{
-						m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
-						Thread.sleep(250);
-					}
-				}
-				catch (Exception e)
+				Thread.sleep(250);
+
+				if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
 				{
-					Main.log.error("", e);
+					m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
+					Thread.sleep(250);
 				}
-			});
+			}
+			catch (Exception e)
+			{
+				Logger.log.error("", e);
+			}
 
 			return m;
+		}
+	}
+
+	public static int emojiToInt(String emoji)
+	{
+		if (emoji.equals("1⃣"))
+		{
+			return 1;
+		}
+		else if (emoji.equals("2⃣"))
+		{
+			return 2;
+		}
+		else if (emoji.equals("3⃣"))
+		{
+			return 3;
+		}
+		else if (emoji.equals("4⃣"))
+		{
+			return 4;
+		}
+		else if (emoji.equals("5⃣"))
+		{
+			return 5;
+		}
+		else if (emoji.equals("6⃣"))
+		{
+			return 6;
+		}
+		else if (emoji.equals("7⃣"))
+		{
+			return 7;
+		}
+		else if (emoji.equals("8⃣"))
+		{
+			return 8;
+		}
+		else if (emoji.equals("9⃣"))
+		{
+			return 9;
+		}
+		else
+		{
+			return 0;
 		}
 	}
 }

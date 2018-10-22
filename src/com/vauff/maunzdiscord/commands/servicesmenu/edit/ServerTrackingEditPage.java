@@ -2,7 +2,7 @@ package com.vauff.maunzdiscord.commands.servicesmenu.edit;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.AbstractMenuPage;
-import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +15,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 {
 	protected File file;
 	protected JSONObject json;
+	protected JSONObject innerJson;
 
 	public ServerTrackingEditPage(MessageReceivedEvent trigger, AbstractCommand<MessageReceivedEvent> cmd)
 	{
@@ -22,7 +23,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 
 		addChild(0, (event) ->
 		{
-			json.put("enabled", !json.getBoolean("enabled"));
+			innerJson.put("enabled", !innerJson.getBoolean("enabled"));
 
 			try
 			{
@@ -31,12 +32,12 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 		});
 		addChild(1, (event) ->
 		{
-			json.put("mapCharacterLimit", !json.getBoolean("mapCharacterLimit"));
+			innerJson.put("mapCharacterLimit", !innerJson.getBoolean("mapCharacterLimit"));
 
 			try
 			{
@@ -45,7 +46,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 		});
 		addChild(2, (event) ->
@@ -58,7 +59,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
@@ -73,7 +74,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 
 			waitForReply(page.menu.getStringID(), trigger.getAuthor().getStringID());
@@ -85,6 +86,7 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 	{
 		file = new File(Util.getJarLocation() + "data/services/server-tracking/" + trigger.getGuild().getStringID() + "/serverInfo.json");
 		json = new JSONObject(Util.getFileContents(file));
+		innerJson = json.getJSONObject("server0");
 		super.show();
 	}
 
@@ -98,10 +100,10 @@ public class ServerTrackingEditPage extends AbstractMenuPage
 	public String[] getItems()
 	{
 		return new String[] {
-				"Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("enabled"))) + "**",
-				"Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(json.getBoolean("mapCharacterLimit"))) + "**",
-				"Server IP: " + "**" + json.getString("serverIP") + ":" + json.getInt("serverPort") + "**",
-				"Server Tracking Channel: " + "<#" + json.getLong("serverTrackingChannelID") + ">"
+				"Enabled: " + "**" + StringUtils.capitalize(Boolean.toString(innerJson.getBoolean("enabled"))) + "**",
+				"Map Character Limit: " + "**" + StringUtils.capitalize(Boolean.toString(innerJson.getBoolean("mapCharacterLimit"))) + "**",
+				"Server IP: " + "**" + innerJson.getString("serverIP") + ":" + innerJson.getInt("serverPort") + "**",
+				"Server Tracking Channel: " + "<#" + innerJson.getLong("serverTrackingChannelID") + ">"
 		};
 	}
 }

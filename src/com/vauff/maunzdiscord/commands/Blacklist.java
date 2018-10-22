@@ -77,7 +77,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 									blacklistArray.add(channel + " **|** " + command);
 								}
 
-								IMessage m = Util.buildPage(blacklistArray, 10, page, false, false, event.getChannel(), event.getAuthor());
+								IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, page, false, false, event.getChannel(), event.getAuthor());
 
 								listMessages.put(event.getAuthor().getStringID(), m.getStringID());
 								waitForReaction(m.getStringID(), event.getAuthor().getStringID());
@@ -90,7 +90,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel]/<list> <all/command>/[page]** to create or remove one");
+							Util.msg(event.getChannel(), event.getAuthor(), "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel] \\<all/command>** to add one");
 						}
 					}
 
@@ -287,18 +287,18 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								Util.msg(event.getChannel(), event.getAuthor(), "The command **" + args[1] + "** doesn't exist!");
+								Util.msg(event.getChannel(), event.getAuthor(), "The command **" + args[2] + "** doesn't exist!");
 							}
 						}
 						else
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "You need to specify a channel to blacklist (or \"all\")! **Usage: *blacklist [all/channel]/<list> <all/command>/[page]**");
+							Util.msg(event.getChannel(), event.getAuthor(), "The channel **" + args[1] + "** doesn't exist!");
 						}
 					}
 				}
 				else
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify a command to blacklist (or \"all\")! **Usage: *blacklist [all/channel]/<list> <all/command>/[page]**");
+					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify arguments! See **\\*help blacklist**");
 				}
 			}
 			else
@@ -355,7 +355,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						blacklistArray.add(channel + " **|** " + command);
 					}
 
-					IMessage m = Util.buildPage(blacklistArray, 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());
@@ -389,7 +389,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						blacklistArray.add(channel + " **|** " + command);
 					}
 
-					IMessage m = Util.buildPage(blacklistArray, 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());
+					IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());
 
 					listMessages.put(event.getUser().getStringID(), m.getStringID());
 					waitForReaction(m.getStringID(), event.getUser().getStringID());

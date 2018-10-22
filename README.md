@@ -12,9 +12,13 @@ Italic ones are permission restricted commands to either just Vauff or guild adm
 
 *benchmark \<gpu/cpu> - Provides complete benchmark information on a GPU or CPU powered by PassMark.
 
-*blacklist [all/channel]/\<list> \<all/command>/[page] - Allows you to blacklist the usage of either all commands or specific commands in a channel.
+_*blacklist [all/channel] \<all/command>_ - Allows you to blacklist the usage of different command/channel combinations.
+
+_*blacklist list [page]_ - Lists the currently blacklisted commands/channels
 
 *changelog [version] - Shows you the changelog of the Maunz version you specify.
+
+*colour [link] - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.
 
 _*disable_ - Disables Maunz either in a specific guild or globally.
 
@@ -22,21 +26,35 @@ _*disable_ - Disables Maunz either in a specific guild or globally.
 
 _*enable_ - Enables Maunz either in a specific guild or globally.
 
-*help [command/page] - Links you to the README or gives command help if a command is given.
+*help [page] - Lists all the available bot commands and the syntax for using each.
+
+*help \<command> - Gives you help on how to use a specific command.
 
 *isitdown \<hostname> - Tells you if the given hostname is down or not.
 
 *map - Tells you which map a server is playing outside of its standard map tracking channel.
 
+*map [mapname] - Gives you information on a specific map such as last time played.
+
 *minecraft \<uuid/username> - Gives you full information about any Minecraft account.
 
-*notify \<list/wipe/mapname> [page] - Lets you list, wipe, add or remove your server map notifications.
+*notify list [page] - Lists your current map notifications.
+
+*notify wipe - Wipes ALL of your map notifications.
+
+*notify \<mapname> - Adds or removes a given map to/from your map notifications, exact name is recommended for best accuracy but the bot can use it as a search term too.
 
 *ping - Makes Maunz respond to you with pong. Very useful for testing your connection!
 
 *players - Lists the current players online on a server.
 
-*quote \<view/list/add> \<quoteid>/[page] - Allows you to view chat quotes.
+*quote - Links you directly to the chat quotes site.
+
+*quote add - Links you to a page where you can submit chat quotes for approval.
+
+*quote view \<quoteid> - Views a chat quote based on ID.
+
+*quote list [page] - Lists existing chat quotes sorted by ID.
 
 *reddit \<subreddit> - Links you to a subreddit that you provide.
 

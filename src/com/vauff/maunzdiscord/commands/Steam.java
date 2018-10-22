@@ -95,7 +95,7 @@ public class Steam extends AbstractCommand<MessageReceivedEvent>
 						bans = bans.substring(0, bans.length() - 2);
 					}
 
-					Util.msg(event.getChannel(), event.getAuthor(), new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(avatarURL))).withThumbnail(avatarURL).withFooterIcon("https://i.imgur.com/GuXJIeX.png").withTitle(nickname).withUrl(link).withFooterText("Powered by steamid.xyz").appendField("Name", nickname, true).appendField("Real Name", realName, true).appendField("Country", country, true).appendField("Account Created", creationDate, true).appendField("Last Logoff", lastLogoff, true).appendField("Status", status, true).appendField("Profile Visibility", visibility, true).appendField("Bans", bans, true).appendField("Steam ID", steamID, true).appendField("Steam ID3", steamID3, true).appendField("Steam32 ID", steam32ID, true).appendField("Steam64 ID", steam64ID, true).build());
+					Util.msg(event.getChannel(), event.getAuthor(), new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(avatarURL), true)).withThumbnail(avatarURL).withFooterIcon("https://i.imgur.com/GuXJIeX.png").withTitle(nickname).withUrl(link).withFooterText("Powered by steamid.xyz").appendField("Name", nickname, true).appendField("Real Name", realName, true).appendField("Country", country, true).appendField("Account Created", creationDate, true).appendField("Last Logoff", lastLogoff, true).appendField("Status", status, true).appendField("Profile Visibility", visibility, true).appendField("Bans", bans, true).appendField("Steam ID", steamID, true).appendField("Steam ID3", steamID3, true).appendField("Steam32 ID", steam32ID, true).appendField("Steam64 ID", steam64ID, true).build());
 				}
 			}
 			catch (HttpStatusException e)

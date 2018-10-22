@@ -65,9 +65,10 @@ public class ServerTrackingEditIP extends AbstractMenuPage
 		{
 			File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 			JSONObject json = new JSONObject(Util.getFileContents(file));
+			JSONObject innerJson = json.getJSONObject("server0");
 
-			json.put("serverIP", ip);
-			json.put("serverPort", port);
+			innerJson.put("serverIP", ip);
+			innerJson.put("serverPort", port);
 			FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 			show(new ServerTrackingEditPage(trigger, cmd));
 		}

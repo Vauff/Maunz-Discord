@@ -7,7 +7,9 @@ import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.HashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -30,6 +32,7 @@ public abstract class AbstractMenuPage
 	 */
 	protected IDataHandler handler;
 	protected ScheduledFuture removeTimer;
+	protected ScheduledExecutorService removeTimerPool;
 
 	/**
 	 * @param trigger The message event that triggered this menu
@@ -92,6 +95,7 @@ public abstract class AbstractMenuPage
 	{
 		AbstractCommand.AWAITED.remove(trigger.getAuthor().getStringID());
 		removeTimer.cancel(false);
+		removeTimerPool.shutdown();
 		menu.delete();
 		page.show();
 	}
@@ -113,7 +117,8 @@ public abstract class AbstractMenuPage
 		menu = Util.msg(trigger.getChannel(), trigger.getAuthor(), getTitle() + System.lineSeparator() + System.lineSeparator() + (getText(trigger.getChannel()) != null ? getText(trigger.getChannel()).replaceAll("\n", System.lineSeparator()) + System.lineSeparator() + System.lineSeparator() : "") + items);
 		Util.addNumberedReactions(menu, true, getAmount());
 
-		removeTimer = Executors.newScheduledThreadPool(1).schedule(() ->
+		removeTimerPool = Executors.newScheduledThreadPool(1);
+		removeTimer = removeTimerPool.schedule(() ->
 		{
 			if (!menu.isDeleted())
 			{
@@ -121,6 +126,8 @@ public abstract class AbstractMenuPage
 				ACTIVE.remove(trigger.getAuthor().getLongID());
 				menu.delete();
 			}
+
+			removeTimerPool.shutdown();
 		}, 120, TimeUnit.SECONDS);
 	}
 
@@ -136,6 +143,7 @@ public abstract class AbstractMenuPage
 		if (removeTimer != null)
 		{
 			removeTimer.cancel(false);
+			removeTimerPool.shutdown();
 		}
 
 		if (menu != null)
@@ -155,7 +163,7 @@ public abstract class AbstractMenuPage
 	{
 		if (item < -1 || item > 8)
 		{
-			Main.log.warn("Tried to add a child with index " + item + ". Index needs to be between including -1 and 8");
+			Logger.log.warn("Tried to add a child with index " + item + ". Index needs to be between including -1 and 8");
 			return;
 		}
 
@@ -174,7 +182,7 @@ public abstract class AbstractMenuPage
 		}
 		else
 		{
-			Main.log.warn("A menu item was selected (" + item + ") but a corresponding page or function could not be found.");
+			Logger.log.warn("A menu item was selected (" + item + ") but a corresponding page or function could not be found.");
 		}
 	}
 
@@ -192,7 +200,7 @@ public abstract class AbstractMenuPage
 	{
 		if (i < 0 || i > 8)
 		{
-			Main.log.warn("i was " + i + " when calling addChild on a menu page. Page was not added.");
+			Logger.log.warn("i was " + i + " when calling addChild on a menu page. Page was not added.");
 			return;
 		}
 
@@ -213,7 +221,7 @@ public abstract class AbstractMenuPage
 	{
 		if (i < 0 || i > 8)
 		{
-			Main.log.warn("index was " + i + " when calling addChild on a menu page, but needs to be between 0 and 8. Page was not added.");
+			Logger.log.warn("index was " + i + " when calling addChild on a menu page, but needs to be between 0 and 8. Page was not added.");
 			return;
 		}
 

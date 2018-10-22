@@ -29,8 +29,10 @@ public class EditServicePage extends AbstractServiceActionPage
 		{
 			Util.msg(trigger.getChannel(), "There are currently no services in this guild to edit!");
 		}
-
-		super.show();
+		else
+		{
+			super.show();
+		}
 	}
 
 	@Override

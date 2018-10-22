@@ -11,6 +11,7 @@ import sx.blah.discord.handle.obj.IMessage;
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Enable extends AbstractCommand<MessageReceivedEvent>
@@ -33,12 +34,16 @@ public class Enable extends AbstractCommand<MessageReceivedEvent>
 				menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
 				Util.addNumberedReactions(m, true, 2);
 
-				Executors.newScheduledThreadPool(1).schedule(() ->
+				ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+				msgDeleterPool.schedule(() ->
 				{
 					if (!m.isDeleted())
 					{
 						m.delete();
 					}
+
+					msgDeleterPool.shutdown();
 				}, 120, TimeUnit.SECONDS);
 			}
 			else

@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.features;
 
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.StatusType;
@@ -21,7 +22,14 @@ public class StatsTimer
 			{
 				if (!showingGuilds)
 				{
-					Main.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, Main.client.getGuilds().size() + " guilds");
+					if (Main.client.getGuilds().size() == 1)
+					{
+						Main.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, Main.client.getGuilds().size() + " guild");
+					}
+					else
+					{
+						Main.client.changePresence(StatusType.ONLINE, ActivityType.PLAYING, Main.client.getGuilds().size() + " guilds");
+					}
 					showingGuilds = true;
 				}
 				else
@@ -32,7 +40,7 @@ public class StatsTimer
 			}
 			catch (Exception e)
 			{
-				Main.log.error("", e);
+				Logger.log.error("", e);
 			}
 		}
 	};

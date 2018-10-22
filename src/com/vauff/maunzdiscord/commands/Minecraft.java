@@ -71,13 +71,8 @@ public class Minecraft extends AbstractCommand<MessageReceivedEvent>
 					uuid = new StringBuilder(uuid).insert(uuid.length() - 12, "-").toString();
 
 					String headURL = "https://cravatar.eu/helmavatar/" + status[1] + "/120";
-					Util.msg(event.getChannel(), event.getAuthor(), new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(headURL))).withThumbnail(headURL).withFooterIcon("https://i.imgur.com/4o6K42Z.png").appendField("Name", status[1], true).withFooterText("Powered by axis.iaero.me").appendField("Account Status", "Premium", true).appendField("Migrated", StringUtils.capitalize(status[2]), true).appendField("UUID", uuid, true).appendField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true).appendField("Raw Skin", "https://minotar.net/skin/" + status[1], true).build());
+					Util.msg(event.getChannel(), event.getAuthor(), new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(headURL), true)).withThumbnail(headURL).withFooterIcon("https://i.imgur.com/4o6K42Z.png").appendField("Name", status[1], true).withFooterText("Powered by axis.iaero.me").appendField("Account Status", "Premium", true).appendField("Migrated", StringUtils.capitalize(status[2]), true).appendField("UUID", uuid, true).appendField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true).appendField("Raw Skin", "https://minotar.net/skin/" + status[1], true).build());
 				}
-			}
-
-			if (args[0].equalsIgnoreCase("*accinfo"))
-			{
-				Util.msg(event.getChannel(), event.getAuthor(), "**\\*accinfo** has been deprecated in favour of **\\*minecraft**, please make sure to use that in the future instead");
 			}
 		}
 	}
@@ -85,9 +80,6 @@ public class Minecraft extends AbstractCommand<MessageReceivedEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] {
-				"*minecraft",
-				"*accinfo"
-		};
+		return new String[] { "*minecraft" };
 	}
 }

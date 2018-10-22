@@ -4,6 +4,7 @@ import com.vauff.maunzdiscord.commands.About;
 import com.vauff.maunzdiscord.commands.Benchmark;
 import com.vauff.maunzdiscord.commands.Blacklist;
 import com.vauff.maunzdiscord.commands.Changelog;
+import com.vauff.maunzdiscord.commands.Colour;
 import com.vauff.maunzdiscord.commands.Disable;
 import com.vauff.maunzdiscord.commands.Discord;
 import com.vauff.maunzdiscord.commands.Enable;
@@ -22,18 +23,18 @@ import com.vauff.maunzdiscord.commands.Source;
 import com.vauff.maunzdiscord.commands.Steam;
 import com.vauff.maunzdiscord.commands.Stop;
 import com.vauff.maunzdiscord.commands.servicesmenu.Services;
-import com.vauff.maunzdiscord.features.Intelligence;
+import com.vauff.maunzdiscord.threads.MessageReceivedThread;
+import com.vauff.maunzdiscord.threads.ReactionAddThread;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class MainListener
@@ -41,7 +42,17 @@ public class MainListener
 	/**
 	 * Holds all commands
 	 */
-	public static LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<AbstractCommand<MessageReceivedEvent>>();
+	public static LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<>();
+
+	/**
+	 * Holds the timestamp of the last time a user used a command
+	 */
+	public static HashMap<String, Long> cooldownTimestamps = new HashMap<>();
+
+	/**
+	 * Holds the timestamp of the last time a user was given the command cooldown message
+	 */
+	public static HashMap<String, Long> cooldownMessageTimestamps = new HashMap<>();
 
 	/**
 	 * Sets up all commands
@@ -56,6 +67,7 @@ public class MainListener
 			commands.add(new Benchmark());
 			commands.add(new Blacklist());
 			commands.add(new Changelog());
+			commands.add(new Colour());
 			commands.add(new Disable());
 			commands.add(new Discord());
 			commands.add(new Enable());
@@ -76,184 +88,31 @@ public class MainListener
 
 			if (json.getJSONObject("database").getString("hostname").equals("") || json.getJSONObject("database").getString("username").equals("") || json.getJSONObject("database").getString("password").equals(""))
 			{
-				Main.log.warn("The quote command is disabled due to 1 or more values in the database section of config.json not being supplied");
+				Logger.log.warn("The quote command is disabled due to 1 or more values in the database section of config.json not being supplied");
 			}
 			else
 			{
 				commands.add(new Quote());
 			}
-
-			if (json.getString("cleverbotAPIKey").equals(""))
-			{
-				Main.log.warn("Maunz intelligence is disabled due to cleverbotAPIKey not being supplied in the config.json");
-			}
-			else
-			{
-				commands.add(new Intelligence());
-			}
 		}
 		catch (Exception e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 		}
 	}
 
 	@EventSubscriber
 	public void onMessageReceived(MessageReceivedEvent event)
 	{
-		try
-		{
-			String cmdName = event.getMessage().getContent().split(" ")[0];
-
-			for (AbstractCommand<MessageReceivedEvent> cmd : commands)
-			{
-				if (Util.isEnabled(event.getGuild()) || cmd instanceof Enable || cmd instanceof Disable)
-				{
-					for (String s : cmd.getAliases())
-					{
-						if (cmdName.equalsIgnoreCase(s))
-						{
-							JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json")));
-							boolean blacklisted = false;
-
-							if (!Util.hasPermission(event.getAuthor(), event.getGuild()))
-							{
-								for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
-								{
-									String entry = json.getJSONArray("blacklist").getString(i);
-
-									if ((entry.split(":")[0].equalsIgnoreCase(event.getChannel().getStringID()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace("*", "")) || entry.split(":")[1].equalsIgnoreCase("all")))
-									{
-										blacklisted = true;
-										break;
-									}
-								}
-							}
-
-							if (!blacklisted)
-							{
-								if (!(cmd instanceof Intelligence))
-								{
-									event.getChannel().setTypingStatus(true);
-									Thread.sleep(250);
-								}
-
-								try
-								{
-									cmd.exe(event);
-								}
-								catch (Exception e)
-								{
-									String message = ":exclamation:  |  **Uh oh, an error occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at <https://goo.gl/igb7hc> with the stacktrace provided below" + System.lineSeparator() + "```" + System.lineSeparator() + ExceptionUtils.getStackTrace(e);
-
-									if (message.length() > 1997)
-									{
-										message = message.substring(0, Math.min(message.length(), 1997));
-									}
-
-									Util.msg(event.getChannel(), event.getAuthor(), message + "```");
-									Main.log.error("", e);
-								}
-
-								event.getChannel().setTypingStatus(false);
-							}
-							else
-							{
-								Util.msg(event.getAuthor().getOrCreatePMChannel(), ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + event.getChannel().mention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
-							}
-						}
-					}
-				}
-			}
-
-			try
-			{
-				if (AbstractCommand.AWAITED.containsKey(event.getAuthor().getStringID()) && event.getChannel().equals(Main.client.getMessageByID(Long.parseLong(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getID())).getChannel()))
-				{
-					Main.client.getMessageByID(Long.parseLong(AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getID())).delete();
-					AbstractCommand.AWAITED.get(event.getAuthor().getStringID()).getCommand().onMessageReceived(event);
-				}
-			}
-			catch (NullPointerException e)
-			{
-				// This means that the message ID in AbstractCommand#AWAITED for the given user ID has already been deleted, we can safely just stop executing
-			}
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-		}
+		MessageReceivedThread thread = new MessageReceivedThread(event, "messagereceived-" + event.getMessage().getStringID());
+		thread.start();
 	}
 
 	@EventSubscriber
 	public void onReactionAdd(ReactionAddEvent event)
 	{
-		try
-		{
-			if (AbstractCommand.AWAITED.containsKey(event.getMessage().getStringID()) && event.getUser().getStringID().equals(AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getID()))
-			{
-				event.getMessage().delete();
-				AbstractCommand.AWAITED.get(event.getMessage().getStringID()).getCommand().onReactionAdd(event);
-			}
-			else if (AbstractMenuPage.ACTIVE.containsKey(event.getUser().getLongID()))
-			{
-				try
-				{
-					if (event.getMessageID() == AbstractMenuPage.ACTIVE.get(event.getUser().getLongID()).menu.getLongID())
-					{
-						ReactionEmoji e = event.getReaction().getEmoji();
-						int index;
-
-						switch (e.toString())
-						{
-							case "❌":
-								index = -1;
-								break;
-							case "1⃣":
-								index = 0;
-								break;
-							case "2⃣":
-								index = 1;
-								break;
-							case "3⃣":
-								index = 2;
-								break;
-							case "4⃣":
-								index = 3;
-								break;
-							case "5⃣":
-								index = 4;
-								break;
-							case "6⃣":
-								index = 5;
-								break;
-							case "7⃣":
-								index = 6;
-								break;
-							case "8⃣":
-								index = 7;
-								break;
-							case "9⃣":
-								index = 8;
-								break;
-							default:
-								Main.log.warn("Emoji added that is not part of the menu. Awaiting new input.");
-								return;
-						}
-
-						AbstractMenuPage.ACTIVE.get(event.getUser().getLongID()).onReacted(event, index);
-					}
-				}
-				catch (Exception e)
-				{
-					Main.log.error("", e);
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			Main.log.error("", e);
-		}
+		ReactionAddThread thread = new ReactionAddThread(event, "reactionadd-" + event.getMessage().getStringID());
+		thread.start();
 	}
 
 	@EventSubscriber
@@ -276,7 +135,7 @@ public class MainListener
 		}
 		catch (Exception e)
 		{
-			Main.log.error("", e);
+			Logger.log.error("", e);
 		}
 	}
 }

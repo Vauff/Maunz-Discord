@@ -50,6 +50,7 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 
 				link = link.replace("amp;", "");
 				Document benchDoc = Jsoup.connect(link).get();
+				Color embedColor;
 				String fullDesc = benchDoc.select("table[class=desc]").html().replace("<a href=\"#history\">", "");
 				String name = benchDoc.select("span[class=cpuname]").text();
 				String score = benchDoc.select("span[style=font-family: Arial, Helvetica, sans-serif;font-size: 35px;	font-weight: bold; color: red;]").text();
@@ -70,6 +71,19 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 					ratio = "N/A";
 				}
 
+				if (Integer.parseInt(samples) <= 4)
+				{
+					embedColor = new Color(255, 0, 0);
+				}
+				else if (Integer.parseInt(samples) <= 24)
+				{
+					embedColor = new Color(255, 160, 0);
+				}
+				else
+				{
+					embedColor = new Color(0, 200, 0);
+				}
+
 				if (link.contains("gpu.php"))
 				{
 					date = fullDesc.split("Videocard First Benchmarked:</span>&nbsp;&nbsp;")[1].split("<")[0];
@@ -80,7 +94,7 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 						price = "N/A";
 					}
 
-					EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withThumbnail("https://i.imgur.com/nAe3jfd.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).build();
+					EmbedObject embed = new EmbedBuilder().withColor(embedColor).withThumbnail("https://i.imgur.com/nAe3jfd.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).build();
 					Util.msg(event.getChannel(), event.getAuthor(), embed);
 				}
 				if (link.contains("cpu.php"))
@@ -124,7 +138,7 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 						tdp = "N/A";
 					}
 
-					EmbedObject embed = new EmbedBuilder().withColor(new Color(0, 154, 255)).withThumbnail("https://i.imgur.com/iKLrQQN.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Single Thread Score", singleThread, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Cores", cores, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).appendField("Clock Speed", clockSpeed, true).appendField("Turbo Speed", turboSpeed, true).appendField("Socket", socket, true).appendField("Typical TDP", tdp, true).build();
+					EmbedObject embed = new EmbedBuilder().withColor(embedColor).withThumbnail("https://i.imgur.com/iKLrQQN.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Single Thread Score", singleThread, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Cores", cores, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).appendField("Clock Speed", clockSpeed, true).appendField("Turbo Speed", turboSpeed, true).appendField("Socket", socket, true).appendField("Typical TDP", tdp, true).build();
 					Util.msg(event.getChannel(), event.getAuthor(), embed);
 				}
 			}
