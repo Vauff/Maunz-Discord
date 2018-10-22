@@ -64,7 +64,7 @@ public class ServerTimerThread implements Runnable
 				}
 				catch (NullPointerException e)
 				{
-					Logger.log.warn("The bot has been removed from the guild belonging to the ID " + file.getName().replace(".json", "") + ", the server tracking loop will skip this guild");
+					// bot is no longer in this guild, move on to next one
 					return;
 				}
 
@@ -196,7 +196,10 @@ public class ServerTimerThread implements Runnable
 							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**").build();
 							EmbedObject pmEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(timestamp).withThumbnail(url).withTitle(serverName).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**").build();
 
-							Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), embed);
+							if (Main.client.getChannelByID(object.getLong("serverTrackingChannelID")) != null)
+							{
+								Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), embed);
+							}
 
 							for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
 							{
