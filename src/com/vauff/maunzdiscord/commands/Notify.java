@@ -461,7 +461,7 @@ public class Notify extends AbstractCommand<MessageReceivedEvent>
 							file.createNewFile();
 							json = new JSONObject();
 							json.put("lastName", event.getUser().getName());
-							json.put("notifications", new JSONArray());
+							json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
 							json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().getStringID()));
 							FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 						}
