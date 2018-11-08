@@ -69,11 +69,14 @@ public class ServerTrackingAddIP extends AbstractMenuPage
 			File folder = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/");
 			File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json");
 			JSONObject json = new JSONObject();
-			JSONObject innerJson = json.put("server0", new JSONObject());
 
 			folder.mkdir();
 			file.createNewFile();
 			json.put("lastGuildName", event.getGuild().getName());
+			json.put("server0", new JSONObject());
+
+			JSONObject innerJson = json.getJSONObject("server0");
+
 			innerJson.put("mapDatabase", new JSONArray());
 			innerJson.put("serverTrackingChannelID", Long.parseLong(((ServerTrackingSetupPageData) handler).channel));
 			innerJson.put("downtimeTimer", 0);
