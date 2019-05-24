@@ -7,6 +7,11 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.http.client.ClientException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -14,19 +19,18 @@ import org.json.JSONObject;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.io.File;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 public class ServerTimerThread implements Runnable
 {
@@ -60,11 +64,11 @@ public class ServerTimerThread implements Runnable
 
 				try
 				{
-					Main.client.getGuildByID(Long.parseLong(file.getName())).getStringID();
+					Main.client.getGuildById(Snowflake.of(file.getName())).block();
 				}
-				catch (NullPointerException e)
+				catch (ClientException e)
 				{
-					// bot is no longer in this guild, move on to next one
+					// bot is no longer in this guild, stop execution
 					return;
 				}
 
@@ -90,7 +94,7 @@ public class ServerTimerThread implements Runnable
 					{
 						boolean channelExists = true;
 
-						if (Objects.isNull(Main.client.getChannelByID(object.getLong("serverTrackingChannelID"))))
+						if (Objects.isNull(Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block())) //TEST THIS
 						{
 							channelExists = false;
 						}
@@ -134,14 +138,14 @@ public class ServerTimerThread implements Runnable
 
 									if (object.getInt("downtimeTimer") == object.getInt("failedConnectionsThreshold") && channelExists)
 									{
-										Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), "The server has gone offline");
+										Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has gone offline");
 									}
 
 									if (object.getInt("downtimeTimer") >= 4320)
 									{
 										if (channelExists)
 										{
-											Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+											Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										}
 
 										object.put("enabled", false);
@@ -158,7 +162,7 @@ public class ServerTimerThread implements Runnable
 
 						if (object.getInt("downtimeTimer") >= object.getInt("failedConnectionsThreshold") && channelExists)
 						{
-							Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), "The server has come back online");
+							Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has come back online");
 						}
 
 						String serverInfo = server.toString();
@@ -167,7 +171,7 @@ public class ServerTimerThread implements Runnable
 						String serverName = serverInfo.split("serverName: ")[1].split("  secure: ")[0].replace("\n", "");
 						int currentPlayers = Integer.parseInt(serverInfo.split("numberOfPlayers: ")[1].split(" ")[0].replace("\n", ""));
 						int maxPlayers = Integer.parseInt(serverInfo.split("maxPlayers: ")[1].split(" ")[0].replace("\n", ""));
-						String url = "http://158.69.59.239/mapimgs/" + StringUtils.substring(map, 0, 31) + ".jpg";
+						String url = "https://vauff.com/mapimgs/" + StringUtils.substring(map, 0, 31) + ".jpg";
 
 						if (currentPlayers > maxPlayers)
 						{
@@ -193,12 +197,20 @@ public class ServerTimerThread implements Runnable
 								// This is to be expected normally because JSoup can't parse a URL serving only a static image
 							}
 
-							EmbedObject embed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(timestamp).withThumbnail(url).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**").build();
-							EmbedObject pmEmbed = new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(url), true)).withTimestamp(timestamp).withThumbnail(url).withTitle(serverName).withDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**").build();
+							final String finalUrl = url;
+							final long finalTimestamp = timestamp;
+							final URL constructedUrl = new URL(url);
 
-							if (Main.client.getChannelByID(object.getLong("serverTrackingChannelID")) != null)
+							Consumer<EmbedCreateSpec> embed = spec -> {
+								spec.setColor(Util.averageColorFromURL(constructedUrl, true));
+								spec.setTimestamp(Instant.ofEpochMilli(finalTimestamp));
+								spec.setThumbnail(finalUrl);
+								spec.setDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**");
+							};
+
+							if (Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block() != null)
 							{
-								Util.msg(Main.client.getChannelByID(object.getLong("serverTrackingChannelID")), embed);
+								Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
 							}
 
 							for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
@@ -206,11 +218,11 @@ public class ServerTimerThread implements Runnable
 								if (!notificationFile.getName().equals("serverInfo.json"))
 								{
 									JSONObject notificationJson = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/" + notificationFile.getName()));
-									IUser user = null;
+									User user = null;
 
 									try
 									{
-										user = Main.client.getUserByID(Long.parseLong(notificationFile.getName().replace(".json", "")));
+										user = Main.client.getUserById(Snowflake.of(Long.parseLong(notificationFile.getName().replace(".json", "")))).block();
 									}
 									catch (NullPointerException e)
 									{
@@ -220,7 +232,7 @@ public class ServerTimerThread implements Runnable
 										// users account doesn't exist anymore
 									}
 
-									if (Main.client.getGuildByID(Long.parseLong(file.getName())).getUsers().contains(user))
+									if (Main.client.getGuildById(Snowflake.of(Long.parseLong(file.getName()))).block().getMembers().collectList().block().contains(user))
 									{
 										try
 										{
@@ -230,7 +242,7 @@ public class ServerTimerThread implements Runnable
 
 												if (mapNotification.equalsIgnoreCase(map))
 												{
-													Util.msg(Main.client.getOrCreatePMChannel(user), pmEmbed);
+													Util.msg(user.getPrivateChannel().block(), embed.andThen(spec -> spec.setTitle(serverName)));
 												}
 											}
 										}
@@ -288,7 +300,7 @@ public class ServerTimerThread implements Runnable
 							object.put("serverName", serverName);
 						}
 
-						json.put("lastGuildName", Main.client.getGuildByID(Long.parseLong(file.getName())).getName());
+						json.put("lastGuildName", Main.client.getGuildById(Snowflake.of(Long.parseLong(file.getName()))).block().getName());
 						object.put("downtimeTimer", 0);
 						server.disconnect();
 					}

@@ -1,16 +1,17 @@
 package com.vauff.maunzdiscord.core;
 
-import com.vdurmont.emoji.EmojiManager;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.reaction.ReactionEmoji;
+import discord4j.core.object.util.Permission;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.http.client.ClientException;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MissingPermissionsException;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -18,12 +19,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 /**
  * A class holding several static utility methods
@@ -165,13 +165,13 @@ public class Util
 	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json, false otherwise
 	 * @throws Exception
 	 */
-	public static boolean hasPermission(IUser user) throws Exception
+	public static boolean hasPermission(User user) throws Exception
 	{
 		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
 		for (int i = 0; i < json.getJSONArray("botOwners").length(); i++)
 		{
-			if (user.getLongID() == json.getJSONArray("botOwners").getLong(i))
+			if (user.getId().asLong() == json.getJSONArray("botOwners").getLong(i))
 			{
 				return true;
 			}
@@ -188,19 +188,19 @@ public class Util
 	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json or the user is a guild administrator, false otherwise
 	 * @throws Exception
 	 */
-	public static boolean hasPermission(IUser user, IGuild guild) throws Exception
+	public static boolean hasPermission(User user, Guild guild) throws Exception
 	{
 		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
 		for (int i = 0; i < json.getJSONArray("botOwners").length(); i++)
 		{
-			if (user.getLongID() == json.getJSONArray("botOwners").getLong(i))
+			if (user.getId().asLong() == json.getJSONArray("botOwners").getLong(i))
 			{
 				return true;
 			}
 		}
 
-		return (user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR) || user.getPermissionsForGuild(guild).contains(Permissions.MANAGE_SERVER) ? true : false);
+		return (user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.ADMINISTRATOR) || user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.MANAGE_GUILD) ? true : false);
 	}
 
 	/**
@@ -210,28 +210,23 @@ public class Util
 	 * @param author  The author
 	 * @param message The message
 	 */
-	public static IMessage msg(IChannel channel, IUser author, String message)
+	public static Message msg(MessageChannel channel, User author, String message)
 	{
 		try
 		{
-			return channel.sendMessage(message);
+			return channel.createMessage(message).block();
 		}
-		catch (MissingPermissionsException e)
+		catch (ClientException e)
 		{
-			if (e.getMissingPermissions().contains(Permissions.SEND_MESSAGES))
+			if (e.getStatus().code() == 403)
 			{
-				msg(author.getOrCreatePMChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.mention() + " because it's lacking the **SEND_MESSAGES** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+				msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 			}
 			else
 			{
 				Logger.log.error("", e);
 			}
 
-			return null;
-		}
-		catch (DiscordException e)
-		{
-			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -242,20 +237,26 @@ public class Util
 	 * @param channel The channel
 	 * @param message The message
 	 */
-	public static IMessage msg(IChannel channel, String message)
+	public static Message msg(MessageChannel channel, String message)
 	{
 		try
 		{
-			return channel.sendMessage(message);
+			return channel.createMessage(message).block();
 		}
-		catch (MissingPermissionsException e)
+		catch (ClientException e)
 		{
-			Logger.log.error("", e);
-			return null;
-		}
-		catch (DiscordException e)
-		{
-			Logger.log.error("", e);
+			if (e.getStatus().code() == 403)
+			{
+				if (!(channel instanceof PrivateChannel))
+				{
+					Logger.log.error("Missing permissions to send message to channel #" + ((GuildChannel)channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel)channel).getGuild().block().getName() + " (" + ((GuildChannel)channel).getGuild().block().getId().asString() + ")");
+				}
+			}
+			else
+			{
+				Logger.log.error("", e);
+			}
+
 			return null;
 		}
 	}
@@ -265,34 +266,25 @@ public class Util
 	 *
 	 * @param channel The channel
 	 * @param author  The author
-	 * @param message The embed
+	 * @param embed The embed
 	 */
-	public static IMessage msg(IChannel channel, IUser author, EmbedObject message)
+	public static Message msg(MessageChannel channel, User author, Consumer<EmbedCreateSpec> embed)
 	{
 		try
 		{
-			return channel.sendMessage("", message, false);
+			return channel.createEmbed(embed).block();
 		}
-		catch (MissingPermissionsException e)
+		catch (ClientException e)
 		{
-			if (e.getMissingPermissions().contains(Permissions.SEND_MESSAGES))
+			if (e.getStatus().code() == 403)
 			{
-				msg(author.getOrCreatePMChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.mention() + " because it's lacking the **SEND_MESSAGES** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
-			}
-			else if (e.getMissingPermissions().contains(Permissions.EMBED_LINKS))
-			{
-				msg(channel, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command because it's lacking the **EMBED_LINKS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+				msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 			}
 			else
 			{
 				Logger.log.error("", e);
 			}
 
-			return null;
-		}
-		catch (DiscordException e)
-		{
-			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -301,30 +293,28 @@ public class Util
 	 * Sends an embed to a channel
 	 *
 	 * @param channel The channel
-	 * @param message The embed
+	 * @param embed The embed
 	 */
-	public static IMessage msg(IChannel channel, EmbedObject message)
+	public static Message msg(MessageChannel channel, Consumer<EmbedCreateSpec> embed)
 	{
 		try
 		{
-			return channel.sendMessage("", message, false);
+			return channel.createEmbed(embed).block();
 		}
-		catch (MissingPermissionsException e)
+		catch (ClientException e)
 		{
-			if (e.getMissingPermissions().contains(Permissions.EMBED_LINKS))
+			if (e.getStatus().code() == 403)
 			{
-				msg(channel, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to send a message because it's lacking the **EMBED_LINKS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set.");
+				if (!(channel instanceof PrivateChannel))
+				{
+					Logger.log.error("Missing permissions to send embed to channel #" + ((GuildChannel)channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel)channel).getGuild().block().getName() + " (" + ((GuildChannel)channel).getGuild().block().getId().asString() + ")");
+				}
 			}
 			else
 			{
 				Logger.log.error("", e);
 			}
 
-			return null;
-		}
-		catch (DiscordException e)
-		{
-			Logger.log.error("", e);
 			return null;
 		}
 	}
@@ -338,7 +328,7 @@ public class Util
 	 */
 	public static Color averageColorFromURL(URL url, boolean handleExceptions)
 	{
-		BufferedImage image = null;
+		BufferedImage image;
 
 		try
 		{
@@ -383,25 +373,26 @@ public class Util
 	 *
 	 * @param m        The message to add the emojis to
 	 * @param reaction A string that contains a reaction that should be added to a given IMessage
-	 * @throws Exception
 	 */
-	public static void addReaction(IMessage m, String reaction) throws Exception
+	public static boolean addReaction(Message m, String reaction)
 	{
 		try
 		{
-			m.addReaction(EmojiManager.getForAlias(":" + reaction + ":"));
-			Thread.sleep(250);
+			m.addReaction(ReactionEmoji.unicode(reaction)).block();
+			return true;
 		}
-		catch (MissingPermissionsException e)
+		catch (ClientException e)
 		{
-			if (e.getMissingPermissions().contains(Permissions.ADD_REACTIONS))
+			if (e.getStatus().code() == 403)
 			{
-				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+				msg(m.getChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 			}
 			else
 			{
-				Logger.log.error(e);
+				Logger.log.error("", e);
 			}
+
+			return false;
 		}
 	}
 
@@ -410,28 +401,13 @@ public class Util
 	 *
 	 * @param m         The message to add the emojis to
 	 * @param reactions An ArrayList<String> that contains a list of reactions that should be added to a given IMessage
-	 * @throws Exception
 	 */
-	public static void addReactions(IMessage m, ArrayList<String> reactions) throws Exception
+	public static void addReactions(Message m, ArrayList<String> reactions)
 	{
-		try
+		for (String reaction : reactions)
 		{
-			for (String reaction : reactions)
-			{
-				m.addReaction(EmojiManager.getForAlias(":" + reaction + ":"));
-				Thread.sleep(250);
-			}
-		}
-		catch (MissingPermissionsException e)
-		{
-			if (e.getMissingPermissions().contains(Permissions.ADD_REACTIONS))
-			{
-				msg(m.getChannel(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking the **ADD_REACTIONS** permission." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
-			}
-			else
-			{
-				Logger.log.error(e);
-			}
+			if (!addReaction(m, reaction))
+				break;
 		}
 	}
 
@@ -441,32 +417,30 @@ public class Util
 	 * @param m           The message to add the emojis to
 	 * @param cancellable Whether an x emoji should be added at the end or not
 	 * @param i           The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
-	 * @throws Exception
 	 */
-	public static void addNumberedReactions(IMessage m, boolean cancellable, int i) throws Exception
+	public static void addNumberedReactions(Message m, boolean cancellable, int i)
 	{
 		ArrayList<String> finalReactions = new ArrayList<>();
 		String[] reactions = {
-				"one",
-				"two",
-				"three",
-				"four",
-				"five",
-				"six",
-				"seven",
-				"eight",
-				"nine"
+				"\u0031\u20E3",
+				"\u0032\u20E3",
+				"\u0033\u20E3",
+				"\u0034\u20E3",
+				"\u0035\u20E3",
+				"\u0036\u20E3",
+				"\u0037\u20E3",
+				"\u0038\u20E3",
+				"\u0039\u20E3"
 		};
 
 		for (int j = 0; j < i; j++)
 		{
 			finalReactions.add(reactions[j]);
-			Thread.sleep(250);
 		}
 
 		if (cancellable)
 		{
-			finalReactions.add("x");
+			finalReactions.add("\u274C");
 		}
 
 		addReactions(m, finalReactions);
@@ -487,13 +461,13 @@ public class Util
 	/**
 	 * Checks whether the bot is enabled for both a specified guild and globally
 	 *
-	 * @param guild The guild for which to check if the bot is enabled
+	 * @param guild The Guild for which to check if the bot is enabled
 	 * @return true if the bot is enabled for the guild and globally, false otherwise
 	 */
-	public static boolean isEnabled(IGuild guild) throws Exception
+	public static boolean isEnabled(Guild guild) throws Exception
 	{
 		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
-		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json")));
+		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getId().asString() + ".json")));
 
 		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
 	}
@@ -506,11 +480,11 @@ public class Util
 	 * @param pageNumber      Which page the method should build and send to the provided IChannel
 	 * @param numberedEntries Whether the entries in a list should be prefixed with their corresponding number in the list or not
 	 * @param codeBlock       Whether to surround the entries in a code block or not
-	 * @param channel         The IChannel that the page message should be sent to
-	 * @param user            The IUser that triggered the command's execution in the first place
-	 * @return The IMessage object for the sent page message if an exception isn't thrown, null otherwise
+	 * @param channel         The MessageChannel that the page message should be sent to
+	 * @param user            The User that triggered the command's execution in the first place
+	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
 	 */
-	public static IMessage buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, IChannel channel, IUser user)
+	public static Message buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, MessageChannel channel, User user)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
@@ -550,7 +524,7 @@ public class Util
 				list.append("```");
 			}
 
-			IMessage m;
+			Message m;
 
 			if (pageNumber == 1 && (int) Math.ceil((float) entries.size() / (float) pageSize) == 1)
 			{
@@ -565,16 +539,12 @@ public class Util
 			{
 				if (pageNumber != 1)
 				{
-					m.addReaction(EmojiManager.getForAlias(":arrow_backward:"));
-					Thread.sleep(250);
+					addReaction(m, "◀");
 				}
-
-				Thread.sleep(250);
 
 				if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
 				{
-					m.addReaction(EmojiManager.getForAlias(":arrow_forward:"));
-					Thread.sleep(250);
+					addReaction(m, "▶");
 				}
 			}
 			catch (Exception e)

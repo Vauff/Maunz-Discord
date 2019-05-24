@@ -2,24 +2,27 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.spec.EmbedCreateSpec;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.net.URL;
+import java.util.function.Consumer;
 
-public class Steam extends AbstractCommand<MessageReceivedEvent>
+public class Steam extends AbstractCommand<MessageCreateEvent>
 {
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().split(" ");
+		String[] args = event.getMessage().getContent().get().split(" ");
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a Steam ID! **Usage: *steam <steamid>**");
+			Util.msg(channel, author, "You need to provide a Steam ID! **Usage: *steam <steamid>**");
 		}
 		else
 		{
@@ -31,7 +34,7 @@ public class Steam extends AbstractCommand<MessageReceivedEvent>
 
 				if (siteText.contains("Player Not Found :( or hasn't set public profile Supported inputs"))
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "Couldn't find a Steam profile with that given ID!");
+					Util.msg(channel, author, "Couldn't find a Steam profile with that given ID!");
 				}
 				else
 				{
@@ -95,12 +98,39 @@ public class Steam extends AbstractCommand<MessageReceivedEvent>
 						bans = bans.substring(0, bans.length() - 2);
 					}
 
-					Util.msg(event.getChannel(), event.getAuthor(), new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(avatarURL), true)).withThumbnail(avatarURL).withFooterIcon("https://i.imgur.com/GuXJIeX.png").withTitle(nickname).withUrl(link).withFooterText("Powered by steamid.xyz").appendField("Name", nickname, true).appendField("Real Name", realName, true).appendField("Country", country, true).appendField("Account Created", creationDate, true).appendField("Last Logoff", lastLogoff, true).appendField("Status", status, true).appendField("Profile Visibility", visibility, true).appendField("Bans", bans, true).appendField("Steam ID", steamID, true).appendField("Steam ID3", steamID3, true).appendField("Steam32 ID", steam32ID, true).appendField("Steam64 ID", steam64ID, true).build());
+					URL constructedURL = new URL(avatarURL);
+					final String finalRealName = realName;
+					final String finalCountry = country;
+					final String finalCreationDate = creationDate;
+					final String finalStatus = status;
+					final String finalBans = bans;
+
+					Consumer<EmbedCreateSpec> embed = spec -> {
+						spec.setColor(Util.averageColorFromURL(constructedURL, true));
+						spec.setThumbnail(avatarURL);
+						spec.setFooter("Powered by steamid.xyz", "https://i.imgur.com/GuXJIeX.png");
+						spec.setTitle(nickname);
+						spec.setUrl(link);
+						spec.addField("Name", nickname, true);
+						spec.addField("Real Name", finalRealName, true);
+						spec.addField("Country", finalCountry, true);
+						spec.addField("Account Created", finalCreationDate, true);
+						spec.addField("Last Logoff", lastLogoff, true);
+						spec.addField("Status", finalStatus, true);
+						spec.addField("Profile Visibility", visibility, true);
+						spec.addField("Bans", finalBans, true);
+						spec.addField("Steam ID", steamID, true);
+						spec.addField("Steam ID3", steamID3, true);
+						spec.addField("Steam32 ID", steam32ID, true);
+						spec.addField("Steam64 ID", steam64ID, true);
+					};
+
+					Util.msg(channel, author, embed);
 				}
 			}
 			catch (HttpStatusException e)
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "Couldn't find a Steam profile with that given ID!");
+				Util.msg(channel, author, "Couldn't find a Steam profile with that given ID!");
 			}
 		}
 	}

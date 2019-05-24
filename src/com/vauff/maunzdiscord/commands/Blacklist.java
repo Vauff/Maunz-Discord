@@ -4,35 +4,40 @@ import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Blacklist extends AbstractCommand<MessageReceivedEvent>
+public class Blacklist extends AbstractCommand<MessageCreateEvent>
 {
 	private static HashMap<String, Integer> listPages = new HashMap<>();
 	private static HashMap<String, String> listMessages = new HashMap<>();
 
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().split(" ");
+		String[] args = event.getMessage().getContent().get().split(" ");
 
-		if (!event.getChannel().isPrivate())
+		if (!(channel instanceof PrivateChannel))
 		{
-			if (Util.hasPermission(event.getAuthor(), event.getGuild()))
+			if (Util.hasPermission(author, event.getGuild().block()))
 			{
 				if (args.length != 1)
 				{
-					File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
+					File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
 					JSONObject json = new JSONObject(Util.getFileContents(file));
 
 					if (args[1].equalsIgnoreCase("list"))
@@ -57,16 +62,16 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 								for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
 								{
 									String entry = json.getJSONArray("blacklist").getString(i);
-									String channel;
+									String channelSelector;
 									String command = "\\*" + entry.split(":")[1];
 
 									if (entry.split(":")[0].equalsIgnoreCase("all"))
 									{
-										channel = "All Channels";
+										channelSelector = "All Channels";
 									}
 									else
 									{
-										channel = Main.client.getChannelByID(Long.parseLong(entry.split(":")[0])).mention();
+										channelSelector = Main.client.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
 									}
 
 									if (entry.split(":")[1].equalsIgnoreCase("all"))
@@ -74,23 +79,23 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 										command = "All Commands";
 									}
 
-									blacklistArray.add(channel + " **|** " + command);
+									blacklistArray.add(channelSelector + " **|** " + command);
 								}
 
-								IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, page, false, false, event.getChannel(), event.getAuthor());
+								Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, page, false, false, channel, author);
 
-								listMessages.put(event.getAuthor().getStringID(), m.getStringID());
-								waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-								listPages.put(event.getAuthor().getStringID(), page);
+								listMessages.put(author.getId().asString(), m.getId().asString());
+								waitForReaction(m.getId().asString(), author.getId().asString());
+								listPages.put(author.getId().asString(), page);
 							}
 							else
 							{
-								Util.msg(event.getChannel(), event.getAuthor(), "Page numbers need to be numerical!");
+								Util.msg(channel, author, "Page numbers need to be numerical!");
 							}
 						}
 						else
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel] \\<all/command>** to add one");
+							Util.msg(channel, author, "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel] \\<all/command>** to add one");
 						}
 					}
 
@@ -105,7 +110,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							for (AbstractCommand<MessageReceivedEvent> cmd : MainListener.commands)
+							for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
 							{
 								for (String s : cmd.getAliases())
 								{
@@ -126,17 +131,17 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 							{
 								String entry = json.getJSONArray("blacklist").getString(i);
 
-								if (entry.equals(event.getChannel().getStringID() + ":" + input))
+								if (entry.equals(channel.getId().asString() + ":" + input))
 								{
 									blacklisted = true;
 
 									if (input.equalsIgnoreCase("all"))
 									{
-										Util.msg(event.getChannel(), event.getAuthor(), "Removing all commands from this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
+										Util.msg(channel, author, "Removing all commands from this guilds blacklist for <#" + channel.getId().asString() + ">!");
 									}
 									else
 									{
-										Util.msg(event.getChannel(), event.getAuthor(), "Removing the ***" + input + "** command from this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
+										Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
 									}
 
 									json.getJSONArray("blacklist").remove(i);
@@ -149,20 +154,20 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 							{
 								if (input.equalsIgnoreCase("all"))
 								{
-									Util.msg(event.getChannel(), event.getAuthor(), "Adding all commands to this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
+									Util.msg(channel, author, "Adding all commands to this guilds blacklist for <#" + channel.getId().asString() + ">!");
 								}
 								else
 								{
-									Util.msg(event.getChannel(), event.getAuthor(), "Adding the ***" + input + "** command to this guilds blacklist for <#" + event.getChannel().getStringID() + ">!");
+									Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
 								}
 
-								json.getJSONArray("blacklist").put(event.getChannel().getStringID() + ":" + input);
+								json.getJSONArray("blacklist").put(channel.getId().asString() + ":" + input);
 								FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 							}
 						}
 						else
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "The command **" + args[1] + "** doesn't exist!");
+							Util.msg(channel, author, "The command **" + args[1] + "** doesn't exist!");
 						}
 					}
 					else
@@ -173,16 +178,15 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 						{
 							if (args[1].startsWith("<#"))
 							{
-								IChannel channel = Main.client.getChannelByID(Long.parseLong(args[1].replaceAll("[^\\d.]", "")));
+								Channel refChannel = Main.client.getChannelById(Snowflake.of(args[1].replaceAll("[^\\d.]", ""))).block();
 
-								if (channel.getGuild().equals(event.getGuild()))
+								if (((GuildChannel) refChannel).getGuild().block().equals(event.getGuild().block()))
 								{
 									location = args[1].replaceAll("[^\\d]", "");
-									;
 								}
 								else
 								{
-									Util.msg(event.getChannel(), event.getAuthor(), "That channel is in another guild!");
+									Util.msg(channel, author, "That channel is in another guild!"); //test this works
 								}
 							}
 						}
@@ -202,7 +206,7 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								for (AbstractCommand<MessageReceivedEvent> cmd : MainListener.commands)
+								for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
 								{
 									for (String s : cmd.getAliases())
 									{
@@ -231,22 +235,22 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 										{
 											if (location.equalsIgnoreCase("all"))
 											{
-												Util.msg(event.getChannel(), event.getAuthor(), "Removing all commands from this guilds blacklist for all channels!");
+												Util.msg(channel, author, "Removing all commands from this guilds blacklist for all channels!");
 											}
 											else
 											{
-												Util.msg(event.getChannel(), event.getAuthor(), "Removing all commands from this guilds blacklist for <#" + location + ">!");
+												Util.msg(channel, author, "Removing all commands from this guilds blacklist for <#" + location + ">!");
 											}
 										}
 										else
 										{
 											if (location.equalsIgnoreCase("all"))
 											{
-												Util.msg(event.getChannel(), event.getAuthor(), "Removing the ***" + input + "** command from this guilds blacklist for all channels!");
+												Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for all channels!");
 											}
 											else
 											{
-												Util.msg(event.getChannel(), event.getAuthor(), "Removing the ***" + input + "** command from this guilds blacklist for <#" + location + ">!");
+												Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + location + ">!");
 											}
 										}
 
@@ -262,22 +266,22 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 									{
 										if (location.equalsIgnoreCase("all"))
 										{
-											Util.msg(event.getChannel(), event.getAuthor(), "Adding all commands to this guilds blacklist for all channels!");
+											Util.msg(channel, author, "Adding all commands to this guilds blacklist for all channels!");
 										}
 										else
 										{
-											Util.msg(event.getChannel(), event.getAuthor(), "Adding all commands to this guilds blacklist for <#" + location + ">!");
+											Util.msg(channel, author, "Adding all commands to this guilds blacklist for <#" + location + ">!");
 										}
 									}
 									else
 									{
 										if (location.equalsIgnoreCase("all"))
 										{
-											Util.msg(event.getChannel(), event.getAuthor(), "Adding the ***" + input + "** command to this guilds blacklist for all channels!");
+											Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for all channels!");
 										}
 										else
 										{
-											Util.msg(event.getChannel(), event.getAuthor(), "Adding the ***" + input + "** command to this guilds blacklist for <#" + location + ">!");
+											Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + location + ">!");
 										}
 									}
 
@@ -287,28 +291,28 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								Util.msg(event.getChannel(), event.getAuthor(), "The command **" + args[2] + "** doesn't exist!");
+								Util.msg(channel, author, "The command **" + args[2] + "** doesn't exist!");
 							}
 						}
 						else
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "The channel **" + args[1] + "** doesn't exist!");
+							Util.msg(channel, author, "The channel **" + args[1] + "** doesn't exist!");
 						}
 					}
 				}
 				else
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "You need to specify arguments! See **\\*help blacklist**");
+					Util.msg(channel, author, "You need to specify arguments! See **\\*help blacklist**");
 				}
 			}
 			else
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
+				Util.msg(channel, author, "You do not have permission to use that command");
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "This command can't be done in a PM, only in a guild in which you have the administrator permission in");
+			Util.msg(channel, author, "This command can't be done in a PM, only in a guild in which you have the administrator permission in");
 		}
 	}
 
@@ -319,82 +323,79 @@ public class Blacklist extends AbstractCommand<MessageReceivedEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event) throws Exception
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (listMessages.containsKey(event.getUser().getStringID()))
+		if (listMessages.containsKey(event.getUser().block().getId().asString()) && message.getId().asString().equals(listMessages.get(event.getUser().block().getId().asString())))
 		{
-			if (event.getMessage().getStringID().equals(listMessages.get(event.getUser().getStringID())))
+			File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
+			JSONObject json = new JSONObject(Util.getFileContents(file));
+
+			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
 			{
-				File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
-				JSONObject json = new JSONObject(Util.getFileContents(file));
+				ArrayList<String> blacklistArray = new ArrayList<>();
 
-				if (event.getReaction().getEmoji().toString().equals("▶"))
+				for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
 				{
-					ArrayList<String> blacklistArray = new ArrayList<>();
+					String entry = json.getJSONArray("blacklist").getString(i);
+					String channel;
+					String command = "\\*" + entry.split(":")[1];
 
-					for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+					if (entry.split(":")[0].equalsIgnoreCase("all"))
 					{
-						String entry = json.getJSONArray("blacklist").getString(i);
-						String channel;
-						String command = "\\*" + entry.split(":")[1];
-
-						if (entry.split(":")[0].equalsIgnoreCase("all"))
-						{
-							channel = "All Channels";
-						}
-						else
-						{
-							channel = Main.client.getChannelByID(Long.parseLong(entry.split(":")[0])).mention();
-						}
-
-						if (entry.split(":")[1].equalsIgnoreCase("all"))
-						{
-							command = "All Commands";
-						}
-
-						blacklistArray.add(channel + " **|** " + command);
+						channel = "All Channels";
+					}
+					else
+					{
+						channel = Main.client.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
 					}
 
-					IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
-
-					listMessages.put(event.getUser().getStringID(), m.getStringID());
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) + 1);
-				}
-
-				else if (event.getReaction().getEmoji().toString().equals("◀"))
-				{
-					ArrayList<String> blacklistArray = new ArrayList<>();
-
-					for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+					if (entry.split(":")[1].equalsIgnoreCase("all"))
 					{
-						String entry = json.getJSONArray("blacklist").getString(i);
-						String channel;
-						String command = "\\*" + entry.split(":")[1];
-
-						if (entry.split(":")[0].equalsIgnoreCase("all"))
-						{
-							channel = "All Channels";
-						}
-						else
-						{
-							channel = Main.client.getChannelByID(Long.parseLong(entry.split(":")[0])).mention();
-						}
-
-						if (entry.split(":")[1].equalsIgnoreCase("all"))
-						{
-							command = "All Commands";
-						}
-
-						blacklistArray.add(channel + " **|** " + command);
+						command = "All Commands";
 					}
 
-					IMessage m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());
-
-					listMessages.put(event.getUser().getStringID(), m.getStringID());
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) - 1);
+					blacklistArray.add(channel + " **|** " + command);
 				}
+
+				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId().asString()) + 1, false, false, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId().asString(), m.getId().asString());
+				waitForReaction(m.getId().asString(), event.getUser().block().getId().asString());
+				listPages.put(event.getUser().block().getId().asString(), listPages.get(event.getUser().block().getId().asString()) + 1);
+			}
+
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+			{
+				ArrayList<String> blacklistArray = new ArrayList<>();
+
+				for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+				{
+					String entry = json.getJSONArray("blacklist").getString(i);
+					String channel;
+					String command = "\\*" + entry.split(":")[1];
+
+					if (entry.split(":")[0].equalsIgnoreCase("all"))
+					{
+						channel = "All Channels";
+					}
+					else
+					{
+						channel = Main.client.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
+					}
+
+					if (entry.split(":")[1].equalsIgnoreCase("all"))
+					{
+						command = "All Commands";
+					}
+
+					blacklistArray.add(channel + " **|** " + command);
+				}
+
+				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId().asString()) - 1, false, false, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId().asString(), m.getId().asString());
+				waitForReaction(m.getId().asString(), event.getUser().block().getId().asString());
+				listPages.put(event.getUser().block().getId().asString(), listPages.get(event.getUser().block().getId().asString()) - 1);
 			}
 		}
 	}

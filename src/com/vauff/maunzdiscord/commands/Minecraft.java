@@ -2,24 +2,27 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.spec.EmbedCreateSpec;
 import org.apache.commons.lang3.StringUtils;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.function.Consumer;
 
-public class Minecraft extends AbstractCommand<MessageReceivedEvent>
+public class Minecraft extends AbstractCommand<MessageCreateEvent>
 {
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().split(" ");
+		String[] args = event.getMessage().getContent().get().split(" ");
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a username! **Usage: *minecraft <uuid/username>**");
+			Util.msg(channel, author, "You need to provide a username! **Usage: *minecraft <uuid/username>**");
 		}
 		else
 		{
@@ -42,23 +45,23 @@ public class Minecraft extends AbstractCommand<MessageReceivedEvent>
 
 			if (username.contains("#") || username.contains("&"))
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
+				Util.msg(channel, author, "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
 			}
 			else
 			{
 				if (statusRaw.equalsIgnoreCase("unknown username"))
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "The Minecraft account name **" + username + "** is free and does not belong to any account!");
+					Util.msg(channel, author, "The Minecraft account name **" + username + "** is free and does not belong to any account!");
 				}
 
 				else if (statusRaw.equalsIgnoreCase("Username must be 16 characters or less."))
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "The Minecraft account name **" + username + "** must be 16 characters or less.");
+					Util.msg(channel, author, "The Minecraft account name **" + username + "** must be 16 characters or less.");
 				}
 
 				else if (statusRaw.equalsIgnoreCase("Username must be alphanumerical (or contain '_')."))
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
+					Util.msg(channel, author, "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
 				}
 
 				else if (statusRaw.contains(","))
@@ -71,7 +74,22 @@ public class Minecraft extends AbstractCommand<MessageReceivedEvent>
 					uuid = new StringBuilder(uuid).insert(uuid.length() - 12, "-").toString();
 
 					String headURL = "https://cravatar.eu/helmavatar/" + status[1] + "/120";
-					Util.msg(event.getChannel(), event.getAuthor(), new EmbedBuilder().withColor(Util.averageColorFromURL(new URL(headURL), true)).withThumbnail(headURL).withFooterIcon("https://i.imgur.com/4o6K42Z.png").appendField("Name", status[1], true).withFooterText("Powered by axis.iaero.me").appendField("Account Status", "Premium", true).appendField("Migrated", StringUtils.capitalize(status[2]), true).appendField("UUID", uuid, true).appendField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true).appendField("Raw Skin", "https://minotar.net/skin/" + status[1], true).build());
+					URL constructedURL = new URL(headURL);
+					final String finalUuid = uuid;
+
+					Consumer<EmbedCreateSpec> embed = spec -> {
+						spec.setColor(Util.averageColorFromURL(constructedURL, true));
+						spec.setThumbnail(headURL);
+						spec.setFooter("Powered by axis.iaero.me", "https://i.imgur.com/4o6K42Z.png");
+						spec.addField("Name", status[1], true);
+						spec.addField("Account Status", "Premium", true);
+						spec.addField("Migrated", StringUtils.capitalize(status[2]), true);
+						spec.addField("UUID", finalUuid, true);
+						spec.addField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true);
+						spec.addField("Raw Skin", "https://minotar.net/skin/" + status[1], true);
+					};
+
+					Util.msg(channel, author, embed);
 				}
 			}
 		}

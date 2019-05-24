@@ -3,22 +3,24 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
 
-public class Stop extends AbstractCommand<MessageReceivedEvent>
+public class Stop extends AbstractCommand<MessageCreateEvent>
 {
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (Util.hasPermission(event.getAuthor()))
+		if (Util.hasPermission(author))
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "Maunz is stopping...");
+			Util.msg(channel, author, "Maunz is stopping...");
 			Logger.log.info("Maunz is stopping...");
 			System.exit(0);
 		}
 		else
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
+			Util.msg(channel, author, "You do not have permission to use that command");
 		}
 	}
 

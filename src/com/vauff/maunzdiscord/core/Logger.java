@@ -1,144 +1,146 @@
 package com.vauff.maunzdiscord.core;
 
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
-import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEditEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageSendEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionRemoveEvent;
-import sx.blah.discord.handle.obj.IEmbed;
-import sx.blah.discord.handle.obj.IMessage;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.guild.GuildDeleteEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageDeleteEvent;
+import discord4j.core.event.domain.message.MessageUpdateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.event.domain.message.ReactionRemoveEvent;
+import discord4j.core.object.Embed;
+import discord4j.core.object.entity.Attachment;
+import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.PrivateChannel;
 
 public class Logger
 {
 	public static org.apache.logging.log4j.Logger log;
 
-	@EventSubscriber
-	public void onMessageReceived(MessageEvent event)
+	public static void onMessageCreate(MessageCreateEvent event)
 	{
-		if (event.getClass().equals(MessageReceivedEvent.class) || event.getClass().equals(MessageSendEvent.class))
+		if (event.getMessage().getAuthor().isPresent())
 		{
-			String authorName = event.getAuthor().getName();
-			String authorId = event.getAuthor().getStringID();
-			String channelName = event.getChannel().getName();
-			String channelId = event.getChannel().getStringID();
-			String messageID = event.getMessage().getStringID();
+			String userName = event.getMessage().getAuthor().get().getUsername();
+			String userId = event.getMessage().getAuthor().get().getId().asString();
+			String channelId = event.getMessage().getChannelId().asString();
+			String messageID = event.getMessage().getId().asString();
 			String msg;
 
-			if (!event.getChannel().isPrivate())
+			if (!(event.getMessage().getChannel().block() instanceof PrivateChannel))
 			{
-				String guildName = event.getGuild().getName();
-				String guildId = event.getGuild().getStringID();
+				String channelName = ((GuildChannel) event.getMessage().getChannel().block()).getName();
+				String guildName = event.getGuild().block().getName();
+				String guildId = event.getGuild().block().getId().asString();
 
-				msg = messageID + " | " + authorName + " (" + authorId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") |";
+				msg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | ";
 			}
 			else
 			{
-				String recipientName = event.getChannel().getUsersHere().get(0).getName();
-				String recipientId = event.getChannel().getUsersHere().get(0).getStringID();
+				PrivateChannel channel = (PrivateChannel) event.getMessage().getChannel().block();
+				String recipientName = channel.getRecipients().next().block().getUsername();
+				String recipientId = channel.getRecipients().next().block().getId().asString();
 
-				if (recipientId.equals(authorId))
+				if (recipientId.equals(userId))
 				{
-					msg = messageID + " | " + authorName + " (" + authorId + ") | PM (" + channelId + ") |";
+					msg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") | ";
 				}
 				else
 				{
-					msg = messageID + " | " + authorName + " (" + authorId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") |";
+					msg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") | ";
 				}
 			}
 
-			if (!event.getMessage().getContent().equals(""))
+			if (event.getMessage().getContent().isPresent())
 			{
-				msg += " " + event.getMessage().getContent();
+				msg += event.getMessage().getContent().get();
 			}
 
-			for (IMessage.Attachment attachment : event.getMessage().getAttachments())
+			for (Attachment attachment : event.getMessage().getAttachments())
 			{
-				msg += " [Attachment " + attachment.getUrl() + "]";
+				msg += "[Attachment " + attachment.getUrl() + "]";
 			}
-			for (IEmbed embed : event.getMessage().getEmbeds())
+			for (Embed embed : event.getMessage().getEmbeds())
 			{
-				msg += " [Embed]";
+				msg += "[Embed]";
 			}
 
 			Logger.log.debug(msg);
 		}
 	}
 
-	@EventSubscriber
-	public void onMessageEdit(MessageEditEvent event)
+	public static void onMessageUpdate(MessageUpdateEvent event)
 	{
-		String userName = event.getAuthor().getName();
-		String userId = event.getAuthor().getStringID();
-		String messageID = event.getMessage().getStringID();
-		String message = event.getMessage().getContent();
-
-		Logger.log.debug(userName + " (" + userId + ") edited the message ID " + messageID + " to \"" + message + "\"");
-	}
-
-	@EventSubscriber
-	public void onMessageDelete(MessageDeleteEvent event)
-	{
-		String userName = event.getAuthor().getName();
-		String userId = event.getAuthor().getStringID();
-		String messageID = event.getMessage().getStringID();
-
-		Logger.log.debug(userName + " (" + userId + ") deleted the message ID " + messageID);
-	}
-
-	@EventSubscriber
-	public void onReactionAdd(ReactionAddEvent event)
-	{
-		String userName = event.getUser().getName();
-		String userId = event.getUser().getStringID();
-		String messageID = event.getMessage().getStringID();
-		String reaction;
-
-		if (event.getReaction().getEmoji().isUnicode())
+		if (event.getMessage().block().getAuthor().isPresent() && event.getMessage().block().getContent().isPresent())
 		{
-			reaction = event.getReaction().getEmoji().getName();
+			String userName = event.getMessage().block().getAuthor().get().getUsername();
+			String userId = event.getMessage().block().getAuthor().get().getId().asString();
+			String messageID = event.getMessage().block().getId().asString();
+			String message = event.getMessage().block().getContent().get();
+
+			Logger.log.debug(userName + " (" + userId + ") edited the message ID " + messageID + " to \"" + message + "\"");
 		}
-		else
+	}
+
+	public static void onMessageDelete(MessageDeleteEvent event)
+	{
+		if (event.getMessage().isPresent() && event.getMessage().get().getAuthor().isPresent())
 		{
-			reaction = ":" + event.getReaction().getEmoji().getName() + ":";
+			String userName = event.getMessage().get().getAuthor().get().getUsername();
+			String userId = event.getMessage().get().getAuthor().get().getId().asString();
+			String messageID = event.getMessage().get().getId().asString();
+
+			Logger.log.debug(userName + " (" + userId + ") deleted the message ID " + messageID);
+		}
+	}
+
+	public static void onReactionAdd(ReactionAddEvent event)
+	{
+		String userName = event.getUser().block().getUsername();
+		String userId = event.getUser().block().getId().asString();
+		String messageID = event.getMessage().block().getId().asString();
+		String reaction = "null";
+
+		if (event.getEmoji().asUnicodeEmoji().isPresent())
+		{
+			reaction = event.getEmoji().asUnicodeEmoji().get().getRaw();
+		}
+		else if (event.getEmoji().asCustomEmoji().isPresent())
+		{
+			reaction = ":" + event.getEmoji().asCustomEmoji().get().getName() + ":";
 		}
 
 		Logger.log.debug(userName + " (" + userId + ") added the reaction " + reaction + " to the message ID " + messageID);
 	}
 
-	@EventSubscriber
-	public void onReactionRemove(ReactionRemoveEvent event)
+	public static void onReactionRemove(ReactionRemoveEvent event)
 	{
-		String userName = event.getUser().getName();
-		String userId = event.getUser().getStringID();
-		String messageID = event.getMessage().getStringID();
-		String reaction;
+		String userName = event.getUser().block().getUsername();
+		String userId = event.getUser().block().getId().asString();
+		String messageID = event.getMessage().block().getId().asString();
+		String reaction = "null";
 
-		if (event.getReaction().getEmoji().isUnicode())
+		if (event.getEmoji().asUnicodeEmoji().isPresent())
 		{
-			reaction = event.getReaction().getEmoji().getName();
+			reaction = event.getEmoji().asUnicodeEmoji().get().getRaw();
 		}
-		else
+		else if (event.getEmoji().asCustomEmoji().isPresent())
 		{
-			reaction = ":" + event.getReaction().getEmoji().getName() + ":";
+			reaction = ":" + event.getEmoji().asCustomEmoji().get().getName() + ":";
 		}
 
 		Logger.log.debug(userName + " (" + userId + ") removed the reaction " + reaction + " from the message ID " + messageID);
 	}
 
-	@EventSubscriber
-	public void onGuildCreate(GuildCreateEvent event)
+	public static void onGuildCreate(GuildCreateEvent event)
 	{
-		Logger.log.debug("Joined guild " + event.getGuild().getName() + " (" + event.getGuild().getStringID() + ")");
+		Logger.log.debug("Joined guild " + event.getGuild().getName() + " (" + event.getGuild().getId().asString() + ")");
 	}
 
-	@EventSubscriber
-	public void onGuildLeave(GuildLeaveEvent event)
+	public static void onGuildDelete(GuildDeleteEvent event)
 	{
-		Logger.log.debug("Left guild " + event.getGuild().getName() + " (" + event.getGuild().getStringID() + ")");
+		if (!event.isUnavailable())
+		{
+			Logger.log.debug("Left guild " + event.getGuild().get().getName() + " (" + event.getGuildId().asString() + ")");
+		}
 	}
 }

@@ -4,20 +4,35 @@ import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.ReadyEventListener;
 import com.vauff.maunzdiscord.core.Util;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.spec.EmbedCreateSpec;
 
 import java.awt.Color;
 import java.net.JarURLConnection;
+import java.util.function.Consumer;
 
-public class About extends AbstractCommand<MessageReceivedEvent>
+public class About extends AbstractCommand<MessageCreateEvent>
 {
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		EmbedObject embed = new EmbedBuilder().withColor(new Color(141, 99, 68)).withThumbnail("https://i.imgur.com/Fzw48O4.jpg").withTitle("Maunz").withUrl("https://github.com/Vauff/Maunz-Discord").withDesc("Maunz is a Discord bot created by Vauff written in Java using the Discord4J library").appendField("Version", Main.version, true).appendField("Java Version", System.getProperty("java.version"), true).appendField("Uptime", getUptime(), true).appendField("Build Date", getBuildDate(), true).build();
-		Util.msg(event.getChannel(), event.getAuthor(), embed);
+		String buildDate = getBuildDate();
+
+		Consumer<EmbedCreateSpec> embed = spec -> {
+			spec.setColor(new Color(141, 99, 68));
+			spec.setThumbnail("https://i.imgur.com/Fzw48O4.jpg");
+			spec.setTitle("Maunz");
+			spec.setUrl("https://github.com/Vauff/Maunz-Discord");
+			spec.setDescription("Maunz is a Discord bot created by Vauff written in Java using the Discord4J library");
+			spec.addField("Version", Main.version, true);
+			spec.addField("Java Version", System.getProperty("java.version"), true);
+			spec.addField("Uptime", getUptime(), true);
+			spec.addField("Build Date", buildDate, true);
+		};
+
+		Util.msg(channel, author, embed);
 	}
 
 	/**

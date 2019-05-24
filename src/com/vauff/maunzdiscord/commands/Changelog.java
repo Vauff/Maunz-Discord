@@ -3,27 +3,29 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Changelog extends AbstractCommand<MessageReceivedEvent>
+public class Changelog extends AbstractCommand<MessageCreateEvent>
 {
 	private static HashMap<String, Integer> listPages = new HashMap<>();
 	private static HashMap<String, String> listMessages = new HashMap<>();
 	private static HashMap<String, String> listVersions = new HashMap<>();
 
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().split(" ");
-		Document doc = null;
+		String[] args = event.getMessage().getContent().get().split(" ");
+		Document doc;
 		ArrayList<String> changelog = new ArrayList<>();
 		String link;
 		String title;
@@ -54,7 +56,7 @@ public class Changelog extends AbstractCommand<MessageReceivedEvent>
 		}
 		catch (HttpStatusException e)
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "That version of Maunz doesn't exist!");
+			Util.msg(channel, author, "That version of Maunz doesn't exist!");
 			return;
 		}
 
@@ -69,32 +71,32 @@ public class Changelog extends AbstractCommand<MessageReceivedEvent>
 			}
 		}
 
-		Util.msg(event.getChannel(), event.getAuthor(), "GitHub link: " + "<" + link + ">");
+		Util.msg(channel, author, "GitHub link: " + "<" + link + ">");
 
-		IMessage m = Util.buildPage(changelog, title, 10, 1, false, true, event.getChannel(), event.getAuthor());
+		Message m = Util.buildPage(changelog, title, 10, 1, false, true, channel, author);
 
-		listMessages.put(event.getAuthor().getStringID(), m.getStringID());
-		listVersions.put(event.getAuthor().getStringID(), version);
-		waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-		listPages.put(event.getAuthor().getStringID(), 1);
+		listMessages.put(author.getId().asString(), m.getId().asString());
+		listVersions.put(author.getId().asString(), version);
+		waitForReaction(m.getId().asString(), author.getId().asString());
+		listPages.put(author.getId().asString(), 1);
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event) throws Exception
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (listMessages.containsKey(event.getUser().getStringID()))
+		if (listMessages.containsKey(event.getUser().block().getId().asString()))
 		{
-			if (event.getMessage().getStringID().equals(listMessages.get(event.getUser().getStringID())))
+			if (message.getId().asString().equals(listMessages.get(event.getUser().block().getId().asString())))
 			{
-				if (event.getReaction().getEmoji().toString().equals("▶"))
+				if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
 				{
 					Document doc = null;
 					ArrayList<String> changelog = new ArrayList<>();
 					String link;
 					String title;
 
-					link = "https://github.com/Vauff/Maunz-Discord/releases/tag/" + listVersions.get(event.getUser().getStringID());
-					title = "Maunz " + listVersions.get(event.getUser().getStringID());
+					link = "https://github.com/Vauff/Maunz-Discord/releases/tag/" + listVersions.get(event.getUser().block().getId().asString());
+					title = "Maunz " + listVersions.get(event.getUser().block().getId().asString());
 
 					try
 					{
@@ -102,7 +104,7 @@ public class Changelog extends AbstractCommand<MessageReceivedEvent>
 					}
 					catch (HttpStatusException e)
 					{
-						Util.msg(event.getChannel(), event.getUser(), "That version of Maunz doesn't exist!");
+						Util.msg(event.getChannel().block(), event.getUser().block(), "That version of Maunz doesn't exist!");
 						return;
 					}
 
@@ -117,22 +119,22 @@ public class Changelog extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					IMessage m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().getStringID()) + 1, false, true, event.getChannel(), event.getUser());
+					Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId().asString()) + 1, false, true, event.getChannel().block(), event.getUser().block());
 
-					listMessages.put(event.getUser().getStringID(), m.getStringID());
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) + 1);
+					listMessages.put(event.getUser().block().getId().asString(), m.getId().asString());
+					waitForReaction(m.getId().asString(), event.getUser().block().getId().asString());
+					listPages.put(event.getUser().block().getId().asString(), listPages.get(event.getUser().block().getId().asString()) + 1);
 				}
 
-				else if (event.getReaction().getEmoji().toString().equals("◀"))
+				else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
 				{
 					Document doc = null;
 					ArrayList<String> changelog = new ArrayList<>();
 					String link;
 					String title;
 
-					link = "https://github.com/Vauff/Maunz-Discord/releases/tag/" + listVersions.get(event.getUser().getStringID());
-					title = "Maunz " + listVersions.get(event.getUser().getStringID());
+					link = "https://github.com/Vauff/Maunz-Discord/releases/tag/" + listVersions.get(event.getUser().block().getId().asString());
+					title = "Maunz " + listVersions.get(event.getUser().block().getId().asString());
 
 					try
 					{
@@ -140,7 +142,7 @@ public class Changelog extends AbstractCommand<MessageReceivedEvent>
 					}
 					catch (HttpStatusException e)
 					{
-						Util.msg(event.getChannel(), event.getUser(), "That version of Maunz doesn't exist!");
+						Util.msg(event.getChannel().block(), event.getUser().block(), "That version of Maunz doesn't exist!");
 						return;
 					}
 
@@ -155,11 +157,11 @@ public class Changelog extends AbstractCommand<MessageReceivedEvent>
 						}
 					}
 
-					IMessage m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().getStringID()) - 1, false, true, event.getChannel(), event.getUser());
+					Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId().asString()) - 1, false, true, event.getChannel().block(), event.getUser().block());
 
-					listMessages.put(event.getUser().getStringID(), m.getStringID());
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) - 1);
+					listMessages.put(event.getUser().block().getId().asString(), m.getId().asString());
+					waitForReaction(m.getId().asString(), event.getUser().block().getId().asString());
+					listPages.put(event.getUser().block().getId().asString(), listPages.get(event.getUser().block().getId().asString()) - 1);
 				}
 			}
 		}

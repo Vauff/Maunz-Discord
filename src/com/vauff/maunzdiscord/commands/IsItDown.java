@@ -2,8 +2,10 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
 import org.jsoup.Jsoup;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,16 +16,16 @@ import java.net.URI;
  * Created by Ramon on 03-Apr-17.
  */
 
-public class IsItDown extends AbstractCommand<MessageReceivedEvent>
+public class IsItDown extends AbstractCommand<MessageCreateEvent>
 {
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().split(" ");
+		String[] args = event.getMessage().getContent().get().split(" ");
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "You need to specify an argument! **Usage: *isitdown <hostname>**");
+			Util.msg(channel, author, "You need to specify an argument! **Usage: *isitdown <hostname>**");
 		}
 		else
 		{
@@ -51,17 +53,17 @@ public class IsItDown extends AbstractCommand<MessageReceivedEvent>
 
 				if (host == null)
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "Please specify a valid hostname or URI.");
+					Util.msg(channel, author, "Please specify a valid hostname or URI.");
 					return;
 				}
 
 				isUp = pingHost(host, port, cleanedUri);
 
-				Util.msg(event.getChannel(), event.getAuthor(), (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
+				Util.msg(channel, author, (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
 			}
 			catch (Exception e)
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "Please specify a valid hostname or URI.");
+				Util.msg(channel, author, "Please specify a valid hostname or URI.");
 			}
 		}
 	}

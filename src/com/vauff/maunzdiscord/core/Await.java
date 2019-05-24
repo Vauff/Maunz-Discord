@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
 
 /**
  * Holds information about a message that needs a reaction/reply to continue further execution
@@ -8,13 +8,13 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 public class Await
 {
 	private String id;
-	private AbstractCommand<? extends MessageReceivedEvent> command;
+	private AbstractCommand<? extends MessageCreateEvent> command;
 
 	/**
 	 * @param anID An ID of a user who triggered the message or a message to be removed later on
 	 * @param cmd  The command with which to continue execution upon adding a reaction
 	 */
-	public Await(String anID, AbstractCommand<? extends MessageReceivedEvent> cmd)
+	public Await(String anID, AbstractCommand<? extends MessageCreateEvent> cmd)
 	{
 		id = anID;
 		command = cmd;
@@ -31,7 +31,7 @@ public class Await
 	/**
 	 * @return The command with which to continue execution upon adding a reaction
 	 */
-	public AbstractCommand<? extends MessageReceivedEvent> getCommand()
+	public AbstractCommand<? extends MessageCreateEvent> getCommand()
 	{
 		return command;
 	}
