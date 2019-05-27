@@ -26,8 +26,7 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		//if (event.getGuild().block().getId().asLong() != 252536814324154368L) // hardcoding is bad mmkay, but this is temporary
-		if (false)
+		if (event.getGuild().block().getId().asLong() != 252536814324154368L) // hardcoding is bad mmkay, but this is temporary
 		{
 			Util.msg(channel, author, "The quote command has been temporarily disabled in most guilds until a rewrite can be completed");
 		}
