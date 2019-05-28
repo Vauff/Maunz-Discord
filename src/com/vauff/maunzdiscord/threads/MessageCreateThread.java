@@ -115,7 +115,7 @@ public class MessageCreateThread implements Runnable
 										Random rnd = new Random();
 										int code = 100000 + rnd.nextInt(900000);
 
-										Util.msg(channel, author, ":exclamation:  |  **Uh oh, an error occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
+										Util.msg(channel, author, ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
 										Logger.log.error(code, e);
 									}
 								}
