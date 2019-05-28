@@ -7,6 +7,7 @@ import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Enable extends AbstractCommand<MessageCreateEvent>
 {
-	private static HashMap<String, String> menuMessages = new HashMap<>();
+	private static HashMap<Snowflake, Snowflake> menuMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
@@ -32,8 +33,8 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 			{
 				Message m = Util.msg(channel, author, "Please select whether you'd like to enable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enable globally" + System.lineSeparator() + "**`[2]`**  |  Enable in guild only");
 
-				waitForReaction(m.getId().asString(), author.getId().asString());
-				menuMessages.put(author.getId().asString(), m.getId().asString());
+				waitForReaction(m.getId(), author.getId());
+				menuMessages.put(author.getId(), m.getId());
 				Util.addNumberedReactions(m, true, 2);
 
 				ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
@@ -73,7 +74,7 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (menuMessages.containsKey(event.getUser().block().getId().asString()))
+		if (menuMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(menuMessages.get(event.getUser().block().getId())))
 		{
 			File botFile = new File(Util.getJarLocation() + "config.json");
 			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");

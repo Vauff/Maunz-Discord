@@ -12,3 +12,4 @@
 /target/classes/data/
 /target/classes/config.json
 /out/
+*.kotlin_module

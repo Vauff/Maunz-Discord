@@ -8,6 +8,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -30,9 +31,9 @@ import java.util.function.Consumer;
 
 public class Map extends AbstractCommand<MessageCreateEvent>
 {
-	private static HashMap<String, List<String>> selectionServers = new HashMap<>();
-	private static HashMap<String, String> selectionMessages = new HashMap<>();
-	private static HashMap<String, String[]> args = new HashMap<>();
+	private static HashMap<Snowflake, List<String>> selectionServers = new HashMap<>();
+	private static HashMap<Snowflake, Snowflake> selectionMessages = new HashMap<>();
+	private static HashMap<Snowflake, String[]> args = new HashMap<>();
 
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
@@ -104,10 +105,10 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 							}
 
 							Message m = Util.msg(channel, author, msg);
-							waitForReaction(m.getId().asString(), author.getId().asString());
-							selectionServers.put(author.getId().asString(), serverList);
-							selectionMessages.put(author.getId().asString(), m.getId().asString());
-							args.put(author.getId().asString(), event.getMessage().getContent().get().split(" "));
+							waitForReaction(m.getId(), author.getId());
+							selectionServers.put(author.getId(), serverList);
+							selectionMessages.put(author.getId(), m.getId());
+							args.put(author.getId(), event.getMessage().getContent().get().split(" "));
 							Util.addNumberedReactions(m, true, serverList.size());
 
 							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
@@ -115,8 +116,8 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 							msgDeleterPool.schedule(() ->
 							{
 								m.delete();
-								selectionServers.remove(author.getId().asString());
-								selectionMessages.remove(author.getId().asString());
+								selectionServers.remove(author.getId());
+								selectionMessages.remove(author.getId());
 								msgDeleterPool.shutdown();
 							}, 120, TimeUnit.SECONDS);
 						}
@@ -172,7 +173,8 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 					final String finalUrl = url;
 					final URL finalConstructedUrl = new URL(url);
 
-					Consumer<EmbedCreateSpec> embed = spec -> {
+					Consumer<EmbedCreateSpec> embed = spec ->
+					{
 						spec.setColor(Util.averageColorFromURL(finalConstructedUrl, true));
 						spec.setTimestamp(Instant.ofEpochMilli(object.getLong("timestamp")));
 						spec.setThumbnail(finalUrl);
@@ -268,7 +270,8 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 				final String finalLastPlayed = lastPlayed;
 				final String finalFirstPlayed = firstPlayed;
 
-				Consumer<EmbedCreateSpec> embed = spec -> {
+				Consumer<EmbedCreateSpec> embed = spec ->
+				{
 					spec.setColor(Util.averageColorFromURL(finalConstructedUrl, true));
 					spec.setThumbnail(finalUrl);
 					spec.setDescription("**" + finalFormattedMap + "**");
@@ -352,7 +355,8 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 					final String finalLastPlayed = lastPlayed;
 					final String finalFirstPlayed = firstPlayed;
 
-					Consumer<EmbedCreateSpec> embed = spec -> {
+					Consumer<EmbedCreateSpec> embed = spec ->
+					{
 						spec.setColor(Util.averageColorFromURL(finalConstructedUrl, true));
 						spec.setThumbnail(finalUrl);
 						spec.setDescription("**" + finalFormattedMap + "**");
@@ -373,18 +377,15 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (selectionMessages.containsKey(event.getUser().block().getId().asString()))
+		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
 		{
-			if (message.getId().asString().equals(selectionMessages.get(event.getUser().block().getId().asString())))
-			{
-				int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
+			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
 
-				if (i != -1)
+			if (i != -1)
+			{
+				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
 				{
-					if (selectionServers.get(event.getUser().block().getId().asString()).contains("server" + i))
-					{
-						runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i), args.get(event.getUser().block().getId().asString()), true);
-					}
+					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i), args.get(event.getUser().block().getId()), true);
 				}
 			}
 		}

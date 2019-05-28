@@ -23,8 +23,8 @@ import java.util.HashMap;
 
 public class Blacklist extends AbstractCommand<MessageCreateEvent>
 {
-	private static HashMap<String, Integer> listPages = new HashMap<>();
-	private static HashMap<String, String> listMessages = new HashMap<>();
+	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
@@ -84,9 +84,9 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 
 								Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, page, false, false, channel, author);
 
-								listMessages.put(author.getId().asString(), m.getId().asString());
-								waitForReaction(m.getId().asString(), author.getId().asString());
-								listPages.put(author.getId().asString(), page);
+								listMessages.put(author.getId(), m.getId());
+								waitForReaction(m.getId(), author.getId());
+								listPages.put(author.getId(), page);
 							}
 							else
 							{
@@ -325,7 +325,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (listMessages.containsKey(event.getUser().block().getId().asString()) && message.getId().asString().equals(listMessages.get(event.getUser().block().getId().asString())))
+		if (listMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(listMessages.get(event.getUser().block().getId())))
 		{
 			File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
 			JSONObject json = new JSONObject(Util.getFileContents(file));
@@ -357,11 +357,11 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 					blacklistArray.add(channel + " **|** " + command);
 				}
 
-				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId().asString()) + 1, false, false, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) + 1, false, false, event.getChannel().block(), event.getUser().block());
 
-				listMessages.put(event.getUser().block().getId().asString(), m.getId().asString());
-				waitForReaction(m.getId().asString(), event.getUser().block().getId().asString());
-				listPages.put(event.getUser().block().getId().asString(), listPages.get(event.getUser().block().getId().asString()) + 1);
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
 			}
 
 			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
@@ -391,11 +391,11 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 					blacklistArray.add(channel + " **|** " + command);
 				}
 
-				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId().asString()) - 1, false, false, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) - 1, false, false, event.getChannel().block(), event.getUser().block());
 
-				listMessages.put(event.getUser().block().getId().asString(), m.getId().asString());
-				waitForReaction(m.getId().asString(), event.getUser().block().getId().asString());
-				listPages.put(event.getUser().block().getId().asString(), listPages.get(event.getUser().block().getId().asString()) - 1);
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
 			}
 		}
 	}

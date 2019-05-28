@@ -6,6 +6,7 @@ import com.vauff.maunzdiscord.threads.ReactionAddThread;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.util.Snowflake;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,12 +25,12 @@ public class MainListener
 	/**
 	 * Holds the timestamp of the last time a user used a command
 	 */
-	public static HashMap<String, Long> cooldownTimestamps = new HashMap<>();
+	public static HashMap<Snowflake, Long> cooldownTimestamps = new HashMap<>();
 
 	/**
 	 * Holds the timestamp of the last time a user was given the command cooldown message
 	 */
-	public static HashMap<String, Long> cooldownMessageTimestamps = new HashMap<>();
+	public static HashMap<Snowflake, Long> cooldownMessageTimestamps = new HashMap<>();
 
 	/**
 	 * Sets up all commands

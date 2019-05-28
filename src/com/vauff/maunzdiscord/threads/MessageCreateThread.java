@@ -11,7 +11,6 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Snowflake;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -67,23 +66,23 @@ public class MessageCreateThread implements Runnable
 
 							if (enabled || cmd instanceof Enable || cmd instanceof Disable)
 							{
-								if (MainListener.cooldownTimestamps.containsKey(author.getId().asString()) && (MainListener.cooldownTimestamps.get(author.getId().asString()) + 2000L) > System.currentTimeMillis())
+								if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
 								{
-									if (MainListener.cooldownMessageTimestamps.containsKey(author.getId().asString()) && (MainListener.cooldownMessageTimestamps.get(author.getId().asString()) + 10000L) < System.currentTimeMillis())
+									if (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis())
 									{
 										Util.msg(channel, author, author.getMention() + " Slow down!");
-										MainListener.cooldownMessageTimestamps.put(author.getId().asString(), System.currentTimeMillis());
+										MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
 									}
-									else if (!MainListener.cooldownMessageTimestamps.containsKey(author.getId().asString()))
+									else if (!MainListener.cooldownMessageTimestamps.containsKey(author.getId()))
 									{
 										Util.msg(channel, author, author.getMention() + " Slow down!");
-										MainListener.cooldownMessageTimestamps.put(author.getId().asString(), System.currentTimeMillis());
+										MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
 									}
 
 									return;
 								}
 
-								MainListener.cooldownTimestamps.put(author.getId().asString(), System.currentTimeMillis());
+								MainListener.cooldownTimestamps.put(author.getId(), System.currentTimeMillis());
 								boolean blacklisted = false;
 
 								if (!Util.hasPermission(author, event.getGuild().block()) && !(channel instanceof PrivateChannel))
@@ -131,10 +130,10 @@ public class MessageCreateThread implements Runnable
 
 				try
 				{
-					if (AbstractCommand.AWAITED.containsKey(author.getId().asString()) && channel.getId().asString().equals(AbstractCommand.AWAITEDCHANNEL.get(author.getId().asString())))
+					if (AbstractCommand.AWAITED.containsKey(author.getId()) && channel.getId().equals(AbstractCommand.AWAITEDCHANNEL.get(author.getId())))
 					{
-						Main.client.getMessageById(channel.getId(), Snowflake.of(AbstractCommand.AWAITED.get(author.getId().asString()).getID())).block().delete();
-						AbstractCommand.AWAITED.get(author.getId().asString()).getCommand().onMessageReceived(event);
+						Main.client.getMessageById(channel.getId(), AbstractCommand.AWAITED.get(author.getId()).getID()).block().delete();
+						AbstractCommand.AWAITED.get(author.getId()).getCommand().onMessageReceived(event);
 					}
 				}
 				catch (NullPointerException e)

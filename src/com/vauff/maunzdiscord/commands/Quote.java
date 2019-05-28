@@ -7,6 +7,7 @@ import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 
@@ -19,8 +20,8 @@ import java.util.HashMap;
 
 public class Quote extends AbstractCommand<MessageCreateEvent>
 {
-	private static HashMap<String, Integer> listPages = new HashMap<>();
-	private static HashMap<String, String> listMessages = new HashMap<>();
+	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
 	private static Connection sqlCon;
 
 	@Override
@@ -73,9 +74,9 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 
 							Message m = Util.buildPage(list, "Quotes List", 10, page, true, true, channel, author);
 
-							listMessages.put(author.getId().asString(), m.getId().asString());
-							waitForReaction(m.getId().asString(), author.getId().asString());
-							listPages.put(author.getId().asString(), page);
+							listMessages.put(author.getId(), m.getId());
+							waitForReaction(m.getId(), author.getId());
+							listPages.put(author.getId(), page);
 
 							sqlCon.abort(command ->
 							{
@@ -181,65 +182,62 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (listMessages.containsKey(event.getUser().block().getId().asString()))
+		if (listMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(listMessages.get(event.getUser().block().getId())))
 		{
-			if (message.getId().asString().equals(listMessages.get(event.getUser().block().getId().asString())))
+			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
 			{
-				if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
+				sqlConnect();
+
+				PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
+				ResultSet rs = pst.executeQuery();
+
+				ArrayList<String> list = new ArrayList<>();
+
+				while (rs.next())
 				{
-					sqlConnect();
-
-					PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
-					ResultSet rs = pst.executeQuery();
-
-					ArrayList<String> list = new ArrayList<>();
-
-					while (rs.next())
+					if (rs.getInt("approved") == 1)
 					{
-						if (rs.getInt("approved") == 1)
-						{
-							list.add(rs.getString("title"));
-						}
+						list.add(rs.getString("title"));
 					}
-
-					Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId().asString()) + 1, true, true, event.getChannel().block(), event.getUser().block());
-
-					listMessages.put(event.getUser().block().getId().asString(), m.getId().asString());
-					waitForReaction(m.getId().asString(), event.getUser().block().getId().asString());
-					listPages.put(event.getUser().block().getId().asString(), listPages.get(event.getUser().block().getId().asString()) + 1);
-
-					sqlCon.abort(command ->
-					{
-					});
 				}
 
-				else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+				Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId()) + 1, true, true, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
+
+				sqlCon.abort(command ->
 				{
-					sqlConnect();
+				});
+			}
 
-					PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
-					ResultSet rs = pst.executeQuery();
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+			{
+				sqlConnect();
 
-					ArrayList<String> list = new ArrayList<>();
+				PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
+				ResultSet rs = pst.executeQuery();
 
-					while (rs.next())
+				ArrayList<String> list = new ArrayList<>();
+
+				while (rs.next())
+				{
+					if (rs.getInt("approved") == 1)
 					{
-						if (rs.getInt("approved") == 1)
-						{
-							list.add(rs.getString("title"));
-						}
+						list.add(rs.getString("title"));
 					}
-
-					Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId().asString()) - 1, true, true, event.getChannel().block(), event.getUser().block());
-
-					listMessages.put(event.getUser().block().getId().asString(), m.getId().asString());
-					waitForReaction(m.getId().asString(), event.getUser().block().getId().asString());
-					listPages.put(event.getUser().block().getId().asString(), listPages.get(event.getUser().block().getId().asString()) - 1);
-
-					sqlCon.abort(command ->
-					{
-					});
 				}
+
+				Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId()) - 1, true, true, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
+
+				sqlCon.abort(command ->
+				{
+				});
 			}
 		}
 	}

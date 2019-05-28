@@ -33,12 +33,12 @@ public class ReactionAddThread implements Runnable
 	{
 		try
 		{
-			if (AbstractCommand.AWAITED.containsKey(event.getMessage().block().getId().asString()) && event.getUser().block().getId().asString().equals(AbstractCommand.AWAITED.get(event.getMessage().block().getId().asString()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
+			if (AbstractCommand.AWAITED.containsKey(event.getMessage().block().getId()) && event.getUser().block().getId().equals(AbstractCommand.AWAITED.get(event.getMessage().block().getId()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
 			{
 				Message message = event.getMessage().block();
 
 				event.getMessage().block().delete().block();
-				AbstractCommand.AWAITED.get(message.getId().asString()).getCommand().onReactionAdd(event, message);
+				AbstractCommand.AWAITED.get(message.getId()).getCommand().onReactionAdd(event, message);
 			}
 		}
 		catch (Exception e)

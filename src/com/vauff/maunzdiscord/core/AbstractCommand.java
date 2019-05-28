@@ -5,6 +5,7 @@ import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 
 import java.util.HashMap;
 
@@ -14,8 +15,8 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	 * Holds all messages as keys which await a reaction or reply by a specific user.
 	 * The values hold an instance of {@link Await}
 	 */
-	public static final HashMap<String, Await> AWAITED = new HashMap<>();
-	public static final HashMap<String, String> AWAITEDCHANNEL = new HashMap<>();
+	public static final HashMap<Snowflake, Await> AWAITED = new HashMap<>();
+	public static final HashMap<Snowflake, String> AWAITEDCHANNEL = new HashMap<>();
 
 	/**
 	 * Executes this command
@@ -39,7 +40,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	 * @param messageID The message which should get reacted on
 	 * @param userID    The user who triggered this command
 	 */
-	public final void waitForReaction(String messageID, String userID)
+	public final void waitForReaction(Snowflake messageID, Snowflake userID)
 	{
 		AWAITED.put(messageID, new Await(userID, this));
 	}
@@ -50,7 +51,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	 * @param messageID The message which will get deleted afterwards
 	 * @param userID    The user who triggered this command
 	 */
-	public final void waitForReply(String messageID, String userID)
+	public final void waitForReply(Snowflake messageID, Snowflake userID)
 	{
 		AWAITED.put(userID, new Await(messageID, this));
 	}
@@ -66,7 +67,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	}
 
 	/**
-	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(String, String)}
+	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(Snowflake, Snowflake)}
 	 *
 	 * @param event The event holding information about the added reaction
 	 * @param message The Message that was reacted to
@@ -76,7 +77,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	}
 
 	/**
-	 * Gets called when a specific user sends a reply defined prior in {@link AbstractCommand#waitForReply(String, String)}
+	 * Gets called when a specific user sends a reply defined prior in {@link AbstractCommand#waitForReply(Snowflake, Snowflake)}
 	 *
 	 * @param event The event holding information about the reply
 	 */
