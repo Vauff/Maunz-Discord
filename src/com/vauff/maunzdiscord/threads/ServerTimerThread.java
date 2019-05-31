@@ -1,6 +1,5 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.github.koraktor.steamcondenser.exceptions.SteamCondenserException;
 import com.github.koraktor.steamcondenser.steam.SteamPlayer;
 import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
 import com.vauff.maunzdiscord.core.Logger;
@@ -29,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 public class ServerTimerThread implements Runnable
@@ -127,7 +125,7 @@ public class ServerTimerThread implements Runnable
 
 								break;
 							}
-							catch (NullPointerException | TimeoutException | SteamCondenserException e)
+							catch (Exception e)
 							{
 								attempts++;
 
