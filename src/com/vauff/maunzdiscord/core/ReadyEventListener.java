@@ -53,7 +53,7 @@ public class ReadyEventListener
 
 			for (Guild guild : Main.client.getGuilds().toIterable())
 			{
-				File file = new File(Util.getJarLocation() + "data/guilds/" + guild.getId() + ".json");
+				File file = new File(Util.getJarLocation() + "data/guilds/" + guild.getId().asString() + ".json");
 
 				if (!file.exists())
 				{
@@ -79,7 +79,6 @@ public class ReadyEventListener
 			new MainListener();
 			Main.client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
 			Main.client.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
-			Main.client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(MainListener::onGuildCreate);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(UptimeTimer.timer, 600, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);

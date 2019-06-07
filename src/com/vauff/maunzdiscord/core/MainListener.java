@@ -90,27 +90,4 @@ public class MainListener
 		ReactionAddThread thread = new ReactionAddThread(event, "reactionadd-" + event.getMessage().block().getId().asString());
 		thread.start();
 	}
-
-	public static void onGuildCreate(GuildCreateEvent event)
-	{
-		try
-		{
-			File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getId().asString() + ".json");
-
-			if (!file.exists())
-			{
-				JSONObject json = new JSONObject();
-
-				file.createNewFile();
-				json.put("enabled", true);
-				json.put("lastGuildName", event.getGuild().getName());
-				json.put("blacklist", new JSONArray());
-				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-			}
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
 }
