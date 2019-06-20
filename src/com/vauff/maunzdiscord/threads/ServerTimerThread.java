@@ -92,7 +92,11 @@ public class ServerTimerThread implements Runnable
 					{
 						boolean channelExists = true;
 
-						if (Objects.isNull(Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block())) //TEST THIS
+						try
+						{
+							Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block();
+						}
+						catch (Exception e)
 						{
 							channelExists = false;
 						}
@@ -206,7 +210,7 @@ public class ServerTimerThread implements Runnable
 								spec.setDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**");
 							};
 
-							if (Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block() != null)
+							if (channelExists)
 							{
 								Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
 							}

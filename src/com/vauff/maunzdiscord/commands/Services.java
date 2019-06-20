@@ -13,7 +13,7 @@ public class Services extends AbstractCommand<MessageCreateEvent>
 	{
 		if (Util.hasPermission(author, event.getGuild().block()))
 		{
-			Util.msg(channel, author, "You can edit the services for this guild at https://vauff.com/");
+			Util.msg(channel, author, "This command is temporarily unavailable until a future release");
 		}
 		else
 		{
