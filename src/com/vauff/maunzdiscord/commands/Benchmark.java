@@ -2,24 +2,26 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.spec.EmbedCreateSpec;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.awt.Color;
+import java.util.function.Consumer;
 
-public class Benchmark extends AbstractCommand<MessageReceivedEvent>
+public class Benchmark extends AbstractCommand<MessageCreateEvent>
 {
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().split(" ");
+		String[] args = event.getMessage().getContent().get().split(" ");
 
 		if (args.length == 1)
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a GPU/CPU name to benchmark!");
+			Util.msg(channel, author, "You need to provide a GPU/CPU name to benchmark!");
 		}
 		else
 		{
@@ -94,8 +96,26 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 						price = "N/A";
 					}
 
-					EmbedObject embed = new EmbedBuilder().withColor(embedColor).withThumbnail("https://i.imgur.com/nAe3jfd.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).build();
-					Util.msg(event.getChannel(), event.getAuthor(), embed);
+					final String finalLink = link;
+					final String finalDate = date;
+					final String finalPrice = price;
+					final String finalRatio = ratio;
+
+					Consumer<EmbedCreateSpec> embed = spec -> {
+						spec.setColor(embedColor);
+						spec.setThumbnail("https://i.imgur.com/nAe3jfd.jpg");
+						spec.setTitle(name);
+						spec.setUrl(finalLink);
+						spec.setFooter("Powered by PassMark", "");
+						spec.addField("Score", score, true);
+						spec.addField("Rank", rank, true);
+						spec.addField("Samples", samples, true);
+						spec.addField("First Benchmarked", finalDate, true);
+						spec.addField("Price", finalPrice, true);
+						spec.addField("Performance Per Dollar", finalRatio, true);
+					};
+
+					Util.msg(channel, author, embed);
 				}
 				if (link.contains("cpu.php"))
 				{
@@ -138,15 +158,43 @@ public class Benchmark extends AbstractCommand<MessageReceivedEvent>
 						tdp = "N/A";
 					}
 
-					EmbedObject embed = new EmbedBuilder().withColor(embedColor).withThumbnail("https://i.imgur.com/iKLrQQN.jpg").withTitle(name).withUrl(link).withFooterText("Powered by PassMark").appendField("Score", score, true).appendField("Single Thread Score", singleThread, true).appendField("Rank", rank, true).appendField("Samples", samples, true).appendField("First Benchmarked", date, true).appendField("Cores", cores, true).appendField("Price", price, true).appendField("Performance Per Dollar", ratio, true).appendField("Clock Speed", clockSpeed, true).appendField("Turbo Speed", turboSpeed, true).appendField("Socket", socket, true).appendField("Typical TDP", tdp, true).build();
-					Util.msg(event.getChannel(), event.getAuthor(), embed);
+					final String finalLink = link;
+					final String finalDate = date;
+					final String finalPrice = price;
+					final String finalRatio = ratio;
+					final String finalSingleThread = singleThread;
+					final String finalClockSpeed = clockSpeed;
+					final String finalTurboSpeed = turboSpeed;
+					final String finalSocket = socket;
+					final String finalTdp = tdp;
+
+					Consumer<EmbedCreateSpec> embed = spec -> {
+						spec.setColor(embedColor);
+						spec.setThumbnail("https://i.imgur.com/iKLrQQN.jpg");
+						spec.setTitle(name);
+						spec.setUrl(finalLink);
+						spec.setFooter("Powered by PassMark", "");
+						spec.addField("Score", score, true);
+						spec.addField("Single Thread Score", finalSingleThread, true);
+						spec.addField("Rank", rank, true);
+						spec.addField("Samples", samples, true);
+						spec.addField("First Benchmarked", finalDate, true);
+						spec.addField("Cores", cores, true);
+						spec.addField("Price", finalPrice, true);
+						spec.addField("Performance Per Dollar", finalRatio, true);
+						spec.addField("Clock Speed", finalClockSpeed, true);
+						spec.addField("Turbo Speed", finalTurboSpeed, true);
+						spec.addField("Socket", finalSocket, true);
+						spec.addField("Typical TDP", finalTdp, true);
+					};
+
+					Util.msg(channel, author, embed);
 				}
 			}
 			else
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "I couldn't find any results for \"" + Util.addArgs(args, 1) + "\"!");
+				Util.msg(channel, author, "I couldn't find any results for \"" + Util.addArgs(args, 1) + "\"!");
 			}
-
 		}
 	}
 

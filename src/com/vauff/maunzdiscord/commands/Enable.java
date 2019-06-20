@@ -2,11 +2,14 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.io.File;
 import java.util.HashMap;
@@ -14,35 +17,31 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Enable extends AbstractCommand<MessageReceivedEvent>
+public class Enable extends AbstractCommand<MessageCreateEvent>
 {
-	private static HashMap<String, String> menuMessages = new HashMap<>();
+	private static HashMap<Snowflake, Snowflake> menuMessages = new HashMap<>();
 
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (Util.hasPermission(event.getAuthor(), event.getGuild()))
+		if (Util.hasPermission(author, event.getGuild().block()))
 		{
-			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
+			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
 			JSONObject guildJson = new JSONObject(Util.getFileContents(guildFile));
 
-			if (Util.hasPermission(event.getAuthor()))
+			if (Util.hasPermission(author))
 			{
-				IMessage m = Util.msg(event.getChannel(), event.getAuthor(), "Please select whether you'd like to enable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enable globally" + System.lineSeparator() + "**`[2]`**  |  Enable in guild only");
+				Message m = Util.msg(channel, author, "Please select whether you'd like to enable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enable globally" + System.lineSeparator() + "**`[2]`**  |  Enable in guild only");
 
-				waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-				menuMessages.put(event.getAuthor().getStringID(), m.getStringID());
+				waitForReaction(m.getId(), author.getId());
+				menuMessages.put(author.getId(), m.getId());
 				Util.addNumberedReactions(m, true, 2);
 
 				ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
 
 				msgDeleterPool.schedule(() ->
 				{
-					if (!m.isDeleted())
-					{
-						m.delete();
-					}
-
+					m.delete().block();
 					msgDeleterPool.shutdown();
 				}, 120, TimeUnit.SECONDS);
 			}
@@ -50,19 +49,19 @@ public class Enable extends AbstractCommand<MessageReceivedEvent>
 			{
 				if (!guildJson.getBoolean("enabled"))
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "Maunz is now enabled in this guild");
+					Util.msg(channel, author, "Maunz is now enabled in this guild");
 					guildJson.put("enabled", true);
 					FileUtils.writeStringToFile(guildFile, guildJson.toString(2), "UTF-8");
 				}
 				else
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "You silly, I was already enabled in this guild!");
+					Util.msg(channel, author, "You silly, I was already enabled in this guild!");
 				}
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "You do not have permission to use that command");
+			Util.msg(channel, author, "You do not have permission to use that command");
 		}
 	}
 
@@ -73,39 +72,39 @@ public class Enable extends AbstractCommand<MessageReceivedEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event) throws Exception
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (menuMessages.containsKey(event.getUser().getStringID()))
+		if (menuMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(menuMessages.get(event.getUser().block().getId())))
 		{
 			File botFile = new File(Util.getJarLocation() + "config.json");
-			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
+			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
 			JSONObject botJson = new JSONObject(Util.getFileContents(botFile));
 			JSONObject guildJson = new JSONObject(Util.getFileContents(guildFile));
 
-			if (event.getReaction().getEmoji().toString().equals("1⃣"))
+			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("1⃣"))
 			{
 				if (!botJson.getBoolean("enabled"))
 				{
-					Util.msg(event.getChannel(), event.getUser(), "Maunz is now enabled globally");
+					Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now enabled globally");
 					botJson.put("enabled", true);
 					FileUtils.writeStringToFile(botFile, botJson.toString(2), "UTF-8");
 				}
 				else
 				{
-					Util.msg(event.getChannel(), event.getUser(), "You silly, I was already enabled globally!");
+					Util.msg(event.getChannel().block(), event.getUser().block(), "You silly, I was already enabled globally!");
 				}
 			}
-			else if (event.getReaction().getEmoji().toString().equals("2⃣"))
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("2⃣"))
 			{
 				if (!guildJson.getBoolean("enabled"))
 				{
-					Util.msg(event.getChannel(), event.getUser(), "Maunz is now enabled in this guild");
+					Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now enabled in this guild");
 					guildJson.put("enabled", true);
 					FileUtils.writeStringToFile(guildFile, guildJson.toString(2), "UTF-8");
 				}
 				else
 				{
-					Util.msg(event.getChannel(), event.getUser(), "You silly, I was already enabled in this guild!");
+					Util.msg(event.getChannel().block(), event.getUser().block(), "You silly, I was already enabled in this guild!");
 				}
 			}
 		}

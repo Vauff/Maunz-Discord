@@ -6,7 +6,7 @@ import com.vauff.maunzdiscord.core.Main;
 import java.util.ArrayList;
 
 /**
- * Holds a timer to restart the bot if the IRC or Discord connection is lost
+ * Holds a timer to restart the bot if the Discord connection is lost
  */
 public class UptimeTimer
 {
@@ -16,9 +16,9 @@ public class UptimeTimer
 		{
 			try
 			{
-				if (!Main.client.isLoggedIn())
+				if (!Main.client.isConnected())
 				{
-					final ArrayList<String> command = new ArrayList<String>();
+					final ArrayList<String> command = new ArrayList<>();
 
 					command.add("java");
 					command.add("-jar");

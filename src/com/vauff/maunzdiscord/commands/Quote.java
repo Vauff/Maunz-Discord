@@ -2,11 +2,14 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,26 +18,26 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Quote extends AbstractCommand<MessageReceivedEvent>
+public class Quote extends AbstractCommand<MessageCreateEvent>
 {
-	private static HashMap<String, Integer> listPages = new HashMap<>();
-	private static HashMap<String, String> listMessages = new HashMap<>();
+	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
 	private static Connection sqlCon;
 
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (event.getGuild().getLongID() != 252536814324154368L) // hardcoding is bad mmkay, but this is temporary
+		if (event.getGuild().block().getId().asLong() != 252536814324154368L) // hardcoding is bad mmkay, but this is temporary
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "The quote command has been temporarily disabled in most guilds until a rewrite can be completed");
+			Util.msg(channel, author, "The quote command has been temporarily disabled in most guilds until a rewrite can be completed");
 		}
 		else
 		{
-			String[] args = event.getMessage().getContent().split(" ");
+			String[] args = event.getMessage().getContent().get().split(" ");
 
 			if (args.length == 1)
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "You can view the quotes site here: http://158.69.59.239/quotes/");
+				Util.msg(channel, author, "You can view the quotes site here: https://vauff.com/quotes/");
 			}
 			else
 			{
@@ -69,11 +72,11 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 								}
 							}
 
-							IMessage m = Util.buildPage(list, "Quotes List", 10, page, true, true, event.getChannel(), event.getAuthor());
+							Message m = Util.buildPage(list, "Quotes List", 10, page, true, true, channel, author);
 
-							listMessages.put(event.getAuthor().getStringID(), m.getStringID());
-							waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-							listPages.put(event.getAuthor().getStringID(), page);
+							listMessages.put(author.getId(), m.getId());
+							waitForReaction(m.getId(), author.getId());
+							listPages.put(author.getId(), page);
 
 							sqlCon.abort(command ->
 							{
@@ -81,14 +84,14 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 						}
 						else
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "Page numbers need to be numerical!");
+							Util.msg(channel, author, "Page numbers need to be numerical!");
 						}
 
 						break;
 					case "view":
 						if (args.length == 2)
 						{
-							Util.msg(event.getChannel(), event.getAuthor(), "You need to provide a quote ID! **Usage: \\*quote view <quoteid>**");
+							Util.msg(channel, author, "You need to provide a quote ID! **Usage: \\*quote view <quoteid>**");
 						}
 						else
 						{
@@ -100,7 +103,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 
 								if (!rs.next())
 								{
-									Util.msg(event.getChannel(), event.getAuthor(), "That quote doesn't exist!");
+									Util.msg(channel, author, "That quote doesn't exist!");
 								}
 								else
 								{
@@ -111,7 +114,7 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 										StringBuilder quote = new StringBuilder();
 
 										quote.append("```" + System.lineSeparator());
-										Util.msg(event.getChannel(), event.getAuthor(), "**ID:** " + rs.getString("id") + " **Title:** " + rs.getString("title") + " **Submitter:** " + rs.getString("submitter") + " **Date:** " + Util.getTime(rs.getLong("time") * 1000));
+										Util.msg(channel, author, "**ID:** " + rs.getString("id") + " **Title:** " + rs.getString("title") + " **Submitter:** " + rs.getString("submitter") + " **Date:** " + Util.getTime(rs.getLong("time") * 1000));
 
 										for (String s : rs.getString("quote").split("\n"))
 										{
@@ -128,16 +131,16 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 										}
 
 										quote.append("```");
-										Util.msg(event.getChannel(), event.getAuthor(), quote.toString());
+										Util.msg(channel, author, quote.toString());
 
 										if (cut)
 										{
-											Util.msg(event.getChannel(), event.getAuthor(), "The rest of this quote is too long for Discord. Please see the full quote at http://158.69.59.239/quotes/viewquote.php?id=" + args[2]);
+											Util.msg(channel, author, "The rest of this quote is too long for Discord. Please see the full quote at http://158.69.59.239/quotes/viewquote.php?id=" + args[2]);
 										}
 									}
 									else
 									{
-										Util.msg(event.getChannel(), event.getAuthor(), "That quote hasn't been approved yet!");
+										Util.msg(channel, author, "That quote hasn't been approved yet!");
 									}
 								}
 
@@ -149,17 +152,17 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 							}
 							else
 							{
-								Util.msg(event.getChannel(), event.getAuthor(), "Quote IDs need to be numerical!");
+								Util.msg(channel, author, "Quote IDs need to be numerical!");
 							}
 						}
 
 						break;
 					case "add":
-						Util.msg(event.getChannel(), event.getAuthor(), "You can submit new quotes here: http://158.69.59.239/quotes/addquote.php");
+						Util.msg(channel, author, "You can submit new quotes here: https://vauff.com/quotes/addquote.php");
 
 						break;
 					default:
-						Util.msg(event.getChannel(), event.getAuthor(), "The argument **" + args[1] + "** was not recognized! See **\\*help quote**");
+						Util.msg(channel, author, "The argument **" + args[1] + "** was not recognized! See **\\*help quote**");
 
 						break;
 				}
@@ -177,67 +180,64 @@ public class Quote extends AbstractCommand<MessageReceivedEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event) throws Exception
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (listMessages.containsKey(event.getUser().getStringID()))
+		if (listMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(listMessages.get(event.getUser().block().getId())))
 		{
-			if (event.getMessage().getStringID().equals(listMessages.get(event.getUser().getStringID())))
+			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
 			{
-				if (event.getReaction().getEmoji().toString().equals("▶"))
+				sqlConnect();
+
+				PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
+				ResultSet rs = pst.executeQuery();
+
+				ArrayList<String> list = new ArrayList<>();
+
+				while (rs.next())
 				{
-					sqlConnect();
-
-					PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
-					ResultSet rs = pst.executeQuery();
-
-					ArrayList<String> list = new ArrayList<>();
-
-					while (rs.next())
+					if (rs.getInt("approved") == 1)
 					{
-						if (rs.getInt("approved") == 1)
-						{
-							list.add(rs.getString("title"));
-						}
+						list.add(rs.getString("title"));
 					}
-
-					IMessage m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().getStringID()) + 1, true, true, event.getChannel(), event.getUser());
-
-					listMessages.put(event.getUser().getStringID(), m.getStringID());
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) + 1);
-
-					sqlCon.abort(command ->
-					{
-					});
 				}
 
-				else if (event.getReaction().getEmoji().toString().equals("◀"))
+				Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId()) + 1, true, true, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
+
+				sqlCon.abort(command ->
 				{
-					sqlConnect();
+				});
+			}
 
-					PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
-					ResultSet rs = pst.executeQuery();
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+			{
+				sqlConnect();
 
-					ArrayList<String> list = new ArrayList<>();
+				PreparedStatement pst = sqlCon.prepareStatement("SELECT * FROM quotes;");
+				ResultSet rs = pst.executeQuery();
 
-					while (rs.next())
+				ArrayList<String> list = new ArrayList<>();
+
+				while (rs.next())
+				{
+					if (rs.getInt("approved") == 1)
 					{
-						if (rs.getInt("approved") == 1)
-						{
-							list.add(rs.getString("title"));
-						}
+						list.add(rs.getString("title"));
 					}
-
-					IMessage m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().getStringID()) - 1, true, true, event.getChannel(), event.getUser());
-
-					listMessages.put(event.getUser().getStringID(), m.getStringID());
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) - 1);
-
-					sqlCon.abort(command ->
-					{
-					});
 				}
+
+				Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId()) - 1, true, true, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
+
+				sqlCon.abort(command ->
+				{
+				});
 			}
 		}
 	}

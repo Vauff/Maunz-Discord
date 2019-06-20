@@ -2,27 +2,30 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import org.apache.commons.lang3.math.NumberUtils;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Help extends AbstractCommand<MessageReceivedEvent>
+public class Help extends AbstractCommand<MessageCreateEvent>
 {
 	private static HashMap<String, String> cmdHelp = new HashMap<>();
 	private static HashMap<String, String> cmdAliases = new HashMap<>();
-	private static HashMap<String, Integer> listPages = new HashMap<>();
-	private static HashMap<String, String> listMessages = new HashMap<>();
+	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
 
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().split(" ");
+		String[] args = event.getMessage().getContent().get().split(" ");
 
 		if (args.length == 1)
 		{
@@ -34,11 +37,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				helpEntries.add(cmdHelp.get(key));
 			}
 
-			IMessage m = Util.buildPage(helpEntries, "Command List", 10, 1, false, false, event.getChannel(), event.getAuthor());
+			Message m = Util.buildPage(helpEntries, "Command List", 10, 1, false, false, channel, author);
 
-			listMessages.put(event.getAuthor().getStringID(), m.getStringID());
-			waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-			listPages.put(event.getAuthor().getStringID(), 1);
+			listMessages.put(author.getId(), m.getId());
+			waitForReaction(m.getId(), author.getId());
+			listPages.put(author.getId(), 1);
 		}
 
 		else if (args.length == 2 && NumberUtils.isCreatable(args[1]))
@@ -52,11 +55,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 				helpEntries.add(cmdHelp.get(key));
 			}
 
-			IMessage m = Util.buildPage(helpEntries, "Command List", 10, page, false, false, event.getChannel(), event.getAuthor());
+			Message m = Util.buildPage(helpEntries, "Command List", 10, page, false, false, channel, author);
 
-			listMessages.put(event.getAuthor().getStringID(), m.getStringID());
-			waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-			listPages.put(event.getAuthor().getStringID(), page);
+			listMessages.put(author.getId(), m.getId());
+			waitForReaction(m.getId(), author.getId());
+			listPages.put(author.getId(), page);
 		}
 		else
 		{
@@ -81,7 +84,7 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 					i++;
 				}
 
-				Util.msg(event.getChannel(), event.getAuthor(), list);
+				Util.msg(channel, author, list);
 			}
 			else if (cmdAliases.containsKey(arg))
 			{
@@ -102,11 +105,11 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 					i++;
 				}
 
-				Util.msg(event.getChannel(), event.getAuthor(), list);
+				Util.msg(channel, author, list);
 			}
 			else
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "I don't recognize the command " + args[1] + "!");
+				Util.msg(channel, author, "I don't recognize the command " + args[1] + "!");
 			}
 		}
 	}
@@ -160,45 +163,42 @@ public class Help extends AbstractCommand<MessageReceivedEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event)
+	public void onReactionAdd(ReactionAddEvent event, Message message)
 	{
-		if (listMessages.containsKey(event.getUser().getStringID()))
+		if (listMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(listMessages.get(event.getUser().block().getId())))
 		{
-			if (event.getMessage().getStringID().equals(listMessages.get(event.getUser().getStringID())))
+			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
 			{
-				if (event.getReaction().getEmoji().toString().equals("▶"))
+				ArrayList<String> helpEntries = new ArrayList<>();
+				SortedSet<String> sortedHelpEntries = new TreeSet<>(cmdHelp.keySet());
+
+				for (String key : sortedHelpEntries)
 				{
-					ArrayList<String> helpEntries = new ArrayList<>();
-					SortedSet<String> sortedHelpEntries = new TreeSet<>(cmdHelp.keySet());
-
-					for (String key : sortedHelpEntries)
-					{
-						helpEntries.add(cmdHelp.get(key));
-					}
-
-					IMessage m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().getStringID()) + 1, false, false, event.getChannel(), event.getUser());
-
-					listMessages.put(event.getUser().getStringID(), m.getStringID());
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) + 1);
+					helpEntries.add(cmdHelp.get(key));
 				}
 
-				else if (event.getReaction().getEmoji().toString().equals("◀"))
+				Message m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().block().getId()) + 1, false, false, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
+			}
+
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+			{
+				ArrayList<String> helpEntries = new ArrayList<>();
+				SortedSet<String> sortedHelpEntries = new TreeSet<>(cmdHelp.keySet());
+
+				for (String key : sortedHelpEntries)
 				{
-					ArrayList<String> helpEntries = new ArrayList<>();
-					SortedSet<String> sortedHelpEntries = new TreeSet<>(cmdHelp.keySet());
-
-					for (String key : sortedHelpEntries)
-					{
-						helpEntries.add(cmdHelp.get(key));
-					}
-
-					IMessage m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().getStringID()) - 1, false, false, event.getChannel(), event.getUser());
-
-					listMessages.put(event.getUser().getStringID(), m.getStringID());
-					waitForReaction(m.getStringID(), event.getUser().getStringID());
-					listPages.put(event.getUser().getStringID(), listPages.get(event.getUser().getStringID()) - 1);
+					helpEntries.add(cmdHelp.get(key));
 				}
+
+				Message m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().block().getId()) - 1, false, false, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
 			}
 		}
 	}

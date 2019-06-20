@@ -1,21 +1,21 @@
 package com.vauff.maunzdiscord.core;
 
+import discord4j.core.DiscordClient;
+import discord4j.core.DiscordClientBuilder;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.util.DiscordException;
 
 import java.io.File;
 
 public class Main
 {
-	public static IDiscordClient client;
-	public static String version = "3.0.2";
+	public static DiscordClient client;
+	public static String version = "r1";
 
-	public static void main(String[] args) throws DiscordException
+	public static void main(String[] args)
 	{
 		try
 		{
@@ -58,8 +58,9 @@ public class Main
 				System.exit(1);
 			}
 
-			client = new ClientBuilder().withToken(Util.token).login();
-			client.getDispatcher().registerListener(new ReadyEventListener());
+			client = new DiscordClientBuilder(Util.token).build();
+			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> ReadyEventListener.onReady());
+			client.login().block();
 		}
 		catch (Exception e)
 		{

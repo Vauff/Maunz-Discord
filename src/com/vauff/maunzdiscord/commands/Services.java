@@ -1,30 +1,19 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 
-import java.util.ArrayList;
-
-public class Restart extends AbstractCommand<MessageCreateEvent>
+public class Services extends AbstractCommand<MessageCreateEvent>
 {
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (Util.hasPermission(author))
+		if (Util.hasPermission(author, event.getGuild().block()))
 		{
-			final ArrayList<String> command = new ArrayList<>();
-
-			command.add("java");
-			command.add("-jar");
-			command.add("Maunz-Discord.jar");
-			Util.msg(channel, author, "Maunz is restarting...");
-			Logger.log.info("Maunz is restarting...");
-			new ProcessBuilder(command).start();
-			System.exit(0);
+			Util.msg(channel, author, "This command is temporarily unavailable until a future release");
 		}
 		else
 		{
@@ -35,6 +24,6 @@ public class Restart extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*restart" };
+		return new String[] { "*services" };
 	}
 }

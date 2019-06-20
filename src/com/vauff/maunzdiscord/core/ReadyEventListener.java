@@ -4,13 +4,18 @@ import com.vauff.maunzdiscord.commands.Help;
 import com.vauff.maunzdiscord.features.ServerTimer;
 import com.vauff.maunzdiscord.features.StatsTimer;
 import com.vauff.maunzdiscord.features.UptimeTimer;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.guild.GuildDeleteEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageDeleteEvent;
+import discord4j.core.event.domain.message.MessageUpdateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.event.domain.message.ReactionRemoveEvent;
+import discord4j.core.object.entity.Guild;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.obj.IGuild;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,14 +30,13 @@ public class ReadyEventListener
 	 */
 	public static StopWatch uptime = new StopWatch();
 
-	@EventSubscriber
-	public void onReady(ReadyEvent event)
+	public static void onReady()
 	{
 		try
 		{
 			uptime.start();
 
-			List<File> folderList = new ArrayList<File>();
+			List<File> folderList = new ArrayList<>();
 
 			folderList.add(new File(Util.getJarLocation() + "data/"));
 			folderList.add(new File(Util.getJarLocation() + "data/services/"));
@@ -47,9 +51,9 @@ public class ReadyEventListener
 				}
 			}
 
-			for (IGuild guild : Main.client.getGuilds())
+			for (Guild guild : Main.client.getGuilds().toIterable())
 			{
-				File file = new File(Util.getJarLocation() + "data/guilds/" + guild.getStringID() + ".json");
+				File file = new File(Util.getJarLocation() + "data/guilds/" + guild.getId().asString() + ".json");
 
 				if (!file.exists())
 				{
@@ -65,8 +69,16 @@ public class ReadyEventListener
 
 			Help.setupCmdHelp();
 
-			Main.client.getDispatcher().registerListener(Executors.newScheduledThreadPool(1), new Logger());
-			Main.client.getDispatcher().registerListener(new MainListener());
+			Main.client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
+			Main.client.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
+			Main.client.getEventDispatcher().on(MessageDeleteEvent.class).subscribe(Logger::onMessageDelete);
+			Main.client.getEventDispatcher().on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
+			Main.client.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
+			Main.client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(Logger::onGuildCreate);
+			Main.client.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
+			new MainListener();
+			Main.client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
+			Main.client.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(UptimeTimer.timer, 600, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);

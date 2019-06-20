@@ -1,37 +1,15 @@
 package com.vauff.maunzdiscord.core;
 
-import com.vauff.maunzdiscord.commands.About;
-import com.vauff.maunzdiscord.commands.Benchmark;
-import com.vauff.maunzdiscord.commands.Blacklist;
-import com.vauff.maunzdiscord.commands.Changelog;
-import com.vauff.maunzdiscord.commands.Colour;
-import com.vauff.maunzdiscord.commands.Disable;
-import com.vauff.maunzdiscord.commands.Discord;
-import com.vauff.maunzdiscord.commands.Enable;
-import com.vauff.maunzdiscord.commands.Help;
-import com.vauff.maunzdiscord.commands.IsItDown;
-import com.vauff.maunzdiscord.commands.Map;
-import com.vauff.maunzdiscord.commands.Minecraft;
-import com.vauff.maunzdiscord.commands.Notify;
-import com.vauff.maunzdiscord.commands.Ping;
-import com.vauff.maunzdiscord.commands.Players;
-import com.vauff.maunzdiscord.commands.Quote;
-import com.vauff.maunzdiscord.commands.Reddit;
-import com.vauff.maunzdiscord.commands.Restart;
-import com.vauff.maunzdiscord.commands.Say;
-import com.vauff.maunzdiscord.commands.Source;
-import com.vauff.maunzdiscord.commands.Steam;
-import com.vauff.maunzdiscord.commands.Stop;
-import com.vauff.maunzdiscord.commands.servicesmenu.Services;
-import com.vauff.maunzdiscord.threads.MessageReceivedThread;
+import com.vauff.maunzdiscord.commands.*;
+import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.util.Snowflake;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 
 import java.io.File;
 import java.util.HashMap;
@@ -42,17 +20,17 @@ public class MainListener
 	/**
 	 * Holds all commands
 	 */
-	public static LinkedList<AbstractCommand<MessageReceivedEvent>> commands = new LinkedList<>();
+	public static LinkedList<AbstractCommand<MessageCreateEvent>> commands = new LinkedList<>();
 
 	/**
 	 * Holds the timestamp of the last time a user used a command
 	 */
-	public static HashMap<String, Long> cooldownTimestamps = new HashMap<>();
+	public static HashMap<Snowflake, Long> cooldownTimestamps = new HashMap<>();
 
 	/**
 	 * Holds the timestamp of the last time a user was given the command cooldown message
 	 */
-	public static HashMap<String, Long> cooldownMessageTimestamps = new HashMap<>();
+	public static HashMap<Snowflake, Long> cooldownMessageTimestamps = new HashMap<>();
 
 	/**
 	 * Sets up all commands
@@ -101,41 +79,15 @@ public class MainListener
 		}
 	}
 
-	@EventSubscriber
-	public void onMessageReceived(MessageReceivedEvent event)
+	public static void onMessageCreate(MessageCreateEvent event)
 	{
-		MessageReceivedThread thread = new MessageReceivedThread(event, "messagereceived-" + event.getMessage().getStringID());
+		MessageCreateThread thread = new MessageCreateThread(event, "messagereceived-" + event.getMessage().getId().asString());
 		thread.start();
 	}
 
-	@EventSubscriber
-	public void onReactionAdd(ReactionAddEvent event)
+	public static void onReactionAdd(ReactionAddEvent event)
 	{
-		ReactionAddThread thread = new ReactionAddThread(event, "reactionadd-" + event.getMessage().getStringID());
+		ReactionAddThread thread = new ReactionAddThread(event, "reactionadd-" + event.getMessage().block().getId().asString());
 		thread.start();
-	}
-
-	@EventSubscriber
-	public void onGuildCreate(GuildCreateEvent event)
-	{
-		try
-		{
-			File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().getStringID() + ".json");
-
-			if (!file.exists())
-			{
-				JSONObject json = new JSONObject();
-
-				file.createNewFile();
-				json.put("enabled", true);
-				json.put("lastGuildName", event.getGuild().getName());
-				json.put("blacklist", new JSONArray());
-				FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-			}
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
 	}
 }

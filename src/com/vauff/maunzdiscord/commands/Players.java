@@ -3,14 +3,15 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
-import org.eclipse.jetty.util.thread.ExecutorThreadPool;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import org.json.JSONException;
 import org.json.JSONObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,17 +21,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Players extends AbstractCommand<MessageReceivedEvent>
+public class Players extends AbstractCommand<MessageCreateEvent>
 {
-	private static HashMap<String, List<String>> selectionServers = new HashMap<>();
-	private static HashMap<String, String> selectionMessages = new HashMap<>();
+	private static HashMap<Snowflake, List<String>> selectionServers = new HashMap<>();
+	private static HashMap<Snowflake, Snowflake> selectionMessages = new HashMap<>();
 
 	@Override
-	public void exe(MessageReceivedEvent event) throws Exception
+	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (!event.getChannel().isPrivate())
+		if (!(channel instanceof PrivateChannel))
 		{
-			String guildID = event.getGuild().getStringID();
+			String guildID = event.getGuild().block().getId().asString();
 			File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + guildID + "/serverInfo.json");
 
 			if (file.exists())
@@ -64,7 +65,7 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 				{
 					if (serverList.size() == 1)
 					{
-						runCmd(event.getAuthor(), event.getChannel(), json.getJSONObject(serverList.get(0)));
+						runCmd(author, channel, json.getJSONObject(serverList.get(0)));
 					}
 					else
 					{
@@ -72,7 +73,7 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 
 						for (String objectName : serverList)
 						{
-							if (json.getJSONObject(objectName).getLong("serverTrackingChannelID") == event.getChannel().getLongID())
+							if (json.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong())
 							{
 								object = objectName;
 								break;
@@ -81,7 +82,7 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 
 						if (!object.equals(""))
 						{
-							runCmd(event.getAuthor(), event.getChannel(), json.getJSONObject(object));
+							runCmd(author, channel, json.getJSONObject(object));
 						}
 						else
 						{
@@ -94,23 +95,20 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 								i++;
 							}
 
-							IMessage m = Util.msg(event.getChannel(), event.getAuthor(), msg);
-							waitForReaction(m.getStringID(), event.getAuthor().getStringID());
-							selectionServers.put(event.getAuthor().getStringID(), serverList);
-							selectionMessages.put(event.getAuthor().getStringID(), m.getStringID());
+							Message m = Util.msg(channel, author, msg);
+
+							waitForReaction(m.getId(), author.getId());
+							selectionServers.put(author.getId(), serverList);
+							selectionMessages.put(author.getId(), m.getId());
 							Util.addNumberedReactions(m, true, serverList.size());
 
 							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
 
 							msgDeleterPool.schedule(() ->
 							{
-								if (!m.isDeleted())
-								{
-									m.delete();
-									selectionServers.remove(event.getAuthor().getStringID());
-									selectionMessages.remove(event.getAuthor().getStringID());
-								}
-
+								m.delete();
+								selectionServers.remove(author.getId());
+								selectionMessages.remove(author.getId());
 								msgDeleterPool.shutdown();
 							}, 120, TimeUnit.SECONDS);
 						}
@@ -118,17 +116,17 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 				}
 				else
 				{
-					Util.msg(event.getChannel(), event.getAuthor(), "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
+					Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
 				}
 			}
 			else
 			{
-				Util.msg(event.getChannel(), event.getAuthor(), "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
+				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
 			}
 		}
 		else
 		{
-			Util.msg(event.getChannel(), event.getAuthor(), "This command can't be done in a PM, only in a guild with the server tracking service enabled");
+			Util.msg(channel, author, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 		}
 	}
 
@@ -138,7 +136,7 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 		return new String[] { "*players" };
 	}
 
-	private void runCmd(IUser user, IChannel channel, JSONObject object)
+	private void runCmd(User user, MessageChannel channel, JSONObject object)
 	{
 		StringBuilder playersList = new StringBuilder();
 
@@ -160,7 +158,7 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 
 				playersList.append("```");
 
-				if (Util.msg((!sizeIsSmall ? user.getOrCreatePMChannel() : channel), user, playersList.toString()) == null)
+				if (Util.msg((!sizeIsSmall ? user.getPrivateChannel().block() : channel), user, playersList.toString()) == null)
 				{
 					if (!sizeIsSmall)
 					{
@@ -187,20 +185,17 @@ public class Players extends AbstractCommand<MessageReceivedEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event) throws Exception
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (selectionMessages.containsKey(event.getUser().getStringID()))
+		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
 		{
-			if (event.getMessage().getStringID().equals(selectionMessages.get(event.getUser().getStringID())))
-			{
-				int i = Util.emojiToInt(event.getReaction().getEmoji().toString()) - 1;
+			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
 
-				if (i != -1)
+			if (i != -1)
+			{
+				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
 				{
-					if (selectionServers.get(event.getUser().getStringID()).contains("server" + i))
-					{
-						runCmd(event.getUser(), event.getChannel(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().getStringID() + "/serverInfo.json")).getJSONObject("server" + i));
-					}
+					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i));
 				}
 			}
 		}

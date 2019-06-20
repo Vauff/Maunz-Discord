@@ -6,6 +6,10 @@
 /*.iml
 /maunz.log
 /maunz-old.log
-/target/
+/target/generated-sources/
+/target/test-classes/
+/target/classes/com/
+/target/classes/data/
+/target/classes/config.json
 /out/
-/resources/META-INF/
+*.kotlin_module
