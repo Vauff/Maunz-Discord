@@ -12,7 +12,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <release>1.11</release>
                 </configuration>
@@ -33,7 +33,7 @@
         <dependency>
             <groupId>com.discord4j</groupId>
             <artifactId>discord4j-core</artifactId>
-            <version>3.0.6</version>
+            <version>3.0.7</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
