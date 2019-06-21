@@ -3,15 +3,11 @@ package com.vauff.maunzdiscord.core;
 import com.vauff.maunzdiscord.commands.*;
 import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
-import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.util.Snowflake;
-import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 

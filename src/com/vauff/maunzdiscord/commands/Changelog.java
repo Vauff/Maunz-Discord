@@ -34,17 +34,24 @@ public class Changelog extends AbstractCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			version = "v" + Main.version;
+			version = Main.version;
 		}
 		else
 		{
-			if (args[1].startsWith("v"))
+			if (args[1].contains("."))
 			{
-				version = args[1];
+				if (args[1].startsWith("v"))
+				{
+					version = args[1];
+				}
+				else
+				{
+					version = "v" + args[1];
+				}
 			}
 			else
 			{
-				version = "v" + args[1];
+				version = args[1];
 			}
 		}
 

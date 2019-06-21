@@ -13,7 +13,7 @@ import java.io.File;
 public class Main
 {
 	public static DiscordClient client;
-	public static String version = "r1";
+	public static String version = "r2";
 
 	public static void main(String[] args)
 	{
@@ -49,7 +49,7 @@ public class Main
 
 			if (!json.getString("discordToken").equals(""))
 			{
-				Logger.log.info("Starting Maunz-Discord v" + version);
+				Logger.log.info("Starting Maunz-Discord " + version);
 				Util.token = json.getString("discordToken");
 			}
 			else

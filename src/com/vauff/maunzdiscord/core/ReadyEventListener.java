@@ -63,6 +63,7 @@ public class ReadyEventListener
 					json.put("enabled", true);
 					json.put("lastGuildName", guild.getName());
 					json.put("blacklist", new JSONArray());
+					json.put("altPlayingText", "discord.gg/v55fW9b");
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				}
 			}

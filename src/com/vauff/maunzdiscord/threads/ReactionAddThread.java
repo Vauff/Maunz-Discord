@@ -31,23 +31,33 @@ public class ReactionAddThread implements Runnable
 
 	public void run()
 	{
+		Message message;
+
 		try
 		{
-			if (AbstractCommand.AWAITED.containsKey(event.getMessage().block().getId()) && event.getUser().block().getId().equals(AbstractCommand.AWAITED.get(event.getMessage().block().getId()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
-			{
-				Message message = event.getMessage().block();
-
-				event.getMessage().block().delete().block();
-				AbstractCommand.AWAITED.get(message.getId()).getCommand().onReactionAdd(event, message);
-			}
+			message = event.getMessage().block();
 		}
 		catch (Exception e)
 		{
-			Random rnd = new Random();
-			int code = 100000 + rnd.nextInt(900000);
+			//message was deleted too quick for us to get anything about it, never ours when this happens anyways
+			return;
+		}
 
-			Util.msg(event.getChannel().block(), event.getUser().block(), ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
-			Logger.log.error(code, e);
+		if (AbstractCommand.AWAITED.containsKey(message.getId()) && event.getUser().block().getId().equals(AbstractCommand.AWAITED.get(message.getId()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
+		{
+			try
+			{
+				message.delete().block();
+				AbstractCommand.AWAITED.get(message.getId()).getCommand().onReactionAdd(event, message);
+			}
+			catch (Exception e)
+			{
+				Random rnd = new Random();
+				int code = 100000 + rnd.nextInt(900000);
+
+				Util.msg(event.getChannel().block(), event.getUser().block(), ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
+				Logger.log.error(code, e);
+			}
 		}
 	}
 }
