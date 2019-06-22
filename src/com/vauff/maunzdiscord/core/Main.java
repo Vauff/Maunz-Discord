@@ -59,7 +59,7 @@ public class Main
 			}
 
 			client = new DiscordClientBuilder(Util.token).build();
-			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> ReadyEventListener.onReady());
+			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> MainListener.onReady());
 			client.login().block();
 		}
 		catch (Exception e)
