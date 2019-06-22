@@ -85,7 +85,7 @@ public class MessageCreateThread implements Runnable
 								MainListener.cooldownTimestamps.put(author.getId(), System.currentTimeMillis());
 								boolean blacklisted = false;
 
-								if (!Util.hasPermission(author, event.getGuild().block()) && !(channel instanceof PrivateChannel))
+								if (!(channel instanceof PrivateChannel) && !Util.hasPermission(author, event.getGuild().block()))
 								{
 									JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json")));
 

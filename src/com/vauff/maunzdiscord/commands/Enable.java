@@ -6,6 +6,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import org.apache.commons.io.FileUtils;
@@ -24,7 +25,7 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (Util.hasPermission(author, event.getGuild().block()))
+		if (!(channel instanceof PrivateChannel) && Util.hasPermission(author, event.getGuild().block()))
 		{
 			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
 			JSONObject guildJson = new JSONObject(Util.getFileContents(guildFile));
@@ -57,6 +58,22 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 				{
 					Util.msg(channel, author, "You silly, I was already enabled in this guild!");
 				}
+			}
+		}
+		else if (channel instanceof PrivateChannel && Util.hasPermission(author))
+		{
+			File botFile = new File(Util.getJarLocation() + "config.json");
+			JSONObject botJson = new JSONObject(Util.getFileContents(botFile));
+
+			if (!botJson.getBoolean("enabled"))
+			{
+				Util.msg(channel, author, "Maunz is now enabled globally");
+				botJson.put("enabled", true);
+				FileUtils.writeStringToFile(botFile, botJson.toString(2), "UTF-8");
+			}
+			else
+			{
+				Util.msg(channel, author, "You silly, I was already enabled globally!");
 			}
 		}
 		else
