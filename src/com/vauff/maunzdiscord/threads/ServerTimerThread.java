@@ -147,7 +147,7 @@ public class ServerTimerThread implements Runnable
 									{
 										if (channelExists)
 										{
-											Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+											Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										}
 
 										object.put("enabled", false);
@@ -212,7 +212,7 @@ public class ServerTimerThread implements Runnable
 
 							if (channelExists)
 							{
-								Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
+								Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
 							}
 
 							for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
