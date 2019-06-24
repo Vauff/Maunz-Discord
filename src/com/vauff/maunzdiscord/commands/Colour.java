@@ -58,7 +58,8 @@ public class Colour extends AbstractCommand<MessageCreateEvent>
 
 			final String finalUrl = url;
 
-			Consumer<EmbedCreateSpec> embed = spec -> {
+			Consumer<EmbedCreateSpec> embed = spec ->
+			{
 				spec.setColor(color);
 				spec.setThumbnail(finalUrl);
 				spec.setTitle("Average Image Colour");

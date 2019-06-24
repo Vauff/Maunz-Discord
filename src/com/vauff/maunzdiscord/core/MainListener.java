@@ -1,9 +1,7 @@
 package com.vauff.maunzdiscord.core;
 
 import com.vauff.maunzdiscord.commands.*;
-import com.vauff.maunzdiscord.features.ServerTimer;
-import com.vauff.maunzdiscord.features.StatsTimer;
-import com.vauff.maunzdiscord.features.UptimeTimer;
+import com.vauff.maunzdiscord.features.*;
 import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
 import discord4j.core.event.domain.guild.GuildCreateEvent;

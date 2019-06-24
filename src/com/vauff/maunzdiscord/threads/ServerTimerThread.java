@@ -26,7 +26,6 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -135,19 +134,19 @@ public class ServerTimerThread implements Runnable
 
 								if (attempts >= 5 || object.getInt("downtimeTimer") >= 1)
 								{
-									Logger.log.error("Failed to connect to the server " + object.getString("serverIP") + ":" + object.getInt("serverPort") + ", automatically retrying in 1 minute");
+									Logger.log.warn("Failed to connect to the server " + object.getString("serverIP") + ":" + object.getInt("serverPort") + ", automatically retrying in 1 minute");
 									object.put("downtimeTimer", object.getInt("downtimeTimer") + 1);
 
 									if (object.getInt("downtimeTimer") == object.getInt("failedConnectionsThreshold") && channelExists)
 									{
-										Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has gone offline");
+										Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has gone offline");
 									}
 
 									if (object.getInt("downtimeTimer") >= 4320)
 									{
 										if (channelExists)
 										{
-											Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+											Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										}
 
 										object.put("enabled", false);
@@ -164,7 +163,7 @@ public class ServerTimerThread implements Runnable
 
 						if (object.getInt("downtimeTimer") >= object.getInt("failedConnectionsThreshold") && channelExists)
 						{
-							Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has come back online");
+							Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has come back online");
 						}
 
 						String serverInfo = server.toString();
@@ -203,7 +202,8 @@ public class ServerTimerThread implements Runnable
 							final long finalTimestamp = timestamp;
 							final URL constructedUrl = new URL(url);
 
-							Consumer<EmbedCreateSpec> embed = spec -> {
+							Consumer<EmbedCreateSpec> embed = spec ->
+							{
 								spec.setColor(Util.averageColorFromURL(constructedUrl, true));
 								spec.setTimestamp(Instant.ofEpochMilli(finalTimestamp));
 								spec.setThumbnail(finalUrl);
@@ -212,7 +212,7 @@ public class ServerTimerThread implements Runnable
 
 							if (channelExists)
 							{
-								Util.msg((MessageChannel)Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
+								Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
 							}
 
 							for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())

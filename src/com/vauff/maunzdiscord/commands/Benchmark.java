@@ -101,7 +101,8 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 					final String finalPrice = price;
 					final String finalRatio = ratio;
 
-					Consumer<EmbedCreateSpec> embed = spec -> {
+					Consumer<EmbedCreateSpec> embed = spec ->
+					{
 						spec.setColor(embedColor);
 						spec.setThumbnail("https://i.imgur.com/nAe3jfd.jpg");
 						spec.setTitle(name);
@@ -168,7 +169,8 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 					final String finalSocket = socket;
 					final String finalTdp = tdp;
 
-					Consumer<EmbedCreateSpec> embed = spec -> {
+					Consumer<EmbedCreateSpec> embed = spec ->
+					{
 						spec.setColor(embedColor);
 						spec.setThumbnail("https://i.imgur.com/iKLrQQN.jpg");
 						spec.setTitle(name);

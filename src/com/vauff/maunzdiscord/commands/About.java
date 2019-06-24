@@ -20,7 +20,8 @@ public class About extends AbstractCommand<MessageCreateEvent>
 	{
 		String buildDate = getBuildDate();
 
-		Consumer<EmbedCreateSpec> embed = spec -> {
+		Consumer<EmbedCreateSpec> embed = spec ->
+		{
 			spec.setColor(new Color(141, 99, 68));
 			spec.setThumbnail("https://i.imgur.com/Fzw48O4.jpg");
 			spec.setTitle("Maunz");

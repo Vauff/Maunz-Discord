@@ -77,7 +77,8 @@ public class Minecraft extends AbstractCommand<MessageCreateEvent>
 					URL constructedURL = new URL(headURL);
 					final String finalUuid = uuid;
 
-					Consumer<EmbedCreateSpec> embed = spec -> {
+					Consumer<EmbedCreateSpec> embed = spec ->
+					{
 						spec.setColor(Util.averageColorFromURL(constructedURL, true));
 						spec.setThumbnail(headURL);
 						spec.setFooter("Powered by axis.iaero.me", "https://i.imgur.com/4o6K42Z.png");

@@ -105,7 +105,8 @@ public class Steam extends AbstractCommand<MessageCreateEvent>
 					final String finalStatus = status;
 					final String finalBans = bans;
 
-					Consumer<EmbedCreateSpec> embed = spec -> {
+					Consumer<EmbedCreateSpec> embed = spec ->
+					{
 						spec.setColor(Util.averageColorFromURL(constructedURL, true));
 						spec.setThumbnail(avatarURL);
 						spec.setFooter("Powered by steamid.xyz", "https://i.imgur.com/GuXJIeX.png");

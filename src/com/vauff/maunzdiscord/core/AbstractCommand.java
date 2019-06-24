@@ -69,7 +69,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	/**
 	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(Snowflake, Snowflake)}
 	 *
-	 * @param event The event holding information about the added reaction
+	 * @param event   The event holding information about the added reaction
 	 * @param message The Message that was reacted to
 	 */
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception

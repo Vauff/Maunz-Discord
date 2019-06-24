@@ -19,7 +19,7 @@ public class ServerTimer
 	public static HashMap<String, Set<String>> serverPlayers = new HashMap<>();
 
 	/**
-	 * Checks the servers in {@link Util#getJarLocation()}/services/map-tracking for new maps being played and sends them to a channel
+	 * Checks the servers in {@link Util#getJarLocation()}/data/services/server-tracking for new maps being played and sends them to a channel
 	 * as well as notifying users that set up a notification for that map
 	 */
 	public static Runnable timer = new Runnable()

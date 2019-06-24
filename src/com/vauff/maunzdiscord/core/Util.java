@@ -249,7 +249,7 @@ public class Util
 			{
 				if (!(channel instanceof PrivateChannel))
 				{
-					Logger.log.error("Missing permissions to send message to channel #" + ((GuildChannel)channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel)channel).getGuild().block().getName() + " (" + ((GuildChannel)channel).getGuild().block().getId().asString() + ")");
+					Logger.log.warn("Missing permissions to send message to channel #" + ((GuildChannel) channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel) channel).getGuild().block().getName() + " (" + ((GuildChannel) channel).getGuild().block().getId().asString() + ")");
 				}
 			}
 			else
@@ -266,7 +266,7 @@ public class Util
 	 *
 	 * @param channel The channel
 	 * @param author  The author
-	 * @param embed The embed
+	 * @param embed   The embed
 	 */
 	public static Message msg(MessageChannel channel, User author, Consumer<EmbedCreateSpec> embed)
 	{
@@ -293,7 +293,7 @@ public class Util
 	 * Sends an embed to a channel
 	 *
 	 * @param channel The channel
-	 * @param embed The embed
+	 * @param embed   The embed
 	 */
 	public static Message msg(MessageChannel channel, Consumer<EmbedCreateSpec> embed)
 	{
@@ -307,7 +307,7 @@ public class Util
 			{
 				if (!(channel instanceof PrivateChannel))
 				{
-					Logger.log.error("Missing permissions to send embed to channel #" + ((GuildChannel)channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel)channel).getGuild().block().getName() + " (" + ((GuildChannel)channel).getGuild().block().getId().asString() + ")");
+					Logger.log.warn("Missing permissions to send embed to channel #" + ((GuildChannel) channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel) channel).getGuild().block().getName() + " (" + ((GuildChannel) channel).getGuild().block().getId().asString() + ")");
 				}
 			}
 			else
@@ -407,7 +407,9 @@ public class Util
 		for (String reaction : reactions)
 		{
 			if (!addReaction(m, reaction))
+			{
 				break;
+			}
 		}
 	}
 
