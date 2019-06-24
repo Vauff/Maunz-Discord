@@ -10,6 +10,7 @@ import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.Embed;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.PrivateChannel;
 
 public class Logger
@@ -79,14 +80,26 @@ public class Logger
 	{
 		try
 		{
-			if (event.getMessage().block().getAuthor().isPresent() && event.getMessage().block().getContent().isPresent())
-			{
-				String userName = event.getMessage().block().getAuthor().get().getUsername();
-				String userId = event.getMessage().block().getAuthor().get().getId().asString();
-				String messageID = event.getMessage().block().getId().asString();
-				String message = event.getMessage().block().getContent().get();
+			Message message;
 
-				Logger.log.debug(userName + " (" + userId + ") edited the message ID " + messageID + " to \"" + message + "\"");
+			try
+			{
+				message = event.getMessage().block();
+			}
+			catch (Exception e)
+			{
+				//this event can fire after an event was deleted if the msg contained a link that could be auto-embedded, in which case getMessage() will error
+				return;
+			}
+
+			if (message.getAuthor().isPresent() && message.getContent().isPresent())
+			{
+				String userName = message.getAuthor().get().getUsername();
+				String userId = message.getAuthor().get().getId().asString();
+				String messageID = message.getId().asString();
+				String messageContent = message.getContent().get();
+
+				Logger.log.debug(userName + " (" + userId + ") edited the message ID " + messageID + " to \"" + messageContent + "\"");
 			}
 		}
 		catch (Exception e)
