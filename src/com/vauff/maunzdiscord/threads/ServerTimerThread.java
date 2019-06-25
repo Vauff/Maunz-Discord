@@ -6,8 +6,8 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
@@ -142,11 +142,11 @@ public class ServerTimerThread implements Runnable
 										Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has gone offline");
 									}
 
-									if (object.getInt("downtimeTimer") >= 4320)
+									if (object.getInt("downtimeTimer") >= 10080)
 									{
 										if (channelExists)
 										{
-											Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has now been offline for over 72 hours and the map tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+											Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has now been offline for a week and the server tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										}
 
 										object.put("enabled", false);
@@ -220,40 +220,37 @@ public class ServerTimerThread implements Runnable
 								if (!notificationFile.getName().equals("serverInfo.json"))
 								{
 									JSONObject notificationJson = new JSONObject(Util.getFileContents("data/services/server-tracking/" + file.getName() + "/" + notificationFile.getName()));
-									User user = null;
+									Member member = null;
 
 									try
 									{
-										user = Main.client.getUserById(Snowflake.of(Long.parseLong(notificationFile.getName().replace(".json", "")))).block();
+										member = Main.client.getMemberById(Snowflake.of(file.getName()), Snowflake.of(notificationFile.getName().replace(".json", ""))).block();
 									}
-									catch (NullPointerException e)
+									catch (ClientException e)
 									{
-										Logger.log.error("", e);
-										// This means that either a bad user ID was
-										// provided by the notification file, or the
-										// users account doesn't exist anymore
+										continue;
+										// This means that a bad user ID was provided,
+										// the given account doesn't exist anymore, or
+										// this user is no longer a member of the guild
 									}
 
-									if (Main.client.getGuildById(Snowflake.of(Long.parseLong(file.getName()))).block().getMembers().collectList().block().contains(user))
+									try
 									{
-										try
+										for (int i = 0; i < notificationJson.getJSONObject("notifications").getJSONArray(objectName).length(); i++)
 										{
-											for (int i = 0; i < notificationJson.getJSONObject("notifications").getJSONArray(objectName).length(); i++)
-											{
-												String mapNotification = notificationJson.getJSONObject("notifications").getJSONArray(objectName).getString(i);
+											String mapNotification = notificationJson.getJSONObject("notifications").getJSONArray(objectName).getString(i);
 
-												if (mapNotification.equalsIgnoreCase(map))
-												{
-													Util.msg(user.getPrivateChannel().block(), embed.andThen(spec -> spec.setTitle(serverName)));
-												}
+											if (mapNotification.equalsIgnoreCase(map))
+											{
+												Util.msg(member.getPrivateChannel().block(), embed.andThen(spec -> spec.setTitle(serverName)));
 											}
 										}
-										catch (JSONException e)
-										{
-											// This means that the user being processed
-											// doesn't have any notifications set for the
-											// given server, it can be safely ignored
-										}
+									}
+									catch (JSONException e)
+									{
+										// This means that the user being processed
+										// doesn't have any notifications set for the
+										// given server, it can be safely ignored
 									}
 								}
 							}
