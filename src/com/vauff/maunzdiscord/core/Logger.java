@@ -12,6 +12,7 @@ import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.PrivateChannel;
+import discord4j.rest.http.client.ClientException;
 
 public class Logger
 {
@@ -86,7 +87,7 @@ public class Logger
 			{
 				message = event.getMessage().block();
 			}
-			catch (Exception e)
+			catch (ClientException e)
 			{
 				//this event can fire after an event was deleted if the msg contained a link that could be auto-embedded, in which case getMessage() will error
 				return;
@@ -131,9 +132,21 @@ public class Logger
 	{
 		try
 		{
+			Message message;
+
+			try
+			{
+				message = event.getMessage().block();
+			}
+			catch (ClientException e)
+			{
+				//this means we can't see the message reacted to because of missing READ_MESSAGE_HISTORY permission
+				return;
+			}
+
 			String userName = event.getUser().block().getUsername();
 			String userId = event.getUser().block().getId().asString();
-			String messageID = event.getMessage().block().getId().asString();
+			String messageID = message.getId().asString();
 			String reaction = "null";
 
 			if (event.getEmoji().asUnicodeEmoji().isPresent())
@@ -157,9 +170,21 @@ public class Logger
 	{
 		try
 		{
+			Message message;
+
+			try
+			{
+				message = event.getMessage().block();
+			}
+			catch (ClientException e)
+			{
+				//this means we can't see the message reacted to because of missing READ_MESSAGE_HISTORY permission
+				return;
+			}
+
 			String userName = event.getUser().block().getUsername();
 			String userId = event.getUser().block().getId().asString();
-			String messageID = event.getMessage().block().getId().asString();
+			String messageID = message.getId().asString();
 			String reaction = "null";
 
 			if (event.getEmoji().asUnicodeEmoji().isPresent())

@@ -11,13 +11,15 @@ import java.util.Random;
 public class ReactionAddThread implements Runnable
 {
 	private ReactionAddEvent event;
+	private Message message;
 	private Thread thread;
 	private String name;
 
-	public ReactionAddThread(ReactionAddEvent passedEvent, String passedName)
+	public ReactionAddThread(ReactionAddEvent passedEvent, Message passedMessage, String passedName)
 	{
-		name = passedName;
 		event = passedEvent;
+		message = passedMessage;
+		name = passedName;
 	}
 
 	public void start()
@@ -33,18 +35,6 @@ public class ReactionAddThread implements Runnable
 	{
 		try
 		{
-			Message message;
-
-			try
-			{
-				message = event.getMessage().block();
-			}
-			catch (Exception e)
-			{
-				//message was deleted too quick for us to get anything about it, never ours when this happens anyways
-				return;
-			}
-
 			if (AbstractCommand.AWAITED.containsKey(message.getId()) && event.getUser().block().getId().equals(AbstractCommand.AWAITED.get(message.getId()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
 			{
 				try

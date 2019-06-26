@@ -13,7 +13,7 @@ import java.io.File;
 public class Main
 {
 	public static DiscordClient client;
-	public static String version = "r5";
+	public static String version = "r6";
 
 	public static void main(String[] args)
 	{

@@ -24,24 +24,27 @@ public class StatsTimer
 		{
 			try
 			{
-				if (!showingGuilds)
+				if (Main.client.isConnected())
 				{
-					if (Main.client.getGuilds().count().block() == 1L)
+					if (!showingGuilds)
 					{
-						Main.client.updatePresence(Presence.online(Activity.playing(Main.client.getGuilds().count().block() + " guild"))).block();
+						if (Main.client.getGuilds().count().block() == 1L)
+						{
+							Main.client.updatePresence(Presence.online(Activity.playing(Main.client.getGuilds().count().block() + " guild"))).block();
+						}
+						else
+						{
+							Main.client.updatePresence(Presence.online(Activity.playing(Main.client.getGuilds().count().block() + " guilds"))).block();
+						}
+						showingGuilds = true;
 					}
 					else
 					{
-						Main.client.updatePresence(Presence.online(Activity.playing(Main.client.getGuilds().count().block() + " guilds"))).block();
-					}
-					showingGuilds = true;
-				}
-				else
-				{
-					JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
-					Main.client.updatePresence(Presence.online(Activity.playing(json.getString("altPlayingText")))).block();
-					showingGuilds = false;
+						Main.client.updatePresence(Presence.online(Activity.playing(json.getString("altPlayingText")))).block();
+						showingGuilds = false;
+					}
 				}
 			}
 			catch (Exception e)

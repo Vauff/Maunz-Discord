@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.features;
 
 import com.vauff.maunzdiscord.core.Logger;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.threads.ServerTimerThread;
 
@@ -28,10 +29,13 @@ public class ServerTimer
 		{
 			try
 			{
-				for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
+				if (Main.client.isConnected())
 				{
-					ServerTimerThread thread = new ServerTimerThread(file, "servertracking-" + file.getName().replace(".json", ""));
-					thread.start();
+					for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
+					{
+						ServerTimerThread thread = new ServerTimerThread(file, "servertracking-" + file.getName().replace(".json", ""));
+						thread.start();
+					}
 				}
 			}
 			catch (Exception e)

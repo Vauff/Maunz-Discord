@@ -12,7 +12,9 @@ import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.util.Snowflake;
+import discord4j.rest.http.client.ClientException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.json.JSONArray;
@@ -139,13 +141,37 @@ public class MainListener
 
 	public static void onMessageCreate(MessageCreateEvent event)
 	{
-		MessageCreateThread thread = new MessageCreateThread(event, "messagereceived-" + event.getMessage().getId().asString());
-		thread.start();
+		try
+		{
+			new MessageCreateThread(event, "messagereceived-" + event.getMessage().getId().asString()).start();
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
 	}
 
 	public static void onReactionAdd(ReactionAddEvent event)
 	{
-		ReactionAddThread thread = new ReactionAddThread(event, "reactionadd-" + event.getMessage().block().getId().asString());
-		thread.start();
+		try
+		{
+			Message message;
+
+			try
+			{
+				message = event.getMessage().block();
+			}
+			catch (ClientException e)
+			{
+				//message was deleted too quick for us to get anything about it, never ours when this happens anyways
+				return;
+			}
+
+			new ReactionAddThread(event, message, "reactionadd-" + message.getId().asString()).start();
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
 	}
 }

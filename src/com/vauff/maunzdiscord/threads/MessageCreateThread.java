@@ -11,6 +11,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.User;
+import discord4j.rest.http.client.ClientException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -68,12 +69,7 @@ public class MessageCreateThread implements Runnable
 							{
 								if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
 								{
-									if (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis())
-									{
-										Util.msg(channel, author, author.getMention() + " Slow down!");
-										MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
-									}
-									else if (!MainListener.cooldownMessageTimestamps.containsKey(author.getId()))
+									if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
 									{
 										Util.msg(channel, author, author.getMention() + " Slow down!");
 										MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
@@ -103,12 +99,27 @@ public class MessageCreateThread implements Runnable
 
 								if (!blacklisted)
 								{
-									channel.type().block();
+									try
+									{
+										channel.type().block();
+									}
+									catch (ClientException e)
+									{
+										if (e.getStatus().code() == 403)
+										{
+											Util.msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+										}
+										else
+										{
+											Logger.log.error("", e);
+										}
+									}
+
 									Thread.sleep(250);
 
 									try
 									{
-										cmd.exe(event, event.getMessage().getChannel().block(), event.getMessage().getAuthor().get());
+										cmd.exe(event, channel, author);
 									}
 									catch (Exception e)
 									{
