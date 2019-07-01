@@ -256,8 +256,8 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 						ArrayList<String> reactions = new ArrayList<>();
 
-						reactions.add("white_check_mark");
-						reactions.add("x");
+						reactions.add("\u2705");
+						reactions.add("\u274C");
 						Util.addReactions(m, reactions);
 
 						ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);

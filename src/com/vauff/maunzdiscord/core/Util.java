@@ -221,13 +221,12 @@ public class Util
 			if (e.getStatus().code() == 403)
 			{
 				msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+				return null;
 			}
 			else
 			{
-				Logger.log.error("", e);
+				throw e;
 			}
-
-			return null;
 		}
 	}
 
@@ -251,13 +250,13 @@ public class Util
 				{
 					Logger.log.warn("Missing permissions to send message to channel #" + ((GuildChannel) channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel) channel).getGuild().block().getName() + " (" + ((GuildChannel) channel).getGuild().block().getId().asString() + ")");
 				}
+
+				return null;
 			}
 			else
 			{
-				Logger.log.error("", e);
+				throw e;
 			}
-
-			return null;
 		}
 	}
 
@@ -279,13 +278,12 @@ public class Util
 			if (e.getStatus().code() == 403)
 			{
 				msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+				return null;
 			}
 			else
 			{
-				Logger.log.error("", e);
+				throw e;
 			}
-
-			return null;
 		}
 	}
 
@@ -309,13 +307,13 @@ public class Util
 				{
 					Logger.log.warn("Missing permissions to send embed to channel #" + ((GuildChannel) channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel) channel).getGuild().block().getName() + " (" + ((GuildChannel) channel).getGuild().block().getId().asString() + ")");
 				}
+
+				return null;
 			}
 			else
 			{
-				Logger.log.error("", e);
+				throw e;
 			}
-
-			return null;
 		}
 	}
 
@@ -386,13 +384,12 @@ public class Util
 			if (e.getStatus().code() == 403)
 			{
 				msg(m.getChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+				return false;
 			}
 			else
 			{
-				Logger.log.error("", e);
+				throw e;
 			}
-
-			return false;
 		}
 	}
 
@@ -537,21 +534,14 @@ public class Util
 				m = Util.msg(channel, user, "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
 			}
 
-			try
+			if (pageNumber != 1)
 			{
-				if (pageNumber != 1)
-				{
-					addReaction(m, "◀");
-				}
-
-				if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-				{
-					addReaction(m, "▶");
-				}
+				addReaction(m, "◀");
 			}
-			catch (Exception e)
+
+			if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
 			{
-				Logger.log.error("", e);
+				addReaction(m, "▶");
 			}
 
 			return m;

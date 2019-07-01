@@ -43,7 +43,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.11.2</version>
+            <version>2.12.0</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -61,5 +61,5 @@
             <version>8.0.16</version>
         </dependency>
     </dependencies>
-    <version>r6</version>
+    <version>r7</version>
 </project>
