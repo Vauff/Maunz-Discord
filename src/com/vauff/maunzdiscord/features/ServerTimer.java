@@ -15,9 +15,14 @@ import java.util.Set;
 public class ServerTimer
 {
 	/**
-	 * Holds extended information about servers (for instance online players)
+	 * Holds online player lists for each server
 	 */
 	public static HashMap<String, Set<String>> serverPlayers = new HashMap<>();
+
+	/**
+	 * Holds the boolean status of whether each guilds server tracking services currently have a thread running or not
+	 */
+	public static HashMap<String, Boolean> trackingThreadRunning = new HashMap<>();
 
 	/**
 	 * Checks the servers in {@link Util#getJarLocation()}/data/services/server-tracking for new maps being played and sends them to a channel
@@ -33,8 +38,20 @@ public class ServerTimer
 				{
 					for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
 					{
-						ServerTimerThread thread = new ServerTimerThread(file, "servertracking-" + file.getName().replace(".json", ""));
-						thread.start();
+						String id = file.getName();
+
+						if (!trackingThreadRunning.containsKey(id))
+						{
+							trackingThreadRunning.put(id, false);
+						}
+
+						if (!trackingThreadRunning.get(id))
+						{
+							ServerTimerThread thread = new ServerTimerThread(file, "servertracking-" + id);
+
+							trackingThreadRunning.put(id, true);
+							thread.start();
+						}
 					}
 				}
 			}

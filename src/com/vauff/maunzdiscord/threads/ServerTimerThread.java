@@ -310,5 +310,9 @@ public class ServerTimerThread implements Runnable
 		{
 			Logger.log.error("", e);
 		}
+		finally
+		{
+			ServerTimer.trackingThreadRunning.put(file.getName(), false);
+		}
 	}
 }
