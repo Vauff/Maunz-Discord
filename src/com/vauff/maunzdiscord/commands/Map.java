@@ -155,7 +155,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 			{
 				if (!object.getString("lastMap").equals("N/A"))
 				{
-					String url = "http://158.69.59.239/mapimgs/" + StringUtils.substring(object.getString("lastMap"), 0, 31) + ".jpg";
+					String url = "https://vauff.com/mapimgs/" + StringUtils.substring(object.getString("lastMap"), 0, 31) + ".jpg";
 
 					try
 					{
@@ -249,7 +249,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 
 			if (mapExists)
 			{
-				String url = "http://158.69.59.239/mapimgs/" + formattedMap + ".jpg";
+				String url = "https://vauff.com/mapimgs/" + formattedMap + ".jpg";
 
 				try
 				{

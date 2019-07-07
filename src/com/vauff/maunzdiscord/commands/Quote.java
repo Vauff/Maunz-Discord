@@ -135,7 +135,7 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 
 										if (cut)
 										{
-											Util.msg(channel, author, "The rest of this quote is too long for Discord. Please see the full quote at http://158.69.59.239/quotes/viewquote.php?id=" + args[2]);
+											Util.msg(channel, author, "The rest of this quote is too long for Discord. Please see the full quote at https://vauff.com/quotes/viewquote.php?id=" + args[2]);
 										}
 									}
 									else
