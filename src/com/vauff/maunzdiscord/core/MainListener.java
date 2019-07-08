@@ -83,7 +83,6 @@ public class MainListener
 					file.createNewFile();
 					json.put("enabled", true);
 					json.put("lastGuildName", guild.getName());
-					json.put("language", "english");
 					json.put("blacklist", new JSONArray());
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
 				}
