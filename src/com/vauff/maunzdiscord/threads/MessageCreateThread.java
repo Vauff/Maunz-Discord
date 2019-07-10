@@ -12,10 +12,11 @@ import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.User;
 import discord4j.rest.http.client.ClientException;
-import org.json.JSONObject;
 
-import java.io.File;
+import java.util.List;
 import java.util.Random;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class MessageCreateThread implements Runnable
 {
@@ -83,12 +84,10 @@ public class MessageCreateThread implements Runnable
 
 								if (!(channel instanceof PrivateChannel) && !Util.hasPermission(author, event.getGuild().block()))
 								{
-									JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json")));
+									List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
 
-									for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+									for (String entry : blacklist)
 									{
-										String entry = json.getJSONArray("blacklist").getString(i);
-
 										if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace("*", "")) || entry.split(":")[1].equalsIgnoreCase("all")))
 										{
 											blacklisted = true;

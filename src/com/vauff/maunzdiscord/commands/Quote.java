@@ -27,9 +27,9 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (event.getGuild().block().getId().asLong() != 252536814324154368L) // hardcoding is bad mmkay, but this is temporary
+		if (event.getGuild().block().getId().asLong() != 252536814324154368L && event.getGuild().block().getId().asLong() != 381499037926293506L)
 		{
-			Util.msg(channel, author, "The quote command has been temporarily disabled in most guilds until a rewrite can be completed");
+			Util.msg(channel, author, "This command is disabled in most guilds until a rewrite can be completed");
 		}
 		else
 		{
@@ -249,8 +249,8 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 	 */
 	private static void sqlConnect() throws Exception
 	{
-		JSONObject json = new JSONObject(Util.getFileContents("config.json"));
+		JSONObject json = new JSONObject(Util.getFileContents("config.json")).getJSONObject("quotesDatabase");
 
-		sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getJSONObject("database").getString("hostname") + "/ircquotes?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getJSONObject("database").getString("username"), json.getJSONObject("database").getString("password"));
+		sqlCon = DriverManager.getConnection("jdbc:mysql://" + json.getString("hostname") + "/" + json.getString("database") + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false", json.getString("username"), json.getString("password"));
 	}
 }

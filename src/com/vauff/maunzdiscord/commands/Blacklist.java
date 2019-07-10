@@ -13,13 +13,14 @@ import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.json.JSONObject;
+import org.bson.Document;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class Blacklist extends AbstractCommand<MessageCreateEvent>
 {
@@ -37,12 +38,11 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 			{
 				if (args.length != 1)
 				{
-					File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
-					JSONObject json = new JSONObject(Util.getFileContents(file));
+					List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
 
 					if (args[1].equalsIgnoreCase("list"))
 					{
-						if (json.getJSONArray("blacklist").length() != 0)
+						if (blacklist.size() != 0)
 						{
 							if (args.length == 2 || NumberUtils.isCreatable(args[2]))
 							{
@@ -57,11 +57,10 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 									page = Integer.parseInt(args[2]);
 								}
 
-								ArrayList<String> blacklistArray = new ArrayList<>();
+								ArrayList<String> blacklistFormatted = new ArrayList<>();
 
-								for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+								for (String entry : blacklist)
 								{
-									String entry = json.getJSONArray("blacklist").getString(i);
 									String channelSelector;
 									String command = "\\*" + entry.split(":")[1];
 
@@ -79,10 +78,10 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 										command = "All Commands";
 									}
 
-									blacklistArray.add(channelSelector + " **|** " + command);
+									blacklistFormatted.add(channelSelector + " **|** " + command);
 								}
 
-								Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, page, false, false, channel, author);
+								Message m = Util.buildPage(blacklistFormatted, "Blacklisted Channels/Commands", 10, page, false, false, channel, author);
 
 								listMessages.put(author.getId(), m.getId());
 								waitForReaction(m.getId(), author.getId());
@@ -127,10 +126,8 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 						{
 							boolean blacklisted = false;
 
-							for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+							for (String entry : blacklist)
 							{
-								String entry = json.getJSONArray("blacklist").getString(i);
-
 								if (entry.equals(channel.getId().asString() + ":" + input))
 								{
 									blacklisted = true;
@@ -144,8 +141,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 										Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
 									}
 
-									json.getJSONArray("blacklist").remove(i);
-									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+									Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", channel.getId().asString() + ":" + input)));
 									break;
 								}
 							}
@@ -161,8 +157,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 									Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
 								}
 
-								json.getJSONArray("blacklist").put(channel.getId().asString() + ":" + input);
-								FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+								Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", channel.getId().asString() + ":" + input)));
 							}
 						}
 						else
@@ -223,10 +218,8 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 							{
 								boolean blacklisted = false;
 
-								for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+								for (String entry : blacklist)
 								{
-									String entry = json.getJSONArray("blacklist").getString(i);
-
 									if (entry.equals(location + ":" + input))
 									{
 										blacklisted = true;
@@ -254,8 +247,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 											}
 										}
 
-										json.getJSONArray("blacklist").remove(i);
-										FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+										Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", location + ":" + input)));
 										break;
 									}
 								}
@@ -285,8 +277,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 										}
 									}
 
-									json.getJSONArray("blacklist").put(location + ":" + input);
-									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+									Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", location + ":" + input)));
 								}
 							}
 							else
@@ -327,16 +318,14 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 	{
 		if (listMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(listMessages.get(event.getUser().block().getId())))
 		{
-			File file = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
-			JSONObject json = new JSONObject(Util.getFileContents(file));
+			List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
 
 			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
 			{
 				ArrayList<String> blacklistArray = new ArrayList<>();
 
-				for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+				for (String entry : blacklist)
 				{
-					String entry = json.getJSONArray("blacklist").getString(i);
 					String channel;
 					String command = "\\*" + entry.split(":")[1];
 
@@ -368,9 +357,8 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 			{
 				ArrayList<String> blacklistArray = new ArrayList<>();
 
-				for (int i = 0; i < json.getJSONArray("blacklist").length(); i++)
+				for (String entry : blacklist)
 				{
-					String entry = json.getJSONArray("blacklist").getString(i);
 					String channel;
 					String command = "\\*" + entry.split(":")[1];
 

@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -10,6 +11,7 @@ import discord4j.core.object.entity.PrivateChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import org.apache.commons.io.FileUtils;
+import org.bson.Document;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -17,6 +19,8 @@ import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class Enable extends AbstractCommand<MessageCreateEvent>
 {
@@ -27,8 +31,7 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 	{
 		if (!(channel instanceof PrivateChannel) && Util.hasPermission(author, event.getGuild().block()))
 		{
-			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
-			JSONObject guildJson = new JSONObject(Util.getFileContents(guildFile));
+			boolean guildEnabled = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getBoolean("enabled");
 
 			if (Util.hasPermission(author))
 			{
@@ -48,11 +51,10 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 			}
 			else
 			{
-				if (!guildJson.getBoolean("enabled"))
+				if (!guildEnabled)
 				{
 					Util.msg(channel, author, "Maunz is now enabled in this guild");
-					guildJson.put("enabled", true);
-					FileUtils.writeStringToFile(guildFile, guildJson.toString(2), "UTF-8");
+					Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$set", new Document("enabled", true)));
 				}
 				else
 				{
@@ -62,14 +64,14 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 		}
 		else if (channel instanceof PrivateChannel && Util.hasPermission(author))
 		{
-			File botFile = new File(Util.getJarLocation() + "config.json");
-			JSONObject botJson = new JSONObject(Util.getFileContents(botFile));
+			File file = new File(Util.getJarLocation() + "config.json");
+			JSONObject json = new JSONObject(Util.getFileContents(file));
 
-			if (!botJson.getBoolean("enabled"))
+			if (!json.getBoolean("enabled"))
 			{
 				Util.msg(channel, author, "Maunz is now enabled globally");
-				botJson.put("enabled", true);
-				FileUtils.writeStringToFile(botFile, botJson.toString(2), "UTF-8");
+				json.put("enabled", true);
+				FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
 			}
 			else
 			{
@@ -93,18 +95,17 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 	{
 		if (menuMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(menuMessages.get(event.getUser().block().getId())))
 		{
-			File botFile = new File(Util.getJarLocation() + "config.json");
-			File guildFile = new File(Util.getJarLocation() + "data/guilds/" + event.getGuild().block().getId().asString() + ".json");
-			JSONObject botJson = new JSONObject(Util.getFileContents(botFile));
-			JSONObject guildJson = new JSONObject(Util.getFileContents(guildFile));
+			File file = new File(Util.getJarLocation() + "config.json");
+			JSONObject json = new JSONObject(Util.getFileContents(file));
+			boolean guildEnabled = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getBoolean("enabled");
 
 			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("1⃣"))
 			{
-				if (!botJson.getBoolean("enabled"))
+				if (!json.getBoolean("enabled"))
 				{
 					Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now enabled globally");
-					botJson.put("enabled", true);
-					FileUtils.writeStringToFile(botFile, botJson.toString(2), "UTF-8");
+					json.put("enabled", true);
+					FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
 				}
 				else
 				{
@@ -113,11 +114,10 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 			}
 			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("2⃣"))
 			{
-				if (!guildJson.getBoolean("enabled"))
+				if (!guildEnabled)
 				{
 					Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now enabled in this guild");
-					guildJson.put("enabled", true);
-					FileUtils.writeStringToFile(guildFile, guildJson.toString(2), "UTF-8");
+					Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$set", new Document("enabled", true)));
 				}
 				else
 				{

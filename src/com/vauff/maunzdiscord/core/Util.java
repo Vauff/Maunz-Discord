@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
+import static com.mongodb.client.model.Filters.eq;
+
 /**
  * A class holding several static utility methods
  */
@@ -386,6 +388,11 @@ public class Util
 				msg(m.getChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to add one or more reactions because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 				return false;
 			}
+			else if (e.getStatus().code() == 404)
+			{
+				//means m was deleted before this reaction could be added, likely because the user selected an earlier reaction in a menu before all reactions had been added
+				return false;
+			}
 			else
 			{
 				throw e;
@@ -466,9 +473,9 @@ public class Util
 	public static boolean isEnabled(Guild guild) throws Exception
 	{
 		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
-		JSONObject guildJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "data/guilds/" + guild.getId().asString() + ".json")));
+		boolean guildEnabled = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", guild.getId().asLong())).first().getBoolean("enabled");
 
-		return botJson.getBoolean("enabled") && guildJson.getBoolean("enabled");
+		return botJson.getBoolean("enabled") && guildEnabled;
 	}
 
 	/**
@@ -476,7 +483,7 @@ public class Util
 	 *
 	 * @param entries         An ArrayList<String> that contains all the entries that should be in the page builder
 	 * @param pageSize        How many entries should be in a specific page
-	 * @param pageNumber      Which page the method should build and send to the provided IChannel
+	 * @param pageNumber      Which page the method should build and send to the provided MessageChannel
 	 * @param numberedEntries Whether the entries in a list should be prefixed with their corresponding number in the list or not
 	 * @param codeBlock       Whether to surround the entries in a code block or not
 	 * @param channel         The MessageChannel that the page message should be sent to
