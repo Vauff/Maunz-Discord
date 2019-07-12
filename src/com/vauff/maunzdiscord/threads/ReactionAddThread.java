@@ -40,6 +40,15 @@ public class ReactionAddThread implements Runnable
 				try
 				{
 					message.delete().block();
+				}
+				catch (Exception e)
+				{
+					//this means the message was already deleted, likely because the user managed to press more than one reaction
+					return;
+				}
+
+				try
+				{
 					AbstractCommand.AWAITED.get(message.getId()).getCommand().onReactionAdd(event, message);
 				}
 				catch (Exception e)
