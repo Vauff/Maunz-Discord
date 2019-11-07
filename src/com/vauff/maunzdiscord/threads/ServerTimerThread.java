@@ -1,7 +1,7 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.github.koraktor.steamcondenser.steam.SteamPlayer;
-import com.github.koraktor.steamcondenser.steam.servers.SourceServer;
+import com.github.koraktor.steamcondenser.servers.SteamPlayer;
+import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
