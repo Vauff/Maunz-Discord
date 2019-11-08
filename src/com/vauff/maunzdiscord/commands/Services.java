@@ -13,7 +13,7 @@ public class Services extends AbstractCommand<MessageCreateEvent>
 	{
 		if (Util.hasPermission(author, event.getGuild().block()))
 		{
-			Util.msg(channel, author, "This command is temporarily unavailable until a future release");
+			Util.msg(channel, author, "This command is temporarily unavailable until a future release" + System.lineSeparator() + System.lineSeparator() + "In the meantime, you can head over to the **#help** channel at https://discord.gg/v55fW9b to request manual service management (additions, edits, etc.). Please see the pinned message there for more details on how to proceed.");
 		}
 		else
 		{

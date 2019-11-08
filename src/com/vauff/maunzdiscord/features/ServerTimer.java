@@ -36,6 +36,8 @@ public class ServerTimer
 			{
 				if (Main.client.isConnected())
 				{
+					Logger.log.debug("Starting a server timer run...");
+
 					for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
 					{
 						String id = file.getName();
