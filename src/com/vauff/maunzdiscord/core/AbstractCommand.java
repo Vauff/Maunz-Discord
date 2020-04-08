@@ -16,7 +16,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	 * The values hold an instance of {@link Await}
 	 */
 	public static final HashMap<Snowflake, Await> AWAITED = new HashMap<>();
-	public static final HashMap<Snowflake, String> AWAITEDCHANNEL = new HashMap<>();
+	public static final HashMap<Snowflake, Snowflake> AWAITEDCHANNEL = new HashMap<>();
 
 	/**
 	 * Executes this command
