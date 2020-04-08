@@ -1,16 +1,18 @@
 package com.vauff.maunzdiscord.commands;
 
+import java.awt.Color;
+import java.util.function.Consumer;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
+
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.spec.EmbedCreateSpec;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.awt.Color;
-import java.util.function.Consumer;
 
 public class Benchmark extends AbstractCommand<MessageCreateEvent>
 {
@@ -53,24 +55,30 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 				link = link.replace("amp;", "");
 				Document benchDoc = Jsoup.connect(link).get();
 				Color embedColor;
-				String fullDesc = benchDoc.select("table[class=desc]").html().replace("<a href=\"#history\">", "");
+				String fullDesc = benchDoc.select("div[class=ov-scroll]").html().replace("<a href=\"#history\">", "");
 				String name = benchDoc.select("span[class=cpuname]").text();
-				String score = benchDoc.select("span[style=font-family: Arial, Helvetica, sans-serif;font-size: 35px;	font-weight: bold; color: red;]").text();
-				String rank = fullDesc.split("Overall Rank:</span>&nbsp;&nbsp;")[1].split("<")[0];
-				String samples = benchDoc.select("td[style=text-align: center]").text().split("Samples: ")[1].split("\\*")[0];
-				String ratio = fullDesc.split("Price:</span>&nbsp;&nbsp;")[1].split("&")[0];
+				String score = benchDoc.select("span[style=font-family: Arial, Helvetica, sans-serif;font-size: 44px;	font-weight: bold; color: #F48A18;]").text();
+				String rank = fullDesc.split("Overall Rank:</strong>&nbsp;&nbsp;")[1].split("<")[0];
+				String samples = benchDoc.select("div[class=right-desc]").text().split("Samples: ")[1].split("\\*")[0];
+				String ratio = "N/A";
 				String turboSpeed = "N/A";
 				String singleThread = "N/A";
 				String clockSpeed = "N/A";
 				String tdp = "N/A";
 				String socket = "N/A";
-				String price;
+				String price = "N/A";
 				String date;
 				String cores;
 
 				if (ratio.equals("NA"))
 				{
 					ratio = "N/A";
+				}
+
+				//if samples is the last entry in the right description, there will be a "+ Compare" from the button below it
+				if (samples.contains("Compare"))
+				{
+					samples = samples.split(" ")[0];
 				}
 
 				if (Integer.parseInt(samples) <= 4)
@@ -88,8 +96,9 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 
 				if (link.contains("gpu.php"))
 				{
-					date = fullDesc.split("Videocard First Benchmarked:</span>&nbsp;&nbsp;")[1].split("<")[0];
-					price = fullDesc.split("Last Price Change:</span>&nbsp;&nbsp;")[1].split(" \\(")[0].split("<")[0];
+					date = fullDesc.split("Videocard First Benchmarked:</strong> ")[1].split("<")[0];
+					price = fullDesc.split("Last Price Change:</strong>&nbsp;&nbsp;")[1].split(" \\(")[0];
+					ratio = fullDesc.split("Price: </strong>")[1].split("<")[0];
 
 					if (price.equals("NA"))
 					{
@@ -97,6 +106,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 					}
 
 					final String finalLink = link;
+					final String finalSamples = samples;
 					final String finalDate = date;
 					final String finalPrice = price;
 					final String finalRatio = ratio;
@@ -110,7 +120,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 						spec.setFooter("Powered by PassMark", "");
 						spec.addField("Score", score, true);
 						spec.addField("Rank", rank, true);
-						spec.addField("Samples", samples, true);
+						spec.addField("Samples", finalSamples, true);
 						spec.addField("First Benchmarked", finalDate, true);
 						spec.addField("Price", finalPrice, true);
 						spec.addField("Performance Per Dollar", finalRatio, true);
@@ -118,20 +128,21 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 
 					Util.msg(channel, author, embed);
 				}
-				if (link.contains("cpu.php"))
+				else if (link.contains("cpu.php"))
 				{
-					date = fullDesc.split("CPU First Seen on Charts:</span>&nbsp;&nbsp;")[1].split("<")[0];
-					price = fullDesc.split("Last Price Change:</span>&nbsp;&nbsp;")[1].split("<")[0];
+					date = fullDesc.split("CPU First Seen on Charts:</strong>&nbsp;&nbsp;")[1].split("<")[0];
+					price = fullDesc.split("Last Price Change:</strong>&nbsp;&nbsp;")[1].split("<")[0];
 					cores = fullDesc.split("No of Cores:</strong> ")[1].split("<")[0];
+					ratio = fullDesc.split("Price:</strong>&nbsp;&nbsp;")[1].split("&")[0];
 
 					if (fullDesc.contains("Clockspeed:</strong> "))
 					{
 						clockSpeed = fullDesc.split("Clockspeed:</strong> ")[1].split("<")[0];
 					}
 
-					if (fullDesc.contains("<br><br> Single Thread Rating: "))
+					if (fullDesc.contains("Single Thread Rating: </strong>"))
 					{
-						singleThread = fullDesc.split("<br><br> Single Thread Rating: ")[1].split("<")[0];
+						singleThread = fullDesc.split("Single Thread Rating: </strong>")[1].split("<")[0].replace("\n", "");
 					}
 
 					if (fullDesc.contains("Turbo Speed:</strong> "))
@@ -160,6 +171,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 					}
 
 					final String finalLink = link;
+					final String finalSamples = samples;
 					final String finalDate = date;
 					final String finalPrice = price;
 					final String finalRatio = ratio;
@@ -179,7 +191,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 						spec.addField("Score", score, true);
 						spec.addField("Single Thread Score", finalSingleThread, true);
 						spec.addField("Rank", rank, true);
-						spec.addField("Samples", samples, true);
+						spec.addField("Samples", finalSamples, true);
 						spec.addField("First Benchmarked", finalDate, true);
 						spec.addField("Cores", cores, true);
 						spec.addField("Price", finalPrice, true);
