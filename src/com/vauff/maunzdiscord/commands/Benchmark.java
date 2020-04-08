@@ -97,12 +97,17 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 				if (link.contains("gpu.php"))
 				{
 					date = fullDesc.split("Videocard First Benchmarked:</strong> ")[1].split("<")[0];
-					price = fullDesc.split("Last Price Change:</strong>&nbsp;&nbsp;")[1].split(" \\(")[0];
+					price = fullDesc.split("Last Price Change:</strong>&nbsp;&nbsp;")[1].split(" \\(")[0].split("<")[0];
 					ratio = fullDesc.split("Price: </strong>")[1].split("<")[0];
 
 					if (price.equals("NA"))
 					{
 						price = "N/A";
+					}
+
+					if (ratio.equals("NA"))
+					{
+						ratio = "N/A";
 					}
 
 					final String finalLink = link;
@@ -163,6 +168,11 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 					if (price.equals("NA"))
 					{
 						price = "N/A";
+					}
+
+					if (ratio.equals("NA"))
+					{
+						ratio = "N/A";
 					}
 
 					if (tdp.equals("-1 W"))
