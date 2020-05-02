@@ -334,7 +334,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 
 				if (!formattedMap.equals(""))
 				{
-					String url = "http://158.69.59.239/mapimgs/" + formattedMap + ".jpg";
+					String url = "https://vauff.com/mapimgs/" + formattedMap + ".jpg";
 
 					try
 					{
