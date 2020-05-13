@@ -58,7 +58,7 @@ public class Main
 
 			if (json.getString("discordToken").equals(""))
 			{
-				Logger.log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discordapp.com/developers/applications/me to the discordToken option in config.json");
+				Logger.log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discord.com/developers/applications to the discordToken option in config.json");
 				exit = true;
 			}
 
