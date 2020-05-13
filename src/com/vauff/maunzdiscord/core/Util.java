@@ -214,22 +214,7 @@ public class Util
 	 */
 	public static Message msg(MessageChannel channel, User author, String message)
 	{
-		try
-		{
-			return channel.createMessage(message).block();
-		}
-		catch (ClientException e)
-		{
-			if (e.getStatus().code() == 403)
-			{
-				msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
-				return null;
-			}
-			else
-			{
-				throw e;
-			}
-		}
+		return channel.createMessage(message).block();
 	}
 
 	/**
@@ -271,22 +256,7 @@ public class Util
 	 */
 	public static Message msg(MessageChannel channel, User author, Consumer<EmbedCreateSpec> embed)
 	{
-		try
-		{
-			return channel.createEmbed(embed).block();
-		}
-		catch (ClientException e)
-		{
-			if (e.getStatus().code() == 403)
-			{
-				msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
-				return null;
-			}
-			else
-			{
-				throw e;
-			}
-		}
+		return channel.createEmbed(embed).block();
 	}
 
 	/**

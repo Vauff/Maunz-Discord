@@ -101,24 +101,23 @@ public class MessageCreateThread implements Runnable
 									try
 									{
 										channel.type().block();
+
+										//if msg shows up too quickly, message history can somehow get out of order
+										Thread.sleep(250);
+
+										cmd.exe(event, channel, author);
 									}
 									catch (ClientException e)
 									{
 										if (e.getStatus().code() == 403)
 										{
 											Util.msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+											return;
 										}
 										else
 										{
-											Logger.log.error("", e);
+											throw e;
 										}
-									}
-
-									Thread.sleep(250);
-
-									try
-									{
-										cmd.exe(event, channel, author);
 									}
 									catch (Exception e)
 									{
