@@ -7,8 +7,8 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.features.ServerTimer;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.util.Snowflake;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.rest.util.Snowflake;;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.io.FileUtils;
@@ -61,7 +61,7 @@ public class ServerTimerThread implements Runnable
 
 				try
 				{
-					Main.client.getGuildById(Snowflake.of(file.getName())).block();
+					Main.gateway.getGuildById(Snowflake.of(file.getName())).block();
 				}
 				catch (ClientException e)
 				{
@@ -93,7 +93,7 @@ public class ServerTimerThread implements Runnable
 
 						try
 						{
-							Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block();
+							Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block();
 						}
 						catch (Exception e)
 						{
@@ -139,14 +139,14 @@ public class ServerTimerThread implements Runnable
 
 									if (object.getInt("downtimeTimer") == object.getInt("failedConnectionsThreshold") && channelExists)
 									{
-										Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has gone offline");
+										Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has gone offline");
 									}
 
 									if (object.getInt("downtimeTimer") >= 10080)
 									{
 										if (channelExists)
 										{
-											Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has now been offline for a week and the server tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+											Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has now been offline for a week and the server tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										}
 
 										object.put("enabled", false);
@@ -163,7 +163,7 @@ public class ServerTimerThread implements Runnable
 
 						if (object.getInt("downtimeTimer") >= object.getInt("failedConnectionsThreshold") && channelExists)
 						{
-							Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has come back online");
+							Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has come back online");
 						}
 
 						String serverInfo = server.toString();
@@ -212,7 +212,7 @@ public class ServerTimerThread implements Runnable
 
 							if (channelExists)
 							{
-								Util.msg((MessageChannel) Main.client.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
+								Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
 							}
 
 							for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
@@ -224,7 +224,7 @@ public class ServerTimerThread implements Runnable
 
 									try
 									{
-										member = Main.client.getMemberById(Snowflake.of(file.getName()), Snowflake.of(notificationFile.getName().replace(".json", ""))).block();
+										member = Main.gateway.getMemberById(Snowflake.of(file.getName()), Snowflake.of(notificationFile.getName().replace(".json", ""))).block();
 									}
 									catch (ClientException e)
 									{
@@ -299,7 +299,7 @@ public class ServerTimerThread implements Runnable
 							object.put("serverName", serverName);
 						}
 
-						json.put("lastGuildName", Main.client.getGuildById(Snowflake.of(Long.parseLong(file.getName()))).block().getName());
+						json.put("lastGuildName", Main.gateway.getGuildById(Snowflake.of(Long.parseLong(file.getName()))).block().getName());
 						object.put("downtimeTimer", 0);
 						server.disconnect();
 					}

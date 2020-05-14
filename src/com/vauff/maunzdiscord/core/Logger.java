@@ -9,9 +9,9 @@ import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.Embed;
 import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.rest.http.client.ClientException;
 
 public class Logger
@@ -54,9 +54,9 @@ public class Logger
 					}
 				}
 
-				if (event.getMessage().getContent().isPresent())
+				if (!event.getMessage().getContent().isEmpty())
 				{
-					msg += event.getMessage().getContent().get();
+					msg += event.getMessage().getContent();
 				}
 
 				for (Attachment attachment : event.getMessage().getAttachments())
@@ -93,12 +93,12 @@ public class Logger
 				return;
 			}
 
-			if (message.getAuthor().isPresent() && message.getContent().isPresent())
+			if (message.getAuthor().isPresent() && !message.getContent().isEmpty())
 			{
 				String userName = message.getAuthor().get().getUsername();
 				String userId = message.getAuthor().get().getId().asString();
 				String messageID = message.getId().asString();
-				String messageContent = message.getContent().get();
+				String messageContent = message.getContent();
 
 				Logger.log.debug(userName + " (" + userId + ") edited the message ID " + messageID + " to \"" + messageContent + "\"");
 			}

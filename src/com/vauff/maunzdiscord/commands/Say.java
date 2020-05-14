@@ -4,11 +4,11 @@ import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.GuildChannel;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.channel.GuildChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Snowflake;
+import discord4j.rest.util.Snowflake;
 import discord4j.rest.http.client.ClientException;
 
 public class Say extends AbstractCommand<MessageCreateEvent>
@@ -16,7 +16,7 @@ public class Say extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().get().split(" ");
+		String[] args = event.getMessage().getContent().split(" ");
 
 		if (channel instanceof PrivateChannel)
 		{
@@ -48,7 +48,7 @@ public class Say extends AbstractCommand<MessageCreateEvent>
 
 			try
 			{
-				sendChannel = (GuildChannel) Main.client.getChannelById(Snowflake.of(args[1].replaceAll("[^\\d.]", ""))).block();
+				sendChannel = (GuildChannel) Main.gateway.getChannelById(Snowflake.of(args[1].replaceAll("[^\\d.]", ""))).block();
 			}
 			catch (ClientException e)
 			{

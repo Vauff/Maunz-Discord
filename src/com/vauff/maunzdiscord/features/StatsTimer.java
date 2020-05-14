@@ -24,17 +24,17 @@ public class StatsTimer
 		{
 			try
 			{
-				if (Main.client.isConnected())
+				if (Main.gateway.getGatewayClient(0).get().isConnected())
 				{
 					if (!showingGuilds)
 					{
-						if (Main.client.getGuilds().count().block() == 1L)
+						if (Main.gateway.getGuilds().count().block() == 1L)
 						{
-							Main.client.updatePresence(Presence.online(Activity.playing(Main.client.getGuilds().count().block() + " guild"))).block();
+							Main.gateway.updatePresence(Presence.online(Activity.playing(Main.gateway.getGuilds().count().block() + " guild"))).block();
 						}
 						else
 						{
-							Main.client.updatePresence(Presence.online(Activity.playing(Main.client.getGuilds().count().block() + " guilds"))).block();
+							Main.gateway.updatePresence(Presence.online(Activity.playing(Main.gateway.getGuilds().count().block() + " guilds"))).block();
 						}
 						showingGuilds = true;
 					}
@@ -42,7 +42,7 @@ public class StatsTimer
 					{
 						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
-						Main.client.updatePresence(Presence.online(Activity.playing(json.getString("altPlayingText")))).block();
+						Main.gateway.updatePresence(Presence.online(Activity.playing(json.getString("altPlayingText")))).block();
 						showingGuilds = false;
 					}
 				}

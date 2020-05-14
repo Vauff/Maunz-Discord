@@ -14,7 +14,7 @@ import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.util.Snowflake;
+import discord4j.rest.util.Snowflake;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.time.StopWatch;
 import org.bson.Document;
@@ -73,19 +73,19 @@ public class MainListener
 				}
 			}
 
-			for (Guild guild : Main.client.getGuilds().toIterable())
+			for (Guild guild : Main.gateway.getGuilds().toIterable())
 			{
 				setupGuild(guild);
 			}
 
 
-			Main.client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
-			Main.client.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
-			Main.client.getEventDispatcher().on(MessageDeleteEvent.class).subscribe(Logger::onMessageDelete);
-			Main.client.getEventDispatcher().on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
-			Main.client.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
-			Main.client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(Logger::onGuildCreate);
-			Main.client.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
+			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
+			Main.gateway.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
+			Main.gateway.getEventDispatcher().on(MessageDeleteEvent.class).subscribe(Logger::onMessageDelete);
+			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
+			Main.gateway.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
+			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(Logger::onGuildCreate);
+			Main.gateway.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
 			commands.add(new About());
 			commands.add(new Benchmark());
 			commands.add(new Blacklist());
@@ -118,9 +118,9 @@ public class MainListener
 				commands.add(new Quote());
 			}
 
-			Main.client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
-			Main.client.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
-			Main.client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(MainListener::onGuildCreate);
+			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
+			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
+			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(MainListener::onGuildCreate);
 			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 		}

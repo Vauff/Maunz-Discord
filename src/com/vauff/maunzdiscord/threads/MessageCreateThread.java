@@ -8,8 +8,8 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.entity.User;
 import discord4j.rest.http.client.ClientException;
 
@@ -43,9 +43,9 @@ public class MessageCreateThread implements Runnable
 	{
 		try
 		{
-			if (event.getMessage().getContent().isPresent() && event.getMessage().getAuthor().isPresent())
+			if (!event.getMessage().getContent().isEmpty() && event.getMessage().getAuthor().isPresent())
 			{
-				String cmdName = event.getMessage().getContent().get().split(" ")[0];
+				String cmdName = event.getMessage().getContent().split(" ")[0];
 				User author = event.getMessage().getAuthor().get();
 				MessageChannel channel = event.getMessage().getChannel().block();
 
@@ -141,7 +141,7 @@ public class MessageCreateThread implements Runnable
 				{
 					if (AbstractCommand.AWAITED.containsKey(author.getId()) && channel.getId().equals(AbstractCommand.AWAITEDCHANNEL.get(author.getId())))
 					{
-						Main.client.getMessageById(channel.getId(), AbstractCommand.AWAITED.get(author.getId()).getID()).block().delete();
+						Main.gateway.getMessageById(channel.getId(), AbstractCommand.AWAITED.get(author.getId()).getID()).block().delete();
 						AbstractCommand.AWAITED.get(author.getId()).getCommand().onMessageReceived(event);
 					}
 				}

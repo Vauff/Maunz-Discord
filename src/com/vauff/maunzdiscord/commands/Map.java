@@ -5,10 +5,10 @@ import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Snowflake;
+import discord4j.rest.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -74,7 +74,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 				{
 					if (serverList.size() == 1)
 					{
-						runCmd(author, channel, json.getJSONObject(serverList.get(0)), event.getMessage().getContent().get().split(" "), false);
+						runCmd(author, channel, json.getJSONObject(serverList.get(0)), event.getMessage().getContent().split(" "), false);
 					}
 					else
 					{
@@ -91,7 +91,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 
 						if (!object.equals(""))
 						{
-							runCmd(author, channel, json.getJSONObject(object), event.getMessage().getContent().get().split(" "), false);
+							runCmd(author, channel, json.getJSONObject(object), event.getMessage().getContent().split(" "), false);
 						}
 						else
 						{
@@ -108,7 +108,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 							waitForReaction(m.getId(), author.getId());
 							selectionServers.put(author.getId(), serverList);
 							selectionMessages.put(author.getId(), m.getId());
-							args.put(author.getId(), event.getMessage().getContent().get().split(" "));
+							args.put(author.getId(), event.getMessage().getContent().split(" "));
 							Util.addNumberedReactions(m, true, serverList.size());
 
 							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);

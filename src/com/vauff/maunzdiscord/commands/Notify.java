@@ -4,12 +4,12 @@ import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Snowflake;
+import discord4j.rest.util.Snowflake;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -78,7 +78,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 					if (serverList.size() == 1)
 					{
 						selectedServers.put(author.getId(), serverList.get(0));
-						runCmd(author, channel, serverInfoJson.getJSONObject(serverList.get(0)), serverList.get(0), event.getMessage().getContent().get());
+						runCmd(author, channel, serverInfoJson.getJSONObject(serverList.get(0)), serverList.get(0), event.getMessage().getContent());
 					}
 					else
 					{
@@ -96,7 +96,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 						if (!object.equals(""))
 						{
 							selectedServers.put(author.getId(), object);
-							runCmd(author, channel, serverInfoJson.getJSONObject(object), object, event.getMessage().getContent().get());
+							runCmd(author, channel, serverInfoJson.getJSONObject(object), object, event.getMessage().getContent());
 						}
 						else
 						{
@@ -113,7 +113,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 							waitForReaction(m.getId(), author.getId());
 							selectionServers.put(author.getId(), serverList);
 							selectionMessages.put(author.getId(), m.getId());
-							messageContents.put(author.getId(), event.getMessage().getContent().get());
+							messageContents.put(author.getId(), event.getMessage().getContent());
 							Util.addNumberedReactions(m, true, serverList.size());
 
 							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);

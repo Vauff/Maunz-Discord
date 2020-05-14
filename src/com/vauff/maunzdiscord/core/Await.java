@@ -1,7 +1,7 @@
 package com.vauff.maunzdiscord.core;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.util.Snowflake;
+import discord4j.rest.util.Snowflake;
 
 /**
  * Holds information about a message that needs a reaction/reply to continue further execution

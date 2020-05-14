@@ -1,20 +1,20 @@
 package com.vauff.maunzdiscord.core;
 
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.reaction.ReactionEmoji;
-import discord4j.core.object.util.Permission;
+import discord4j.rest.util.Color;
+import discord4j.rest.util.Permission;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.HttpURLConnection;

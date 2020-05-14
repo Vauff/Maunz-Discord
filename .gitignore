@@ -7,6 +7,7 @@
 /maunz.log
 /maunz-old.log
 /target/generated-sources/
+/target/maven-status/
 /target/test-classes/
 /target/classes/com/
 /target/classes/data/

@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.discord4j</groupId>
             <artifactId>discord4j-core</artifactId>
-            <version>3.0.14</version>
+            <version>3.1.0.RC1</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.github.Vauff</groupId>
             <artifactId>steam-condenser-java</artifactId>
-            <version>f824fc4ed8</version>
+            <version>fc706febdd</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>4.0.2</version>
+            <version>4.0.3</version>
         </dependency>
     </dependencies>
     <version>r12</version>

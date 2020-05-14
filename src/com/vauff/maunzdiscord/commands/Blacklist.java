@@ -6,13 +6,13 @@ import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.entity.Channel;
-import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.channel.Channel;
+import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.PrivateChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Snowflake;
+import discord4j.rest.util.Snowflake;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bson.Document;
 
@@ -30,7 +30,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		String[] args = event.getMessage().getContent().get().split(" ");
+		String[] args = event.getMessage().getContent().split(" ");
 
 		if (!(channel instanceof PrivateChannel))
 		{
@@ -70,7 +70,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 									}
 									else
 									{
-										channelSelector = Main.client.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
+										channelSelector = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
 									}
 
 									if (entry.split(":")[1].equalsIgnoreCase("all"))
@@ -173,7 +173,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 						{
 							if (args[1].startsWith("<#"))
 							{
-								Channel refChannel = Main.client.getChannelById(Snowflake.of(args[1].replaceAll("[^\\d.]", ""))).block();
+								Channel refChannel = Main.gateway.getChannelById(Snowflake.of(args[1].replaceAll("[^\\d.]", ""))).block();
 
 								if (((GuildChannel) refChannel).getGuild().block().equals(event.getGuild().block()))
 								{
@@ -335,7 +335,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 					}
 					else
 					{
-						channel = Main.client.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
+						channel = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
 					}
 
 					if (entry.split(":")[1].equalsIgnoreCase("all"))
@@ -368,7 +368,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 					}
 					else
 					{
-						channel = Main.client.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
+						channel = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
 					}
 
 					if (entry.split(":")[1].equalsIgnoreCase("all"))

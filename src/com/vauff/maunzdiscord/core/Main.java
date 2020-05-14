@@ -3,7 +3,7 @@ package com.vauff.maunzdiscord.core;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import discord4j.core.DiscordClient;
-import discord4j.core.DiscordClientBuilder;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +14,7 @@ import java.io.File;
 
 public class Main
 {
-	public static DiscordClient client;
+	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
 	public static String version = "r12";
 
@@ -88,9 +88,11 @@ public class Main
 				System.exit(1);
 			}
 
-			client = new DiscordClientBuilder(Util.token).build();
-			client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> MainListener.onReady());
-			client.login().block();
+			DiscordClient client = DiscordClient.builder(Util.token).build();
+
+			gateway = client.login().block();
+			gateway.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> MainListener.onReady());
+			gateway.onDisconnect().block();
 		}
 		catch (Exception e)
 		{
