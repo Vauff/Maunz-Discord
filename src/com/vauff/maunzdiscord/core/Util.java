@@ -302,7 +302,7 @@ public class Util
 		try
 		{
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36");
+			connection.setRequestProperty("User-Agent", getUserAgent());
 			image = ImageIO.read(connection.getInputStream());
 
 			final int pixels = image.getWidth() * image.getHeight();
@@ -573,5 +573,17 @@ public class Util
 		{
 			return 0;
 		}
+	}
+
+	/**
+	 * Provides the bots global user agent from config.json
+	 *
+	 * @return The user agent
+	 */
+	public static String getUserAgent() throws Exception
+	{
+		JSONObject json = new JSONObject(getFileContents(getJarLocation() + "config.json"));
+
+		return json.getString("userAgent");
 	}
 }
