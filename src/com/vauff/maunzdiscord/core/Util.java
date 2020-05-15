@@ -582,7 +582,7 @@ public class Util
 	 */
 	public static String getUserAgent() throws Exception
 	{
-		JSONObject json = new JSONObject(getFileContents(getJarLocation() + "config.json"));
+		JSONObject json = new JSONObject(getFileContents("config.json"));
 
 		return json.getString("userAgent");
 	}
