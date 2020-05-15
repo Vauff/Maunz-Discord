@@ -4,12 +4,12 @@ import com.vauff.maunzdiscord.core.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
-import discord4j.core.object.entity.User;
-import discord4j.rest.util.Snowflake;
 import discord4j.rest.http.client.ClientException;
+import discord4j.rest.util.Snowflake;
 
 public class Say extends AbstractCommand<MessageCreateEvent>
 {

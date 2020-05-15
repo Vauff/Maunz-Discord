@@ -1,16 +1,16 @@
 package com.vauff.maunzdiscord.core;
 
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.reaction.ReactionEmoji;
-import discord4j.rest.util.Color;
-import discord4j.rest.util.Permission;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
+import discord4j.rest.util.Color;
+import discord4j.rest.util.Permission;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
@@ -61,7 +61,7 @@ public class Util
 	/**
 	 * Gets the contents of a file as a string
 	 *
-	 * @param arg The path of the file, relative to {@link Util#getJarLocation()}
+	 * @param arg The path of the file to read, relative to {@link Util#getJarLocation()}
 	 * @return The content of the file
 	 * @throws Exception
 	 */
@@ -75,7 +75,7 @@ public class Util
 	/**
 	 * Gets the contents of a file as a string
 	 *
-	 * @param arg The path of the file
+	 * @param arg The File object to read
 	 * @return The content of the file, or an empty string if an exception has been caught
 	 * @throws Exception
 	 */
@@ -114,11 +114,11 @@ public class Util
 	}
 
 	/**
-	 * Concatenates a string array from a given start index and leavs out the part after the last space
+	 * Concatenates a string array from a given start index
 	 *
 	 * @param args       The array to concatenate
 	 * @param startIndex The index to start concatenating the array
-	 * @return The concatenated array with the part after the last space left out
+	 * @return The concatenated array
 	 */
 	public static String addArgs(String[] args, int startIndex)
 	{
@@ -161,10 +161,10 @@ public class Util
 	}
 
 	/**
-	 * Checks if the client ID of a user is equal to the client ID of the botOwner supplied in config.json
+	 * Checks if a user is a bot administrator
 	 *
 	 * @param user The user to check
-	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json, false otherwise
+	 * @return true if user is a bot administrator, false otherwise
 	 * @throws Exception
 	 */
 	public static boolean hasPermission(User user) throws Exception
@@ -183,27 +183,22 @@ public class Util
 	}
 
 	/**
-	 * Checks if the client ID of a user is equal to the client ID of the botOwner supplied in config.json or the user is administrator in the supplied guild
+	 * Checks if a user is a bot or guild administrator
 	 *
 	 * @param user  The user to check
 	 * @param guild The guild to check for permissions in
-	 * @return true if the client IDs match and the given user is the botOwner supplied in config.json or the user is a guild administrator, false otherwise
+	 * @return true if the user is a bot or guild administrator, false otherwise
 	 * @throws Exception
 	 */
 	public static boolean hasPermission(User user, Guild guild) throws Exception
 	{
-		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
-
-		for (int i = 0; i < json.getJSONArray("botOwners").length(); i++)
-		{
-			if (user.getId().asLong() == json.getJSONArray("botOwners").getLong(i))
-			{
-				return true;
-			}
-		}
+		if (hasPermission(user))
+			return true;
 
 		return (user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.ADMINISTRATOR) || user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.MANAGE_GUILD) ? true : false);
 	}
+
+	//TODO: Remove the msg methods for responding to users, they are basically useless now with error handling for them moved to MessageCreateThread
 
 	/**
 	 * Sends a message to a channel
@@ -211,6 +206,7 @@ public class Util
 	 * @param channel The channel
 	 * @param author  The author
 	 * @param message The message
+	 * @return The message object
 	 */
 	public static Message msg(MessageChannel channel, User author, String message)
 	{
@@ -222,6 +218,7 @@ public class Util
 	 *
 	 * @param channel The channel
 	 * @param message The message
+	 * @return The message object
 	 */
 	public static Message msg(MessageChannel channel, String message)
 	{
@@ -253,6 +250,7 @@ public class Util
 	 * @param channel The channel
 	 * @param author  The author
 	 * @param embed   The embed
+	 * @return The message object
 	 */
 	public static Message msg(MessageChannel channel, User author, Consumer<EmbedCreateSpec> embed)
 	{
@@ -264,6 +262,7 @@ public class Util
 	 *
 	 * @param channel The channel
 	 * @param embed   The embed
+	 * @return The message object
 	 */
 	public static Message msg(MessageChannel channel, Consumer<EmbedCreateSpec> embed)
 	{
@@ -292,9 +291,9 @@ public class Util
 	/**
 	 * Gets the average color from the picture found at a URL
 	 *
-	 * @param url The URL leading to the picture
-	 * @return The average color of the picture.
-	 * If the URL does not contain a picture an RGB color value of 0, 154, 255 will be returned
+	 * @param url              The URL leading to the picture
+	 * @param handleExceptions Whether to return (0, 154, 255) when an exception happens
+	 * @return The average color of the picture, null or (0, 154, 255) on error
 	 */
 	public static Color averageColorFromURL(URL url, boolean handleExceptions)
 	{
@@ -341,8 +340,9 @@ public class Util
 	/**
 	 * Generic method for adding a reaction to a message, used so a no permission message can be sent if required
 	 *
-	 * @param m        The message to add the emojis to
-	 * @param reaction A string that contains a reaction that should be added to a given IMessage
+	 * @param m        The message to add the reaction to
+	 * @param reaction The reaction to add
+	 * @return true if the reaction was added successfully, false otherwise
 	 */
 	public static boolean addReaction(Message m, String reaction)
 	{
@@ -373,8 +373,8 @@ public class Util
 	/**
 	 * Generic method for adding reactions to a message, used so a no permission message can be sent if required
 	 *
-	 * @param m         The message to add the emojis to
-	 * @param reactions An ArrayList<String> that contains a list of reactions that should be added to a given IMessage
+	 * @param m         The message to add the reactions to
+	 * @param reactions An ArrayList<String> that contains a list of reactions to add
 	 */
 	public static void addReactions(Message m, ArrayList<String> reactions)
 	{
@@ -388,11 +388,11 @@ public class Util
 	}
 
 	/**
-	 * Adds keycap emojis, increasing by value, starting at one and ending at nine. Used for menu selection
+	 * Adds keycap reactions, increasing by value, starting at one and ending at nine. Used for menu selection
 	 *
-	 * @param m           The message to add the emojis to
-	 * @param cancellable Whether an x emoji should be added at the end or not
-	 * @param i           The amount of emojis to add, starting by one. If i is 5, all emojis from :one: to :five: will be added.
+	 * @param m           The message to add the reactions to
+	 * @param cancellable Whether an x reaction should be added at the end or not
+	 * @param i           The amount of reactions to add
 	 */
 	public static void addNumberedReactions(Message m, boolean cancellable, int i)
 	{
@@ -426,6 +426,7 @@ public class Util
 	 * Checks whether the bot is enabled globally
 	 *
 	 * @return true if the bot is enabled globally, false otherwise
+	 * @throws Exception
 	 */
 	public static boolean isEnabled() throws Exception
 	{
@@ -435,25 +436,24 @@ public class Util
 	}
 
 	/**
-	 * Checks whether the bot is enabled for both a specified guild and globally
+	 * Checks whether the bot is enabled both for a specific guild and globally
 	 *
 	 * @param guild The Guild for which to check if the bot is enabled
-	 * @return true if the bot is enabled for the guild and globally, false otherwise
+	 * @return true if the bot is enabled in both, false otherwise
+	 * @throws Exception
 	 */
 	public static boolean isEnabled(Guild guild) throws Exception
 	{
-		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
-		boolean guildEnabled = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", guild.getId().asLong())).first().getBoolean("enabled");
-
-		return botJson.getBoolean("enabled") && guildEnabled;
+		return isEnabled() && Main.mongoDatabase.getCollection("guilds").find(eq("guildId", guild.getId().asLong())).first().getBoolean("enabled");
 	}
 
 	/**
 	 * Builds a modular page message for the given parameters
 	 *
 	 * @param entries         An ArrayList<String> that contains all the entries that should be in the page builder
+	 * @param title           The title to give all the pages
 	 * @param pageSize        How many entries should be in a specific page
-	 * @param pageNumber      Which page the method should build and send to the provided MessageChannel
+	 * @param pageNumber      Which page the method should build and send to the provided channel
 	 * @param numberedEntries Whether the entries in a list should be prefixed with their corresponding number in the list or not
 	 * @param codeBlock       Whether to surround the entries in a code block or not
 	 * @param channel         The MessageChannel that the page message should be sent to
@@ -525,6 +525,12 @@ public class Util
 		}
 	}
 
+	/**
+	 * Converts an emoji into an integer
+	 *
+	 * @param emoji The string value of the emoji
+	 * @return The integer value of the emoji
+	 */
 	public static int emojiToInt(String emoji)
 	{
 		if (emoji.equals("1⃣"))

@@ -1,18 +1,16 @@
 package com.vauff.maunzdiscord.commands;
 
-import java.util.function.Consumer;
-
+import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
-import com.vauff.maunzdiscord.core.Util;
-
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.entity.User;
-import discord4j.core.spec.EmbedCreateSpec;
+import java.util.function.Consumer;
 
 public class Benchmark extends AbstractCommand<MessageCreateEvent>
 {
