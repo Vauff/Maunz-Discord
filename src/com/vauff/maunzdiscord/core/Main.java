@@ -23,8 +23,6 @@ public class Main
 		try
 		{
 			File file = new File(Util.getJarLocation() + "config.json");
-			File logFile = new File("maunz.log");
-			File oldLogFile = new File("maunz-old.log");
 			boolean exit = false;
 			JSONObject json;
 
@@ -52,9 +50,6 @@ public class Main
 				FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
 			}
 
-			Thread.sleep(2000);
-			oldLogFile.delete();
-			logFile.renameTo(oldLogFile);
 			Logger.log = LogManager.getLogger(Main.class);
 
 			if (json.getString("discordToken").equals(""))

@@ -4,8 +4,7 @@
 /.settings
 /.idea
 /*.iml
-/maunz.log
-/maunz-old.log
+/logs/
 /target/generated-sources/
 /target/maven-status/
 /target/test-classes/
