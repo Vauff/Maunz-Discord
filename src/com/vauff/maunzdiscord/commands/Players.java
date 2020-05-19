@@ -1,8 +1,10 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.features.ServerTimer;
+import com.vauff.maunzdiscord.timers.ServerTimer;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
@@ -131,9 +133,20 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public String[] getAliases()
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		return new String[] { "*players" };
+		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
+		{
+			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
+
+			if (i != -1)
+			{
+				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
+				{
+					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i));
+				}
+			}
+		}
 	}
 
 	private void runCmd(User user, MessageChannel channel, JSONObject object)
@@ -185,19 +198,14 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
+	public String[] getAliases()
 	{
-		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
-		{
-			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
+		return new String[] { "*players" };
+	}
 
-			if (i != -1)
-			{
-				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
-				{
-					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i));
-				}
-			}
-		}
+	@Override
+	public CommandHelp getHelp()
+	{
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Lists the current players online on a server.") }, 0);
 	}
 }

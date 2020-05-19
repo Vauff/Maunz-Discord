@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -36,5 +38,11 @@ public class Restart extends AbstractCommand<MessageCreateEvent>
 	public String[] getAliases()
 	{
 		return new String[] { "*restart" };
+	}
+
+	@Override
+	public CommandHelp getHelp()
+	{
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Restarts Maunz.") }, 2);
 	}
 }

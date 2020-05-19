@@ -1,4 +1,4 @@
-package com.vauff.maunzdiscord.core;
+package com.vauff.maunzdiscord.commands.templates;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -27,12 +27,38 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	public abstract void exe(M event, MessageChannel channel, User author) throws Exception;
 
 	/**
+	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(Snowflake, Snowflake)}
+	 *
+	 * @param event   The event holding information about the added reaction
+	 * @param message The Message that was reacted to
+	 */
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
+	{
+	}
+
+	/**
+	 * Gets called when a specific user sends a reply defined prior in {@link AbstractCommand#waitForReply(Snowflake, Snowflake)}
+	 *
+	 * @param event The event holding information about the reply
+	 */
+	public void onMessageReceived(MessageCreateEvent event) throws Exception
+	{
+	}
+
+	/**
 	 * Defines aliases that can be used to trigger the command.
 	 * The main alias should also be defined in here
 	 *
 	 * @return A string array of all valid aliases
 	 */
 	public abstract String[] getAliases();
+
+	/**
+	 * An object that holds information about the command to display in *help
+	 *
+	 * @return An instance of {@link CommandHelp}
+	 */
+	public abstract CommandHelp getHelp();
 
 	/**
 	 * Sets up this command to await a reaction by the user who triggered this command
@@ -64,24 +90,5 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	public boolean confirmable()
 	{
 		return false;
-	}
-
-	/**
-	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(Snowflake, Snowflake)}
-	 *
-	 * @param event   The event holding information about the added reaction
-	 * @param message The Message that was reacted to
-	 */
-	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
-	{
-	}
-
-	/**
-	 * Gets called when a specific user sends a reply defined prior in {@link AbstractCommand#waitForReply(Snowflake, Snowflake)}
-	 *
-	 * @param event The event holding information about the reply
-	 */
-	public void onMessageReceived(MessageCreateEvent event) throws Exception
-	{
 	}
 }

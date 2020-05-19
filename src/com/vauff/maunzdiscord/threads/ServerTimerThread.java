@@ -5,7 +5,7 @@ import com.github.koraktor.steamcondenser.servers.SteamPlayer;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.features.ServerTimer;
+import com.vauff.maunzdiscord.timers.ServerTimer;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;

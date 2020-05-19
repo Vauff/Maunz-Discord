@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
@@ -100,5 +102,11 @@ public class Minecraft extends AbstractCommand<MessageCreateEvent>
 	public String[] getAliases()
 	{
 		return new String[] { "*minecraft" };
+	}
+
+	@Override
+	public CommandHelp getHelp()
+	{
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<uuid/username>", "Gives you full information about any Minecraft account.") }, 0);
 	}
 }

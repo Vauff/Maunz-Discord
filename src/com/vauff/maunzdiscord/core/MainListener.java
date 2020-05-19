@@ -2,9 +2,10 @@ package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoCollection;
 import com.vauff.maunzdiscord.commands.*;
-import com.vauff.maunzdiscord.features.*;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
+import com.vauff.maunzdiscord.timers.*;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -60,7 +61,6 @@ public class MainListener
 			JSONObject configJson = new JSONObject(Util.getFileContents("config.json"));
 
 			uptime.start();
-			Help.setupCmdHelp();
 			folderList.add(new File(Util.getJarLocation() + "data/"));
 			folderList.add(new File(Util.getJarLocation() + "data/services/"));
 			folderList.add(new File(Util.getJarLocation() + "data/services/server-tracking/"));

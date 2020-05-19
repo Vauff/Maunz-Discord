@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
@@ -308,12 +310,6 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public String[] getAliases()
-	{
-		return new String[] { "*blacklist" };
-	}
-
-	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
 		if (listMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(listMessages.get(event.getUser().block().getId())))
@@ -386,5 +382,22 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
 			}
 		}
+	}
+
+	@Override
+	public String[] getAliases()
+	{
+		return new String[] { "*blacklist" };
+	}
+
+	@Override
+	public CommandHelp getHelp()
+	{
+		SubCommandHelp[] subCommandHelps = new SubCommandHelp[2];
+
+		subCommandHelps[0] = new SubCommandHelp("[all/channel] <all/command>", "Allows you to blacklist the usage of different command/channel combinations (or all).");
+		subCommandHelps[1] = new SubCommandHelp("list [page]", "Lists the currently blacklisted commands/channels.");
+
+		return new CommandHelp(getAliases(), subCommandHelps, 1);
 	}
 }

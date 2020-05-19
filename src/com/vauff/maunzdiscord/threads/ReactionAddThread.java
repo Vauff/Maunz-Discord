@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.ReactionAddEvent;

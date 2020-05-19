@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -146,9 +148,201 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public String[] getAliases()
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		return new String[] { "*notify" };
+		if ((confirmationMessages.containsKey(event.getUser().block().getId()) || listMessages.containsKey(event.getUser().block().getId())) && (message.getId().equals(confirmationMessages.get(event.getUser().block().getId())) || message.getId().equals(listMessages.get(event.getUser().block().getId()))))
+		{
+			String selectedServer = selectedServers.get(event.getUser().block().getId());
+			String guildID = event.getGuild().block().getId().asString();
+			String fileName = "data/services/server-tracking/" + guildID + "/" + event.getUser().block().getId().asString() + ".json";
+			File file = new File(Util.getJarLocation() + fileName);
+			JSONObject json = null;
+
+			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("✅"))
+			{
+				if (confirmationMaps.get(event.getUser().block().getId()).equals("wipe"))
+				{
+					json = new JSONObject(Util.getFileContents(file));
+
+					json.getJSONObject("notifications").remove(selectedServer);
+
+					if (json.getJSONObject("notifications").length() == 0)
+					{
+						FileUtils.forceDelete(file);
+					}
+					else
+					{
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					}
+
+					Util.msg(event.getChannel().block(), event.getUser().block(), "Successfully wiped all of your map notifications!");
+				}
+				else
+				{
+					Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
+
+					if (file.exists())
+					{
+						json = new JSONObject(Util.getFileContents(file));
+						json.put("lastName", event.getUser().block().getUsername());
+						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					}
+					else
+					{
+						file.createNewFile();
+						json = new JSONObject();
+						json.put("lastName", event.getUser().block().getUsername());
+						json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
+						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					}
+				}
+
+				confirmationMaps.remove(event.getUser().block().getId());
+				confirmationMessages.remove(event.getUser().block().getId());
+				Thread.sleep(2000);
+			}
+
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("❌"))
+			{
+				confirmationMaps.remove(event.getUser().block().getId());
+				confirmationMessages.remove(event.getUser().block().getId());
+				Thread.sleep(2000);
+			}
+
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("1⃣"))
+			{
+				boolean mapSet = false;
+				int index = 0;
+
+				if (file.exists())
+				{
+					json = new JSONObject(Util.getFileContents(file));
+
+					if (!json.getJSONObject("notifications").isNull(selectedServer))
+					{
+						for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
+						{
+							String mapNotification = json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i);
+
+							if (mapNotification.equalsIgnoreCase(confirmationSuggestionMaps.get(event.getUser().block().getId())))
+							{
+								mapSet = true;
+								index = i;
+							}
+						}
+					}
+				}
+
+				if (!mapSet)
+				{
+					Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationSuggestionMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
+
+					if (file.exists())
+					{
+						json = new JSONObject(Util.getFileContents(file));
+
+						if (json.getJSONObject("notifications").isNull(selectedServer))
+						{
+							json.getJSONObject("notifications").put(selectedServer, new JSONArray());
+						}
+
+						json.put("lastName", event.getUser().block().getUsername());
+						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationSuggestionMaps.get(event.getUser().block().getId()));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					}
+					else
+					{
+						file.createNewFile();
+						json = new JSONObject();
+						json.put("lastName", event.getUser().block().getUsername());
+						json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
+						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationSuggestionMaps.get(event.getUser().block().getId()));
+						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					}
+				}
+				else
+				{
+					Util.msg(event.getChannel().block(), event.getUser().block(), "Removing **" + confirmationSuggestionMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** from your map notifications!");
+					json.put("lastName", event.getUser().block().getUsername());
+					json.getJSONObject("notifications").getJSONArray(selectedServer).remove(index);
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+				}
+			}
+
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("2⃣"))
+			{
+				Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
+
+				if (file.exists())
+				{
+					json = new JSONObject(Util.getFileContents(file));
+					json.put("lastName", event.getUser().block().getUsername());
+					json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+				}
+				else
+				{
+					file.createNewFile();
+					json = new JSONObject();
+					json.put("lastName", event.getUser().block().getUsername());
+					json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
+					json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
+					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+				}
+			}
+
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
+			{
+				ArrayList<String> notifications = new ArrayList<>();
+
+				json = new JSONObject(Util.getFileContents(file));
+
+				for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
+				{
+					notifications.add(json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i));
+				}
+
+				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) + 1, false, true, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
+			}
+
+			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+			{
+				ArrayList<String> notifications = new ArrayList<>();
+
+				json = new JSONObject(Util.getFileContents(file));
+
+				for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
+				{
+					notifications.add(json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i));
+				}
+
+				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) - 1, false, true, event.getChannel().block(), event.getUser().block());
+
+				listMessages.put(event.getUser().block().getId(), m.getId());
+				waitForReaction(m.getId(), event.getUser().block().getId());
+				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
+			}
+		}
+
+		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
+		{
+			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
+
+			if (i != -1)
+			{
+				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
+				{
+					selectedServers.put(event.getUser().block().getId(), "server" + i);
+					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i), "server" + i, messageContents.get(event.getUser().block().getId()));
+				}
+			}
+		}
 	}
 
 	private void runCmd(User user, MessageChannel channel, JSONObject object, String objectName, String messageContent) throws Exception
@@ -405,200 +599,20 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
+	public String[] getAliases()
 	{
-		if ((confirmationMessages.containsKey(event.getUser().block().getId()) || listMessages.containsKey(event.getUser().block().getId())) && (message.getId().equals(confirmationMessages.get(event.getUser().block().getId())) || message.getId().equals(listMessages.get(event.getUser().block().getId()))))
-		{
-			String selectedServer = selectedServers.get(event.getUser().block().getId());
-			String guildID = event.getGuild().block().getId().asString();
-			String fileName = "data/services/server-tracking/" + guildID + "/" + event.getUser().block().getId().asString() + ".json";
-			File file = new File(Util.getJarLocation() + fileName);
-			JSONObject json = null;
+		return new String[] { "*notify" };
+	}
 
-			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("✅"))
-			{
-				if (confirmationMaps.get(event.getUser().block().getId()).equals("wipe"))
-				{
-					json = new JSONObject(Util.getFileContents(file));
+	@Override
+	public CommandHelp getHelp()
+	{
+		SubCommandHelp[] subCommandHelps = new SubCommandHelp[3];
 
-					json.getJSONObject("notifications").remove(selectedServer);
+		subCommandHelps[0] = new SubCommandHelp("list [page]", "Lists your current map notifications.");
+		subCommandHelps[1] = new SubCommandHelp("wipe", "Wipes ALL of your map notifications.");
+		subCommandHelps[2] = new SubCommandHelp("<mapname>", "Adds or removes a map to/from your map notifications, exact name is recommended, but it can be used as a search term too.");
 
-					if (json.getJSONObject("notifications").length() == 0)
-					{
-						FileUtils.forceDelete(file);
-					}
-					else
-					{
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Successfully wiped all of your map notifications!");
-				}
-				else
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
-
-					if (file.exists())
-					{
-						json = new JSONObject(Util.getFileContents(file));
-						json.put("lastName", event.getUser().block().getUsername());
-						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-					else
-					{
-						file.createNewFile();
-						json = new JSONObject();
-						json.put("lastName", event.getUser().block().getUsername());
-						json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
-						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-				}
-
-				confirmationMaps.remove(event.getUser().block().getId());
-				confirmationMessages.remove(event.getUser().block().getId());
-				Thread.sleep(2000);
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("❌"))
-			{
-				confirmationMaps.remove(event.getUser().block().getId());
-				confirmationMessages.remove(event.getUser().block().getId());
-				Thread.sleep(2000);
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("1⃣"))
-			{
-				boolean mapSet = false;
-				int index = 0;
-
-				if (file.exists())
-				{
-					json = new JSONObject(Util.getFileContents(file));
-
-					if (!json.getJSONObject("notifications").isNull(selectedServer))
-					{
-						for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
-						{
-							String mapNotification = json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i);
-
-							if (mapNotification.equalsIgnoreCase(confirmationSuggestionMaps.get(event.getUser().block().getId())))
-							{
-								mapSet = true;
-								index = i;
-							}
-						}
-					}
-				}
-
-				if (!mapSet)
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationSuggestionMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
-
-					if (file.exists())
-					{
-						json = new JSONObject(Util.getFileContents(file));
-
-						if (json.getJSONObject("notifications").isNull(selectedServer))
-						{
-							json.getJSONObject("notifications").put(selectedServer, new JSONArray());
-						}
-
-						json.put("lastName", event.getUser().block().getUsername());
-						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationSuggestionMaps.get(event.getUser().block().getId()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-					else
-					{
-						file.createNewFile();
-						json = new JSONObject();
-						json.put("lastName", event.getUser().block().getUsername());
-						json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
-						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationSuggestionMaps.get(event.getUser().block().getId()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-				}
-				else
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Removing **" + confirmationSuggestionMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** from your map notifications!");
-					json.put("lastName", event.getUser().block().getUsername());
-					json.getJSONObject("notifications").getJSONArray(selectedServer).remove(index);
-					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-				}
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("2⃣"))
-			{
-				Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
-
-				if (file.exists())
-				{
-					json = new JSONObject(Util.getFileContents(file));
-					json.put("lastName", event.getUser().block().getUsername());
-					json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
-					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-				}
-				else
-				{
-					file.createNewFile();
-					json = new JSONObject();
-					json.put("lastName", event.getUser().block().getUsername());
-					json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
-					json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
-					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-				}
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
-			{
-				ArrayList<String> notifications = new ArrayList<>();
-
-				json = new JSONObject(Util.getFileContents(file));
-
-				for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
-				{
-					notifications.add(json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i));
-				}
-
-				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) + 1, false, true, event.getChannel().block(), event.getUser().block());
-
-				listMessages.put(event.getUser().block().getId(), m.getId());
-				waitForReaction(m.getId(), event.getUser().block().getId());
-				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
-			{
-				ArrayList<String> notifications = new ArrayList<>();
-
-				json = new JSONObject(Util.getFileContents(file));
-
-				for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
-				{
-					notifications.add(json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i));
-				}
-
-				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) - 1, false, true, event.getChannel().block(), event.getUser().block());
-
-				listMessages.put(event.getUser().block().getId(), m.getId());
-				waitForReaction(m.getId(), event.getUser().block().getId());
-				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
-			}
-		}
-
-		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
-		{
-			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
-
-			if (i != -1)
-			{
-				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
-				{
-					selectedServers.put(event.getUser().block().getId(), "server" + i);
-					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i), "server" + i, messageContents.get(event.getUser().block().getId()));
-				}
-			}
-		}
+		return new CommandHelp(getAliases(), subCommandHelps, 0);
 	}
 }

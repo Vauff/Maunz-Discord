@@ -1,4 +1,4 @@
-package com.vauff.maunzdiscord.features;
+package com.vauff.maunzdiscord.timers;
 
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;

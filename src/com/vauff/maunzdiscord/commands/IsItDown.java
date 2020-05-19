@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
@@ -68,12 +70,6 @@ public class IsItDown extends AbstractCommand<MessageCreateEvent>
 		}
 	}
 
-	@Override
-	public String[] getAliases()
-	{
-		return new String[] { "*isitdown" };
-	}
-
 	/**
 	 * Pings a host at a specific port. The ping will be deemed unsuccessful if the socket couldn't connect
 	 * to the host within the given timeframe
@@ -127,5 +123,17 @@ public class IsItDown extends AbstractCommand<MessageCreateEvent>
 
 		// Assume http
 		return 80;
+	}
+
+	@Override
+	public String[] getAliases()
+	{
+		return new String[] { "*isitdown" };
+	}
+
+	@Override
+	public CommandHelp getHelp()
+	{
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<hostname>", "Tells you if the given hostname is down or not.") }, 0);
 	}
 }

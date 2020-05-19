@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -140,9 +142,20 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public String[] getAliases()
+	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		return new String[] { "*map" };
+		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
+		{
+			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
+
+			if (i != -1)
+			{
+				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
+				{
+					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i), args.get(event.getUser().block().getId()), true);
+				}
+			}
+		}
 	}
 
 	private void runCmd(User user, MessageChannel channel, JSONObject object, String[] args, boolean includeName) throws Exception
@@ -375,19 +388,19 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
+	public String[] getAliases()
 	{
-		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
-		{
-			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
+		return new String[] { "*map" };
+	}
 
-			if (i != -1)
-			{
-				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
-				{
-					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i), args.get(event.getUser().block().getId()), true);
-				}
-			}
-		}
+	@Override
+	public CommandHelp getHelp()
+	{
+		SubCommandHelp[] subCommandHelps = new SubCommandHelp[2];
+
+		subCommandHelps[0] = new SubCommandHelp("", "Tells you which map a server is playing outside of its standard map tracking channel.");
+		subCommandHelps[1] = new SubCommandHelp("[mapname]", "Gives you information on a specific map such as last time played.");
+
+		return new CommandHelp(getAliases(), subCommandHelps, 0);
 	}
 }

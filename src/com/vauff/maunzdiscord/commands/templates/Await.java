@@ -1,4 +1,4 @@
-package com.vauff.maunzdiscord.core;
+package com.vauff.maunzdiscord.commands.templates;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.rest.util.Snowflake;

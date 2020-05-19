@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -85,12 +87,6 @@ public class Disable extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public String[] getAliases()
-	{
-		return new String[] { "*disable" };
-	}
-
-	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
 		if (menuMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(menuMessages.get(event.getUser().block().getId())))
@@ -125,5 +121,17 @@ public class Disable extends AbstractCommand<MessageCreateEvent>
 				}
 			}
 		}
+	}
+
+	@Override
+	public String[] getAliases()
+	{
+		return new String[] { "*disable" };
+	}
+
+	@Override
+	public CommandHelp getHelp()
+	{
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Disables Maunz either in a specific guild or globally.") }, 1);
 	}
 }

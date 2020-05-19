@@ -6,7 +6,7 @@ Maunz is a Discord bot created by Vauff written in Java using the Discord4J libr
 
 # Commands
 
-Italic ones are permission restricted commands to either just Vauff or guild administrators. [] indicates that the argument is optional, \<> indicates the argument is required.
+Italic ones are permission restricted commands to either bot or guild administrators. [] indicates that the argument is optional, \<> indicates the argument is required.
 
 *about - Gives information about Maunz such as version and uptime.
 
@@ -42,9 +42,9 @@ _*enable_ - Enables Maunz either in a specific guild or globally.
 
 *notify wipe - Wipes ALL of your map notifications.
 
-*notify \<mapname> - Adds or removes a given map to/from your map notifications, exact name is recommended for best accuracy but the bot can use it as a search term too.
+*notify \<mapname> - Adds or removes a map to/from your map notifications, exact name is recommended, but it can be used as a search term too.
 
-*ping - Makes Maunz respond to you with pong. Very useful for testing your connection!
+*ping - Makes Maunz respond to you with pong, useful for testing your connection.
 
 *players - Lists the current players online on a server.
 
@@ -56,7 +56,7 @@ _*enable_ - Enables Maunz either in a specific guild or globally.
 
 *quote list [page] - Lists existing chat quotes sorted by ID.
 
-*reddit \<subreddit> - Links you to a subreddit that you provide.
+*reddit \<subreddit> - Links you to the subreddit name that you provide.
 
 _*restart_ - Restarts Maunz.
 

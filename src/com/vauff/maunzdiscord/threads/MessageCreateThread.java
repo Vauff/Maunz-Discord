@@ -2,7 +2,7 @@ package com.vauff.maunzdiscord.threads;
 
 import com.vauff.maunzdiscord.commands.Disable;
 import com.vauff.maunzdiscord.commands.Enable;
-import com.vauff.maunzdiscord.core.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
