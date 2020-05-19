@@ -13,14 +13,7 @@ public class Services extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (Util.hasPermission(author, event.getGuild().block()))
-		{
-			Util.msg(channel, author, "This command is temporarily unavailable until a future release" + System.lineSeparator() + System.lineSeparator() + "In the meantime, you can head over to the **#help** channel at https://discord.gg/v55fW9b to request manual service management (additions, edits, etc.). Please see the pinned message there for more details on how to proceed.");
-		}
-		else
-		{
-			Util.msg(channel, author, "You do not have permission to use that command");
-		}
+		Util.msg(channel, author, "This command is temporarily unavailable until a future release" + System.lineSeparator() + System.lineSeparator() + "In the meantime, you can head over to the **#help** channel at https://discord.gg/v55fW9b to request manual service management (additions, edits, etc.). Please see the pinned message there for more details on how to proceed.");
 	}
 
 	@Override
@@ -30,8 +23,14 @@ public class Services extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 1;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Opens an interface for enabling specific services on a guild.") }, 1);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Opens an interface for enabling specific services on a guild.") });
 	}
 }

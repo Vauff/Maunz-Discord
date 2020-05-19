@@ -26,12 +26,6 @@ public class Say extends AbstractCommand<MessageCreateEvent>
 			return;
 		}
 
-		if (!Util.hasPermission(author, event.getGuild().block()))
-		{
-			Util.msg(channel, author, "You do not have permission to use that command");
-			return;
-		}
-
 		if (args.length == 1)
 		{
 			Util.msg(channel, author, "I need a message to send! **Usage: *say [channel] <message>**");
@@ -87,8 +81,14 @@ public class Say extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 1;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[channel] <message>", "Makes Maunz say whatever you want her to.") }, 1);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[channel] <message>", "Makes Maunz say whatever you want her to.") });
 	}
 }

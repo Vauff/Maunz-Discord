@@ -12,18 +12,9 @@ public class CommandHelp
 	 */
 	public SubCommandHelp[] subCommandHelps;
 
-	/**
-	 * Permission level required to use this command
-	 * 0 - No permission required
-	 * 1 - Guild or bot administrator
-	 * 2 - Bot administrator
-	 */
-	public int permissionLevel;
-
-	public CommandHelp(String[] aliases, SubCommandHelp[] subCommandHelps, int permissionLevel)
+	public CommandHelp(String[] aliases, SubCommandHelp[] subCommandHelps)
 	{
 		this.aliases = aliases;
 		this.subCommandHelps = subCommandHelps;
-		this.permissionLevel = permissionLevel;
 	}
 }

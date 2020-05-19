@@ -16,22 +16,15 @@ public class Restart extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (Util.hasPermission(author))
-		{
-			final ArrayList<String> command = new ArrayList<>();
+		final ArrayList<String> command = new ArrayList<>();
 
-			command.add("java");
-			command.add("-jar");
-			command.add("Maunz-Discord.jar");
-			Util.msg(channel, author, "Maunz is restarting...");
-			Logger.log.info("Maunz is restarting...");
-			new ProcessBuilder(command).start();
-			System.exit(0);
-		}
-		else
-		{
-			Util.msg(channel, author, "You do not have permission to use that command");
-		}
+		command.add("java");
+		command.add("-jar");
+		command.add("Maunz-Discord.jar");
+		Util.msg(channel, author, "Maunz is restarting...");
+		Logger.log.info("Maunz is restarting...");
+		new ProcessBuilder(command).start();
+		System.exit(0);
 	}
 
 	@Override
@@ -41,8 +34,14 @@ public class Restart extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 2;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Restarts Maunz.") }, 2);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Restarts Maunz.") });
 	}
 }

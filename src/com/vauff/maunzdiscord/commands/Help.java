@@ -39,10 +39,10 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 			{
 				CommandHelp commandHelp = command.getHelp();
 
-				if (commandHelp.permissionLevel == 1 && !Util.hasPermission(author, event.getGuild().block()))
+				if (command.getPermissionLevel() == 1 && !Util.hasPermission(author, event.getGuild().block()))
 					continue;
 
-				if (commandHelp.permissionLevel == 2 && !Util.hasPermission(author))
+				if (command.getPermissionLevel() == 2 && !Util.hasPermission(author))
 					continue;
 
 				for (int i = 0; i < commandHelp.subCommandHelps.length; i++)
@@ -77,10 +77,10 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 				{
 					if (commandHelp.aliases[i].equalsIgnoreCase(arg))
 					{
-						if (commandHelp.permissionLevel == 1 && !Util.hasPermission(author, event.getGuild().block()))
+						if (command.getPermissionLevel() == 1 && !Util.hasPermission(author, event.getGuild().block()))
 							continue;
 
-						if (commandHelp.permissionLevel == 2 && !Util.hasPermission(author))
+						if (command.getPermissionLevel() == 2 && !Util.hasPermission(author))
 							continue;
 
 						matchFound = true;
@@ -124,10 +124,10 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 		{
 			CommandHelp helpCommand = command.getHelp();
 
-			if (helpCommand.permissionLevel == 1 && !Util.hasPermission(event.getUser().block(), event.getGuild().block()))
+			if (command.getPermissionLevel() == 1 && !Util.hasPermission(event.getUser().block(), event.getGuild().block()))
 				continue;
 
-			if (helpCommand.permissionLevel == 2 && !Util.hasPermission(event.getUser().block()))
+			if (command.getPermissionLevel() == 2 && !Util.hasPermission(event.getUser().block()))
 				continue;
 
 			for (int i = 0; i < helpCommand.subCommandHelps.length; i++)
@@ -160,6 +160,12 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
 		SubCommandHelp[] subCommandHelps = new SubCommandHelp[2];
@@ -167,6 +173,6 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 		subCommandHelps[0] = new SubCommandHelp("[page]", "Lists all the available bot commands and the syntax for using each.");
 		subCommandHelps[1] = new SubCommandHelp("<command>", "Gives you help on how to use a specific command.");
 
-		return new CommandHelp(getAliases(), subCommandHelps, 0);
+		return new CommandHelp(getAliases(), subCommandHelps);
 	}
 }

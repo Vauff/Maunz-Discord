@@ -23,8 +23,14 @@ public class Source extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Links you to the GitHub page of Maunz, you can submit issues/pull requests here.") }, 0);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Links you to the GitHub page of Maunz, you can submit issues/pull requests here.") });
 	}
 }

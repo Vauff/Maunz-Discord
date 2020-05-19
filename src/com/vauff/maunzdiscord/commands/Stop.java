@@ -14,16 +14,9 @@ public class Stop extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (Util.hasPermission(author))
-		{
-			Util.msg(channel, author, "Maunz is stopping...");
-			Logger.log.info("Maunz is stopping...");
-			System.exit(0);
-		}
-		else
-		{
-			Util.msg(channel, author, "You do not have permission to use that command");
-		}
+		Util.msg(channel, author, "Maunz is stopping...");
+		Logger.log.info("Maunz is stopping...");
+		System.exit(0);
 	}
 
 	@Override
@@ -33,8 +26,14 @@ public class Stop extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 2;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Stops Maunz.") }, 2);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Stops Maunz.") });
 	}
 }

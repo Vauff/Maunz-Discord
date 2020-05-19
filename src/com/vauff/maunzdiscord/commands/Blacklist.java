@@ -36,73 +36,163 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 
 		if (!(channel instanceof PrivateChannel))
 		{
-			if (Util.hasPermission(author, event.getGuild().block()))
+			if (args.length != 1)
 			{
-				if (args.length != 1)
+				List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
+
+				if (args[1].equalsIgnoreCase("list"))
 				{
-					List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
-
-					if (args[1].equalsIgnoreCase("list"))
+					if (blacklist.size() != 0)
 					{
-						if (blacklist.size() != 0)
+						if (args.length == 2 || NumberUtils.isCreatable(args[2]))
 						{
-							if (args.length == 2 || NumberUtils.isCreatable(args[2]))
+							int page;
+
+							if (args.length == 2)
 							{
-								int page;
-
-								if (args.length == 2)
-								{
-									page = 1;
-								}
-								else
-								{
-									page = Integer.parseInt(args[2]);
-								}
-
-								ArrayList<String> blacklistFormatted = new ArrayList<>();
-
-								for (String entry : blacklist)
-								{
-									String channelSelector;
-									String command = "\\*" + entry.split(":")[1];
-
-									if (entry.split(":")[0].equalsIgnoreCase("all"))
-									{
-										channelSelector = "All Channels";
-									}
-									else
-									{
-										channelSelector = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
-									}
-
-									if (entry.split(":")[1].equalsIgnoreCase("all"))
-									{
-										command = "All Commands";
-									}
-
-									blacklistFormatted.add(channelSelector + " **|** " + command);
-								}
-
-								Message m = Util.buildPage(blacklistFormatted, "Blacklisted Channels/Commands", 10, page, false, false, channel, author);
-
-								listMessages.put(author.getId(), m.getId());
-								waitForReaction(m.getId(), author.getId());
-								listPages.put(author.getId(), page);
+								page = 1;
 							}
 							else
 							{
-								Util.msg(channel, author, "Page numbers need to be numerical!");
+								page = Integer.parseInt(args[2]);
 							}
+
+							ArrayList<String> blacklistFormatted = new ArrayList<>();
+
+							for (String entry : blacklist)
+							{
+								String channelSelector;
+								String command = "\\*" + entry.split(":")[1];
+
+								if (entry.split(":")[0].equalsIgnoreCase("all"))
+								{
+									channelSelector = "All Channels";
+								}
+								else
+								{
+									channelSelector = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
+								}
+
+								if (entry.split(":")[1].equalsIgnoreCase("all"))
+								{
+									command = "All Commands";
+								}
+
+								blacklistFormatted.add(channelSelector + " **|** " + command);
+							}
+
+							Message m = Util.buildPage(blacklistFormatted, "Blacklisted Channels/Commands", 10, page, false, false, channel, author);
+
+							listMessages.put(author.getId(), m.getId());
+							waitForReaction(m.getId(), author.getId());
+							listPages.put(author.getId(), page);
 						}
 						else
 						{
-							Util.msg(channel, author, "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel] \\<all/command>** to add one");
+							Util.msg(channel, author, "Page numbers need to be numerical!");
+						}
+					}
+					else
+					{
+						Util.msg(channel, author, "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel] \\<all/command>** to add one");
+					}
+				}
+
+				else if (args.length == 2)
+				{
+					String input = args[1].replace("*", "");
+					boolean commandExists = false;
+
+					if (input.equalsIgnoreCase("all"))
+					{
+						commandExists = true;
+					}
+					else
+					{
+						for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
+						{
+							for (String s : cmd.getAliases())
+							{
+								if (s.equalsIgnoreCase("*" + input))
+								{
+									commandExists = true;
+									break;
+								}
+							}
 						}
 					}
 
-					else if (args.length == 2)
+					if (commandExists)
 					{
-						String input = args[1].replace("*", "");
+						boolean blacklisted = false;
+
+						for (String entry : blacklist)
+						{
+							if (entry.equals(channel.getId().asString() + ":" + input))
+							{
+								blacklisted = true;
+
+								if (input.equalsIgnoreCase("all"))
+								{
+									Util.msg(channel, author, "Removing all commands from this guilds blacklist for <#" + channel.getId().asString() + ">!");
+								}
+								else
+								{
+									Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
+								}
+
+								Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", channel.getId().asString() + ":" + input)));
+								break;
+							}
+						}
+
+						if (!blacklisted)
+						{
+							if (input.equalsIgnoreCase("all"))
+							{
+								Util.msg(channel, author, "Adding all commands to this guilds blacklist for <#" + channel.getId().asString() + ">!");
+							}
+							else
+							{
+								Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
+							}
+
+							Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", channel.getId().asString() + ":" + input)));
+						}
+					}
+					else
+					{
+						Util.msg(channel, author, "The command **" + args[1] + "** doesn't exist!");
+					}
+				}
+				else
+				{
+					String location = "";
+
+					if (args[1].startsWith("<#"))
+					{
+						if (args[1].startsWith("<#"))
+						{
+							Channel refChannel = Main.gateway.getChannelById(Snowflake.of(args[1].replaceAll("[^\\d.]", ""))).block();
+
+							if (((GuildChannel) refChannel).getGuild().block().equals(event.getGuild().block()))
+							{
+								location = args[1].replaceAll("[^\\d]", "");
+							}
+							else
+							{
+								Util.msg(channel, author, "That channel is in another guild!"); //test this works
+							}
+						}
+					}
+					else if (args[1].equalsIgnoreCase("all"))
+					{
+						location = "all";
+					}
+
+					if (!location.equalsIgnoreCase(""))
+					{
+						String input = args[2].replace("*", "");
 						boolean commandExists = false;
 
 						if (input.equalsIgnoreCase("all"))
@@ -130,20 +220,34 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 
 							for (String entry : blacklist)
 							{
-								if (entry.equals(channel.getId().asString() + ":" + input))
+								if (entry.equals(location + ":" + input))
 								{
 									blacklisted = true;
 
 									if (input.equalsIgnoreCase("all"))
 									{
-										Util.msg(channel, author, "Removing all commands from this guilds blacklist for <#" + channel.getId().asString() + ">!");
+										if (location.equalsIgnoreCase("all"))
+										{
+											Util.msg(channel, author, "Removing all commands from this guilds blacklist for all channels!");
+										}
+										else
+										{
+											Util.msg(channel, author, "Removing all commands from this guilds blacklist for <#" + location + ">!");
+										}
 									}
 									else
 									{
-										Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
+										if (location.equalsIgnoreCase("all"))
+										{
+											Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for all channels!");
+										}
+										else
+										{
+											Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + location + ">!");
+										}
 									}
 
-									Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", channel.getId().asString() + ":" + input)));
+									Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", location + ":" + input)));
 									break;
 								}
 							}
@@ -152,155 +256,44 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 							{
 								if (input.equalsIgnoreCase("all"))
 								{
-									Util.msg(channel, author, "Adding all commands to this guilds blacklist for <#" + channel.getId().asString() + ">!");
+									if (location.equalsIgnoreCase("all"))
+									{
+										Util.msg(channel, author, "Adding all commands to this guilds blacklist for all channels!");
+									}
+									else
+									{
+										Util.msg(channel, author, "Adding all commands to this guilds blacklist for <#" + location + ">!");
+									}
 								}
 								else
 								{
-									Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
+									if (location.equalsIgnoreCase("all"))
+									{
+										Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for all channels!");
+									}
+									else
+									{
+										Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + location + ">!");
+									}
 								}
 
-								Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", channel.getId().asString() + ":" + input)));
+								Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", location + ":" + input)));
 							}
 						}
 						else
 						{
-							Util.msg(channel, author, "The command **" + args[1] + "** doesn't exist!");
+							Util.msg(channel, author, "The command **" + args[2] + "** doesn't exist!");
 						}
 					}
 					else
 					{
-						String location = "";
-
-						if (args[1].startsWith("<#"))
-						{
-							if (args[1].startsWith("<#"))
-							{
-								Channel refChannel = Main.gateway.getChannelById(Snowflake.of(args[1].replaceAll("[^\\d.]", ""))).block();
-
-								if (((GuildChannel) refChannel).getGuild().block().equals(event.getGuild().block()))
-								{
-									location = args[1].replaceAll("[^\\d]", "");
-								}
-								else
-								{
-									Util.msg(channel, author, "That channel is in another guild!"); //test this works
-								}
-							}
-						}
-						else if (args[1].equalsIgnoreCase("all"))
-						{
-							location = "all";
-						}
-
-						if (!location.equalsIgnoreCase(""))
-						{
-							String input = args[2].replace("*", "");
-							boolean commandExists = false;
-
-							if (input.equalsIgnoreCase("all"))
-							{
-								commandExists = true;
-							}
-							else
-							{
-								for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
-								{
-									for (String s : cmd.getAliases())
-									{
-										if (s.equalsIgnoreCase("*" + input))
-										{
-											commandExists = true;
-											break;
-										}
-									}
-								}
-							}
-
-							if (commandExists)
-							{
-								boolean blacklisted = false;
-
-								for (String entry : blacklist)
-								{
-									if (entry.equals(location + ":" + input))
-									{
-										blacklisted = true;
-
-										if (input.equalsIgnoreCase("all"))
-										{
-											if (location.equalsIgnoreCase("all"))
-											{
-												Util.msg(channel, author, "Removing all commands from this guilds blacklist for all channels!");
-											}
-											else
-											{
-												Util.msg(channel, author, "Removing all commands from this guilds blacklist for <#" + location + ">!");
-											}
-										}
-										else
-										{
-											if (location.equalsIgnoreCase("all"))
-											{
-												Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for all channels!");
-											}
-											else
-											{
-												Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + location + ">!");
-											}
-										}
-
-										Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", location + ":" + input)));
-										break;
-									}
-								}
-
-								if (!blacklisted)
-								{
-									if (input.equalsIgnoreCase("all"))
-									{
-										if (location.equalsIgnoreCase("all"))
-										{
-											Util.msg(channel, author, "Adding all commands to this guilds blacklist for all channels!");
-										}
-										else
-										{
-											Util.msg(channel, author, "Adding all commands to this guilds blacklist for <#" + location + ">!");
-										}
-									}
-									else
-									{
-										if (location.equalsIgnoreCase("all"))
-										{
-											Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for all channels!");
-										}
-										else
-										{
-											Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + location + ">!");
-										}
-									}
-
-									Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", location + ":" + input)));
-								}
-							}
-							else
-							{
-								Util.msg(channel, author, "The command **" + args[2] + "** doesn't exist!");
-							}
-						}
-						else
-						{
-							Util.msg(channel, author, "The channel **" + args[1] + "** doesn't exist!");
-						}
+						Util.msg(channel, author, "The channel **" + args[1] + "** doesn't exist!");
 					}
-				}
-				else
-				{
-					Util.msg(channel, author, "You need to specify arguments! See **\\*help blacklist**");
 				}
 			}
 			else
 			{
-				Util.msg(channel, author, "You do not have permission to use that command");
+				Util.msg(channel, author, "You need to specify arguments! See **\\*help blacklist**");
 			}
 		}
 		else
@@ -391,6 +384,12 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 1;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
 		SubCommandHelp[] subCommandHelps = new SubCommandHelp[2];
@@ -398,6 +397,6 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 		subCommandHelps[0] = new SubCommandHelp("[all/channel] <all/command>", "Allows you to blacklist the usage of different command/channel combinations (or all).");
 		subCommandHelps[1] = new SubCommandHelp("list [page]", "Lists the currently blacklisted commands/channels.");
 
-		return new CommandHelp(getAliases(), subCommandHelps, 1);
+		return new CommandHelp(getAliases(), subCommandHelps);
 	}
 }

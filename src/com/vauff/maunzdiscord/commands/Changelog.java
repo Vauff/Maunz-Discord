@@ -181,8 +181,14 @@ public class Changelog extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[version]", "Shows you the changelog of the Maunz version you specify.") }, 0);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[version]", "Shows you the changelog of the Maunz version you specify.") });
 	}
 }

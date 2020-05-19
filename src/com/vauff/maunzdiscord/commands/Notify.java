@@ -605,6 +605,12 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
 		SubCommandHelp[] subCommandHelps = new SubCommandHelp[3];
@@ -613,6 +619,6 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 		subCommandHelps[1] = new SubCommandHelp("wipe", "Wipes ALL of your map notifications.");
 		subCommandHelps[2] = new SubCommandHelp("<mapname>", "Adds or removes a map to/from your map notifications, exact name is recommended, but it can be used as a search term too.");
 
-		return new CommandHelp(getAliases(), subCommandHelps, 0);
+		return new CommandHelp(getAliases(), subCommandHelps);
 	}
 }

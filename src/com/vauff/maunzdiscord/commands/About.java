@@ -123,8 +123,14 @@ public class About extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Gives information about Maunz such as version and uptime.") }, 0);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Gives information about Maunz such as version and uptime.") });
 	}
 }

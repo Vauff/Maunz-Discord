@@ -63,8 +63,14 @@ public class Reddit extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<subreddit>", "Links you to the subreddit name that you provide.") }, 0);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<subreddit>", "Links you to the subreddit name that you provide.") });
 	}
 }

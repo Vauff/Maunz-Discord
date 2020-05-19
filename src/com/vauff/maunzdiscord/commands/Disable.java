@@ -31,7 +31,7 @@ public class Disable extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		if (!(channel instanceof PrivateChannel) && Util.hasPermission(author, event.getGuild().block()))
+		if (!(channel instanceof PrivateChannel))
 		{
 			boolean guildEnabled = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getBoolean("enabled");
 
@@ -130,8 +130,14 @@ public class Disable extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 1;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Disables Maunz either in a specific guild or globally.") }, 1);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Disables Maunz either in a specific guild or globally.") });
 	}
 }

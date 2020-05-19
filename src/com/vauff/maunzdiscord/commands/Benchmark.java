@@ -229,8 +229,14 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<gpu/cpu>", "Provides complete benchmark information on a GPU or CPU powered by PassMark.") }, 0);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<gpu/cpu>", "Provides complete benchmark information on a GPU or CPU powered by PassMark.") });
 	}
 }

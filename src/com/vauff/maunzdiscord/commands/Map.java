@@ -394,6 +394,12 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
 		SubCommandHelp[] subCommandHelps = new SubCommandHelp[2];
@@ -401,6 +407,6 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 		subCommandHelps[0] = new SubCommandHelp("", "Tells you which map a server is playing outside of its standard map tracking channel.");
 		subCommandHelps[1] = new SubCommandHelp("[mapname]", "Gives you information on a specific map such as last time played.");
 
-		return new CommandHelp(getAliases(), subCommandHelps, 0);
+		return new CommandHelp(getAliases(), subCommandHelps);
 	}
 }

@@ -87,8 +87,14 @@ public class Colour extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[link]", "Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.") }, 0);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[link]", "Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.") });
 	}
 }

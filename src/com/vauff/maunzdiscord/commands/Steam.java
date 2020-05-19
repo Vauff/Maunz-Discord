@@ -145,8 +145,14 @@ public class Steam extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<steamid>", "Gives full information on a Steam account for the given input.") }, 0);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<steamid>", "Gives full information on a Steam account for the given input.") });
 	}
 }

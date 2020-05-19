@@ -61,6 +61,16 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	public abstract CommandHelp getHelp();
 
 	/**
+	 * Permission level required to use this command
+	 * 0 - No permission required
+	 * 1 - Guild or bot administrator
+	 * 2 - Bot administrator
+	 *
+	 * @return The permission level
+	 */
+	public abstract int getPermissionLevel();
+
+	/**
 	 * Sets up this command to await a reaction by the user who triggered this command
 	 *
 	 * @param messageID The message which should get reacted on

@@ -257,6 +257,12 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
 		SubCommandHelp[] subCommandHelps = new SubCommandHelp[4];
@@ -266,6 +272,6 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 		subCommandHelps[2] = new SubCommandHelp("view <quoteid>", "Views a chat quote based on ID.");
 		subCommandHelps[3] = new SubCommandHelp("list [page]", "Lists existing chat quotes sorted by ID.");
 
-		return new CommandHelp(getAliases(), subCommandHelps, 0);
+		return new CommandHelp(getAliases(), subCommandHelps);
 	}
 }

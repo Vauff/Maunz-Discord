@@ -132,8 +132,14 @@ public class IsItDown extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
+	public int getPermissionLevel()
+	{
+		return 0;
+	}
+
+	@Override
 	public CommandHelp getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<hostname>", "Tells you if the given hostname is down or not.") }, 0);
+		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("<hostname>", "Tells you if the given hostname is down or not.") });
 	}
 }
