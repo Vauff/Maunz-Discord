@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -187,8 +186,8 @@ public class Changelog extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[version]", "Shows you the changelog of the Maunz version you specify.") });
+		return new CommandHelp[] { new CommandHelp("[version]", "Shows you the changelog of the Maunz version you specify.") };
 	}
 }

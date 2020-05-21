@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -87,8 +86,8 @@ public class Say extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[channel] <message>", "Makes Maunz say whatever you want her to.") });
+		return new CommandHelp[] { new CommandHelp("[channel] <message>", "Makes Maunz say whatever you want her to.") };
 	}
 }

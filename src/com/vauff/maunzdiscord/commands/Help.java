@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -37,19 +36,15 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 			for (AbstractCommand command : MainListener.commands)
 			{
-				CommandHelp commandHelp = command.getHelp();
-
 				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 					continue;
 
 				if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(author))
 					continue;
 
-				for (int i = 0; i < commandHelp.subCommandHelps.length; i++)
+				for (CommandHelp commandHelp : command.getHelp())
 				{
-					SubCommandHelp subCommandHelp = commandHelp.subCommandHelps[i];
-
-					helpEntries.add("**\\" + commandHelp.aliases[0] + " " + subCommandHelp.arguments + "** - " + subCommandHelp.description);
+					helpEntries.add("**\\" + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description);
 				}
 			}
 
@@ -71,11 +66,9 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 			rootIteration:
 			for (AbstractCommand command : MainListener.commands)
 			{
-				CommandHelp commandHelp = command.getHelp();
-
-				for (int i = 0; i < commandHelp.aliases.length; i++)
+				for (String alias : command.getAliases())
 				{
-					if (commandHelp.aliases[i].equalsIgnoreCase(arg))
+					if (alias.equalsIgnoreCase(arg))
 					{
 						if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 							continue;
@@ -85,18 +78,15 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 						matchFound = true;
 
-						for (int j = 0; j < commandHelp.subCommandHelps.length; j++)
+						for (CommandHelp commandHelp : command.getHelp())
 						{
-							SubCommandHelp subCommandHelp = commandHelp.subCommandHelps[j];
-
-							list += "**\\" + commandHelp.aliases[0] + " " + subCommandHelp.arguments + "** - " + subCommandHelp.description + System.lineSeparator();
+							list += "**\\" + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description + System.lineSeparator();
 						}
 
 						list = StringUtils.removeEnd(list, System.lineSeparator());
 
 						break rootIteration;
 					}
-
 				}
 			}
 
@@ -122,19 +112,15 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 		for (AbstractCommand command : MainListener.commands)
 		{
-			CommandHelp helpCommand = command.getHelp();
-
 			if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(event.getUser().block(), event.getGuild().block()))
 				continue;
 
 			if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(event.getUser().block()))
 				continue;
 
-			for (int i = 0; i < helpCommand.subCommandHelps.length; i++)
+			for (CommandHelp commandHelp : command.getHelp())
 			{
-				SubCommandHelp subCommandHelp = helpCommand.subCommandHelps[i];
-
-				helpEntries.add("**\\" + helpCommand.aliases[0] + " " + subCommandHelp.arguments + "** - " + subCommandHelp.description);
+				helpEntries.add("**\\" + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description);
 			}
 		}
 
@@ -166,13 +152,13 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		SubCommandHelp[] subCommandHelps = new SubCommandHelp[2];
+		CommandHelp[] commandHelps = new CommandHelp[2];
 
-		subCommandHelps[0] = new SubCommandHelp("[page]", "Lists all the available bot commands and the syntax for using each.");
-		subCommandHelps[1] = new SubCommandHelp("<command>", "Gives you help on how to use a specific command.");
+		commandHelps[0] = new CommandHelp("[page]", "Lists all the available bot commands and the syntax for using each.");
+		commandHelps[1] = new CommandHelp("<command>", "Gives you help on how to use a specific command.");
 
-		return new CommandHelp(getAliases(), subCommandHelps);
+		return commandHelps;
 	}
 }

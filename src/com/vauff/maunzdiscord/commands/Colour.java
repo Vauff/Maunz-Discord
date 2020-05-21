@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Attachment;
@@ -93,8 +92,8 @@ public class Colour extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("[link]", "Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.") });
+		return new CommandHelp[] { new CommandHelp("[link]", "Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.") };
 	}
 }

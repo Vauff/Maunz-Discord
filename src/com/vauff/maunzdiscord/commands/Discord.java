@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
@@ -32,8 +31,8 @@ public class Discord extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.") });
+		return new CommandHelp[] { new CommandHelp("", "Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.") };
 	}
 }

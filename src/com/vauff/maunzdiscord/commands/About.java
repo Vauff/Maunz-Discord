@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
@@ -129,8 +128,8 @@ public class About extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Gives information about Maunz such as version and uptime.") });
+		return new CommandHelp[] { new CommandHelp("", "Gives information about Maunz such as version and uptime.") };
 	}
 }

@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -263,15 +262,15 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		SubCommandHelp[] subCommandHelps = new SubCommandHelp[4];
+		CommandHelp[] commandHelps = new CommandHelp[4];
 
-		subCommandHelps[0] = new SubCommandHelp("", "Links you directly to the chat quotes site.");
-		subCommandHelps[1] = new SubCommandHelp("add", "Links you to a page where you can submit chat quotes for approval.");
-		subCommandHelps[2] = new SubCommandHelp("view <quoteid>", "Views a chat quote based on ID.");
-		subCommandHelps[3] = new SubCommandHelp("list [page]", "Lists existing chat quotes sorted by ID.");
+		commandHelps[0] = new CommandHelp("", "Links you directly to the chat quotes site.");
+		commandHelps[1] = new CommandHelp("add", "Links you to a page where you can submit chat quotes for approval.");
+		commandHelps[2] = new CommandHelp("view <quoteid>", "Views a chat quote based on ID.");
+		commandHelps[3] = new CommandHelp("list [page]", "Lists existing chat quotes sorted by ID.");
 
-		return new CommandHelp(getAliases(), subCommandHelps);
+		return commandHelps;
 	}
 }

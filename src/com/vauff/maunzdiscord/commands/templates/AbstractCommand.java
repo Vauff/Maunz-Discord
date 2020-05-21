@@ -68,11 +68,11 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	public abstract String[] getAliases();
 
 	/**
-	 * An object that holds information about the command to display in *help
+	 * An array of objects that hold information about the command to display in *help
 	 *
-	 * @return An instance of {@link CommandHelp}
+	 * @return An array of {@link CommandHelp}
 	 */
-	public abstract CommandHelp getHelp();
+	public abstract CommandHelp[] getHelp();
 
 	/**
 	 * Permission level required to use this command

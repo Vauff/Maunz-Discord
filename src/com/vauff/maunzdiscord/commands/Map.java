@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -400,13 +399,13 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		SubCommandHelp[] subCommandHelps = new SubCommandHelp[2];
+		CommandHelp[] commandHelps = new CommandHelp[2];
 
-		subCommandHelps[0] = new SubCommandHelp("", "Tells you which map a server is playing outside of its standard map tracking channel.");
-		subCommandHelps[1] = new SubCommandHelp("[mapname]", "Gives you information on a specific map such as last time played.");
+		commandHelps[0] = new CommandHelp("", "Tells you which map a server is playing outside of its standard map tracking channel.");
+		commandHelps[1] = new CommandHelp("[mapname]", "Gives you information on a specific map such as last time played.");
 
-		return new CommandHelp(getAliases(), subCommandHelps);
+		return commandHelps;
 	}
 }

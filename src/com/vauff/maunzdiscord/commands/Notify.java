@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -611,14 +610,14 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		SubCommandHelp[] subCommandHelps = new SubCommandHelp[3];
+		CommandHelp[] commandHelps = new CommandHelp[3];
 
-		subCommandHelps[0] = new SubCommandHelp("list [page]", "Lists your current map notifications.");
-		subCommandHelps[1] = new SubCommandHelp("wipe", "Wipes ALL of your map notifications.");
-		subCommandHelps[2] = new SubCommandHelp("<mapname>", "Adds or removes a map to/from your map notifications, exact name is recommended, but it can be used as a search term too.");
+		commandHelps[0] = new CommandHelp("list [page]", "Lists your current map notifications.");
+		commandHelps[1] = new CommandHelp("wipe", "Wipes ALL of your map notifications.");
+		commandHelps[2] = new CommandHelp("<mapname>", "Adds or removes a map to/from your map notifications, exact name is recommended, but it can be used as a search term too.");
 
-		return new CommandHelp(getAliases(), subCommandHelps);
+		return commandHelps;
 	}
 }

@@ -3,18 +3,18 @@ package com.vauff.maunzdiscord.commands.templates;
 public class CommandHelp
 {
 	/**
-	 * Array of valid command aliases, first is treated as primary
+	 * Arguments available for this command
 	 */
-	public String[] aliases;
+	public String arguments;
 
 	/**
-	 * List of sub commands for this command (different behaviour with different arguments)
+	 * Description of what this command does
 	 */
-	public SubCommandHelp[] subCommandHelps;
+	public String description;
 
-	public CommandHelp(String[] aliases, SubCommandHelp[] subCommandHelps)
+	public CommandHelp(String arguments, String description)
 	{
-		this.aliases = aliases;
-		this.subCommandHelps = subCommandHelps;
+		this.arguments = arguments;
+		this.description = description;
 	}
 }

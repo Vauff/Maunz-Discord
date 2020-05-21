@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.timers.ServerTimer;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -210,8 +209,8 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp(getAliases(), new SubCommandHelp[] { new SubCommandHelp("", "Lists the current players online on a server.") });
+		return new CommandHelp[] { new CommandHelp("", "Lists the current players online on a server.") };
 	}
 }

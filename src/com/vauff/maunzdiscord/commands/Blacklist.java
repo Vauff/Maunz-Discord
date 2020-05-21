@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
-import com.vauff.maunzdiscord.commands.templates.SubCommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
@@ -390,13 +389,13 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public CommandHelp getHelp()
+	public CommandHelp[] getHelp()
 	{
-		SubCommandHelp[] subCommandHelps = new SubCommandHelp[2];
+		CommandHelp[] commandHelps = new CommandHelp[2];
 
-		subCommandHelps[0] = new SubCommandHelp("[all/channel] <all/command>", "Allows you to blacklist the usage of different command/channel combinations (or all).");
-		subCommandHelps[1] = new SubCommandHelp("list [page]", "Lists the currently blacklisted commands/channels.");
+		commandHelps[0] = new CommandHelp("[all/channel] <all/command>", "Allows you to blacklist the usage of different command/channel combinations (or all).");
+		commandHelps[1] = new CommandHelp("list [page]", "Lists the currently blacklisted commands/channels.");
 
-		return new CommandHelp(getAliases(), subCommandHelps);
+		return commandHelps;
 	}
 }
