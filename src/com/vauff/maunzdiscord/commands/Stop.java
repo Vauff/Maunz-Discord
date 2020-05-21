@@ -26,9 +26,9 @@ public class Stop extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public int getPermissionLevel()
+	public BotPermission getPermissionLevel()
 	{
-		return 2;
+		return BotPermission.BOT_ADMIN;
 	}
 
 	@Override

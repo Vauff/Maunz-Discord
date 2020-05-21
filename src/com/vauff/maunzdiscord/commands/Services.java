@@ -23,9 +23,9 @@ public class Services extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public int getPermissionLevel()
+	public BotPermission getPermissionLevel()
 	{
-		return 1;
+		return BotPermission.GUILD_ADMIN;
 	}
 
 	@Override

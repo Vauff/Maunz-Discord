@@ -39,10 +39,10 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 			{
 				CommandHelp commandHelp = command.getHelp();
 
-				if (command.getPermissionLevel() == 1 && !Util.hasPermission(author, event.getGuild().block()))
+				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 					continue;
 
-				if (command.getPermissionLevel() == 2 && !Util.hasPermission(author))
+				if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(author))
 					continue;
 
 				for (int i = 0; i < commandHelp.subCommandHelps.length; i++)
@@ -77,10 +77,10 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 				{
 					if (commandHelp.aliases[i].equalsIgnoreCase(arg))
 					{
-						if (command.getPermissionLevel() == 1 && !Util.hasPermission(author, event.getGuild().block()))
+						if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 							continue;
 
-						if (command.getPermissionLevel() == 2 && !Util.hasPermission(author))
+						if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(author))
 							continue;
 
 						matchFound = true;
@@ -124,10 +124,10 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 		{
 			CommandHelp helpCommand = command.getHelp();
 
-			if (command.getPermissionLevel() == 1 && !Util.hasPermission(event.getUser().block(), event.getGuild().block()))
+			if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(event.getUser().block(), event.getGuild().block()))
 				continue;
 
-			if (command.getPermissionLevel() == 2 && !Util.hasPermission(event.getUser().block()))
+			if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(event.getUser().block()))
 				continue;
 
 			for (int i = 0; i < helpCommand.subCommandHelps.length; i++)
@@ -160,9 +160,9 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public int getPermissionLevel()
+	public BotPermission getPermissionLevel()
 	{
-		return 0;
+		return BotPermission.EVERYONE;
 	}
 
 	@Override

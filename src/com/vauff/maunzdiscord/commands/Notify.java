@@ -605,9 +605,9 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public int getPermissionLevel()
+	public BotPermission getPermissionLevel()
 	{
-		return 0;
+		return BotPermission.EVERYONE;
 	}
 
 	@Override

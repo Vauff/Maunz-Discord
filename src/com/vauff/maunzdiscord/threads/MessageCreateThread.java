@@ -110,7 +110,7 @@ public class MessageCreateThread implements Runnable
 								//if msg shows up too quickly, message history can somehow get out of order
 								Thread.sleep(250);
 
-								if ((cmd.getPermissionLevel() == 1 && !Util.hasPermission(author, event.getGuild().block())) || (cmd.getPermissionLevel() == 2 && !Util.hasPermission(author)))
+								if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block())) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
 								{
 									Util.msg(channel, author, "You do not have permission to use that command");
 									return;

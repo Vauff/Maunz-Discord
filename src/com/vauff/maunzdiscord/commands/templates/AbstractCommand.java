@@ -19,6 +19,20 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	public static final HashMap<Snowflake, Snowflake> AWAITEDCHANNEL = new HashMap<>();
 
 	/**
+	 * Enum holding the different bot permissions commands may require to use
+	 *
+	 * EVERYONE - No permission required
+	 * GUILD_ADMIN - ADMINISTRATOR or MANAGE_GUILD permission required
+	 * BOT_ADMIN - User must be listed in config.json botOwners
+	 */
+	public enum BotPermission
+	{
+		EVERYONE,
+		GUILD_ADMIN,
+		BOT_ADMIN
+	}
+
+	/**
 	 * Executes this command
 	 *
 	 * @param event The event by which this command got triggered
@@ -62,13 +76,10 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 
 	/**
 	 * Permission level required to use this command
-	 * 0 - No permission required
-	 * 1 - Guild or bot administrator
-	 * 2 - Bot administrator
 	 *
 	 * @return The permission level
 	 */
-	public abstract int getPermissionLevel();
+	public abstract BotPermission getPermissionLevel();
 
 	/**
 	 * Sets up this command to await a reaction by the user who triggered this command
