@@ -489,7 +489,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 					{
 						String map = object.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
 
-						if (map.equalsIgnoreCase(argument))
+						if (map.equalsIgnoreCase(argument) || argument.contains("*"))
 						{
 							mapExists = true;
 							break;
