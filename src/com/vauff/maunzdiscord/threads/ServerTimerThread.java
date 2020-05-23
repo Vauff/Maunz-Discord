@@ -11,6 +11,8 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
 import discord4j.rest.util.Snowflake;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -33,6 +35,11 @@ import java.util.function.Consumer;
 
 public class ServerTimerThread implements Runnable
 {
+	/**
+	 * Regex pattern to check for wildcards
+	 */
+	private static final Pattern WILDCARD_PATTERN = Pattern.compile("(?i)[^*]+|(\\*)");
+
 	private File file;
 	private Thread thread;
 	private String name;
@@ -242,9 +249,10 @@ public class ServerTimerThread implements Runnable
 										{
 											String mapNotification = notificationJson.getJSONObject("notifications").getJSONArray(objectName).getString(i);
 
-											if (mapNotification.equalsIgnoreCase(map))
+											if (wildcardMatches(mapNotification, map))
 											{
 												Util.msg(member.getPrivateChannel().block(), embed.andThen(spec -> spec.setTitle(serverName)));
+												break;
 											}
 										}
 									}
@@ -316,5 +324,36 @@ public class ServerTimerThread implements Runnable
 		{
 			ServerTimer.trackingThreadRunning.put(file.getName(), false);
 		}
+	}
+
+	/**
+	 * Checks if provided text matches the provided pattern with wildcards
+	 *
+	 * @param pattern Provided pattern with wildcards
+	 * @param text Text to match with the pattern
+	 * @return Whether the text matches the pattern
+	 */
+	private static boolean wildcardMatches(String pattern, String text)
+	{
+		final Matcher matcher = WILDCARD_PATTERN.matcher(pattern);
+		final StringBuffer buffer = new StringBuffer();
+
+		buffer.append("(?i)");
+		while (matcher.find())
+		{
+			if (matcher.group(1) != null)
+			{
+				matcher.appendReplacement(buffer, ".*");
+			}
+			else
+			{
+				matcher.appendReplacement(buffer, "\\\\Q" + matcher.group(0) + "\\\\E");
+			}
+		}
+
+		matcher.appendTail(buffer);
+		final String replaced = buffer.toString();
+
+		return text.matches(replaced);
 	}
 }
