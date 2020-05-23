@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20190722</version>
+            <version>20200518</version>
         </dependency>
         <dependency>
             <groupId>com.github.Vauff</groupId>
@@ -72,5 +72,5 @@
             <version>4.0.3</version>
         </dependency>
     </dependencies>
-    <version>r13</version>
+    <version>r14</version>
 </project>
