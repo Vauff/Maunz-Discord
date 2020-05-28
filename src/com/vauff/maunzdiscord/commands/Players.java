@@ -4,13 +4,13 @@ import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.timers.ServerTimer;
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
-import discord4j.rest.util.Snowflake;
 import org.json.JSONException;
 import org.json.JSONObject;
 

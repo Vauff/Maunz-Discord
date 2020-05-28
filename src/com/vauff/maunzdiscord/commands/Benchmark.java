@@ -82,15 +82,15 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 
 				if (Integer.parseInt(samples) <= 4)
 				{
-					embedColor = new Color(255, 0, 0);
+					embedColor = Color.of(255, 0, 0);
 				}
 				else if (Integer.parseInt(samples) <= 24)
 				{
-					embedColor = new Color(255, 160, 0);
+					embedColor = Color.of(255, 160, 0);
 				}
 				else
 				{
-					embedColor = new Color(0, 200, 0);
+					embedColor = Color.of(0, 200, 0);
 				}
 
 				if (link.contains("gpu.php"))

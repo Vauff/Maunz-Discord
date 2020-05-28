@@ -314,7 +314,7 @@ public class Util
 			{
 				for (int y = 0; y < image.getHeight(); y++)
 				{
-					Color pixel = new Color(image.getRGB(x, y));
+					Color pixel = Color.of(image.getRGB(x, y));
 
 					red += pixel.getRed();
 					green += pixel.getGreen();
@@ -322,13 +322,13 @@ public class Util
 				}
 			}
 
-			return new Color(red / pixels, green / pixels, blue / pixels);
+			return Color.of(red / pixels, green / pixels, blue / pixels);
 		}
 		catch (Exception e)
 		{
 			if (handleExceptions)
 			{
-				return new Color(0, 154, 255);
+				return Color.of(0, 154, 255);
 			}
 			else
 			{

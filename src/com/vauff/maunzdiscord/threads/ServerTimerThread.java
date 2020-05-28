@@ -6,13 +6,11 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.timers.ServerTimer;
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
-import discord4j.rest.util.Snowflake;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -30,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 ;
 
@@ -330,7 +330,7 @@ public class ServerTimerThread implements Runnable
 	 * Checks if provided text matches the provided pattern with wildcards
 	 *
 	 * @param pattern Provided pattern with wildcards
-	 * @param text Text to match with the pattern
+	 * @param text    Text to match with the pattern
 	 * @return Whether the text matches the pattern
 	 */
 	private static boolean wildcardMatches(String pattern, String text)
