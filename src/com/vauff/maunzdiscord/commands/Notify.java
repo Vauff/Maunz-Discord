@@ -183,6 +183,10 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 					if (file.exists())
 					{
 						json = new JSONObject(Util.getFileContents(file));
+
+						if (json.getJSONObject("notifications").isNull(selectedServer))
+							json.getJSONObject("notifications").put(selectedServer, new JSONArray());
+
 						json.put("lastName", event.getUser().block().getUsername());
 						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
 						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
@@ -243,9 +247,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 						json = new JSONObject(Util.getFileContents(file));
 
 						if (json.getJSONObject("notifications").isNull(selectedServer))
-						{
 							json.getJSONObject("notifications").put(selectedServer, new JSONArray());
-						}
 
 						json.put("lastName", event.getUser().block().getUsername());
 						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationSuggestionMaps.get(event.getUser().block().getId()));
@@ -277,6 +279,10 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 				if (file.exists())
 				{
 					json = new JSONObject(Util.getFileContents(file));
+
+					if (json.getJSONObject("notifications").isNull(selectedServer))
+						json.getJSONObject("notifications").put(selectedServer, new JSONArray());
+
 					json.put("lastName", event.getUser().block().getUsername());
 					json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
 					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
@@ -514,6 +520,10 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 								if (file.exists())
 								{
 									json = new JSONObject(Util.getFileContents(file));
+
+									if (json.getJSONObject("notifications").isNull(objectName))
+										json.getJSONObject("notifications").put(objectName, new JSONArray());
+
 									json.put("lastName", user.getUsername());
 									json.getJSONObject("notifications").getJSONArray(objectName).put(argument);
 									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
