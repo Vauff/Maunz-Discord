@@ -110,7 +110,11 @@ public class ServerTimerThread implements Runnable
 						}
 
 						SourceServer server;
+						String msgServerName = "The server";
 						int attempts = 0;
+
+						if (isMultiTrackingChannel(json, object.getLong("serverTrackingChannelID")))
+							msgServerName = "**" + object.getString("serverName") + "**";
 
 						while (true)
 						{
@@ -148,14 +152,14 @@ public class ServerTimerThread implements Runnable
 
 									if (object.getInt("downtimeTimer") == object.getInt("failedConnectionsThreshold") && channelExists)
 									{
-										Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has gone offline");
+										Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), msgServerName + " has gone offline");
 									}
 
 									if (object.getInt("downtimeTimer") >= 10080)
 									{
 										if (channelExists)
 										{
-											Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has now been offline for a week and the server tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+											Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), msgServerName + " has now been offline for a week and its server tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 										}
 
 										object.put("enabled", false);
@@ -172,7 +176,7 @@ public class ServerTimerThread implements Runnable
 
 						if (object.getInt("downtimeTimer") >= object.getInt("failedConnectionsThreshold") && channelExists)
 						{
-							Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), "The server has come back online");
+							Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), msgServerName + " has come back online");
 						}
 
 						String serverInfo = server.toString();
