@@ -141,7 +141,7 @@ public class ServerTimerThread implements Runnable
 							{
 								attempts++;
 
-								if (attempts >= 5 || object.getInt("downtimeTimer") >= 1)
+								if (attempts >= 5 || object.getInt("downtimeTimer") >= object.getInt("failedConnectionsThreshold"))
 								{
 									Logger.log.warn("Failed to connect to the server " + object.getString("serverIP") + ":" + object.getInt("serverPort") + ", automatically retrying in 1 minute");
 									object.put("downtimeTimer", object.getInt("downtimeTimer") + 1);
