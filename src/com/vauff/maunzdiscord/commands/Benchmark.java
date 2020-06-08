@@ -68,6 +68,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 				String price = "N/A";
 				String date;
 				String cores;
+				String threads;
 
 				if (ratio.equals("NA"))
 				{
@@ -136,7 +137,8 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 				{
 					date = fullDesc.split("CPU First Seen on Charts:</strong>&nbsp;&nbsp;")[1].split("<")[0];
 					price = fullDesc.split("Last Price Change:</strong>&nbsp;&nbsp;")[1].split("<")[0];
-					cores = fullDesc.split("No of Cores:</strong> ")[1].split("<")[0];
+					cores = fullDesc.split("Cores:</strong> ")[1].split("<")[0];
+					threads = fullDesc.split("Threads</strong>: ")[1].split("<")[0];
 					ratio = fullDesc.split("Price:</strong>&nbsp;&nbsp;")[1].split("&")[0];
 
 					if (fullDesc.contains("Clockspeed:</strong> "))
@@ -203,6 +205,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 						spec.addField("Samples", finalSamples, true);
 						spec.addField("First Benchmarked", finalDate, true);
 						spec.addField("Cores", cores, true);
+						spec.addField("Threads", threads, true);
 						spec.addField("Price", finalPrice, true);
 						spec.addField("Performance Per Dollar", finalRatio, true);
 						spec.addField("Clock Speed", finalClockSpeed, true);
