@@ -219,9 +219,14 @@ public class ServerTimerThread implements Runnable
 								spec.setDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + players + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**");
 							};
 
+							Consumer<EmbedCreateSpec> titledEmbed = embed.andThen(spec -> spec.setTitle(serverName));
+
 							if (channelExists)
 							{
-								Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
+								if (isMultiTrackingChannel(json, object.getLong("serverTrackingChannelID")))
+									Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), titledEmbed);
+								else
+									Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
 							}
 
 							for (File notificationFile : new File(Util.getJarLocation() + "data/services/server-tracking/" + file.getName()).listFiles())
@@ -251,7 +256,7 @@ public class ServerTimerThread implements Runnable
 
 											if (wildcardMatches(mapNotification, map))
 											{
-												Util.msg(member.getPrivateChannel().block(), embed.andThen(spec -> spec.setTitle(serverName)));
+												Util.msg(member.getPrivateChannel().block(), titledEmbed);
 												break;
 											}
 										}
@@ -356,5 +361,43 @@ public class ServerTimerThread implements Runnable
 		final String replaced = buffer.toString();
 
 		return text.matches(replaced);
+	}
+
+	/**
+	 * Checks if a given channel has multiple servers being tracked in it
+	 *
+	 * @param json    The guilds JSON document
+	 * @param channel The channel to check
+	 * @return True if channel tracking multiple servers, false otherwise
+	 */
+	private static boolean isMultiTrackingChannel(JSONObject json, long channel)
+	{
+		int serverNumber = 0;
+		int matches = 0;
+
+		while (true)
+		{
+			JSONObject object;
+			String objectName = "server" + serverNumber;
+
+			try
+			{
+				object = json.getJSONObject(objectName);
+			}
+			catch (JSONException e)
+			{
+				break;
+			}
+
+			serverNumber++;
+
+			if (!object.getBoolean("enabled"))
+				continue;
+
+			if (object.getLong("serverTrackingChannelID") == channel)
+				matches++;
+		}
+
+		return matches >= 2;
 	}
 }
