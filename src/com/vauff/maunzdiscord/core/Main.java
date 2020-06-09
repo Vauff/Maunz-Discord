@@ -16,7 +16,7 @@ public class Main
 {
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
-	public static String version = "r17";
+	public static String version = "r18";
 
 	public static void main(String[] args)
 	{
