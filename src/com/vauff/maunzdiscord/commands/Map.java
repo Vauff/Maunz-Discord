@@ -295,15 +295,29 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 			}
 			else
 			{
+				ArrayList<Long> mapDatabaseTimestamps = new ArrayList<>();
 				ArrayList<String> mapDatabase = new ArrayList<>();
 
 				for (int i = 0; i < object.getJSONArray("mapDatabase").length(); i++)
 				{
-					mapDatabase.add(object.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName"));
+					mapDatabaseTimestamps.add(object.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
 				}
 
-				Collections.sort(mapDatabase, String.CASE_INSENSITIVE_ORDER);
-				Collections.reverse(mapDatabase);
+				Collections.sort(mapDatabaseTimestamps);
+				Collections.reverse(mapDatabaseTimestamps);
+
+				for (int i = 0; i < mapDatabaseTimestamps.size(); i++)
+				{
+					long timestamp = mapDatabaseTimestamps.get(i);
+
+					for (int j = 0; j < object.getJSONArray("mapDatabase").length(); j++)
+					{
+						JSONObject databaseEntry = object.getJSONArray("mapDatabase").getJSONObject(j);
+
+						if (databaseEntry.getLong("lastPlayed") == timestamp)
+							mapDatabase.add(databaseEntry.getString("mapName"));
+					}
+				}
 
 				for (int i = 0; i < mapDatabase.size(); i++)
 				{
