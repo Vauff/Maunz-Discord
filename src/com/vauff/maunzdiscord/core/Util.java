@@ -12,6 +12,7 @@ import discord4j.rest.http.client.ClientException;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.Permission;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
@@ -585,5 +586,43 @@ public class Util
 		JSONObject json = new JSONObject(getFileContents("config.json"));
 
 		return json.getString("userAgent");
+	}
+
+	/**
+	 * Checks if a given channel has multiple servers being tracked in it
+	 *
+	 * @param json    The guilds JSON document
+	 * @param channel The channel to check
+	 * @return True if channel tracking multiple servers, false otherwise
+	 */
+	public static boolean isMultiTrackingChannel(JSONObject json, long channel)
+	{
+		int serverNumber = 0;
+		int matches = 0;
+
+		while (true)
+		{
+			JSONObject object;
+			String objectName = "server" + serverNumber;
+
+			try
+			{
+				object = json.getJSONObject(objectName);
+			}
+			catch (JSONException e)
+			{
+				break;
+			}
+
+			serverNumber++;
+
+			if (!object.getBoolean("enabled"))
+				continue;
+
+			if (object.getLong("serverTrackingChannelID") == channel)
+				matches++;
+		}
+
+		return matches >= 2;
 	}
 }

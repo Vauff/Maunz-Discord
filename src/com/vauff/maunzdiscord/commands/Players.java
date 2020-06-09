@@ -74,7 +74,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 
 						for (String objectName : serverList)
 						{
-							if (json.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong())
+							if (json.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(json, json.getJSONObject(objectName).getLong("serverTrackingChannelID")))
 							{
 								object = objectName;
 								break;

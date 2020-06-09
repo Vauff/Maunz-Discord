@@ -113,7 +113,7 @@ public class ServerTimerThread implements Runnable
 						String msgServerName = "The server";
 						int attempts = 0;
 
-						if (isMultiTrackingChannel(json, object.getLong("serverTrackingChannelID")))
+						if (Util.isMultiTrackingChannel(json, object.getLong("serverTrackingChannelID")))
 							msgServerName = "**" + object.getString("serverName") + "**";
 
 						while (true)
@@ -227,7 +227,7 @@ public class ServerTimerThread implements Runnable
 
 							if (channelExists)
 							{
-								if (isMultiTrackingChannel(json, object.getLong("serverTrackingChannelID")))
+								if (Util.isMultiTrackingChannel(json, object.getLong("serverTrackingChannelID")))
 									Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), titledEmbed);
 								else
 									Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(object.getLong("serverTrackingChannelID"))).block(), embed);
@@ -365,43 +365,5 @@ public class ServerTimerThread implements Runnable
 		final String replaced = buffer.toString();
 
 		return text.matches(replaced);
-	}
-
-	/**
-	 * Checks if a given channel has multiple servers being tracked in it
-	 *
-	 * @param json    The guilds JSON document
-	 * @param channel The channel to check
-	 * @return True if channel tracking multiple servers, false otherwise
-	 */
-	private static boolean isMultiTrackingChannel(JSONObject json, long channel)
-	{
-		int serverNumber = 0;
-		int matches = 0;
-
-		while (true)
-		{
-			JSONObject object;
-			String objectName = "server" + serverNumber;
-
-			try
-			{
-				object = json.getJSONObject(objectName);
-			}
-			catch (JSONException e)
-			{
-				break;
-			}
-
-			serverNumber++;
-
-			if (!object.getBoolean("enabled"))
-				continue;
-
-			if (object.getLong("serverTrackingChannelID") == channel)
-				matches++;
-		}
-
-		return matches >= 2;
 	}
 }
