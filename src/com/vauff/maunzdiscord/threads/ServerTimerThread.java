@@ -23,6 +23,7 @@ import java.io.File;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -242,7 +243,8 @@ public class ServerTimerThread implements Runnable
 
 									try
 									{
-										member = Main.gateway.getMemberById(Snowflake.of(file.getName()), Snowflake.of(notificationFile.getName().replace(".json", ""))).block();
+										// Setting a 10 second timeout on the block() since it has previously hung tracking threads
+										member = Main.gateway.getMemberById(Snowflake.of(file.getName()), Snowflake.of(notificationFile.getName().replace(".json", ""))).block(Duration.ofSeconds(10));
 									}
 									catch (ClientException e)
 									{
