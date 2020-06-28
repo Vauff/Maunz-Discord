@@ -246,12 +246,10 @@ public class ServerTimerThread implements Runnable
 										// Setting a 10 second timeout on the block() since it has previously hung tracking threads
 										member = Main.gateway.getMemberById(Snowflake.of(file.getName()), Snowflake.of(notificationFile.getName().replace(".json", ""))).block(Duration.ofSeconds(10));
 									}
-									catch (ClientException e)
+									catch (ClientException | IllegalStateException e)
 									{
+										//invalid member, or member is no longer in guild
 										continue;
-										// This means that a bad user ID was provided,
-										// the given account doesn't exist anymore, or
-										// this user is no longer a member of the guild
 									}
 
 									try
