@@ -51,7 +51,7 @@ public class ServiceProcessThread implements Runnable
 		}
 	}
 
-	public void run()
+	public synchronized void run()
 	{
 		try
 		{
@@ -184,7 +184,7 @@ public class ServiceProcessThread implements Runnable
 				doc.put("lastMap", map);
 			}
 
-			Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), doc);
+			Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 		}
 		catch (Exception e)
 		{

@@ -36,7 +36,7 @@ public class ServerRequestThread implements Runnable
 		}
 	}
 
-	public void run()
+	public synchronized void run()
 	{
 		try
 		{
@@ -52,7 +52,7 @@ public class ServerRequestThread implements Runnable
 
 					try
 					{
-						doc.put("players", server.getPlayers().keySet().toArray());
+						doc.put("players", server.getPlayers().keySet());
 					}
 					catch (NullPointerException e)
 					{
@@ -63,7 +63,7 @@ public class ServerRequestThread implements Runnable
 							keySet.add(player.getName());
 						}
 
-						doc.put("players", keySet.toArray());
+						doc.put("players", keySet);
 					}
 
 					break;
@@ -156,7 +156,7 @@ public class ServerRequestThread implements Runnable
 
 			doc.put("downtimeTimer", 0);
 			server.disconnect();
-			Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), doc);
+			Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 
 			for (ServiceProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
 			{
