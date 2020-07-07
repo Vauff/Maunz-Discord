@@ -37,7 +37,7 @@ public class ServerProcessThread implements Runnable
 		}
 		finally
 		{
-			ServerTimer.threadRunning.put(id, false);
+			ServerTimer.threadRunning.put("servertracking-" + id, false);
 		}
 	}
 }

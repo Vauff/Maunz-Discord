@@ -8,6 +8,8 @@ import org.bson.Document;
 
 import java.util.HashMap;
 
+import static com.mongodb.client.model.Filters.eq;
+
 /**
  * A timer to refresh the state of tracked servers
  */
@@ -31,14 +33,12 @@ public class ServerTimer
 				{
 					Logger.log.debug("Starting a server timer run...");
 
-					for (Document doc : Main.mongoDatabase.getCollection("server-tracking").find())
+					for (Document doc : Main.mongoDatabase.getCollection("services").find(eq("enabled", true)))
 					{
 						String id = doc.getObjectId("_id").toString();
 
 						if (!threadRunning.containsKey(id))
-						{
 							threadRunning.put(id, false);
-						}
 
 						if (!threadRunning.get(id))
 						{
@@ -49,14 +49,12 @@ public class ServerTimer
 						}
 					}
 
-					for (Document doc : Main.mongoDatabase.getCollection("server-tracking").find())
+					for (Document doc : Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)))
 					{
 						String id = doc.getString("ip") + ":" + doc.getInteger("port");
 
 						if (!threadRunning.containsKey(id))
-						{
 							threadRunning.put(id, false);
-						}
 
 						if (!threadRunning.get(id))
 						{
