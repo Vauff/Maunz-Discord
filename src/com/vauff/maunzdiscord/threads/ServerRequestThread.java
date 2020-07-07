@@ -157,6 +157,11 @@ public class ServerRequestThread implements Runnable
 			doc.put("downtimeTimer", 0);
 			server.disconnect();
 			Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), doc);
+
+			for (ServerProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
+			{
+				processThread.notify();
+			}
 		}
 		catch (Exception e)
 		{

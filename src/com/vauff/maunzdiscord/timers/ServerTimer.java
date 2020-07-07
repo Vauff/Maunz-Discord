@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.timers;
 
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.threads.ServerProcessThread;
 import com.vauff.maunzdiscord.threads.ServerRequestThread;
 import org.bson.Document;
@@ -24,6 +23,11 @@ public class ServerTimer
 	public static HashMap<String, Boolean> threadRunning = new HashMap<>();
 
 	/**
+	 * Holds lists of which ServerProcessThreads are waiting for which server requests to finish
+	 */
+	public static HashMap<String, List<ServerProcessThread>> waitingProcessThreads = new HashMap<>();
+
+	/**
 	 * Iterate the server tracking storage and start threads for each server and service
 	 */
 	public static Runnable timer = new Runnable()
@@ -39,6 +43,7 @@ public class ServerTimer
 					for (Document doc : Main.mongoDatabase.getCollection("services").find(eq("enabled", true)))
 					{
 						String id = doc.getObjectId("_id").toString();
+						String serverID = doc.getObjectId("serverID").toString();
 
 						if (!threadRunning.containsKey(id))
 							threadRunning.put(id, false);
@@ -49,6 +54,9 @@ public class ServerTimer
 
 							threadRunning.put(id, true);
 							thread.start();
+
+							waitingProcessThreads.putIfAbsent(serverID, new ArrayList<>());
+							waitingProcessThreads.get(serverID).add(thread);
 						}
 					}
 
