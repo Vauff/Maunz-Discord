@@ -74,11 +74,11 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 
 						for (String objectName : serverList)
 						{
-							if (json.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(json, json.getJSONObject(objectName).getLong("serverTrackingChannelID")))
+							/*if (json.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(json, json.getJSONObject(objectName).getLong("serverTrackingChannelID")))
 							{
 								object = objectName;
 								break;
-							}
+							}*/
 						}
 
 						if (!object.equals(""))
@@ -154,7 +154,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 
 		if (!(object.getInt("downtimeTimer") >= object.getInt("failedConnectionsThreshold")))
 		{
-			if (ServerTimer.serverPlayers.containsKey(object.getString("serverIP") + ":" + object.getInt("serverPort")))
+			/*if (ServerTimer.serverPlayers.containsKey(object.getString("serverIP") + ":" + object.getInt("serverPort")))
 			{
 				boolean sizeIsSmall = ServerTimer.serverPlayers.get(object.getString("serverIP") + ":" + object.getInt("serverPort")).size() <= 8;
 
@@ -188,7 +188,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 			else
 			{
 				Util.msg(channel, user, "There doesn't appear to be any player info cached yet (was the bot just started or the service just added?), please wait a moment before trying again");
-			}
+			}*/
 		}
 		else
 		{

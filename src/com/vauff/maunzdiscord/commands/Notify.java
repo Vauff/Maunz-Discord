@@ -87,11 +87,11 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 						for (String objectName : serverList)
 						{
-							if (serverInfoJson.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(serverInfoJson, serverInfoJson.getJSONObject(objectName).getLong("serverTrackingChannelID")))
+							/*if (serverInfoJson.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(serverInfoJson, serverInfoJson.getJSONObject(objectName).getLong("serverTrackingChannelID")))
 							{
 								object = objectName;
 								break;
-							}
+							}*/
 						}
 
 						if (!object.equals(""))
