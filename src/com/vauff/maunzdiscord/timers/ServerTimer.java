@@ -2,11 +2,14 @@ package com.vauff.maunzdiscord.timers;
 
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.threads.ServerProcessThread;
 import com.vauff.maunzdiscord.threads.ServerRequestThread;
 import org.bson.Document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -49,6 +52,12 @@ public class ServerTimer
 						}
 					}
 
+					/**
+					 * Holds a list of which servers already have a thread started in the current timer run
+					 * This is different from {@link threadRunning}, because that can be asynchronously set to false before the timer stops running
+					 */
+					List<String> startedThreads = new ArrayList<>();
+
 					for (Document doc : Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)))
 					{
 						String id = doc.getString("ip") + ":" + doc.getInteger("port");
@@ -56,12 +65,13 @@ public class ServerTimer
 						if (!threadRunning.containsKey(id))
 							threadRunning.put(id, false);
 
-						if (!threadRunning.get(id))
+						if (!threadRunning.get(id) && !startedThreads.contains(id))
 						{
 							ServerRequestThread thread = new ServerRequestThread(doc, id);
 
 							threadRunning.put(id, true);
 							thread.start();
+							startedThreads.add(id);
 						}
 					}
 				}
