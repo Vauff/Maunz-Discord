@@ -158,7 +158,7 @@ public class ServerRequestThread implements Runnable
 			server.disconnect();
 			Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), doc);
 
-			for (ServerProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
+			for (ServiceProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
 			{
 				processThread.notify();
 			}

@@ -2,7 +2,7 @@ package com.vauff.maunzdiscord.timers;
 
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.threads.ServerProcessThread;
+import com.vauff.maunzdiscord.threads.ServiceProcessThread;
 import com.vauff.maunzdiscord.threads.ServerRequestThread;
 import org.bson.Document;
 
@@ -25,7 +25,7 @@ public class ServerTimer
 	/**
 	 * Holds lists of which ServerProcessThreads are waiting for which server requests to finish
 	 */
-	public static HashMap<String, List<ServerProcessThread>> waitingProcessThreads = new HashMap<>();
+	public static HashMap<String, List<ServiceProcessThread>> waitingProcessThreads = new HashMap<>();
 
 	/**
 	 * Iterate the server tracking storage and start threads for each server and service
@@ -50,7 +50,7 @@ public class ServerTimer
 
 						if (!threadRunning.get(id))
 						{
-							ServerProcessThread thread = new ServerProcessThread(doc, id);
+							ServiceProcessThread thread = new ServiceProcessThread(doc, id);
 
 							threadRunning.put(id, true);
 							thread.start();
