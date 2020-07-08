@@ -11,6 +11,7 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
@@ -56,17 +57,11 @@ public class ServiceProcessThread implements Runnable
 		}
 	}
 
-	public synchronized void run()
+	public void run()
 	{
 		try
 		{
-			// wait until the ServerRequestThread finishes
-			wait();
-
-			if (stop)
-				return;
-
-			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverId"))).first();
+			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
 			boolean channelExists = true;
 			String msgServerName = "The server";
 

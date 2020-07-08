@@ -53,7 +53,6 @@ public class ServerTimer
 							ServiceProcessThread thread = new ServiceProcessThread(doc, id);
 
 							threadRunning.put(id, true);
-							thread.start();
 
 							waitingProcessThreads.putIfAbsent(serverID, new ArrayList<>());
 							waitingProcessThreads.get(serverID).add(thread);

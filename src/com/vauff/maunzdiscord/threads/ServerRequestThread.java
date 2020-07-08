@@ -169,19 +169,16 @@ public class ServerRequestThread implements Runnable
 		}
 	}
 
-	private synchronized void cleanup(boolean success)
+	private void cleanup(boolean success)
 	{
 		server.disconnect();
 
-		if (success)
-			Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
+		if (!success)
+			return;
+
+		Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 
 		for (ServiceProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
-		{
-				if (!success)
-					processThread.stop = true;
-
-				processThread.notify();
-		}
+				processThread.start();
 	}
 }
