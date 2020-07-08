@@ -18,6 +18,7 @@ import static com.mongodb.client.model.Filters.eq;
 public class ServerRequestThread implements Runnable
 {
 	private Document doc;
+	private SourceServer server;
 	private Thread thread;
 	private String id;
 
@@ -36,11 +37,10 @@ public class ServerRequestThread implements Runnable
 		}
 	}
 
-	public synchronized void run()
+	public void run()
 	{
 		try
 		{
-			SourceServer server;
 			int attempts = 0;
 
 			while (true)
@@ -82,6 +82,7 @@ public class ServerRequestThread implements Runnable
 							doc.put("enabled", false);
 						}
 
+						cleanup(true);
 						return;
 					}
 					else
@@ -155,21 +156,32 @@ public class ServerRequestThread implements Runnable
 			}
 
 			doc.put("downtimeTimer", 0);
-			server.disconnect();
-			Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
-
-			for (ServiceProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
-			{
-				processThread.notify();
-			}
+			cleanup(true);
 		}
 		catch (Exception e)
 		{
 			Logger.log.error("", e);
+			cleanup(false);
 		}
 		finally
 		{
 			ServerTimer.threadRunning.put("servertracking-" + id, false);
+		}
+	}
+
+	private synchronized void cleanup(boolean success)
+	{
+		server.disconnect();
+
+		if (success)
+			Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
+
+		for (ServiceProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
+		{
+				if (!success)
+					processThread.stop = true;
+
+				processThread.notify();
 		}
 	}
 }

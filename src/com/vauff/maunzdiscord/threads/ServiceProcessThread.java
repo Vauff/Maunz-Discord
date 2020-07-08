@@ -28,6 +28,11 @@ import static com.mongodb.client.model.Filters.eq;
 public class ServiceProcessThread implements Runnable
 {
 	/**
+	 * Controls whether the thread should stop itself after being notified
+	 */
+	public boolean stop = false;
+
+	/**
 	 * Regex pattern to check for wildcards
 	 */
 	private static final Pattern WILDCARD_PATTERN = Pattern.compile("(?i)[^*]+|(\\*)");
@@ -57,6 +62,9 @@ public class ServiceProcessThread implements Runnable
 		{
 			// wait until the ServerRequestThread finishes
 			wait();
+
+			if (stop)
+				return;
 
 			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverId"))).first();
 			boolean channelExists = true;
@@ -101,7 +109,10 @@ public class ServiceProcessThread implements Runnable
 			}
 
 			if (serverDoc.getInteger("downtimeTimer") >= 1)
+			{
+				Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 				return;
+			}
 
 			if (!doc.getBoolean("online"))
 			{
