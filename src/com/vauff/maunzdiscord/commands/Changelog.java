@@ -82,7 +82,7 @@ public class Changelog extends AbstractCommand<MessageCreateEvent>
 
 		Util.msg(channel, author, "GitHub link: " + "<" + link + ">");
 
-		Message m = Util.buildPage(changelog, title, 10, 1, false, true, channel, author);
+		Message m = Util.buildPage(changelog, title, 10, 1, 0, true, false, channel, author);
 
 		listMessages.put(author.getId(), m.getId());
 		listVersions.put(author.getId(), version);
@@ -126,7 +126,7 @@ public class Changelog extends AbstractCommand<MessageCreateEvent>
 					}
 				}
 
-				Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) + 1, false, true, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) + 1, 0, true, false, event.getChannel().block(), event.getUser().block());
 
 				listMessages.put(event.getUser().block().getId(), m.getId());
 				waitForReaction(m.getId(), event.getUser().block().getId());
@@ -164,7 +164,7 @@ public class Changelog extends AbstractCommand<MessageCreateEvent>
 					}
 				}
 
-				Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) - 1, false, true, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) - 1, 0, true, false, event.getChannel().block(), event.getUser().block());
 
 				listMessages.put(event.getUser().block().getId(), m.getId());
 				waitForReaction(m.getId(), event.getUser().block().getId());

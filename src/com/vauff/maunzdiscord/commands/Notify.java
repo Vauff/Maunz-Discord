@@ -309,7 +309,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 					notifications.add(json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i));
 				}
 
-				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) + 1, false, true, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) + 1, 0, true, false, event.getChannel().block(), event.getUser().block());
 
 				listMessages.put(event.getUser().block().getId(), m.getId());
 				waitForReaction(m.getId(), event.getUser().block().getId());
@@ -327,7 +327,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 					notifications.add(json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i));
 				}
 
-				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) - 1, false, true, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) - 1, 0, true, false, event.getChannel().block(), event.getUser().block());
 
 				listMessages.put(event.getUser().block().getId(), m.getId());
 				waitForReaction(m.getId(), event.getUser().block().getId());
@@ -418,7 +418,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 									notifications.add(json.getJSONObject("notifications").getJSONArray(objectName).getString(i));
 								}
 
-								Message m = Util.buildPage(notifications, "Notification List", 10, page, false, true, channel, user);
+								Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, channel, user);
 
 								listMessages.put(user.getId(), m.getId());
 								waitForReaction(m.getId(), user.getId());

@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.commands;
 import com.mongodb.client.FindIterable;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
@@ -29,6 +30,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
 	private static HashMap<Snowflake, Snowflake> selectionMessages = new HashMap<>();
+	private static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
 
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
@@ -65,32 +67,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 					}
 				}
 
-				String msg = "Please select which server to retrieve player data for" + System.lineSeparator();
-				int i = 1;
-
-				for (Document doc : services)
-				{
-					Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
-					msg += System.lineSeparator() + "**`[" + i + "]`**  |  " + serverDoc.getString("name");
-					i++;
-				}
-
-				Message m = Util.msg(channel, author, msg);
-
-				waitForReaction(m.getId(), author.getId());
-				selectionServices.put(author.getId(), services);
-				selectionMessages.put(author.getId(), m.getId());
-				Util.addNumberedReactions(m, true, services.size());
-
-				ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
-
-				msgDeleterPool.schedule(() ->
-				{
-					m.delete();
-					selectionServices.remove(author.getId());
-					selectionMessages.remove(author.getId());
-					msgDeleterPool.shutdown();
-				}, 120, TimeUnit.SECONDS);
+				runSelection(author, channel, services, 1);
 			}
 		}
 		else
@@ -102,15 +79,30 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message)
 	{
-		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
+		String emoji = event.getEmoji().asUnicodeEmoji().get().getRaw();
+		User user = event.getUser().block();
+
+		if (selectionMessages.containsKey(user.getId()) && message.getId().equals(selectionMessages.get(user.getId())))
 		{
-			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw());
+			if (emoji.equals("▶"))
+			{
+				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) + 1);
+				return;
+			}
+
+			else if (emoji.equals("◀"))
+			{
+				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) - 1);
+				return;
+			}
+
+			int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
 
 			if (i != 0)
 			{
 				if (selectionServices.get(event.getUser().block().getId()).size() >= i)
 				{
-					runCmd(event.getUser().block(), event.getChannel().block(), selectionServices.get(event.getUser().block().getId()).get(i - 1));
+					runCmd(event.getUser().block(), event.getChannel().block(), selectionServices.get(event.getUser().block().getId()).get(i));
 				}
 			}
 		}
@@ -167,6 +159,36 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 
 		if (!sizeIsSmall)
 			Util.msg(channel, user, "Sending the online player list to you in a PM!");
+	}
+
+	private void runSelection(User user, MessageChannel channel, List<Document> services, int page)
+	{
+		ArrayList<String> servers = new ArrayList<>();
+
+		for (Document doc : services)
+		{
+			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
+			servers.add(serverDoc.getString("name"));
+		}
+
+		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, channel, user);
+
+		Util.addReaction(m, "\u274C");
+		selectionServices.put(user.getId(), services);
+		selectionMessages.put(user.getId(), m.getId());
+		selectionPages.put(user.getId(), page);
+		waitForReaction(m.getId(), user.getId());
+
+		ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+		msgDeleterPool.schedule(() ->
+		{
+			m.delete();
+			selectionServices.remove(user.getId());
+			selectionMessages.remove(user.getId());
+			selectionPages.remove(user.getId());
+			msgDeleterPool.shutdown();
+		}, 120, TimeUnit.SECONDS);
 	}
 
 	@Override

@@ -73,7 +73,7 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 								}
 							}
 
-							Message m = Util.buildPage(list, "Quotes List", 10, page, true, true, channel, author);
+							Message m = Util.buildPage(list, "Quotes List", 10, page, 1, true, false, channel, author);
 
 							listMessages.put(author.getId(), m.getId());
 							waitForReaction(m.getId(), author.getId());
@@ -193,7 +193,7 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 					}
 				}
 
-				Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId()) + 1, true, true, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId()) + 1, 1, true, false, event.getChannel().block(), event.getUser().block());
 
 				listMessages.put(event.getUser().block().getId(), m.getId());
 				waitForReaction(m.getId(), event.getUser().block().getId());
@@ -221,7 +221,7 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 					}
 				}
 
-				Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId()) - 1, true, true, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(list, "Quotes List", 10, listPages.get(event.getUser().block().getId()) - 1, 1, true, false, event.getChannel().block(), event.getUser().block());
 
 				listMessages.put(event.getUser().block().getId(), m.getId());
 				waitForReaction(m.getId(), event.getUser().block().getId());

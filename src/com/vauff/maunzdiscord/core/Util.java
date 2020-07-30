@@ -452,17 +452,18 @@ public class Util
 	/**
 	 * Builds a modular page message for the given parameters
 	 *
-	 * @param entries         An ArrayList<String> that contains all the entries that should be in the page builder
-	 * @param title           The title to give all the pages
-	 * @param pageSize        How many entries should be in a specific page
-	 * @param pageNumber      Which page the method should build and send to the provided channel
-	 * @param numberedEntries Whether the entries in a list should be prefixed with their corresponding number in the list or not
-	 * @param codeBlock       Whether to surround the entries in a code block or not
-	 * @param channel         The MessageChannel that the page message should be sent to
-	 * @param user            The User that triggered the command's execution in the first place
+	 * @param entries            An ArrayList<String> that contains all the entries that should be in the page builder
+	 * @param title              The title to give all the pages
+	 * @param pageSize           How many entries should be in a specific page
+	 * @param pageNumber         Which page the method should build and send to the provided channel
+	 * @param numberStyle        Which style to use for numbered entries, 0 = none, 1 = standard, 2 = code block surrounded & unique per page
+	 * @param codeBlock          Whether to surround all the entries in a code block or not
+	 * @param numberedReactions  Whether to add numbered reactions for each entry
+	 * @param channel            The MessageChannel that the page message should be sent to
+	 * @param user               The User that triggered the command's execution in the first place
 	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
 	 */
-	public static Message buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, boolean numberedEntries, boolean codeBlock, MessageChannel channel, User user)
+	public static Message buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, MessageChannel channel, User user)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
@@ -477,6 +478,7 @@ public class Util
 				list.append("```" + System.lineSeparator());
 			}
 
+			int usedEntries = 0;
 
 			for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
 			{
@@ -486,13 +488,19 @@ public class Util
 				}
 				else
 				{
-					if (numberedEntries)
+					usedEntries++;
+
+					if (numberStyle == 0)
+					{
+						list.append(entries.get(i) + System.lineSeparator());
+					}
+					else if (numberStyle == 1)
 					{
 						list.append((i + 1) + " - " + entries.get(i) + System.lineSeparator());
 					}
-					else
+					else if (numberStyle == 2)
 					{
-						list.append(entries.get(i) + System.lineSeparator());
+						list.append("**`[" + ((i + 1) - (pageSize * (pageNumber - 1))) + "]`** | " + entries.get(i) + System.lineSeparator());
 					}
 				}
 			}
@@ -516,6 +524,11 @@ public class Util
 			if (pageNumber != 1)
 			{
 				addReaction(m, "◀");
+			}
+
+			if (numberedReactions)
+			{
+				Util.addNumberedReactions(m, false, usedEntries);
 			}
 
 			if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))

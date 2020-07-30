@@ -80,7 +80,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 								blacklistFormatted.add(channelSelector + " **|** " + command);
 							}
 
-							Message m = Util.buildPage(blacklistFormatted, "Blacklisted Channels/Commands", 10, page, false, false, channel, author);
+							Message m = Util.buildPage(blacklistFormatted, "Blacklisted Channels/Commands", 10, page, 0, false, false, channel, author);
 
 							listMessages.put(author.getId(), m.getId());
 							waitForReaction(m.getId(), author.getId());
@@ -334,7 +334,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 					blacklistArray.add(channel + " **|** " + command);
 				}
 
-				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) + 1, false, false, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) + 1, 0, false, false, event.getChannel().block(), event.getUser().block());
 
 				listMessages.put(event.getUser().block().getId(), m.getId());
 				waitForReaction(m.getId(), event.getUser().block().getId());
@@ -367,7 +367,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 					blacklistArray.add(channel + " **|** " + command);
 				}
 
-				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) - 1, false, false, event.getChannel().block(), event.getUser().block());
+				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) - 1, 0, false, false, event.getChannel().block(), event.getUser().block());
 
 				listMessages.put(event.getUser().block().getId(), m.getId());
 				waitForReaction(m.getId(), event.getUser().block().getId());
