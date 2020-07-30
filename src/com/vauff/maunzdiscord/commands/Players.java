@@ -96,7 +96,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 
 			int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
 
-			if (i != 0)
+			if (i != -1)
 			{
 				if (selectionServices.get(event.getUser().block().getId()).size() >= i)
 				{
