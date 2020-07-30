@@ -49,10 +49,8 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 			if (services.size() == 0)
 			{
 				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
-				return;
 			}
-
-			if (services.size() == 1)
+			else if (services.size() == 1)
 			{
 				runCmd(author, channel, services.get(0));
 			}
