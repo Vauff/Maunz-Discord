@@ -36,7 +36,7 @@ public class ServerTimer
 		{
 			try
 			{
-				if (Main.gateway.getGatewayClient(0).get().isConnected())
+				if (Main.gateway.getGatewayClient(0).get().isConnected().block())
 				{
 					Logger.log.debug("Starting a server timer run...");
 
