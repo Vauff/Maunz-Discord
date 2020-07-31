@@ -13,7 +13,6 @@ import discord4j.rest.util.Color;
 import discord4j.rest.util.Permission;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
@@ -25,6 +24,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -459,11 +461,12 @@ public class Util
 	 * @param numberStyle        Which style to use for numbered entries, 0 = none, 1 = standard, 2 = code block surrounded & unique per page
 	 * @param codeBlock          Whether to surround all the entries in a code block or not
 	 * @param numberedReactions  Whether to add numbered reactions for each entry
+	 * @param cancellable        Whether to add an X emoji to close the page
 	 * @param channel            The MessageChannel that the page message should be sent to
 	 * @param user               The User that triggered the command's execution in the first place
 	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
 	 */
-	public static Message buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, MessageChannel channel, User user)
+	public static Message buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
@@ -521,20 +524,28 @@ public class Util
 				m = Util.msg(channel, user, "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
 			}
 
-			if (pageNumber != 1)
-			{
-				addReaction(m, "◀");
-			}
+			final int finalUsedEntries = usedEntries;
+			ScheduledExecutorService reactionAddPool = Executors.newScheduledThreadPool(1);
 
-			if (numberedReactions)
+			reactionAddPool.schedule(() ->
 			{
-				Util.addNumberedReactions(m, false, usedEntries);
-			}
-
-			if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-			{
-				addReaction(m, "▶");
-			}
+				if (pageNumber != 1)
+				{
+					addReaction(m, "◀");
+				}
+				if (numberedReactions)
+				{
+					Util.addNumberedReactions(m, false, finalUsedEntries);
+				}
+				if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+				{
+					addReaction(m, "▶");
+				}
+				if (cancellable)
+				{
+					Util.addReaction(m, "\u274C");
+				}
+			}, 250, TimeUnit.MILLISECONDS);
 
 			return m;
 		}

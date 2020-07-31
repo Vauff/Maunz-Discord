@@ -369,9 +369,8 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 			servers.add(serverDoc.getString("name"));
 		}
 
-		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, channel, user);
+		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel, user);
 
-		Util.addReaction(m, "\u274C");
 		selectionServices.put(user.getId(), services);
 		selectionMessages.put(user.getId(), m.getId());
 		selectionPages.put(user.getId(), page);
