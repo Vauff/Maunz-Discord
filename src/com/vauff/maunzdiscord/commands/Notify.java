@@ -335,9 +335,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 					msgDeleterPool.schedule(() ->
 					{
-						m.delete();
-						confirmationMaps.remove(user.getId());
-						confirmationMessages.remove(user.getId());
+						m.delete().block();
 						msgDeleterPool.shutdown();
 					}, 120, TimeUnit.SECONDS);
 				}
@@ -452,9 +450,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 							msgDeleterPool.schedule(() ->
 							{
-								m.delete();
-								confirmationMaps.remove(user.getId());
-								confirmationMessages.remove(user.getId());
+								m.delete().block();
 								msgDeleterPool.shutdown();
 							}, 120, TimeUnit.SECONDS);
 						}
@@ -485,10 +481,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 		msgDeleterPool.schedule(() ->
 		{
-			m.delete();
-			selectionServices.remove(user.getId());
-			selectionMessages.remove(user.getId());
-			selectionPages.remove(user.getId());
+			m.delete().block();
 			msgDeleterPool.shutdown();
 		}, 120, TimeUnit.SECONDS);
 	}
