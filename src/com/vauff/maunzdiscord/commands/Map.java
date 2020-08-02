@@ -15,7 +15,6 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
-import org.json.JSONObject;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
@@ -111,7 +110,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 			{
 				if (selectionServices.get(event.getUser().block().getId()).size() >= i)
 				{
-					runCmd(event.getUser().block(), event.getChannel().block(), selectionServices.get(event.getUser().block().getId()).get(i), args.get(event.getUser().block().getId()), true);
+					runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i), args.get(user.getId()), true);
 				}
 			}
 		}

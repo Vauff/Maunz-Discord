@@ -1,24 +1,25 @@
 package com.vauff.maunzdiscord.commands;
 
+import com.mongodb.client.FindIterable;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,16 +28,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+
 public class Notify extends AbstractCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, String> confirmationMaps = new HashMap<>();
 	private static HashMap<Snowflake, String> confirmationSuggestionMaps = new HashMap<>();
 	private static HashMap<Snowflake, Snowflake> confirmationMessages = new HashMap<>();
+
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
-	private static HashMap<Snowflake, List<String>> selectionServers = new HashMap<>();
-	private static HashMap<Snowflake, String> selectedServers = new HashMap<>();
+
+	private static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
+	private static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
 	private static HashMap<Snowflake, Snowflake> selectionMessages = new HashMap<>();
+
+	private static HashMap<Snowflake, ObjectId> selectedServices = new HashMap<>();
 	private static HashMap<Snowflake, String> messageContents = new HashMap<>();
 
 	@Override
@@ -44,100 +52,38 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	{
 		if (!(channel instanceof PrivateChannel))
 		{
-			String guildID = event.getGuild().block().getId().asString();
-			File serverInfoFile = new File(Util.getJarLocation() + "data/services/server-tracking/" + guildID + "/serverInfo.json");
+			long guildID = event.getGuild().block().getId().asLong();
+			FindIterable<Document> servicesIterable = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("guildID", guildID)));
+			List<Document> services = new ArrayList<>();
 
-			if (serverInfoFile.exists())
+			for (Document doc : servicesIterable)
 			{
-				JSONObject serverInfoJson = new JSONObject(Util.getFileContents(serverInfoFile));
-				int serverNumber = 0;
-				List<String> serverList = new ArrayList<>();
+				services.add(doc);
+			}
 
-				while (true)
-				{
-					JSONObject object;
-
-					try
-					{
-						object = serverInfoJson.getJSONObject("server" + serverNumber);
-					}
-					catch (JSONException e)
-					{
-						break;
-					}
-
-					if (object.getBoolean("enabled"))
-					{
-						serverList.add("server" + serverNumber);
-					}
-
-					serverNumber++;
-				}
-
-				if (serverList.size() != 0)
-				{
-					if (serverList.size() == 1)
-					{
-						selectedServers.put(author.getId(), serverList.get(0));
-						runCmd(author, channel, serverInfoJson.getJSONObject(serverList.get(0)), serverList.get(0), event.getMessage().getContent());
-					}
-					else
-					{
-						String object = "";
-
-						for (String objectName : serverList)
-						{
-							/*if (serverInfoJson.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(serverInfoJson, serverInfoJson.getJSONObject(objectName).getLong("serverTrackingChannelID")))
-							{
-								object = objectName;
-								break;
-							}*/
-						}
-
-						if (!object.equals(""))
-						{
-							selectedServers.put(author.getId(), object);
-							runCmd(author, channel, serverInfoJson.getJSONObject(object), object, event.getMessage().getContent());
-						}
-						else
-						{
-							String msg = "Please select which server to manage your notifications for" + System.lineSeparator();
-							int i = 1;
-
-							for (String serverObject : serverList)
-							{
-								msg += System.lineSeparator() + "**`[" + i + "]`**  |  " + serverInfoJson.getJSONObject(serverObject).getString("serverName");
-								i++;
-							}
-
-							Message m = Util.msg(channel, author, msg);
-							waitForReaction(m.getId(), author.getId());
-							selectionServers.put(author.getId(), serverList);
-							selectionMessages.put(author.getId(), m.getId());
-							messageContents.put(author.getId(), event.getMessage().getContent());
-							Util.addNumberedReactions(m, true, serverList.size());
-
-							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
-
-							msgDeleterPool.schedule(() ->
-							{
-								m.delete();
-								selectionServers.remove(author.getId());
-								selectionMessages.remove(author.getId());
-								messageContents.remove(author.getId());
-								msgDeleterPool.shutdown();
-							}, 120, TimeUnit.SECONDS);
-						}
-					}
-				}
-				else
-				{
-					Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
-				}
+			if (services.size() == 0)
+			{
+				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
+				return;
+			}
+			else if (services.size() == 1)
+			{
+				selectedServices.put(author.getId(), services.get(0).getObjectId("_id"));
+				runCmd(author, channel, services.get(0), event.getMessage().getContent());
 			}
 			else
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
+				for (Document doc : services)
+				{
+					if (doc.getLong("channelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(guildID, channel.getId().asLong()))
+					{
+						runCmd(author, channel, doc, event.getMessage().getContent());
+						return;
+					}
+				}
+
+				messageContents.put(author.getId(), event.getMessage().getContent());
+				runSelection(author, channel, services, 1);
 			}
 		}
 		else
@@ -149,223 +95,147 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if ((confirmationMessages.containsKey(event.getUser().block().getId()) || listMessages.containsKey(event.getUser().block().getId())) && (message.getId().equals(confirmationMessages.get(event.getUser().block().getId())) || message.getId().equals(listMessages.get(event.getUser().block().getId()))))
-		{
-			String selectedServer = selectedServers.get(event.getUser().block().getId());
-			String guildID = event.getGuild().block().getId().asString();
-			String fileName = "data/services/server-tracking/" + guildID + "/" + event.getUser().block().getId().asString() + ".json";
-			File file = new File(Util.getJarLocation() + fileName);
-			JSONObject json = null;
+		String emoji = event.getEmoji().asUnicodeEmoji().get().getRaw();
+		User user = event.getUser().block();
 
-			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("✅"))
+		// Server selection and pagination
+		if (selectionMessages.containsKey(user.getId()) && message.getId().equals(selectionMessages.get(user.getId())))
+		{
+			if (emoji.equals("▶"))
+			{
+				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) + 1);
+				return;
+			}
+
+			else if (emoji.equals("◀"))
+			{
+				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) - 1);
+				return;
+			}
+
+			int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
+
+			if (i != -2)
+			{
+				if (selectionServices.get(user.getId()).size() >= i)
+				{
+					selectedServices.put(user.getId(), selectionServices.get(user.getId()).get(i).getObjectId("_id"));
+					runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i), messageContents.get(user.getId()));
+				}
+			}
+		}
+
+		// Confirmations
+		else if (confirmationMessages.containsKey(user.getId()) && message.getId().equals(confirmationMessages.get(user.getId())))
+		{
+			Document serviceDoc = Main.mongoDatabase.getCollection("services").find(eq("_id", selectedServices.get(user.getId()))).first();
+			List<Document> notificationDocs = serviceDoc.getList("notifications", Document.class);
+
+			if (emoji.equals("✅"))
 			{
 				if (confirmationMaps.get(event.getUser().block().getId()).equals("wipe"))
 				{
-					json = new JSONObject(Util.getFileContents(file));
-
-					json.getJSONObject("notifications").remove(selectedServer);
-
-					if (json.getJSONObject("notifications").length() == 0)
+					for (int i = 0; i < notificationDocs.size(); i++)
 					{
-						FileUtils.forceDelete(file);
-					}
-					else
-					{
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
+						long userID = notificationDocs.get(i).getLong("userID");
 
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Successfully wiped all of your map notifications!");
+						if (userID != user.getId().asLong())
+							continue;
+
+						notificationDocs.remove(i);
+						Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", serviceDoc.getObjectId("_id")), serviceDoc);
+						Util.msg(event.getChannel().block(), user, "Successfully wiped all of your map notifications!");
+						break;
+					}
 				}
 				else
 				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
-
-					if (file.exists())
-					{
-						json = new JSONObject(Util.getFileContents(file));
-
-						if (json.getJSONObject("notifications").isNull(selectedServer))
-							json.getJSONObject("notifications").put(selectedServer, new JSONArray());
-
-						json.put("lastName", event.getUser().block().getUsername());
-						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-					else
-					{
-						file.createNewFile();
-						json = new JSONObject();
-						json.put("lastName", event.getUser().block().getUsername());
-						json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
-						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
+					addNotification(serviceDoc, user, event.getChannel().block(), confirmationMaps.get(user.getId()));
 				}
 
-				confirmationMaps.remove(event.getUser().block().getId());
-				confirmationMessages.remove(event.getUser().block().getId());
-				Thread.sleep(2000);
+				confirmationMaps.remove(user.getId());
+				confirmationMessages.remove(user.getId());
 			}
 
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("❌"))
-			{
-				confirmationMaps.remove(event.getUser().block().getId());
-				confirmationMessages.remove(event.getUser().block().getId());
-				Thread.sleep(2000);
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("1⃣"))
+			else if (emoji.equals("1⃣"))
 			{
 				boolean mapSet = false;
 				int index = 0;
 
-				if (file.exists())
+				for (int i = 0; i < notificationDocs.size(); i++)
 				{
-					json = new JSONObject(Util.getFileContents(file));
+					if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
+						continue;
 
-					if (!json.getJSONObject("notifications").isNull(selectedServer))
+					List<String> notifications = notificationDocs.get(i).getList("notifications", String.class);
+
+					for (String notification : notifications)
 					{
-						for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
+						if (notification.equalsIgnoreCase(confirmationSuggestionMaps.get(user.getId())))
 						{
-							String mapNotification = json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i);
-
-							if (mapNotification.equalsIgnoreCase(confirmationSuggestionMaps.get(event.getUser().block().getId())))
-							{
-								mapSet = true;
-								index = i;
-							}
+							mapSet = true;
+							index = i;
+							break;
 						}
 					}
 				}
 
 				if (!mapSet)
 				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationSuggestionMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
-
-					if (file.exists())
-					{
-						json = new JSONObject(Util.getFileContents(file));
-
-						if (json.getJSONObject("notifications").isNull(selectedServer))
-							json.getJSONObject("notifications").put(selectedServer, new JSONArray());
-
-						json.put("lastName", event.getUser().block().getUsername());
-						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationSuggestionMaps.get(event.getUser().block().getId()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
-					else
-					{
-						file.createNewFile();
-						json = new JSONObject();
-						json.put("lastName", event.getUser().block().getUsername());
-						json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
-						json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationSuggestionMaps.get(event.getUser().block().getId()));
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-					}
+					addNotification(serviceDoc, user, event.getChannel().block(), confirmationSuggestionMaps.get(user.getId()));
 				}
 				else
 				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Removing **" + confirmationSuggestionMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** from your map notifications!");
-					json.put("lastName", event.getUser().block().getUsername());
-					json.getJSONObject("notifications").getJSONArray(selectedServer).remove(index);
-					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+					removeNotification(serviceDoc, user, event.getChannel().block(), confirmationSuggestionMaps.get(user.getId()), index);
 				}
 			}
 
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("2⃣"))
+			else if (emoji.equals("2⃣"))
 			{
-				Util.msg(event.getChannel().block(), event.getUser().block(), "Adding **" + confirmationMaps.get(event.getUser().block().getId()).replace("_", "\\_") + "** to your map notifications!");
-
-				if (file.exists())
-				{
-					json = new JSONObject(Util.getFileContents(file));
-
-					if (json.getJSONObject("notifications").isNull(selectedServer))
-						json.getJSONObject("notifications").put(selectedServer, new JSONArray());
-
-					json.put("lastName", event.getUser().block().getUsername());
-					json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
-					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-				}
-				else
-				{
-					file.createNewFile();
-					json = new JSONObject();
-					json.put("lastName", event.getUser().block().getUsername());
-					json.put("notifications", new JSONObject().put(selectedServer, new JSONArray()));
-					json.getJSONObject("notifications").getJSONArray(selectedServer).put(confirmationMaps.get(event.getUser().block().getId()));
-					FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-				}
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
-			{
-				ArrayList<String> notifications = new ArrayList<>();
-
-				json = new JSONObject(Util.getFileContents(file));
-
-				for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
-				{
-					notifications.add(json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i));
-				}
-
-				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) + 1, 0, true, false, false, event.getChannel().block(), event.getUser().block());
-
-				listMessages.put(event.getUser().block().getId(), m.getId());
-				waitForReaction(m.getId(), event.getUser().block().getId());
-				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
-			{
-				ArrayList<String> notifications = new ArrayList<>();
-
-				json = new JSONObject(Util.getFileContents(file));
-
-				for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(selectedServer).length(); i++)
-				{
-					notifications.add(json.getJSONObject("notifications").getJSONArray(selectedServer).getString(i));
-				}
-
-				Message m = Util.buildPage(notifications, "Notification List", 10, listPages.get(event.getUser().block().getId()) - 1, 0, true, false, false, event.getChannel().block(), event.getUser().block());
-
-				listMessages.put(event.getUser().block().getId(), m.getId());
-				waitForReaction(m.getId(), event.getUser().block().getId());
-				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
+				addNotification(serviceDoc, user, event.getChannel().block(), confirmationMaps.get(user.getId()));
 			}
 		}
 
-		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
+		// Notification list pagination
+		else if (listMessages.containsKey(user.getId()) && message.getId().equals(listMessages.get(user.getId())))
 		{
-			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
+			int page = -1;
 
-			if (i != -1)
+			if (emoji.equals("▶"))
 			{
-				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
-				{
-					selectedServers.put(event.getUser().block().getId(), "server" + i);
-					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i), "server" + i, messageContents.get(event.getUser().block().getId()));
-				}
+				page = listPages.get(event.getUser().block().getId()) + 1;
 			}
+			else if (emoji.equals("◀"))
+			{
+				page = listPages.get(event.getUser().block().getId()) - 1;
+			}
+
+			List<String> notifications = new ArrayList<>();
+			List<Document> notificationDocs = Main.mongoDatabase.getCollection("services").find(eq("_id", selectedServices.get(user.getId()))).first().getList("notifications", Document.class);
+
+			for (int i = 0; i < notificationDocs.size(); i++)
+			{
+				if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
+					continue;
+
+				notifications = notificationDocs.get(i).getList("notifications", String.class);
+				break;
+			}
+
+			Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, event.getChannel().block(), user);
+
+			listMessages.put(user.getId(), m.getId());
+			waitForReaction(m.getId(), user.getId());
+			listPages.put(user.getId(), page);
 		}
 	}
 
-	private void runCmd(User user, MessageChannel channel, JSONObject object, String objectName, String messageContent) throws Exception
+	private void runCmd(User user, MessageChannel channel, Document doc, String messageContent) throws Exception
 	{
+		Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
+		List<Document> notificationDocs = doc.getList("notifications", Document.class);
 		String argument;
-		JSONObject json = null;
-		File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + ((GuildChannel) channel).getGuild().block().getId().asString() + "/" + user.getId().asString() + ".json");
 		String[] args = messageContent.split(" ");
-
-		if (file.exists())
-		{
-			json = new JSONObject(Util.getFileContents(file));
-
-			if (Util.getFileContents(file).contains("﻿"))
-			{
-				FileUtils.writeStringToFile(file, Util.getFileContents(file).replace("﻿", ""), "UTF-8");
-			}
-		}
 
 		if (args.length == 1)
 		{
@@ -373,7 +243,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 		}
 		else
 		{
-			if (object.getBoolean("mapCharacterLimit"))
+			if (doc.getBoolean("mapCharacterLimit"))
 			{
 				argument = StringUtils.substring(messageContent.split(" ")[1], 0, 31);
 			}
@@ -388,87 +258,88 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 			}
 			else
 			{
+				boolean hasNotifications = false;
+
+				for (int i = 0; i < notificationDocs.size(); i++)
+				{
+					if (notificationDocs.get(i).getLong("userID") != user.getId().asLong() || notificationDocs.get(i).getList("notifications", String.class).size() == 0)
+						continue;
+
+					hasNotifications = true;
+					break;
+				}
 				if (argument.equalsIgnoreCase("list"))
 				{
-					if (!file.exists())
+					if (!hasNotifications)
 					{
 						Util.msg(channel, user, "You do not have any map notifications set! Use **\\*notify <mapname>** to add one");
+						return;
 					}
-					else
+
+					if (args.length == 2 || NumberUtils.isCreatable(args[2]))
 					{
-						if (json.getJSONObject("notifications").has(objectName) && json.getJSONObject("notifications").getJSONArray(objectName).length() != 0)
+						int page;
+
+						if (args.length == 2)
 						{
-							if (args.length == 2 || NumberUtils.isCreatable(args[2]))
-							{
-								int page;
-
-								if (args.length == 2)
-								{
-									page = 1;
-								}
-								else
-								{
-									page = Integer.parseInt(args[2]);
-								}
-
-								ArrayList<String> notifications = new ArrayList<>();
-
-								for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(objectName).length(); i++)
-								{
-									notifications.add(json.getJSONObject("notifications").getJSONArray(objectName).getString(i));
-								}
-
-								Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, channel, user);
-
-								listMessages.put(user.getId(), m.getId());
-								waitForReaction(m.getId(), user.getId());
-								listPages.put(user.getId(), page);
-							}
-							else
-							{
-								Util.msg(channel, user, "Page numbers need to be numerical!");
-							}
+							page = 1;
 						}
 						else
 						{
-							Util.msg(channel, user, "You do not have any map notifications set! Use **\\*notify <mapname>** to add one");
+							page = Integer.parseInt(args[2]);
 						}
+
+						List<String> notifications = new ArrayList<>();
+
+						for (int i = 0; i < doc.getList("notifications", Document.class).size(); i++)
+						{
+							if (doc.getList("notifications", Document.class).get(i).getLong("userID") != user.getId().asLong())
+								continue;
+
+							notifications = doc.getList("notifications", Document.class).get(i).getList("notifications", String.class);
+							break;
+						}
+
+						Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, channel, user);
+
+						listMessages.put(user.getId(), m.getId());
+						waitForReaction(m.getId(), user.getId());
+						listPages.put(user.getId(), page);
+					}
+					else
+					{
+						Util.msg(channel, user, "Page numbers need to be numerical!");
 					}
 				}
 				else if (argument.equalsIgnoreCase("wipe"))
 				{
-					if (!file.exists())
+					if (!hasNotifications)
 					{
 						Util.msg(channel, user, "You don't have any map notifications to wipe!");
+						return;
 					}
-					else if (file.exists() && new JSONObject(Util.getFileContents(file)).getJSONObject("notifications").isNull(objectName))
+
+					Message m = Util.msg(channel, user, "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+
+					waitForReaction(m.getId(), user.getId());
+					confirmationMaps.put(user.getId(), "wipe");
+					confirmationMessages.put(user.getId(), m.getId());
+
+					ArrayList<String> reactions = new ArrayList<>();
+
+					reactions.add("\u2705");
+					reactions.add("\u274C");
+					Util.addReactions(m, reactions);
+
+					ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+					msgDeleterPool.schedule(() ->
 					{
-						Util.msg(channel, user, "You don't have any map notifications to wipe!");
-					}
-					else
-					{
-						Message m = Util.msg(channel, user, "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
-
-						waitForReaction(m.getId(), user.getId());
-						confirmationMaps.put(user.getId(), "wipe");
-						confirmationMessages.put(user.getId(), m.getId());
-
-						ArrayList<String> reactions = new ArrayList<>();
-
-						reactions.add("\u2705");
-						reactions.add("\u274C");
-						Util.addReactions(m, reactions);
-
-						ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
-
-						msgDeleterPool.schedule(() ->
-						{
-							m.delete();
-							confirmationMaps.remove(user.getId());
-							confirmationMessages.remove(user.getId());
-							msgDeleterPool.shutdown();
-						}, 120, TimeUnit.SECONDS);
-					}
+						m.delete();
+						confirmationMaps.remove(user.getId());
+						confirmationMessages.remove(user.getId());
+						msgDeleterPool.shutdown();
+					}, 120, TimeUnit.SECONDS);
 				}
 				else
 				{
@@ -476,13 +347,16 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 					boolean mapExists = false;
 					int index = 0;
 
-					if (file.exists() && !json.getJSONObject("notifications").isNull(objectName))
+					for (int i = 0; i < notificationDocs.size(); i++)
 					{
-						for (int i = 0; i < json.getJSONObject("notifications").getJSONArray(objectName).length(); i++)
-						{
-							String mapNotification = json.getJSONObject("notifications").getJSONArray(objectName).getString(i);
+						if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
+							continue;
 
-							if (mapNotification.equalsIgnoreCase(argument))
+						List<String> notifications = notificationDocs.get(i).getList("notifications", String.class);
+
+						for (String notification : notifications)
+						{
+							if (notification.equalsIgnoreCase(argument))
 							{
 								mapSet = true;
 								index = i;
@@ -491,9 +365,9 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 						}
 					}
 
-					for (int i = 0; i < object.getJSONArray("mapDatabase").length(); i++)
+					for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
 					{
-						String map = object.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
+						String map = serverDoc.getList("mapDatabase", Document.class).get(i).getString("map");
 
 						if (map.equalsIgnoreCase(argument) || argument.contains("*"))
 						{
@@ -504,121 +378,169 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 					if (mapSet)
 					{
-						Util.msg(channel, user, "Removing **" + argument.replace("_", "\\_") + "** from your map notifications!");
-						json.put("lastName", user.getUsername());
-						json.getJSONObject("notifications").getJSONArray(objectName).remove(index);
-						FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
+						removeNotification(doc, user, channel, argument, index);
 					}
 					else
 					{
-						if (!argument.contains("﻿"))
+						if (mapExists)
 						{
-							if (mapExists)
-							{
-								Util.msg(channel, user, "Adding **" + argument.replace("_", "\\_") + "** to your map notifications!");
-
-								if (file.exists())
-								{
-									json = new JSONObject(Util.getFileContents(file));
-
-									if (json.getJSONObject("notifications").isNull(objectName))
-										json.getJSONObject("notifications").put(objectName, new JSONArray());
-
-									json.put("lastName", user.getUsername());
-									json.getJSONObject("notifications").getJSONArray(objectName).put(argument);
-									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-								}
-								else
-								{
-									file.createNewFile();
-									json = new JSONObject();
-									json.put("lastName", user.getUsername());
-									json.put("notifications", new JSONObject().put(objectName, new JSONArray()));
-									json.getJSONObject("notifications").getJSONArray(objectName).put(argument);
-									FileUtils.writeStringToFile(file, json.toString(2), "UTF-8");
-								}
-							}
-							else
-							{
-								String mapSuggestion = "";
-								Message m;
-								ArrayList<Long> mapDatabaseTimestamps = new ArrayList<>();
-								ArrayList<String> mapDatabase = new ArrayList<>();
-
-								for (int i = 0; i < object.getJSONArray("mapDatabase").length(); i++)
-								{
-									mapDatabaseTimestamps.add(object.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
-								}
-
-								Collections.sort(mapDatabaseTimestamps);
-								Collections.reverse(mapDatabaseTimestamps);
-
-								for (int i = 0; i < mapDatabaseTimestamps.size(); i++)
-								{
-									long timestamp = mapDatabaseTimestamps.get(i);
-
-									for (int j = 0; j < object.getJSONArray("mapDatabase").length(); j++)
-									{
-										JSONObject databaseEntry = object.getJSONArray("mapDatabase").getJSONObject(j);
-
-										if (databaseEntry.getLong("lastPlayed") == timestamp)
-											mapDatabase.add(databaseEntry.getString("mapName"));
-									}
-								}
-
-								for (int i = 0; i < mapDatabase.size(); i++)
-								{
-									String map = mapDatabase.get(i);
-
-									if (StringUtils.containsIgnoreCase(map, argument))
-									{
-										mapSuggestion = map;
-										break;
-									}
-								}
-
-								if (mapSuggestion.equals(""))
-								{
-									m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
-									waitForReaction(m.getId(), user.getId());
-									confirmationMaps.put(user.getId(), argument);
-									confirmationMessages.put(user.getId(), m.getId());
-
-									ArrayList<String> reactions = new ArrayList<>();
-
-									reactions.add("\u2705");
-									reactions.add("\u274C");
-									Util.addReactions(m, reactions);
-								}
-								else
-								{
-									m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + mapSuggestion.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + argument.replace("_", "\\_"));
-									waitForReaction(m.getId(), user.getId());
-									confirmationMaps.put(user.getId(), argument);
-									confirmationSuggestionMaps.put(user.getId(), mapSuggestion);
-									confirmationMessages.put(user.getId(), m.getId());
-									Util.addNumberedReactions(m, true, 2);
-								}
-
-								ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
-
-								msgDeleterPool.schedule(() ->
-								{
-									m.delete();
-									confirmationMaps.remove(user.getId());
-									confirmationMessages.remove(user.getId());
-									msgDeleterPool.shutdown();
-								}, 120, TimeUnit.SECONDS);
-							}
+							addNotification(doc, user, channel, argument);
 						}
 						else
 						{
-							Util.msg(channel, user, "Do not include invisible characters with your map name!");
+							String mapSuggestion = "";
+							Message m;
+							ArrayList<Long> mapDatabaseTimestamps = new ArrayList<>();
+							ArrayList<String> mapDatabase = new ArrayList<>();
+
+							for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
+							{
+								mapDatabaseTimestamps.add(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed"));
+							}
+
+							Collections.sort(mapDatabaseTimestamps);
+							Collections.reverse(mapDatabaseTimestamps);
+
+							for (int i = 0; i < mapDatabaseTimestamps.size(); i++)
+							{
+								long timestamp = mapDatabaseTimestamps.get(i);
+
+								for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++)
+								{
+									Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(i);
+
+									if (databaseEntry.getLong("lastPlayed") == timestamp)
+										mapDatabase.add(databaseEntry.getString("map"));
+								}
+							}
+
+							for (int i = 0; i < mapDatabase.size(); i++)
+							{
+								String map = mapDatabase.get(i);
+
+								if (StringUtils.containsIgnoreCase(map, argument))
+								{
+									mapSuggestion = map;
+									break;
+								}
+							}
+
+							if (mapSuggestion.equals(""))
+							{
+								m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+								waitForReaction(m.getId(), user.getId());
+								confirmationMaps.put(user.getId(), argument);
+								confirmationMessages.put(user.getId(), m.getId());
+
+								ArrayList<String> reactions = new ArrayList<>();
+
+								reactions.add("\u2705");
+								reactions.add("\u274C");
+								Util.addReactions(m, reactions);
+							}
+							else
+							{
+								m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + mapSuggestion.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + argument.replace("_", "\\_"));
+								waitForReaction(m.getId(), user.getId());
+								confirmationMaps.put(user.getId(), argument);
+								confirmationSuggestionMaps.put(user.getId(), mapSuggestion);
+								confirmationMessages.put(user.getId(), m.getId());
+								Util.addNumberedReactions(m, true, 2);
+							}
+
+							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+							msgDeleterPool.schedule(() ->
+							{
+								m.delete();
+								confirmationMaps.remove(user.getId());
+								confirmationMessages.remove(user.getId());
+								msgDeleterPool.shutdown();
+							}, 120, TimeUnit.SECONDS);
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private void runSelection(User user, MessageChannel channel, List<Document> services, int page)
+	{
+		ArrayList<String> servers = new ArrayList<>();
+
+		for (Document doc : services)
+		{
+			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
+			servers.add(serverDoc.getString("name"));
+		}
+
+		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel, user);
+
+		selectionServices.put(user.getId(), services);
+		selectionMessages.put(user.getId(), m.getId());
+		selectionPages.put(user.getId(), page);
+		waitForReaction(m.getId(), user.getId());
+
+		ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+		msgDeleterPool.schedule(() ->
+		{
+			m.delete();
+			selectionServices.remove(user.getId());
+			selectionMessages.remove(user.getId());
+			selectionPages.remove(user.getId());
+			msgDeleterPool.shutdown();
+		}, 120, TimeUnit.SECONDS);
+	}
+
+	private void addNotification(Document serviceDoc, User user, MessageChannel channel, String notification)
+	{
+		List<Document> notificationDocs = serviceDoc.getList("notifications", Document.class);
+		boolean docFound = false;
+
+		Util.msg(channel, user, "Adding **" + notification.replace("_", "\\_") + "** to your map notifications!");
+
+		for (int i = 0; i < notificationDocs.size(); i++)
+		{
+			if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
+				continue;
+
+			docFound = true;
+			notificationDocs.get(i).getList("notifications", String.class).add(notification.replace("﻿", ""));
+			break;
+		}
+
+		if (!docFound)
+		{
+			Document notificationDoc = new Document();
+			ArrayList<String> notifications = new ArrayList<>();
+
+			notificationDoc.put("userID", user.getId().asLong());
+			notifications.add(notification.replace("﻿", ""));
+			notificationDoc.put("notifications", notifications);
+
+			notificationDocs.add(notificationDoc);
+		}
+
+		Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", serviceDoc.getObjectId("_id")), serviceDoc);
+	}
+
+	private void removeNotification(Document serviceDoc, User user, MessageChannel channel, String notification, int index)
+	{
+		List<Document> notificationDocs = serviceDoc.getList("notifications", Document.class);
+
+		Util.msg(channel, user, "Removing **" + notification.replace("_", "\\_") + "** from your map notifications!");
+
+		for (int i = 0; i < notificationDocs.size(); i++)
+		{
+			if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
+				continue;
+
+			notificationDocs.get(i).getList("notifications", String.class).remove(index);
+			break;
+		}
+
+		Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", serviceDoc.getObjectId("_id")), serviceDoc);
 	}
 
 	@Override

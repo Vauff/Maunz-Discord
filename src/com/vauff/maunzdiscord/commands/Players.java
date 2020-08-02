@@ -97,9 +97,9 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 
 			if (i != -2)
 			{
-				if (selectionServices.get(event.getUser().block().getId()).size() >= i)
+				if (selectionServices.get(user.getId()).size() >= i)
 				{
-					runCmd(event.getUser().block(), event.getChannel().block(), selectionServices.get(event.getUser().block().getId()).get(i));
+					runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i));
 				}
 			}
 		}

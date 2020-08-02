@@ -23,6 +23,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -466,7 +467,7 @@ public class Util
 	 * @param user               The User that triggered the command's execution in the first place
 	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
 	 */
-	public static Message buildPage(ArrayList<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user)
+	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
