@@ -1,7 +1,9 @@
 package com.vauff.maunzdiscord.commands;
 
+import com.mongodb.client.FindIterable;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -12,13 +14,11 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.bson.Document;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
 
-import java.io.File;
 import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -30,10 +30,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+
 public class Map extends AbstractCommand<MessageCreateEvent>
 {
-	private static HashMap<Snowflake, List<String>> selectionServers = new HashMap<>();
+	private static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
 	private static HashMap<Snowflake, Snowflake> selectionMessages = new HashMap<>();
+	private static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
 	private static HashMap<Snowflake, String[]> args = new HashMap<>();
 
 	@Override
@@ -41,97 +45,37 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 	{
 		if (!(channel instanceof PrivateChannel))
 		{
-			String guildID = event.getGuild().block().getId().asString();
-			File file = new File(Util.getJarLocation() + "data/services/server-tracking/" + guildID + "/serverInfo.json");
+			long guildID = event.getGuild().block().getId().asLong();
+			FindIterable<Document> servicesIterable = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("guildID", guildID)));
+			List<Document> services = new ArrayList<>();
 
-			if (file.exists())
+			for (Document doc : servicesIterable)
 			{
-				JSONObject json = new JSONObject(Util.getFileContents("data/services/server-tracking/" + guildID + "/serverInfo.json"));
-				int serverNumber = 0;
-				List<String> serverList = new ArrayList<>();
+				services.add(doc);
+			}
 
-				while (true)
-				{
-					JSONObject object;
-
-					try
-					{
-						object = json.getJSONObject("server" + serverNumber);
-					}
-					catch (JSONException e)
-					{
-						break;
-					}
-
-					if (object.getBoolean("enabled"))
-					{
-						serverList.add("server" + serverNumber);
-					}
-
-					serverNumber++;
-				}
-
-				if (serverList.size() != 0)
-				{
-					if (serverList.size() == 1)
-					{
-						runCmd(author, channel, json.getJSONObject(serverList.get(0)), event.getMessage().getContent().split(" "), false);
-					}
-					else
-					{
-						String object = "";
-
-						for (String objectName : serverList)
-						{
-							if (json.getJSONObject(objectName).getLong("serverTrackingChannelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(json, json.getJSONObject(objectName).getLong("serverTrackingChannelID")))
-							{
-								object = objectName;
-								break;
-							}
-						}
-
-						if (!object.equals(""))
-						{
-							runCmd(author, channel, json.getJSONObject(object), event.getMessage().getContent().split(" "), false);
-						}
-						else
-						{
-							String msg = "Please select which server to view the map for" + System.lineSeparator();
-							int i = 1;
-
-							for (String serverObject : serverList)
-							{
-								msg += System.lineSeparator() + "**`[" + i + "]`**  |  " + json.getJSONObject(serverObject).getString("serverName");
-								i++;
-							}
-
-							Message m = Util.msg(channel, author, msg);
-							waitForReaction(m.getId(), author.getId());
-							selectionServers.put(author.getId(), serverList);
-							selectionMessages.put(author.getId(), m.getId());
-							args.put(author.getId(), event.getMessage().getContent().split(" "));
-							Util.addNumberedReactions(m, true, serverList.size());
-
-							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
-
-							msgDeleterPool.schedule(() ->
-							{
-								m.delete();
-								selectionServers.remove(author.getId());
-								selectionMessages.remove(author.getId());
-								msgDeleterPool.shutdown();
-							}, 120, TimeUnit.SECONDS);
-						}
-					}
-				}
-				else
-				{
-					Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
-				}
+			if (services.size() == 0)
+			{
+				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
+				return;
+			}
+			else if (services.size() == 1)
+			{
+				runCmd(author, channel, services.get(0), event.getMessage().getContent().split(" "), false);
 			}
 			else
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
+				for (Document doc : services)
+				{
+					if (doc.getLong("channelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(guildID, channel.getId().asLong()))
+					{
+						runCmd(author, channel, doc, event.getMessage().getContent().split(" "), false);
+						return;
+					}
+				}
+
+				args.put(author.getId(), event.getMessage().getContent().split(" "));
+				runSelection(author, channel, services, 1);
 			}
 		}
 		else
@@ -143,78 +87,92 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
+		String emoji = event.getEmoji().asUnicodeEmoji().get().getRaw();
+		User user = event.getUser().block();
+
 		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
 		{
-			int i = Util.emojiToInt(event.getEmoji().asUnicodeEmoji().get().getRaw()) - 1;
-
-			if (i != -1)
+			if (emoji.equals("▶"))
 			{
-				if (selectionServers.get(event.getUser().block().getId()).contains("server" + i))
+				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) + 1);
+				return;
+			}
+
+			else if (emoji.equals("◀"))
+			{
+				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) - 1);
+				return;
+			}
+
+			int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
+
+			if (i != -2)
+			{
+				if (selectionServices.get(event.getUser().block().getId()).size() >= i)
 				{
-					runCmd(event.getUser().block(), event.getChannel().block(), new JSONObject(Util.getFileContents("data/services/server-tracking/" + event.getGuild().block().getId().asString() + "/serverInfo.json")).getJSONObject("server" + i), args.get(event.getUser().block().getId()), true);
+					runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i), args.get(user.getId()), true);
 				}
 			}
 		}
 	}
 
-	private void runCmd(User user, MessageChannel channel, JSONObject object, String[] args, boolean includeName) throws Exception
+	private void runCmd(User user, MessageChannel channel, Document doc, String[] args, boolean includeName) throws Exception
 	{
+		Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
 		String argument;
 
 		if (args.length == 1)
 		{
-			if (!(object.getInt("downtimeTimer") >= object.getInt("failedConnectionsThreshold")))
+			if (!doc.getBoolean("online"))
 			{
-				if (!object.getString("lastMap").equals("N/A"))
-				{
-					String url = "https://vauff.com/mapimgs/" + StringUtils.substring(object.getString("lastMap"), 0, 31) + ".jpg";
+				Util.msg(channel, user, "The server currently appears to be offline");
+				return;
+			}
 
-					try
-					{
-						Jsoup.connect(url).get();
-					}
-					catch (HttpStatusException e)
-					{
-						url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(object.getString("lastMap"), 0, 31) + ".jpg";
-					}
-					catch (UnsupportedMimeTypeException e)
-					{
-						// This is to be expected normally because JSoup can't parse a URL serving only a static image
-					}
+			if (doc.getString("lastMap").equals("N/A"))
+			{
+				Util.msg(channel, user, "There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again");
+				return;
+			}
 
-					final String finalUrl = url;
-					final URL finalConstructedUrl = new URL(url);
+			String url = "https://vauff.com/mapimgs/" + StringUtils.substring(doc.getString("lastMap"), 0, 31) + ".jpg";
 
-					Consumer<EmbedCreateSpec> embed = spec ->
-					{
-						spec.setColor(Util.averageColorFromURL(finalConstructedUrl, true));
-						spec.setTimestamp(Instant.ofEpochMilli(object.getLong("timestamp")));
-						spec.setThumbnail(finalUrl);
-						spec.setDescription("Currently Playing: **" + object.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + object.getString("players") + "**\nQuick Join: **steam://connect/" + object.getString("serverIP") + ":" + object.getInt("serverPort") + "**");
-					};
+			try
+			{
+				Jsoup.connect(url).get();
+			}
+			catch (HttpStatusException e)
+			{
+				url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(doc.getString("lastMap"), 0, 31) + ".jpg";
+			}
+			catch (UnsupportedMimeTypeException e)
+			{
+				// This is to be expected normally because JSoup can't parse a URL serving only a static image
+			}
 
-					if (includeName)
-					{
-						Util.msg(channel, user, embed.andThen(spec -> spec.setTitle(object.getString("serverName"))));
-					}
-					else
-					{
-						Util.msg(channel, user, embed);
-					}
-				}
-				else
-				{
-					Util.msg(channel, user, "There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again");
-				}
+			final String finalUrl = url;
+			final URL finalConstructedUrl = new URL(url);
+
+			Consumer<EmbedCreateSpec> embed = spec ->
+			{
+				spec.setColor(Util.averageColorFromURL(finalConstructedUrl, true));
+				spec.setTimestamp(Instant.ofEpochMilli(serverDoc.getLong("timestamp")));
+				spec.setThumbnail(finalUrl);
+				spec.setDescription("Currently Playing: **" + doc.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + serverDoc.getString("playerCount") + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**");
+			};
+
+			if (includeName)
+			{
+				Util.msg(channel, user, embed.andThen(spec -> spec.setTitle(serverDoc.getString("name"))));
 			}
 			else
 			{
-				Util.msg(channel, user, "The server currently appears to be offline");
+				Util.msg(channel, user, embed);
 			}
 		}
 		else
 		{
-			if (object.getBoolean("mapCharacterLimit"))
+			if (doc.getBoolean("mapCharacterLimit"))
 			{
 				argument = StringUtils.substring(args[1], 0, 31);
 			}
@@ -228,27 +186,27 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 			String lastPlayed = "";
 			String firstPlayed = "";
 
-			for (int i = 0; i < object.getJSONArray("mapDatabase").length(); i++)
+			for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
 			{
-				String map = object.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
+				String map = serverDoc.getList("mapDatabase", Document.class).get(i).getString("map");
 
 				if (map.equalsIgnoreCase(argument))
 				{
 					mapExists = true;
 					formattedMap = map;
 
-					if (object.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed") != 0)
+					if (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed") != 0)
 					{
-						lastPlayed = Util.getTime(object.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
+						lastPlayed = Util.getTime(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed"));
 					}
 					else
 					{
 						lastPlayed = "N/A";
 					}
 
-					if (object.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed") != 0)
+					if (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed") != 0)
 					{
-						firstPlayed = Util.getTime(object.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed"));
+						firstPlayed = Util.getTime(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed"));
 					}
 					else
 					{
@@ -298,9 +256,9 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 				ArrayList<Long> mapDatabaseTimestamps = new ArrayList<>();
 				ArrayList<String> mapDatabase = new ArrayList<>();
 
-				for (int i = 0; i < object.getJSONArray("mapDatabase").length(); i++)
+				for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
 				{
-					mapDatabaseTimestamps.add(object.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
+					mapDatabaseTimestamps.add(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed"));
 				}
 
 				Collections.sort(mapDatabaseTimestamps);
@@ -310,12 +268,12 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 				{
 					long timestamp = mapDatabaseTimestamps.get(i);
 
-					for (int j = 0; j < object.getJSONArray("mapDatabase").length(); j++)
+					for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++)
 					{
-						JSONObject databaseEntry = object.getJSONArray("mapDatabase").getJSONObject(j);
+						Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(j);
 
 						if (databaseEntry.getLong("lastPlayed") == timestamp)
-							mapDatabase.add(databaseEntry.getString("mapName"));
+							mapDatabase.add(databaseEntry.getString("map"));
 					}
 				}
 
@@ -330,24 +288,24 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 					}
 				}
 
-				for (int i = 0; i < object.getJSONArray("mapDatabase").length(); i++)
+				for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
 				{
-					String map = object.getJSONArray("mapDatabase").getJSONObject(i).getString("mapName");
+					String map = serverDoc.getList("mapDatabase", Document.class).get(i).getString("map");
 
 					if (map.equalsIgnoreCase(formattedMap))
 					{
-						if (object.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed") != 0)
+						if (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed") != 0)
 						{
-							lastPlayed = Util.getTime(object.getJSONArray("mapDatabase").getJSONObject(i).getLong("lastPlayed"));
+							lastPlayed = Util.getTime(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed"));
 						}
 						else
 						{
 							lastPlayed = "N/A";
 						}
 
-						if (object.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed") != 0)
+						if (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed") != 0)
 						{
-							firstPlayed = Util.getTime(object.getJSONArray("mapDatabase").getJSONObject(i).getLong("firstPlayed"));
+							firstPlayed = Util.getTime(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed"));
 						}
 						else
 						{
@@ -398,6 +356,32 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 				}
 			}
 		}
+	}
+
+	private void runSelection(User user, MessageChannel channel, List<Document> services, int page)
+	{
+		ArrayList<String> servers = new ArrayList<>();
+
+		for (Document doc : services)
+		{
+			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
+			servers.add(serverDoc.getString("name"));
+		}
+
+		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel, user);
+
+		selectionServices.put(user.getId(), services);
+		selectionMessages.put(user.getId(), m.getId());
+		selectionPages.put(user.getId(), page);
+		waitForReaction(m.getId(), user.getId());
+
+		ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+		msgDeleterPool.schedule(() ->
+		{
+			m.delete().block();
+			msgDeleterPool.shutdown();
+		}, 120, TimeUnit.SECONDS);
 	}
 
 	@Override

@@ -2,31 +2,33 @@ package com.vauff.maunzdiscord.timers;
 
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.threads.ServerTimerThread;
+import com.vauff.maunzdiscord.threads.ServiceProcessThread;
+import com.vauff.maunzdiscord.threads.ServerRequestThread;
+import org.bson.Document;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.List;
+
+import static com.mongodb.client.model.Filters.eq;
 
 /**
- * A timer to send notifications of maps currently being played on given servers
+ * A timer to refresh the state of tracked servers
  */
 public class ServerTimer
 {
 	/**
-	 * Holds online player lists for each server
+	 * Holds the boolean status of whether each server/service currently has a thread running or not
 	 */
-	public static HashMap<String, Set<String>> serverPlayers = new HashMap<>();
+	public static HashMap<String, Boolean> threadRunning = new HashMap<>();
 
 	/**
-	 * Holds the boolean status of whether each guilds server tracking services currently have a thread running or not
+	 * Holds lists of which ServerProcessThreads are waiting for which server requests to finish
 	 */
-	public static HashMap<String, Boolean> trackingThreadRunning = new HashMap<>();
+	public static HashMap<String, List<ServiceProcessThread>> waitingProcessThreads = new HashMap<>();
 
 	/**
-	 * Checks the servers in {@link Util#getJarLocation()}/data/services/server-tracking for new maps being played and sends them to a channel
-	 * as well as notifying users that set up a notification for that map
+	 * Iterate the server tracking storage and start threads for each server and service
 	 */
 	public static Runnable timer = new Runnable()
 	{
@@ -34,25 +36,49 @@ public class ServerTimer
 		{
 			try
 			{
-				if (Main.gateway.getGatewayClient(0).get().isConnected())
+				if (Main.gateway.getGatewayClient(0).get().isConnected().block())
 				{
 					Logger.log.debug("Starting a server timer run...");
 
-					for (File file : new File(Util.getJarLocation() + "data/services/server-tracking").listFiles())
+					for (Document doc : Main.mongoDatabase.getCollection("services").find(eq("enabled", true)))
 					{
-						String id = file.getName();
+						String id = doc.getObjectId("_id").toString();
+						String serverID = doc.getObjectId("serverID").toString();
 
-						if (!trackingThreadRunning.containsKey(id))
+						if (!threadRunning.containsKey(id))
+							threadRunning.put(id, false);
+
+						if (!threadRunning.get(id))
 						{
-							trackingThreadRunning.put(id, false);
+							ServiceProcessThread thread = new ServiceProcessThread(doc, id);
+
+							threadRunning.put(id, true);
+
+							waitingProcessThreads.putIfAbsent(serverID, new ArrayList<>());
+							waitingProcessThreads.get(serverID).add(thread);
 						}
+					}
 
-						if (!trackingThreadRunning.get(id))
+					/**
+					 * Holds a list of which servers already have a thread started in the current timer run
+					 * This is different from {@link threadRunning}, because that can be asynchronously set to false before the timer stops running
+					 */
+					List<String> startedThreads = new ArrayList<>();
+
+					for (Document doc : Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)))
+					{
+						String id = doc.getString("ip") + ":" + doc.getInteger("port");
+
+						if (!threadRunning.containsKey(id))
+							threadRunning.put(id, false);
+
+						if (!threadRunning.get(id) && !startedThreads.contains(id))
 						{
-							ServerTimerThread thread = new ServerTimerThread(file, "servertracking-" + id);
+							ServerRequestThread thread = new ServerRequestThread(doc, id);
 
-							trackingThreadRunning.put(id, true);
+							threadRunning.put(id, true);
 							thread.start();
+							startedThreads.add(id);
 						}
 					}
 				}

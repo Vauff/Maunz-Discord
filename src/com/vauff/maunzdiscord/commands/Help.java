@@ -48,7 +48,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 				}
 			}
 
-			Message m = Util.buildPage(helpEntries, "Command List", 10, page, false, false, channel, author);
+			Message m = Util.buildPage(helpEntries, "Command List", 10, page, 0, false, false, false, channel, author);
 
 			listMessages.put(author.getId(), m.getId());
 			waitForReaction(m.getId(), author.getId());
@@ -132,7 +132,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 		if (pageChange == 0)
 			return;
 
-		Message m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().block().getId()) + pageChange, false, false, event.getChannel().block(), event.getUser().block());
+		Message m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().block().getId()) + pageChange, 0, false, false, false, event.getChannel().block(), event.getUser().block());
 
 		listMessages.put(event.getUser().block().getId(), m.getId());
 		waitForReaction(m.getId(), event.getUser().block().getId());

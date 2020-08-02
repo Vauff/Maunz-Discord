@@ -24,7 +24,7 @@ public class StatsTimer
 		{
 			try
 			{
-				if (Main.gateway.getGatewayClient(0).get().isConnected())
+				if (Main.gateway.getGatewayClient(0).get().isConnected().block())
 				{
 					if (!showingGuilds)
 					{

@@ -57,21 +57,9 @@ public class MainListener
 	{
 		try
 		{
-			List<File> folderList = new ArrayList<>();
 			JSONObject configJson = new JSONObject(Util.getFileContents("config.json"));
 
 			uptime.start();
-			folderList.add(new File(Util.getJarLocation() + "data/"));
-			folderList.add(new File(Util.getJarLocation() + "data/services/"));
-			folderList.add(new File(Util.getJarLocation() + "data/services/server-tracking/"));
-
-			for (File folder : folderList)
-			{
-				if (!folder.isDirectory())
-				{
-					folder.mkdir();
-				}
-			}
 
 			for (Guild guild : Main.gateway.getGuilds().toIterable())
 			{
