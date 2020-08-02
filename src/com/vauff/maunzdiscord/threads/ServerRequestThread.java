@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -171,7 +172,8 @@ public class ServerRequestThread implements Runnable
 
 	private void cleanup(boolean success)
 	{
-		server.disconnect();
+		if (!Objects.isNull(server))
+			server.disconnect();
 
 		if (!success)
 			return;
