@@ -405,7 +405,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 								for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++)
 								{
-									Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(i);
+									Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(j);
 
 									if (databaseEntry.getLong("lastPlayed") == timestamp)
 										mapDatabase.add(databaseEntry.getString("map"));
