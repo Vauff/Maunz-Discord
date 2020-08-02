@@ -455,16 +455,16 @@ public class Util
 	/**
 	 * Builds a modular page message for the given parameters
 	 *
-	 * @param entries            An ArrayList<String> that contains all the entries that should be in the page builder
-	 * @param title              The title to give all the pages
-	 * @param pageSize           How many entries should be in a specific page
-	 * @param pageNumber         Which page the method should build and send to the provided channel
-	 * @param numberStyle        Which style to use for numbered entries, 0 = none, 1 = standard, 2 = code block surrounded & unique per page
-	 * @param codeBlock          Whether to surround all the entries in a code block or not
-	 * @param numberedReactions  Whether to add numbered reactions for each entry
-	 * @param cancellable        Whether to add an X emoji to close the page
-	 * @param channel            The MessageChannel that the page message should be sent to
-	 * @param user               The User that triggered the command's execution in the first place
+	 * @param entries           An ArrayList<String> that contains all the entries that should be in the page builder
+	 * @param title             The title to give all the pages
+	 * @param pageSize          How many entries should be in a specific page
+	 * @param pageNumber        Which page the method should build and send to the provided channel
+	 * @param numberStyle       Which style to use for numbered entries, 0 = none, 1 = standard, 2 = code block surrounded & unique per page
+	 * @param codeBlock         Whether to surround all the entries in a code block or not
+	 * @param numberedReactions Whether to add numbered reactions for each entry
+	 * @param cancellable       Whether to add an X emoji to close the page
+	 * @param channel           The MessageChannel that the page message should be sent to
+	 * @param user              The User that triggered the command's execution in the first place
 	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
 	 */
 	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user)
@@ -617,8 +617,8 @@ public class Util
 	/**
 	 * Checks if a given channel has multiple servers being tracked in it
 	 *
-	 * @param guildID     The guild to check inside of
-	 * @param channelID   The channel to check
+	 * @param guildID   The guild to check inside of
+	 * @param channelID The channel to check
 	 * @return True if channel tracking multiple servers, false otherwise
 	 */
 	public static boolean isMultiTrackingChannel(long guildID, long channelID)

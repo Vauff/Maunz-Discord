@@ -21,11 +21,9 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.bson.Document;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 

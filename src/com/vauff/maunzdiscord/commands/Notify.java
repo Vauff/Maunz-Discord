@@ -555,7 +555,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 		commandHelps[0] = new CommandHelp("list [page]", "Lists your current map notifications.");
 		commandHelps[1] = new CommandHelp("wipe", "Wipes ALL of your map notifications.");
-		commandHelps[2] = new CommandHelp("<mapname>", "Adds or removes a map to/from your map notifications, exact name is recommended, but it can be used as a search term too.");
+		commandHelps[2] = new CommandHelp("<mapname>", "Adds or removes a map to/from your map notifications, wildcard characters are also supported here.");
 
 		return commandHelps;
 	}

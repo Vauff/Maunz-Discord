@@ -42,7 +42,7 @@ _*enable_ - Enables Maunz either in a specific guild or globally.
 
 *notify wipe - Wipes ALL of your map notifications.
 
-*notify \<mapname> - Adds or removes a map to/from your map notifications, exact name is recommended, but it can be used as a search term too.
+*notify \<mapname> - Adds or removes a map to/from your map notifications, wildcard characters are also supported here.
 
 *ping - Makes Maunz respond to you with pong, useful for testing your connection.
 
