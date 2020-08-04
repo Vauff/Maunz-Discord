@@ -43,7 +43,7 @@ public class MessageCreateThread implements Runnable
 	{
 		try
 		{
-			if (event.getMessage().getContent().isEmpty() || !event.getMessage().getAuthor().isPresent())
+			if (event.getMessage().getContent().isEmpty() || !event.getMessage().getAuthor().isPresent() || event.getMessage().getAuthor().get().isBot())
 				return;
 
 			String cmdName = event.getMessage().getContent().split(" ")[0];
