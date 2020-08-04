@@ -28,11 +28,6 @@ import static com.mongodb.client.model.Filters.eq;
 public class ServiceProcessThread implements Runnable
 {
 	/**
-	 * Controls whether the thread should stop itself after being notified
-	 */
-	public boolean stop = false;
-
-	/**
 	 * Regex pattern to check for wildcards
 	 */
 	private static final Pattern WILDCARD_PATTERN = Pattern.compile("(?i)[^*]+|(\\*)");
