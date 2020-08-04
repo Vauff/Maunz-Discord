@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -94,7 +95,6 @@ public class ServerRequestThread implements Runnable
 			}
 
 			HashMap<String, Object> serverInfo = server.getServerInfo();
-
 			long timestamp = 0;
 			String map = serverInfo.get("mapName").toString();
 			String name = serverInfo.get("serverName").toString();
@@ -179,8 +179,11 @@ public class ServerRequestThread implements Runnable
 			return;
 
 		Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
+		List<ServiceProcessThread> processThreads = ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString());
 
-		for (ServiceProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
-				processThread.start();
+		for (ServiceProcessThread processThread : processThreads)
+			processThread.start();
+
+
 	}
 }

@@ -61,16 +61,6 @@ public class ServiceProcessThread implements Runnable
 
 			try
 			{
-				Main.gateway.getGuildById(Snowflake.of(doc.getLong("guildID"))).block();
-			}
-			catch (ClientException e)
-			{
-				// bot is no longer in this guild, stop execution
-				return;
-			}
-
-			try
-			{
 				Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block();
 			}
 			catch (Exception e)

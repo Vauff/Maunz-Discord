@@ -4,6 +4,8 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.threads.ServerRequestThread;
 import com.vauff.maunzdiscord.threads.ServiceProcessThread;
+import discord4j.common.util.Snowflake;
+import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -45,8 +47,17 @@ public class ServerTimer
 						String id = doc.getObjectId("_id").toString();
 						String serverID = doc.getObjectId("serverID").toString();
 
-						if (!threadRunning.containsKey(id))
-							threadRunning.put(id, false);
+						try
+						{
+							Main.gateway.getGuildById(Snowflake.of(doc.getLong("guildID"))).block();
+						}
+						catch (ClientException e)
+						{
+							// bot is no longer in this guild
+							continue;
+						}
+
+						threadRunning.putIfAbsent(id, false);
 
 						if (!threadRunning.get(id))
 						{
@@ -72,8 +83,7 @@ public class ServerTimer
 
 						String id = doc.getString("ip") + ":" + doc.getInteger("port");
 
-						if (!threadRunning.containsKey(id))
-							threadRunning.put(id, false);
+						threadRunning.putIfAbsent(id, false);
 
 						if (!threadRunning.get(id) && !startedThreads.contains(id))
 						{
