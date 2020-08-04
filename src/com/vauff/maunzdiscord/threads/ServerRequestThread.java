@@ -180,9 +180,6 @@ public class ServerRequestThread implements Runnable
 
 		Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 
-		if (!ServerTimer.waitingProcessThreads.containsKey(doc.getObjectId("_id").toString()))
-			return;
-
 		for (ServiceProcessThread processThread : ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()))
 				processThread.start();
 	}

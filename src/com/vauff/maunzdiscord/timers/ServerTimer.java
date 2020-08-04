@@ -2,8 +2,8 @@ package com.vauff.maunzdiscord.timers;
 
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.threads.ServiceProcessThread;
 import com.vauff.maunzdiscord.threads.ServerRequestThread;
+import com.vauff.maunzdiscord.threads.ServiceProcessThread;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -67,6 +67,9 @@ public class ServerTimer
 
 					for (Document doc : Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)))
 					{
+						if (!ServerTimer.waitingProcessThreads.containsKey(doc.getObjectId("_id").toString()))
+							continue;
+
 						String id = doc.getString("ip") + ":" + doc.getInteger("port");
 
 						if (!threadRunning.containsKey(id))
