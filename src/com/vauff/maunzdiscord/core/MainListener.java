@@ -55,6 +55,9 @@ public class MainListener
 	{
 		try
 		{
+			if (uptime.isStarted())
+				return;
+
 			JSONObject configJson = new JSONObject(Util.getFileContents("config.json"));
 
 			uptime.start();
