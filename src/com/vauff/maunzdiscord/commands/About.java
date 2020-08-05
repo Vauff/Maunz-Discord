@@ -118,7 +118,7 @@ public class About extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*about" };
+		return new String[] { "about" };
 	}
 
 	@Override

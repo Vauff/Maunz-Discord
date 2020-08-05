@@ -176,7 +176,7 @@ public class Changelog extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*changelog" };
+		return new String[] { "changelog" };
 	}
 
 	@Override

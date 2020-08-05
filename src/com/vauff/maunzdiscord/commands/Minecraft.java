@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
@@ -23,7 +24,7 @@ public class Minecraft extends AbstractCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "You need to provide a username! **Usage: *minecraft <uuid/username>**");
+			Util.msg(channel, author, "You need to provide a username! **Usage: " + Main.prefix + "minecraft <uuid/username>**");
 		}
 		else
 		{
@@ -100,7 +101,7 @@ public class Minecraft extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*minecraft" };
+		return new String[] { "minecraft" };
 	}
 
 	@Override

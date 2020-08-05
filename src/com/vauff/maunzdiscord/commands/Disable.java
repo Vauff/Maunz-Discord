@@ -125,7 +125,7 @@ public class Disable extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*disable" };
+		return new String[] { "disable" };
 	}
 
 	@Override

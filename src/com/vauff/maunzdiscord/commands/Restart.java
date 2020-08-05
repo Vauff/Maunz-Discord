@@ -29,7 +29,7 @@ public class Restart extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*restart" };
+		return new String[] { "restart" };
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public class Reddit extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*reddit" };
+		return new String[] { "reddit" };
 	}
 
 	@Override

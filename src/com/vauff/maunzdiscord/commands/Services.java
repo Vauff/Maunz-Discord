@@ -18,7 +18,7 @@ public class Services extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*services" };
+		return new String[] { "services" };
 	}
 
 	@Override

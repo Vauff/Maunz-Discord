@@ -18,7 +18,7 @@ public class Ping extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*ping" };
+		return new String[] { "ping" };
 	}
 
 	@Override

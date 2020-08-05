@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
@@ -44,7 +45,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 				for (CommandHelp commandHelp : command.getHelp())
 				{
-					helpEntries.add("**\\" + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description);
+					helpEntries.add("**" + Main.prefix + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description);
 				}
 			}
 
@@ -60,15 +61,15 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 			String list = "";
 			boolean matchFound = false;
 
-			if (!arg.startsWith("*"))
-				arg = "*" + arg;
+			if (!arg.startsWith(Main.prefix))
+				arg = Main.prefix + arg;
 
 			rootIteration:
 			for (AbstractCommand command : MainListener.commands)
 			{
 				for (String alias : command.getAliases())
 				{
-					if (alias.equalsIgnoreCase(arg))
+					if (arg.equalsIgnoreCase(Main.prefix + alias))
 					{
 						if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 							continue;
@@ -80,7 +81,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 						for (CommandHelp commandHelp : command.getHelp())
 						{
-							list += "**\\" + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description + System.lineSeparator();
+							list += "**" + Main.prefix + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description + System.lineSeparator();
 						}
 
 						list = StringUtils.removeEnd(list, System.lineSeparator());
@@ -96,7 +97,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 			}
 			else
 			{
-				Util.msg(channel, author, "The command **" + args[1] + "** either doesn't exist, or you don't have access to it.");
+				Util.msg(channel, author, "The command **" + arg + "** either doesn't exist, or you don't have access to it.");
 			}
 		}
 	}
@@ -120,7 +121,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 			for (CommandHelp commandHelp : command.getHelp())
 			{
-				helpEntries.add("**\\" + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description);
+				helpEntries.add("**" + Main.prefix + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description);
 			}
 		}
 
@@ -142,7 +143,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*help" };
+		return new String[] { "help" };
 	}
 
 	@Override

@@ -50,57 +50,63 @@ public class MessageCreateThread implements Runnable
 			User author = event.getMessage().getAuthor().get();
 			MessageChannel channel = event.getMessage().getChannel().block();
 
-			for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
+			if (cmdName.startsWith(Main.prefix))
 			{
-				for (String s : cmd.getAliases())
+				for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
 				{
-					if (!cmdName.equalsIgnoreCase(s))
-						continue;
-
-					boolean enabled;
-
-					if (channel instanceof PrivateChannel)
+					for (String s : cmd.getAliases())
 					{
-						enabled = Util.isEnabled();
-					}
-					else
-					{
-						enabled = Util.isEnabled(event.getGuild().block());
-					}
+						if (!cmdName.equalsIgnoreCase(Main.prefix + s))
+							continue;
 
-					if (!enabled && !(cmd instanceof Enable) && !(cmd instanceof Disable))
-						return;
+						boolean enabled;
 
-					if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
-					{
-						if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
+						if (channel instanceof PrivateChannel)
 						{
-							Util.msg(channel, author, author.getMention() + " Slow down!");
-							MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
+							enabled = Util.isEnabled();
+						}
+						else
+						{
+							enabled = Util.isEnabled(event.getGuild().block());
 						}
 
-						return;
-					}
+						if (!enabled && !(cmd instanceof Enable) && !(cmd instanceof Disable))
+							return;
 
-					MainListener.cooldownTimestamps.put(author.getId(), System.currentTimeMillis());
-					boolean blacklisted = false;
-
-					if (!(channel instanceof PrivateChannel) && !Util.hasPermission(author, event.getGuild().block()))
-					{
-						List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
-
-						for (String entry : blacklist)
+						if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
 						{
-							if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace("*", "")) || entry.split(":")[1].equalsIgnoreCase("all")))
+							if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
 							{
-								blacklisted = true;
-								break;
+								Util.msg(channel, author, author.getMention() + " Slow down!");
+								MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
+							}
+
+							return;
+						}
+
+						MainListener.cooldownTimestamps.put(author.getId(), System.currentTimeMillis());
+						boolean blacklisted = false;
+
+						if (!(channel instanceof PrivateChannel) && !Util.hasPermission(author, event.getGuild().block()))
+						{
+							List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
+
+							for (String entry : blacklist)
+							{
+								if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.prefix, "")) || entry.split(":")[1].equalsIgnoreCase("all")))
+								{
+									blacklisted = true;
+									break;
+								}
 							}
 						}
-					}
 
-					if (!blacklisted)
-					{
+						if (blacklisted)
+						{
+							Util.msg(author.getPrivateChannel().block(), ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
+							return;
+						}
+
 						try
 						{
 							try
@@ -139,10 +145,6 @@ public class MessageCreateThread implements Runnable
 							Util.msg(channel, author, ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
 							Logger.log.error(code, e);
 						}
-					}
-					else
-					{
-						Util.msg(author.getPrivateChannel().block(), ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
 					}
 				}
 			}

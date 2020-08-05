@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -92,7 +93,7 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 					case "view":
 						if (args.length == 2)
 						{
-							Util.msg(channel, author, "You need to provide a quote ID! **Usage: \\*quote view <quoteid>**");
+							Util.msg(channel, author, "You need to provide a quote ID! **Usage: " + Main.prefix + "quote view <quoteid>**");
 						}
 						else
 						{
@@ -163,7 +164,7 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 
 						break;
 					default:
-						Util.msg(channel, author, "The argument **" + args[1] + "** was not recognized! See **\\*help quote**");
+						Util.msg(channel, author, "The argument **" + args[1] + "** was not recognized! See **" + Main.prefix + "help quote**");
 
 						break;
 				}
@@ -250,8 +251,8 @@ public class Quote extends AbstractCommand<MessageCreateEvent>
 	public String[] getAliases()
 	{
 		return new String[] {
-				"*quote",
-				"*quotes"
+				"quote",
+				"quotes"
 		};
 	}
 

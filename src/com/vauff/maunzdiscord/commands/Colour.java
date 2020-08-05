@@ -80,8 +80,8 @@ public class Colour extends AbstractCommand<MessageCreateEvent>
 	public String[] getAliases()
 	{
 		return new String[] {
-				"*colour",
-				"*color"
+				"colour",
+				"color"
 		};
 	}
 

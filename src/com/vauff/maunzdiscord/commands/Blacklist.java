@@ -61,7 +61,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 							for (String entry : blacklist)
 							{
 								String channelSelector;
-								String command = "\\*" + entry.split(":")[1];
+								String command = Main.prefix + entry.split(":")[1];
 
 								if (entry.split(":")[0].equalsIgnoreCase("all"))
 								{
@@ -93,13 +93,13 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 					}
 					else
 					{
-						Util.msg(channel, author, "This guild doesn't have any commands/channels blacklisted, use **\\*blacklist [all/channel] \\<all/command>** to add one");
+						Util.msg(channel, author, "This guild doesn't have any commands/channels blacklisted, use **" + Main.prefix + "blacklist [all/channel] \\<all/command>** to add one");
 					}
 				}
 
 				else if (args.length == 2)
 				{
-					String input = args[1].replace("*", "");
+					String input = args[1].replace(Main.prefix, "");
 					boolean commandExists = false;
 
 					if (input.equalsIgnoreCase("all"))
@@ -112,7 +112,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 						{
 							for (String s : cmd.getAliases())
 							{
-								if (s.equalsIgnoreCase("*" + input))
+								if (s.equalsIgnoreCase(input))
 								{
 									commandExists = true;
 									break;
@@ -137,7 +137,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 								}
 								else
 								{
-									Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
+									Util.msg(channel, author, "Removing the **" + Main.prefix + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
 								}
 
 								Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", channel.getId().asString() + ":" + input)));
@@ -153,7 +153,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 							}
 							else
 							{
-								Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
+								Util.msg(channel, author, "Adding the **" + Main.prefix + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
 							}
 
 							Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", channel.getId().asString() + ":" + input)));
@@ -191,7 +191,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 
 					if (!location.equalsIgnoreCase(""))
 					{
-						String input = args[2].replace("*", "");
+						String input = args[2].replace(Main.prefix, "");
 						boolean commandExists = false;
 
 						if (input.equalsIgnoreCase("all"))
@@ -204,7 +204,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 							{
 								for (String s : cmd.getAliases())
 								{
-									if (s.equalsIgnoreCase("*" + input))
+									if (s.equalsIgnoreCase(input))
 									{
 										commandExists = true;
 										break;
@@ -238,11 +238,11 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 									{
 										if (location.equalsIgnoreCase("all"))
 										{
-											Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for all channels!");
+											Util.msg(channel, author, "Removing the **" + Main.prefix + input + "** command from this guilds blacklist for all channels!");
 										}
 										else
 										{
-											Util.msg(channel, author, "Removing the ***" + input + "** command from this guilds blacklist for <#" + location + ">!");
+											Util.msg(channel, author, "Removing the **" + Main.prefix + input + "** command from this guilds blacklist for <#" + location + ">!");
 										}
 									}
 
@@ -268,11 +268,11 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 								{
 									if (location.equalsIgnoreCase("all"))
 									{
-										Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for all channels!");
+										Util.msg(channel, author, "Adding the **" + Main.prefix + input + "** command to this guilds blacklist for all channels!");
 									}
 									else
 									{
-										Util.msg(channel, author, "Adding the ***" + input + "** command to this guilds blacklist for <#" + location + ">!");
+										Util.msg(channel, author, "Adding the **" + Main.prefix + input + "** command to this guilds blacklist for <#" + location + ">!");
 									}
 								}
 
@@ -292,7 +292,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 			}
 			else
 			{
-				Util.msg(channel, author, "You need to specify arguments! See **\\*help blacklist**");
+				Util.msg(channel, author, "You need to specify arguments! See **" + Main.prefix + "help blacklist**");
 			}
 		}
 		else
@@ -315,7 +315,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 				for (String entry : blacklist)
 				{
 					String channel;
-					String command = "\\*" + entry.split(":")[1];
+					String command = Main.prefix + entry.split(":")[1];
 
 					if (entry.split(":")[0].equalsIgnoreCase("all"))
 					{
@@ -348,7 +348,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 				for (String entry : blacklist)
 				{
 					String channel;
-					String command = "\\*" + entry.split(":")[1];
+					String command = Main.prefix + entry.split(":")[1];
 
 					if (entry.split(":")[0].equalsIgnoreCase("all"))
 					{
@@ -379,7 +379,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*blacklist" };
+		return new String[] { "blacklist" };
 	}
 
 	@Override

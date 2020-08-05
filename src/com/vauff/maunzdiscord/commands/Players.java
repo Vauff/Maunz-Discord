@@ -47,7 +47,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
+				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run **" + Main.prefix + "services** to set one up");
 			}
 			else if (services.size() == 1)
 			{
@@ -187,7 +187,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*players" };
+		return new String[] { "players" };
 	}
 
 	@Override

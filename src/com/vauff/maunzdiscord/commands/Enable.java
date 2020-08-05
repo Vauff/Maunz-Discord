@@ -125,7 +125,7 @@ public class Enable extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*enable" };
+		return new String[] { "enable" };
 	}
 
 	@Override

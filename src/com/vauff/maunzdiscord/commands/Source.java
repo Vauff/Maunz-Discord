@@ -18,7 +18,7 @@ public class Source extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*source" };
+		return new String[] { "source" };
 	}
 
 	@Override

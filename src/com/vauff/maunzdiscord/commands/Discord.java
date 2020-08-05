@@ -19,8 +19,8 @@ public class Discord extends AbstractCommand<MessageCreateEvent>
 	public String[] getAliases()
 	{
 		return new String[] {
-				"*discord",
-				"*invite"
+				"discord",
+				"invite"
 		};
 	}
 

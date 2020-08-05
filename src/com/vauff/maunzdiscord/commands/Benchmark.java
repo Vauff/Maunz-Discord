@@ -227,7 +227,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*benchmark" };
+		return new String[] { "benchmark" };
 	}
 
 	@Override

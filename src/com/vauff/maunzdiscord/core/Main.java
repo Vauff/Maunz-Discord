@@ -17,6 +17,7 @@ public class Main
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
 	public static String version = "r22";
+	public static String prefix;
 
 	public static void main(String[] args)
 	{
@@ -39,6 +40,7 @@ public class Main
 				json.put("altPlayingText", "discord.gg/v55fW9b");
 				json.put("userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
 				json.put("botOwners", new JSONArray());
+				json.put("prefix", "*");
 				json.put("mongoDatabase", new JSONObject());
 				json.getJSONObject("mongoDatabase").put("connectionString", "");
 				json.getJSONObject("mongoDatabase").put("database", "");
@@ -51,6 +53,7 @@ public class Main
 			}
 
 			Logger.log = LogManager.getLogger(Main.class);
+			prefix = json.getString("prefix");
 
 			if (json.getString("discordToken").equals(""))
 			{

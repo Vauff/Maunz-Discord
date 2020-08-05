@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
@@ -23,7 +24,7 @@ public class Steam extends AbstractCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "You need to provide a Steam ID! **Usage: *steam <steamid>**");
+			Util.msg(channel, author, "You need to provide a Steam ID! **Usage: " + Main.prefix + "steam <steamid>**");
 		}
 		else
 		{
@@ -140,7 +141,7 @@ public class Steam extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*steam" };
+		return new String[] { "steam" };
 	}
 
 	@Override

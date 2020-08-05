@@ -21,7 +21,7 @@ public class Stop extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*stop" };
+		return new String[] { "stop" };
 	}
 
 	@Override

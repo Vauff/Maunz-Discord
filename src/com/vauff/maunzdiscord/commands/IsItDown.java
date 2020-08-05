@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
@@ -26,7 +27,7 @@ public class IsItDown extends AbstractCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "You need to specify an argument! **Usage: *isitdown <hostname>**");
+			Util.msg(channel, author, "You need to specify an argument! **Usage: " + Main.prefix + "isitdown <hostname>**");
 		}
 		else
 		{
@@ -127,7 +128,7 @@ public class IsItDown extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*isitdown" };
+		return new String[] { "isitdown" };
 	}
 
 	@Override

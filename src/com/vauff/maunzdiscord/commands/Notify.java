@@ -63,7 +63,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run ***services** to set one up");
+				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run **" + Main.prefix + "services** to set one up");
 				return;
 			}
 			else if (services.size() == 1)
@@ -239,7 +239,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, user, "You need to specify an argument! See **\\*help notify**");
+			Util.msg(channel, user, "You need to specify an argument! See **" + Main.prefix + "help notify**");
 		}
 		else
 		{
@@ -272,7 +272,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 				{
 					if (!hasNotifications)
 					{
-						Util.msg(channel, user, "You do not have any map notifications set! Use **\\*notify <mapname>** to add one");
+						Util.msg(channel, user, "You do not have any map notifications set! Use **" + Main.prefix + "notify <mapname>** to add one");
 						return;
 					}
 
@@ -539,7 +539,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*notify" };
+		return new String[] { "notify" };
 	}
 
 	@Override

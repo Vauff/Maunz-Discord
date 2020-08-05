@@ -27,7 +27,7 @@ public class Say extends AbstractCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "I need a message to send! **Usage: *say [channel] <message>**");
+			Util.msg(channel, author, "I need a message to send! **Usage: " + Main.prefix + "say [channel] <message>**");
 			return;
 		}
 
@@ -35,7 +35,7 @@ public class Say extends AbstractCommand<MessageCreateEvent>
 		{
 			if (args.length == 2)
 			{
-				Util.msg(channel, author, "I need a message to send! **Usage: *say [channel] <message>**");
+				Util.msg(channel, author, "I need a message to send! **Usage: " + Main.prefix + "say [channel] <message>**");
 				return;
 			}
 
@@ -76,7 +76,7 @@ public class Say extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public String[] getAliases()
 	{
-		return new String[] { "*say" };
+		return new String[] { "say" };
 	}
 
 	@Override
