@@ -138,7 +138,17 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 					date = fullDesc.split("CPU First Seen on Charts:</strong>&nbsp;&nbsp;")[1].split("<")[0];
 					price = fullDesc.split("Last Price Change:</strong>&nbsp;&nbsp;")[1].split("<")[0];
 					cores = fullDesc.split("Cores:</strong> ")[1].split("<")[0];
-					threads = fullDesc.split("Threads</strong>: ")[1].split("<")[0];
+
+					if (cores.contains(" physical modules)"))
+					{
+						threads = cores.split(" \\(in ")[0];
+						cores = cores.split(" \\(in ")[1].split(" physical modules\\)")[0];
+					}
+					else
+					{
+						threads = fullDesc.split("Threads</strong>: ")[1].split("<")[0];
+					}
+
 					ratio = fullDesc.split("Price:</strong>&nbsp;&nbsp;")[1].split("&")[0];
 
 					if (fullDesc.contains("Clockspeed:</strong> "))
@@ -191,6 +201,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 					final String finalTurboSpeed = turboSpeed;
 					final String finalSocket = socket;
 					final String finalTdp = tdp;
+					final String finalCores = cores;
 
 					Consumer<EmbedCreateSpec> embed = spec ->
 					{
@@ -204,7 +215,7 @@ public class Benchmark extends AbstractCommand<MessageCreateEvent>
 						spec.addField("Rank", rank, true);
 						spec.addField("Samples", finalSamples, true);
 						spec.addField("First Benchmarked", finalDate, true);
-						spec.addField("Cores", cores, true);
+						spec.addField("Cores", finalCores, true);
 						spec.addField("Threads", threads, true);
 						spec.addField("Price", finalPrice, true);
 						spec.addField("Performance Per Dollar", finalRatio, true);
