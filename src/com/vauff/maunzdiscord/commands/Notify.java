@@ -12,13 +12,10 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,12 +166,14 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 					List<String> notifications = notificationDocs.get(i).getList("notifications", String.class);
 
-					for (String notification : notifications)
+					for (int j = 0; j < notifications.size(); j++)
 					{
+						String notification = notifications.get(j);
+
 						if (notification.equalsIgnoreCase(confirmationSuggestionMaps.get(user.getId())))
 						{
 							mapSet = true;
-							index = i;
+							index = j;
 							break;
 						}
 					}
@@ -352,12 +351,14 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 
 						List<String> notifications = notificationDocs.get(i).getList("notifications", String.class);
 
-						for (String notification : notifications)
+						for (int j = 0; j < notifications.size(); j++)
 						{
+							String notification = notifications.get(j);
+
 							if (notification.equalsIgnoreCase(argument))
 							{
 								mapSet = true;
-								index = i;
+								index = j;
 								break;
 							}
 						}
