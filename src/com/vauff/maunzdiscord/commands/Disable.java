@@ -46,8 +46,8 @@ public class Disable extends AbstractCommand<MessageCreateEvent>
 
 				msgDeleterPool.schedule(() ->
 				{
-					m.delete().block();
 					msgDeleterPool.shutdown();
+					m.delete().block();
 				}, 120, TimeUnit.SECONDS);
 			}
 			else

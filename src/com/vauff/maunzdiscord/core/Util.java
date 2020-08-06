@@ -530,6 +530,8 @@ public class Util
 
 			reactionAddPool.schedule(() ->
 			{
+				reactionAddPool.shutdown();
+
 				if (pageNumber != 1)
 				{
 					addReaction(m, "◀");
