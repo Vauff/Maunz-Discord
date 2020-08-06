@@ -121,6 +121,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 		if (numberOfPlayers == 0)
 		{
 			Util.msg(channel, user, "There are currently no players online!");
+			return;
 		}
 
 		boolean sizeIsSmall = numberOfPlayers <= 8;
