@@ -61,7 +61,6 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 			if (services.size() == 0)
 			{
 				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run **" + Main.prefix + "services** to set one up");
-				return;
 			}
 			else if (services.size() == 1)
 			{
@@ -74,6 +73,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 				{
 					if (doc.getLong("channelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(guildID, channel.getId().asLong()))
 					{
+						selectedServices.put(author.getId(), doc.getObjectId("_id"));
 						runCmd(author, channel, doc, event.getMessage().getContent());
 						return;
 					}
@@ -229,7 +229,7 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 		}
 	}
 
-	private void runCmd(User user, MessageChannel channel, Document doc, String messageContent) throws Exception
+	private void runCmd(User user, MessageChannel channel, Document doc, String messageContent)
 	{
 		Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
 		List<Document> notificationDocs = doc.getList("notifications", Document.class);
