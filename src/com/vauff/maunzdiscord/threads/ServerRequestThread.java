@@ -175,15 +175,16 @@ public class ServerRequestThread implements Runnable
 		if (!Objects.isNull(server))
 			server.disconnect();
 
-		if (!success)
-			return;
-
-		Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 		List<ServiceProcessThread> processThreads = ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString());
 
-		for (ServiceProcessThread processThread : processThreads)
-			processThread.start();
+		if (success)
+		{
+			Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 
+			for (ServiceProcessThread processThread : processThreads)
+				processThread.start();
+		}
 
+		ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()).clear();
 	}
 }
