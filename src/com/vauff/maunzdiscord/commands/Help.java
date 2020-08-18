@@ -45,7 +45,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 				for (CommandHelp commandHelp : command.getHelp())
 				{
-					helpEntries.add("**" + Main.prefix + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description);
+					helpEntries.add("**" + getEscapedPrefix() + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description);
 				}
 			}
 
@@ -69,7 +69,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 			{
 				for (String alias : command.getAliases())
 				{
-					if (arg.equalsIgnoreCase(Main.prefix + alias))
+					if (arg.equalsIgnoreCase(getEscapedPrefix() + alias))
 					{
 						if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 							continue;
@@ -81,7 +81,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 						for (CommandHelp commandHelp : command.getHelp())
 						{
-							list += "**" + Main.prefix + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description + System.lineSeparator();
+							list += "**" + getEscapedPrefix() + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description + System.lineSeparator();
 						}
 
 						list = StringUtils.removeEnd(list, System.lineSeparator());
@@ -121,7 +121,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 			for (CommandHelp commandHelp : command.getHelp())
 			{
-				helpEntries.add("**" + Main.prefix + command.getAliases()[0] + " " + commandHelp.arguments + "** - " + commandHelp.description);
+				helpEntries.add("**" + getEscapedPrefix() + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description);
 			}
 		}
 
@@ -138,6 +138,14 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 		listMessages.put(event.getUser().block().getId(), m.getId());
 		waitForReaction(m.getId(), event.getUser().block().getId());
 		listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + pageChange);
+	}
+
+	private String getEscapedPrefix()
+	{
+		if (Main.prefix.equals("*") || Main.prefix.equals("_") || Main.prefix.equals("`") || Main.prefix.equals(">"))
+			return "\\" + Main.prefix;
+		else
+			return Main.prefix;
 	}
 
 	@Override
