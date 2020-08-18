@@ -175,7 +175,7 @@ public class ServerRequestThread implements Runnable
 		if (!Objects.isNull(server))
 			server.disconnect();
 
-		List<ServiceProcessThread> processThreads = ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString());
+		List<ServiceProcessThread> processThreads = new ArrayList<>(ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()));
 
 		if (success)
 		{
