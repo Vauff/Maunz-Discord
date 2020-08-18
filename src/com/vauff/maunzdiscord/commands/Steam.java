@@ -34,7 +34,7 @@ public class Steam extends AbstractCommand<MessageCreateEvent>
 				String siteHtml = site.html();
 				String siteText = site.text();
 
-				if (siteText.contains("Player Not Found :( or hasn't set public profile Supported inputs"))
+				if (siteText.contains("Player Not Found :( or hasn't set public profile Supported inputs") || siteText.contains("Steam Id Finder - is the simplest way to find steam id online by anything you know:"))
 				{
 					Util.msg(channel, author, "Couldn't find a Steam profile with that given ID!");
 				}
