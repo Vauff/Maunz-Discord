@@ -167,10 +167,14 @@ public class ServiceProcessThread implements Runnable
 						}
 					}
 				}
-
-				doc.put("lastMap", map);
-				Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 			}
+
+			if (!map.equals(""))
+			{
+				doc.put("lastMap", map);
+			}
+
+			Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 		}
 		catch (Exception e)
 		{
