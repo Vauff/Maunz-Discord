@@ -313,6 +313,8 @@ public class Util
 		{
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestProperty("User-Agent", getUserAgent());
+			connection.setConnectTimeout(5000);
+			connection.setReadTimeout(5000);
 			image = ImageIO.read(connection.getInputStream());
 
 			final int pixels = image.getWidth() * image.getHeight();
