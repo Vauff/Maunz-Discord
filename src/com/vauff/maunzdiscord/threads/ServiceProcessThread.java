@@ -76,7 +76,7 @@ public class ServiceProcessThread implements Runnable
 				if (channelExists)
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has gone offline");
 
-				doc.put("online", false);
+				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("online", false)));
 			}
 
 			if (serverDoc.getInteger("downtimeTimer") >= 10080)
@@ -84,21 +84,18 @@ public class ServiceProcessThread implements Runnable
 				if (channelExists)
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has now been offline for a week and its server tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 
-				doc.put("enabled", false);
+				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("enabled", false)));
 			}
 
 			if (serverDoc.getInteger("downtimeTimer") >= 1)
-			{
-				Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 				return;
-			}
 
 			if (!doc.getBoolean("online"))
 			{
 				if (channelExists)
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has come back online");
 
-				doc.put("online", true);
+				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("online", true)));
 			}
 
 			long timestamp = serverDoc.getLong("timestamp");
@@ -167,14 +164,9 @@ public class ServiceProcessThread implements Runnable
 						}
 					}
 				}
-			}
 
-			if (!map.equals(""))
-			{
-				doc.put("lastMap", map);
+				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("lastMap", map)));
 			}
-
-			Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
 		}
 		catch (Exception e)
 		{

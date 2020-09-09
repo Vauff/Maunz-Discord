@@ -54,7 +54,7 @@ public class ServerRequestThread implements Runnable
 
 					try
 					{
-						doc.put("players", server.getPlayers().keySet());
+						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("players", server.getPlayers().keySet())));
 					}
 					catch (NullPointerException e)
 					{
@@ -65,7 +65,7 @@ public class ServerRequestThread implements Runnable
 							keySet.add(player.getName());
 						}
 
-						doc.put("players", keySet);
+						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("players", keySet)));
 					}
 
 					break;
@@ -77,11 +77,12 @@ public class ServerRequestThread implements Runnable
 					if (attempts >= 5 || doc.getInteger("downtimeTimer") >= doc.getInteger("failedConnectionsThreshold"))
 					{
 						Logger.log.warn("Failed to connect to the server " + doc.getString("ip") + ":" + doc.getInteger("port") + ", automatically retrying in 1 minute");
-						doc.put("downtimeTimer", doc.getInteger("downtimeTimer") + 1);
+						int downtimeTimer = doc.getInteger("downtimeTimer") + 1;
+						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("downtimeTimer", downtimeTimer)));
 
-						if (doc.getInteger("downtimeTimer") >= 10080)
+						if (downtimeTimer >= 10080)
 						{
-							doc.put("enabled", false);
+							Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("enabled", false)));
 						}
 
 						cleanup(true);
@@ -121,7 +122,7 @@ public class ServerRequestThread implements Runnable
 					if (dbMap.equalsIgnoreCase(map))
 					{
 						mapFound = true;
-						doc.getList("mapDatabase", Document.class).get(i).put("lastPlayed", timestamp);
+						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("mapDatabase." + i + ".lastPlayed", timestamp)));
 						break;
 					}
 				}
@@ -132,31 +133,24 @@ public class ServerRequestThread implements Runnable
 					mapDoc.put("map", map);
 					mapDoc.put("firstPlayed", timestamp);
 					mapDoc.put("lastPlayed", timestamp);
-					doc.getList("mapDatabase", Document.class).add(mapDoc);
+					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$push", new Document("mapDatabase", mapDoc)));
+
 				}
 			}
 
 			if (!map.equals(""))
-			{
-				doc.put("map", map);
-			}
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("map", map)));
 
 			if (!playerCount.equals(""))
-			{
-				doc.put("playerCount", playerCount);
-			}
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("playerCount", playerCount)));
 
 			if (timestamp != 0)
-			{
-				doc.put("timestamp", timestamp);
-			}
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("timestamp", timestamp)));
 
 			if (!name.equals(""))
-			{
-				doc.put("name", name);
-			}
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("name", name)));
 
-			doc.put("downtimeTimer", 0);
+			Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("downtimeTimer", 0)));
 			cleanup(true);
 		}
 		catch (Exception e)
@@ -179,8 +173,6 @@ public class ServerRequestThread implements Runnable
 
 		if (success)
 		{
-			Main.mongoDatabase.getCollection("servers").replaceOne(eq("_id", doc.getObjectId("_id")), doc);
-
 			for (ServiceProcessThread processThread : processThreads)
 				processThread.start();
 		}
