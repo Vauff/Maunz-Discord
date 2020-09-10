@@ -139,8 +139,8 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 						if (userID != user.getId().asLong())
 							continue;
 
-						notificationDocs.remove(i);
-						Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", serviceDoc.getObjectId("_id")), serviceDoc);
+						Main.mongoDatabase.getCollection("services").updateOne(eq("_id", serviceDoc.getObjectId("_id")), new Document("$unset", new Document("notifications." + i, 1)));
+						Main.mongoDatabase.getCollection("services").updateOne(eq("_id", serviceDoc.getObjectId("_id")), new Document("$pull", new Document("notifications", null)));
 						Util.msg(event.getChannel().block(), user, "Successfully wiped all of your map notifications!");
 						break;
 					}
@@ -490,7 +490,6 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 	private void addNotification(Document serviceDoc, User user, MessageChannel channel, String notification)
 	{
 		List<Document> notificationDocs = serviceDoc.getList("notifications", Document.class);
-		boolean docFound = false;
 
 		Util.msg(channel, user, "Adding **" + notification.replace("_", "\\_") + "** to your map notifications!");
 
@@ -499,24 +498,18 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 			if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
 				continue;
 
-			docFound = true;
-			notificationDocs.get(i).getList("notifications", String.class).add(notification.replace("﻿", ""));
-			break;
+			Main.mongoDatabase.getCollection("services").updateOne(eq("_id", serviceDoc.getObjectId("_id")), new Document("$push", new Document("notifications." + i + ".notifications", notification.replace("﻿", ""))));
+			return;
 		}
 
-		if (!docFound)
-		{
-			Document notificationDoc = new Document();
-			ArrayList<String> notifications = new ArrayList<>();
+		Document notificationDoc = new Document();
+		ArrayList<String> notifications = new ArrayList<>();
 
-			notificationDoc.put("userID", user.getId().asLong());
-			notifications.add(notification.replace("﻿", ""));
-			notificationDoc.put("notifications", notifications);
+		notificationDoc.put("userID", user.getId().asLong());
+		notifications.add(notification.replace("﻿", ""));
+		notificationDoc.put("notifications", notifications);
 
-			notificationDocs.add(notificationDoc);
-		}
-
-		Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", serviceDoc.getObjectId("_id")), serviceDoc);
+		Main.mongoDatabase.getCollection("services").updateOne(eq("_id", serviceDoc.getObjectId("_id")), new Document("$push", new Document("notifications", notificationDoc)));
 	}
 
 	private void removeNotification(Document serviceDoc, User user, MessageChannel channel, String notification, int index)
@@ -530,11 +523,10 @@ public class Notify extends AbstractCommand<MessageCreateEvent>
 			if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
 				continue;
 
+			Main.mongoDatabase.getCollection("services").updateOne(eq("_id", serviceDoc.getObjectId("_id")), new Document("$pull", new Document("notifications." + i + ".notifications", notification)));
 			notificationDocs.get(i).getList("notifications", String.class).remove(index);
 			break;
 		}
-
-		Main.mongoDatabase.getCollection("services").replaceOne(eq("_id", serviceDoc.getObjectId("_id")), serviceDoc);
 	}
 
 	@Override
