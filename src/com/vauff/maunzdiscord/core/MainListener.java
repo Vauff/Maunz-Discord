@@ -98,15 +98,6 @@ public class MainListener
 			commands.add(new Steam());
 			commands.add(new Stop());
 
-			if (configJson.getJSONObject("quotesDatabase").getString("hostname").equals("") || configJson.getJSONObject("quotesDatabase").getString("username").equals("") || configJson.getJSONObject("quotesDatabase").getString("password").equals("") || configJson.getJSONObject("quotesDatabase").getString("database").equals(""))
-			{
-				Logger.log.warn("The quote command is disabled due to 1 or more values in the quotesDatabase section of config.json not being supplied");
-			}
-			else
-			{
-				commands.add(new Quote());
-			}
-
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
 			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
 			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(MainListener::onGuildCreate);
