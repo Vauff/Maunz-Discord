@@ -44,11 +44,6 @@ public class Main
 				json.put("mongoDatabase", new JSONObject());
 				json.getJSONObject("mongoDatabase").put("connectionString", "");
 				json.getJSONObject("mongoDatabase").put("database", "");
-				json.put("quotesDatabase", new JSONObject());
-				json.getJSONObject("quotesDatabase").put("hostname", "");
-				json.getJSONObject("quotesDatabase").put("username", "");
-				json.getJSONObject("quotesDatabase").put("password", "");
-				json.getJSONObject("quotesDatabase").put("database", "");
 				FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
 			}
 

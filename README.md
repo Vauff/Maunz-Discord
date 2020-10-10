@@ -48,14 +48,6 @@ _*enable_ - Enables Maunz either in a specific guild or globally.
 
 *players - Lists the current players online on a server.
 
-*quote - Links you directly to the chat quotes site.
-
-*quote add - Links you to a page where you can submit chat quotes for approval.
-
-*quote view \<quoteid> - Views a chat quote based on ID.
-
-*quote list [page] - Lists existing chat quotes sorted by ID.
-
 *reddit \<subreddit> - Links you to the subreddit name that you provide.
 
 _*restart_ - Restarts Maunz.
