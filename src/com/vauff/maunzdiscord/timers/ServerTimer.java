@@ -51,9 +51,9 @@ public class ServerTimer
 						{
 							Main.gateway.getGuildById(Snowflake.of(doc.getLong("guildID"))).block();
 						}
-						catch (ClientException e)
+						catch (Exception e)
 						{
-							// bot is no longer in this guild
+							// likely bot is no longer in the guild, this will sometimes also error due to general API/network issues, but we can just safely skip over a guild sometimes in that instance
 							continue;
 						}
 
