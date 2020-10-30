@@ -5,6 +5,7 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.threads.ServerRequestThread;
 import com.vauff.maunzdiscord.threads.ServiceProcessThread;
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Guild;
 import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 
@@ -46,10 +47,11 @@ public class ServerTimer
 					{
 						String id = doc.getObjectId("_id").toString();
 						String serverID = doc.getObjectId("serverID").toString();
+						Guild guild;
 
 						try
 						{
-							Main.gateway.getGuildById(Snowflake.of(doc.getLong("guildID"))).block();
+							guild = Main.gateway.getGuildById(Snowflake.of(doc.getLong("guildID"))).block();
 						}
 						catch (Exception e)
 						{
@@ -61,7 +63,7 @@ public class ServerTimer
 
 						if (!threadRunning.get(id))
 						{
-							ServiceProcessThread thread = new ServiceProcessThread(doc, id);
+							ServiceProcessThread thread = new ServiceProcessThread(doc, id, guild);
 
 							threadRunning.put(id, true);
 

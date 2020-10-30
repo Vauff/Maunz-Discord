@@ -5,8 +5,10 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.timers.ServerTimer;
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.retriever.EntityRetrievalStrategy;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.StringUtils;
@@ -35,11 +37,13 @@ public class ServiceProcessThread implements Runnable
 	private Document doc;
 	private Thread thread;
 	private String id;
+	private Guild guild;
 
-	public ServiceProcessThread(Document doc, String id)
+	public ServiceProcessThread(Document doc, String id, Guild guild)
 	{
 		this.doc = doc;
 		this.id = id;
+		this.guild = guild;
 	}
 
 	public void start()
@@ -147,7 +151,7 @@ public class ServiceProcessThread implements Runnable
 					try
 					{
 						// Setting a 10 second timeout on the block() since it has previously hung tracking threads
-						member = Main.gateway.getMemberById(Snowflake.of(doc.getLong("guildID")), Snowflake.of(notificationDoc.getLong("userID"))).block(Duration.ofSeconds(10));
+						member = guild.getMemberById(Snowflake.of(notificationDoc.getLong("userID")), EntityRetrievalStrategy.REST).block(Duration.ofSeconds(10));
 					}
 					catch (ClientException | IllegalStateException e)
 					{
