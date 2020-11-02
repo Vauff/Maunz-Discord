@@ -144,25 +144,26 @@ public class ServiceProcessThread implements Runnable
 						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), embed);
 				}
 
+				parentLoop:
 				for (Document notificationDoc : doc.getList("notifications", Document.class))
 				{
-					Member member = null;
-
-					try
-					{
-						// Setting a 10 second timeout on the block() since it has previously hung tracking threads
-						member = guild.getMemberById(Snowflake.of(notificationDoc.getLong("userID")), EntityRetrievalStrategy.REST).block(Duration.ofSeconds(10));
-					}
-					catch (ClientException | IllegalStateException e)
-					{
-						//invalid member, or member is no longer in guild
-						continue;
-					}
-
 					for (String mapNotification : notificationDoc.getList("notifications", String.class))
 					{
 						if (wildcardMatches(mapNotification, map))
 						{
+							Member member;
+
+							try
+							{
+								// Setting a 10 second timeout on the block() since it has previously hung tracking threads
+								member = guild.getMemberById(Snowflake.of(notificationDoc.getLong("userID")), EntityRetrievalStrategy.REST).block(Duration.ofSeconds(10));
+							}
+							catch (ClientException | IllegalStateException e)
+							{
+								//invalid member, or member is no longer in guild
+								continue parentLoop;
+							}
+
 							Util.msg(member.getPrivateChannel().block(), titledEmbed);
 							break;
 						}
