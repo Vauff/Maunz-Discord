@@ -13,6 +13,7 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
@@ -34,14 +35,12 @@ public class ServiceProcessThread implements Runnable
 	 */
 	private static final Pattern WILDCARD_PATTERN = Pattern.compile("(?i)[^*]+|(\\*)");
 
-	private Document doc;
 	private Thread thread;
-	private String id;
+	private ObjectId id;
 	private Guild guild;
 
-	public ServiceProcessThread(Document doc, String id, Guild guild)
+	public ServiceProcessThread(ObjectId id, Guild guild)
 	{
-		this.doc = doc;
 		this.id = id;
 		this.guild = guild;
 	}
@@ -59,6 +58,7 @@ public class ServiceProcessThread implements Runnable
 	{
 		try
 		{
+			Document doc = Main.mongoDatabase.getCollection("services").find(eq("_id", id)).first();
 			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
 			boolean channelExists = true;
 			String msgServerName = "The server";
@@ -80,7 +80,7 @@ public class ServiceProcessThread implements Runnable
 				if (channelExists)
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has gone offline");
 
-				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("online", false)));
+				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("online", false)));
 			}
 
 			if (serverDoc.getInteger("downtimeTimer") >= 10080)
@@ -88,7 +88,7 @@ public class ServiceProcessThread implements Runnable
 				if (channelExists)
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has now been offline for a week and its server tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
 
-				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("enabled", false)));
+				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
 			}
 
 			if (serverDoc.getInteger("downtimeTimer") >= 1)
@@ -99,7 +99,7 @@ public class ServiceProcessThread implements Runnable
 				if (channelExists)
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has come back online");
 
-				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("online", true)));
+				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("online", true)));
 			}
 
 			long timestamp = serverDoc.getLong("timestamp");
@@ -170,7 +170,7 @@ public class ServiceProcessThread implements Runnable
 					}
 				}
 
-				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("lastMap", map)));
+				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("lastMap", map)));
 			}
 		}
 		catch (Exception e)
@@ -179,7 +179,7 @@ public class ServiceProcessThread implements Runnable
 		}
 		finally
 		{
-			ServerTimer.threadRunning.put(id, false);
+			ServerTimer.threadRunning.put(id.toString(), false);
 		}
 	}
 

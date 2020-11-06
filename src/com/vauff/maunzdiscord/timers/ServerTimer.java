@@ -8,6 +8,7 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
 import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,9 +44,10 @@ public class ServerTimer
 				{
 					Logger.log.debug("Starting a server timer run...");
 
-					for (Document doc : Main.mongoDatabase.getCollection("services").find(eq("enabled", true)))
+					for (Document doc : Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)))
 					{
-						String id = doc.getObjectId("_id").toString();
+						ObjectId id = doc.getObjectId("_id");
+						String idString = id.toString();
 						String serverID = doc.getObjectId("serverID").toString();
 						Guild guild;
 
@@ -59,13 +61,13 @@ public class ServerTimer
 							continue;
 						}
 
-						threadRunning.putIfAbsent(id, false);
+						threadRunning.putIfAbsent(idString, false);
 
-						if (!threadRunning.get(id))
+						if (!threadRunning.get(idString))
 						{
-							ServiceProcessThread thread = new ServiceProcessThread(doc, id, guild);
+							ServiceProcessThread thread = new ServiceProcessThread(id, guild);
 
-							threadRunning.put(id, true);
+							threadRunning.put(idString, true);
 
 							waitingProcessThreads.putIfAbsent(serverID, new ArrayList<>());
 							waitingProcessThreads.get(serverID).add(thread);
@@ -78,22 +80,24 @@ public class ServerTimer
 					 */
 					List<String> startedThreads = new ArrayList<>();
 
-					for (Document doc : Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)))
+					for (Document doc : Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)))
 					{
 						if (!ServerTimer.waitingProcessThreads.containsKey(doc.getObjectId("_id").toString()))
 							continue;
 
-						String id = doc.getString("ip") + ":" + doc.getInteger("port");
+						ObjectId id = doc.getObjectId("_id");
+						String idString = id.toString();
+						String ipPort = doc.getString("ip") + ":" + doc.getInteger("port");
 
-						threadRunning.putIfAbsent(id, false);
+						threadRunning.putIfAbsent(idString, false);
 
-						if (!threadRunning.get(id) && !startedThreads.contains(id))
+						if (!threadRunning.get(idString) && !startedThreads.contains(idString))
 						{
-							ServerRequestThread thread = new ServerRequestThread(doc, id);
+							ServerRequestThread thread = new ServerRequestThread(id, ipPort);
 
-							threadRunning.put(id, true);
+							threadRunning.put(idString, true);
 							thread.start();
-							startedThreads.add(id);
+							startedThreads.add(idString);
 						}
 					}
 				}

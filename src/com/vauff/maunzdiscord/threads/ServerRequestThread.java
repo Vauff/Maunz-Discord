@@ -6,6 +6,7 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.timers.ServerTimer;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -19,22 +20,22 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class ServerRequestThread implements Runnable
 {
-	private Document doc;
 	private SourceServer server;
 	private Thread thread;
-	private String id;
+	private ObjectId id;
+	private String ipPort;
 
-	public ServerRequestThread(Document doc, String id)
+	public ServerRequestThread(ObjectId id, String ipPort)
 	{
-		this.doc = doc;
 		this.id = id;
+		this.ipPort = ipPort;
 	}
 
 	public void start()
 	{
 		if (thread == null)
 		{
-			thread = new Thread(this, "servertracking-" + id);
+			thread = new Thread(this, "servertracking-" + ipPort);
 			thread.start();
 		}
 	}
@@ -43,6 +44,7 @@ public class ServerRequestThread implements Runnable
 	{
 		try
 		{
+			Document doc = Main.mongoDatabase.getCollection("servers").find(eq("_id", id)).first();
 			int attempts = 0;
 
 			while (true)
@@ -54,7 +56,7 @@ public class ServerRequestThread implements Runnable
 
 					try
 					{
-						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("players", server.getPlayers().keySet())));
+						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", server.getPlayers().keySet())));
 					}
 					catch (NullPointerException e)
 					{
@@ -65,7 +67,7 @@ public class ServerRequestThread implements Runnable
 							keySet.add(player.getName());
 						}
 
-						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("players", keySet)));
+						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", keySet)));
 					}
 
 					break;
@@ -76,13 +78,13 @@ public class ServerRequestThread implements Runnable
 
 					if (attempts >= 5 || doc.getInteger("downtimeTimer") >= doc.getInteger("failedConnectionsThreshold"))
 					{
-						Logger.log.warn("Failed to connect to the server " + doc.getString("ip") + ":" + doc.getInteger("port") + ", automatically retrying in 1 minute");
+						Logger.log.warn("Failed to connect to the server " + ipPort + ", automatically retrying in 1 minute");
 						int downtimeTimer = doc.getInteger("downtimeTimer") + 1;
-						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("downtimeTimer", downtimeTimer)));
+						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", downtimeTimer)));
 
 						if (downtimeTimer >= 10080)
 						{
-							Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("enabled", false)));
+							Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
 						}
 
 						cleanup(true);
@@ -122,7 +124,7 @@ public class ServerRequestThread implements Runnable
 					if (dbMap.equalsIgnoreCase(map))
 					{
 						mapFound = true;
-						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("mapDatabase." + i + ".lastPlayed", timestamp)));
+						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("mapDatabase." + i + ".lastPlayed", timestamp)));
 						break;
 					}
 				}
@@ -133,24 +135,24 @@ public class ServerRequestThread implements Runnable
 					mapDoc.put("map", map);
 					mapDoc.put("firstPlayed", timestamp);
 					mapDoc.put("lastPlayed", timestamp);
-					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$push", new Document("mapDatabase", mapDoc)));
+					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$push", new Document("mapDatabase", mapDoc)));
 
 				}
 			}
 
 			if (!map.equals(""))
-				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("map", map)));
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("map", map)));
 
 			if (!playerCount.equals(""))
-				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("playerCount", playerCount)));
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("playerCount", playerCount)));
 
 			if (timestamp != 0)
-				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("timestamp", timestamp)));
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("timestamp", timestamp)));
 
 			if (!name.equals(""))
-				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("name", name)));
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("name", name)));
 
-			Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$set", new Document("downtimeTimer", 0)));
+			Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", 0)));
 			cleanup(true);
 		}
 		catch (Exception e)
@@ -160,7 +162,7 @@ public class ServerRequestThread implements Runnable
 		}
 		finally
 		{
-			ServerTimer.threadRunning.put(id, false);
+			ServerTimer.threadRunning.put(id.toString(), false);
 		}
 	}
 
@@ -169,7 +171,7 @@ public class ServerRequestThread implements Runnable
 		if (!Objects.isNull(server))
 			server.disconnect();
 
-		List<ServiceProcessThread> processThreads = new ArrayList<>(ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()));
+		List<ServiceProcessThread> processThreads = new ArrayList<>(ServerTimer.waitingProcessThreads.get(id.toString()));
 
 		if (success)
 		{
@@ -177,6 +179,6 @@ public class ServerRequestThread implements Runnable
 				processThread.start();
 		}
 
-		ServerTimer.waitingProcessThreads.get(doc.getObjectId("_id").toString()).clear();
+		ServerTimer.waitingProcessThreads.get(id.toString()).clear();
 	}
 }
