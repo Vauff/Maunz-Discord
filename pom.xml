@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.github.Vauff</groupId>
             <artifactId>steam-condenser-java</artifactId>
-            <version>fc706febdd</version>
+            <version>0b7f80172d</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -67,5 +67,5 @@
             <version>4.1.1</version>
         </dependency>
     </dependencies>
-    <version>r32</version>
+    <version>r33</version>
 </project>
