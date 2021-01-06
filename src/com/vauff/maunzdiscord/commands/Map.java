@@ -15,7 +15,6 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
-import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
 
@@ -141,13 +140,13 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 			{
 				Jsoup.connect(url).get();
 			}
-			catch (HttpStatusException e)
-			{
-				url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(doc.getString("lastMap"), 0, 31) + ".jpg";
-			}
 			catch (UnsupportedMimeTypeException e)
 			{
 				// This is to be expected normally because JSoup can't parse a URL serving only a static image
+			}
+			catch (Exception e)
+			{
+				url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(doc.getString("lastMap"), 0, 31) + ".jpg";
 			}
 
 			final String finalUrl = url;
@@ -225,13 +224,13 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 				{
 					Jsoup.connect(url).get();
 				}
-				catch (HttpStatusException e)
-				{
-					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + formattedMap + ".jpg";
-				}
 				catch (UnsupportedMimeTypeException e)
 				{
 					// This is to be expected normally because JSoup can't parse a URL serving only a static image
+				}
+				catch (Exception e)
+				{
+					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + formattedMap + ".jpg";
 				}
 
 				final String finalUrl = url;
@@ -324,13 +323,13 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 					{
 						Jsoup.connect(url).get();
 					}
-					catch (HttpStatusException e)
-					{
-						url = "https://image.gametracker.com/images/maps/160x120/csgo/" + formattedMap + ".jpg";
-					}
 					catch (UnsupportedMimeTypeException e)
 					{
 						// This is to be expected normally because JSoup can't parse a URL serving only a static image
+					}
+					catch (Exception e)
+					{
+						url = "https://image.gametracker.com/images/maps/160x120/csgo/" + formattedMap + ".jpg";
 					}
 
 					final String finalUrl = url;

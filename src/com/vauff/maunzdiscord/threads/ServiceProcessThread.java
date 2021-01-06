@@ -14,11 +14,9 @@ import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.UnsupportedMimeTypeException;
 
-import java.net.ConnectException;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
@@ -114,13 +112,13 @@ public class ServiceProcessThread implements Runnable
 				{
 					Jsoup.connect(url).get();
 				}
-				catch (HttpStatusException | ConnectException e)
-				{
-					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(map, 0, 31) + ".jpg";
-				}
 				catch (UnsupportedMimeTypeException e)
 				{
 					// This is to be expected normally because JSoup can't parse a URL serving only a static image
+				}
+				catch (Exception e)
+				{
+					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(map, 0, 31) + ".jpg";
 				}
 
 				final String finalUrl = url;
