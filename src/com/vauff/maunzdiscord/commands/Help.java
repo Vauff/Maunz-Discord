@@ -69,7 +69,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 			{
 				for (String alias : command.getAliases())
 				{
-					if (arg.equalsIgnoreCase(getEscapedPrefix() + alias))
+					if (arg.equalsIgnoreCase(Main.prefix + alias))
 					{
 						if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 							continue;
