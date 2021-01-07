@@ -101,7 +101,7 @@ public class MainListener
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
 			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
 			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(MainListener::onGuildCreate);
-			Executors.newScheduledThreadPool(1).scheduleAtFixedRate(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 		}
 		catch (Exception e)

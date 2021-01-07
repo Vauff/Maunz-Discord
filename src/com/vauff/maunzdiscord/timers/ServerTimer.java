@@ -10,6 +10,7 @@ import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +45,10 @@ public class ServerTimer
 				{
 					Logger.log.debug("Starting a server timer run...");
 
-					for (Document doc : Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)))
+					List<Document> serviceDocs = Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)).into(new ArrayList<>());
+					List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
+
+					for (Document doc : serviceDocs)
 					{
 						ObjectId id = doc.getObjectId("_id");
 						String idString = id.toString();
@@ -53,11 +57,11 @@ public class ServerTimer
 
 						try
 						{
-							guild = Main.gateway.getGuildById(Snowflake.of(doc.getLong("guildID"))).block();
+							guild = Main.gateway.getGuildById(Snowflake.of(doc.getLong("guildID"))).block(Duration.ofSeconds(10));
 						}
 						catch (Exception e)
 						{
-							// likely bot is no longer in the guild, this will sometimes also error due to general API/network issues, but we can just safely skip over a guild sometimes in that instance
+							// likely bot is no longer in the guild, this will sometimes also error due to general API/network issues, but we can just safely skip over a service in that instance
 							continue;
 						}
 
@@ -80,7 +84,7 @@ public class ServerTimer
 					 */
 					List<String> startedThreads = new ArrayList<>();
 
-					for (Document doc : Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)))
+					for (Document doc : serverDocs)
 					{
 						if (!ServerTimer.waitingProcessThreads.containsKey(doc.getObjectId("_id").toString()))
 							continue;
