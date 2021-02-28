@@ -104,7 +104,7 @@ public class ServerRequestThread implements Runnable
 			int currentPlayers = Integer.parseInt(serverInfo.get("numberOfPlayers").toString());
 			int maxPlayers = Integer.parseInt(serverInfo.get("maxPlayers").toString());
 
-			if (currentPlayers > maxPlayers)
+			if (currentPlayers > maxPlayers && maxPlayers >= 0)
 			{
 				currentPlayers = maxPlayers;
 			}
