@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
@@ -17,7 +17,7 @@ import org.jsoup.nodes.Document;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Changelog extends AbstractCommand<MessageCreateEvent>
+public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();

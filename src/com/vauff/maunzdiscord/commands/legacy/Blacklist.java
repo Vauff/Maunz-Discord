@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
@@ -23,7 +23,7 @@ import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class Blacklist extends AbstractCommand<MessageCreateEvent>
+public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
@@ -108,7 +108,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 					}
 					else
 					{
-						for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
+						for (AbstractLegacyCommand<MessageCreateEvent> cmd : MainListener.legacyCommands)
 						{
 							for (String s : cmd.getAliases())
 							{
@@ -200,7 +200,7 @@ public class Blacklist extends AbstractCommand<MessageCreateEvent>
 						}
 						else
 						{
-							for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
+							for (AbstractLegacyCommand<MessageCreateEvent> cmd : MainListener.legacyCommands)
 							{
 								for (String s : cmd.getAliases())
 								{

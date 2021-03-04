@@ -1,8 +1,29 @@
 package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoCollection;
-import com.vauff.maunzdiscord.commands.*;
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.legacy.About;
+import com.vauff.maunzdiscord.commands.legacy.Benchmark;
+import com.vauff.maunzdiscord.commands.legacy.Blacklist;
+import com.vauff.maunzdiscord.commands.legacy.Changelog;
+import com.vauff.maunzdiscord.commands.legacy.Colour;
+import com.vauff.maunzdiscord.commands.legacy.Disable;
+import com.vauff.maunzdiscord.commands.legacy.Discord;
+import com.vauff.maunzdiscord.commands.legacy.Enable;
+import com.vauff.maunzdiscord.commands.legacy.Help;
+import com.vauff.maunzdiscord.commands.legacy.IsItDown;
+import com.vauff.maunzdiscord.commands.legacy.Map;
+import com.vauff.maunzdiscord.commands.legacy.Minecraft;
+import com.vauff.maunzdiscord.commands.legacy.Notify;
+import com.vauff.maunzdiscord.commands.legacy.Ping;
+import com.vauff.maunzdiscord.commands.legacy.Players;
+import com.vauff.maunzdiscord.commands.legacy.Reddit;
+import com.vauff.maunzdiscord.commands.legacy.Restart;
+import com.vauff.maunzdiscord.commands.legacy.Say;
+import com.vauff.maunzdiscord.commands.legacy.Services;
+import com.vauff.maunzdiscord.commands.legacy.Source;
+import com.vauff.maunzdiscord.commands.legacy.Steam;
+import com.vauff.maunzdiscord.commands.legacy.Stop;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
 import com.vauff.maunzdiscord.timers.*;
@@ -34,7 +55,7 @@ public class MainListener
 	/**
 	 * Holds all commands
 	 */
-	public static LinkedList<AbstractCommand<MessageCreateEvent>> commands = new LinkedList<>();
+	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
 
 	/**
 	 * Holds the timestamp of the last time a user used a command
@@ -75,28 +96,28 @@ public class MainListener
 			Main.gateway.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
 			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(Logger::onGuildCreate);
 			Main.gateway.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
-			commands.add(new About());
-			commands.add(new Benchmark());
-			commands.add(new Blacklist());
-			commands.add(new Changelog());
-			commands.add(new Colour());
-			commands.add(new Disable());
-			commands.add(new Discord());
-			commands.add(new Enable());
-			commands.add(new Help());
-			commands.add(new IsItDown());
-			commands.add(new Map());
-			commands.add(new Minecraft());
-			commands.add(new Notify());
-			commands.add(new Ping());
-			commands.add(new Players());
-			commands.add(new Reddit());
-			commands.add(new Restart());
-			commands.add(new Say());
-			commands.add(new Services());
-			commands.add(new Source());
-			commands.add(new Steam());
-			commands.add(new Stop());
+			legacyCommands.add(new About());
+			legacyCommands.add(new Benchmark());
+			legacyCommands.add(new Blacklist());
+			legacyCommands.add(new Changelog());
+			legacyCommands.add(new Colour());
+			legacyCommands.add(new Disable());
+			legacyCommands.add(new Discord());
+			legacyCommands.add(new Enable());
+			legacyCommands.add(new Help());
+			legacyCommands.add(new IsItDown());
+			legacyCommands.add(new Map());
+			legacyCommands.add(new Minecraft());
+			legacyCommands.add(new Notify());
+			legacyCommands.add(new Ping());
+			legacyCommands.add(new Players());
+			legacyCommands.add(new Reddit());
+			legacyCommands.add(new Restart());
+			legacyCommands.add(new Say());
+			legacyCommands.add(new Services());
+			legacyCommands.add(new Source());
+			legacyCommands.add(new Steam());
+			legacyCommands.add(new Stop());
 
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
 			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);

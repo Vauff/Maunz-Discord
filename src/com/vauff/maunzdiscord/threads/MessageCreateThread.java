@@ -1,8 +1,8 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.vauff.maunzdiscord.commands.Disable;
-import com.vauff.maunzdiscord.commands.Enable;
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.legacy.Disable;
+import com.vauff.maunzdiscord.commands.legacy.Enable;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
@@ -52,7 +52,7 @@ public class MessageCreateThread implements Runnable
 
 			if (cmdName.startsWith(Main.prefix))
 			{
-				for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
+				for (AbstractLegacyCommand<MessageCreateEvent> cmd : MainListener.legacyCommands)
 				{
 					for (String s : cmd.getAliases())
 					{
@@ -116,7 +116,7 @@ public class MessageCreateThread implements Runnable
 								//if msg shows up too quickly, message history can somehow get out of order
 								Thread.sleep(250);
 
-								if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block())) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
+								if ((cmd.getPermissionLevel() == AbstractLegacyCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block())) || (cmd.getPermissionLevel() == AbstractLegacyCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
 								{
 									Util.msg(channel, author, "You do not have permission to use that command");
 									return;
@@ -151,10 +151,10 @@ public class MessageCreateThread implements Runnable
 
 			try
 			{
-				if (AbstractCommand.AWAITED.containsKey(author.getId()) && channel.getId().equals(AbstractCommand.AWAITEDCHANNEL.get(author.getId())))
+				if (AbstractLegacyCommand.AWAITED.containsKey(author.getId()) && channel.getId().equals(AbstractLegacyCommand.AWAITEDCHANNEL.get(author.getId())))
 				{
-					Main.gateway.getMessageById(channel.getId(), AbstractCommand.AWAITED.get(author.getId()).getID()).block().delete();
-					AbstractCommand.AWAITED.get(author.getId()).getCommand().onMessageReceived(event);
+					Main.gateway.getMessageById(channel.getId(), AbstractLegacyCommand.AWAITED.get(author.getId()).getID()).block().delete();
+					AbstractLegacyCommand.AWAITED.get(author.getId()).getCommand().onMessageReceived(event);
 				}
 			}
 			catch (NullPointerException e)

@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -35,7 +35,7 @@ public class ReactionAddThread implements Runnable
 	{
 		try
 		{
-			if (AbstractCommand.AWAITED.containsKey(message.getId()) && event.getUser().block().getId().equals(AbstractCommand.AWAITED.get(message.getId()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
+			if (AbstractLegacyCommand.AWAITED.containsKey(message.getId()) && event.getUser().block().getId().equals(AbstractLegacyCommand.AWAITED.get(message.getId()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
 			{
 				try
 				{
@@ -49,7 +49,7 @@ public class ReactionAddThread implements Runnable
 
 				try
 				{
-					AbstractCommand.AWAITED.get(message.getId()).getCommand().onReactionAdd(event, message);
+					AbstractLegacyCommand.AWAITED.get(message.getId()).getCommand().onReactionAdd(event, message);
 				}
 				catch (Exception e)
 				{

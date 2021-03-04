@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
@@ -14,7 +14,7 @@ import discord4j.rest.util.Color;
 import java.net.JarURLConnection;
 import java.util.function.Consumer;
 
-public class About extends AbstractCommand<MessageCreateEvent>
+public class About extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception

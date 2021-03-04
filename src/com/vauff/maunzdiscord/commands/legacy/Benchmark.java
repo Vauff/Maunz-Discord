@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -13,7 +13,7 @@ import org.jsoup.nodes.Document;
 
 import java.util.function.Consumer;
 
-public class Benchmark extends AbstractCommand<MessageCreateEvent>
+public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception

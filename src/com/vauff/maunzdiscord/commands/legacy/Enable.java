@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class Enable extends AbstractCommand<MessageCreateEvent>
+public class Enable extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, Snowflake> menuMessages = new HashMap<>();
 

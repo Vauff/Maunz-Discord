@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
@@ -17,7 +17,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Help extends AbstractCommand<MessageCreateEvent>
+public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
@@ -35,7 +35,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 		{
 			ArrayList<String> helpEntries = new ArrayList<>();
 
-			for (AbstractCommand command : MainListener.commands)
+			for (AbstractLegacyCommand command : MainListener.legacyCommands)
 			{
 				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 					continue;
@@ -65,7 +65,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 				arg = Main.prefix + arg;
 
 			rootIteration:
-			for (AbstractCommand command : MainListener.commands)
+			for (AbstractLegacyCommand command : MainListener.legacyCommands)
 			{
 				for (String alias : command.getAliases())
 				{
@@ -111,7 +111,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 		int pageChange = 0;
 		ArrayList<String> helpEntries = new ArrayList<>();
 
-		for (AbstractCommand command : MainListener.commands)
+		for (AbstractLegacyCommand command : MainListener.legacyCommands)
 		{
 			if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(event.getUser().block(), event.getGuild().block()))
 				continue;

@@ -4,12 +4,10 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.User;
-import discord4j.core.object.entity.channel.MessageChannel;
 
 import java.util.HashMap;
 
-public abstract class AbstractCommand<M extends MessageCreateEvent>
+public abstract class AbstractCommand
 {
 	/**
 	 * Holds all messages as keys which await a reaction or reply by a specific user.
@@ -33,15 +31,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	}
 
 	/**
-	 * Executes this command
-	 *
-	 * @param event The event by which this command got triggered
-	 * @throws Exception If an exception gets thrown by any implementing methods
-	 */
-	public abstract void exe(M event, MessageChannel channel, User author) throws Exception;
-
-	/**
-	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(Snowflake, Snowflake)}
+	 * Gets called when a reaction is added to a message defined prior in {@link AbstractLegacyCommand#waitForReaction(Snowflake, Snowflake)}
 	 *
 	 * @param event   The event holding information about the added reaction
 	 * @param message The Message that was reacted to
@@ -51,7 +41,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	}
 
 	/**
-	 * Gets called when a specific user sends a reply defined prior in {@link AbstractCommand#waitForReply(Snowflake, Snowflake)}
+	 * Gets called when a specific user sends a reply defined prior in {@link AbstractLegacyCommand#waitForReply(Snowflake, Snowflake)}
 	 *
 	 * @param event The event holding information about the reply
 	 */
@@ -60,26 +50,11 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	}
 
 	/**
-	 * Defines aliases that can be used to trigger the command.
-	 * The main alias should also be defined in here
-	 *
-	 * @return A string array of all valid aliases
-	 */
-	public abstract String[] getAliases();
-
-	/**
-	 * An array of objects that hold information about the command to display in *help
-	 *
-	 * @return An array of {@link CommandHelp}
-	 */
-	public abstract CommandHelp[] getHelp();
-
-	/**
 	 * Permission level required to use this command
 	 *
 	 * @return The permission level
 	 */
-	public abstract BotPermission getPermissionLevel();
+	public abstract AbstractLegacyCommand.BotPermission getPermissionLevel();
 
 	/**
 	 * Sets up this command to await a reaction by the user who triggered this command
@@ -104,7 +79,7 @@ public abstract class AbstractCommand<M extends MessageCreateEvent>
 	}
 
 	/**
-	 * Defines if the default implementation of {@link AbstractCommand#onReactionAdd(ReactionAddEvent, Message)}
+	 * Defines if the default implementation of {@link AbstractLegacyCommand#onReactionAdd(ReactionAddEvent, Message)}
 	 *
 	 * @return true if the default behavior of said method should be used, false otherwise
 	 */
