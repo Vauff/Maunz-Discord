@@ -109,6 +109,7 @@ public class ServerTimer
 			}
 			catch (Exception e)
 			{
+				Logger.log.error("HELLO I AM AN IDIOT AND ERRORING");
 				Logger.log.error(ExceptionUtils.getStackTrace(e));
 			}
 		}
