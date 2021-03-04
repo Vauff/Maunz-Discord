@@ -7,6 +7,7 @@ import com.vauff.maunzdiscord.threads.ServiceProcessThread;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
 import discord4j.rest.http.client.ClientException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -108,7 +109,7 @@ public class ServerTimer
 			}
 			catch (Exception e)
 			{
-				Logger.log.error("", e);
+				Logger.log.error(ExceptionUtils.getStackTrace(e));
 			}
 		}
 	};

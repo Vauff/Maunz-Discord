@@ -13,6 +13,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.rest.http.client.ClientException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class Logger
 {
@@ -73,7 +74,7 @@ public class Logger
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Logger.log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -105,7 +106,7 @@ public class Logger
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Logger.log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -124,7 +125,7 @@ public class Logger
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Logger.log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -162,7 +163,7 @@ public class Logger
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Logger.log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -200,7 +201,7 @@ public class Logger
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Logger.log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -212,7 +213,7 @@ public class Logger
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Logger.log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -227,7 +228,7 @@ public class Logger
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Logger.log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 }

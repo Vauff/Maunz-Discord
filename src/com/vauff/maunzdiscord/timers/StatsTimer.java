@@ -5,6 +5,7 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public class StatsTimer
 			}
 			catch (Exception e)
 			{
-				Logger.log.error("", e);
+				Logger.log.error(ExceptionUtils.getStackTrace(e));
 			}
 		}
 	};

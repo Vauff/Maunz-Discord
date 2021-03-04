@@ -6,6 +6,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,7 +17,7 @@ public class Main
 {
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
-	public static String version = "r35";
+	public static String version = "r36";
 	public static String prefix;
 
 	public static void main(String[] args)
@@ -77,7 +78,7 @@ public class Main
 			}
 			catch (Exception e)
 			{
-				Logger.log.error("", e);
+				Logger.log.error(ExceptionUtils.getStackTrace(e));
 				Logger.log.fatal("An error occured while connecting to the MongoDB database");
 				System.exit(1);
 			}
@@ -90,7 +91,7 @@ public class Main
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Logger.log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 }
