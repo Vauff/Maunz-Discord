@@ -12,7 +12,6 @@ import discord4j.core.retriever.EntityRetrievalStrategy;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
@@ -174,7 +173,7 @@ public class ServiceProcessThread implements Runnable
 		}
 		catch (Exception e)
 		{
-			Logger.log.error(ExceptionUtils.getStackTrace(e));
+			Logger.log.error("", e);
 		}
 		finally
 		{

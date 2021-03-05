@@ -5,7 +5,6 @@ import com.github.koraktor.steamcondenser.servers.SteamPlayer;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.timers.ServerTimer;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -158,7 +157,7 @@ public class ServerRequestThread implements Runnable
 		}
 		catch (Exception e)
 		{
-			Logger.log.error(ExceptionUtils.getStackTrace(e));
+			Logger.log.error("", e);
 			cleanup(false);
 		}
 		finally

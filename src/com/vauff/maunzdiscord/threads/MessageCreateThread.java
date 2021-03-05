@@ -12,7 +12,6 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.rest.http.client.ClientException;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.List;
 import java.util.Random;
@@ -144,7 +143,7 @@ public class MessageCreateThread implements Runnable
 							int code = 100000000 + rnd.nextInt(900000000);
 
 							Util.msg(channel, author, ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
-							Logger.log.error("Code " + code + ": " + ExceptionUtils.getStackTrace(e));
+							Logger.log.error(code, e);
 						}
 					}
 				}
@@ -165,7 +164,7 @@ public class MessageCreateThread implements Runnable
 		}
 		catch (Exception e)
 		{
-			Logger.log.error(ExceptionUtils.getStackTrace(e));
+			Logger.log.error("", e);
 		}
 	}
 }

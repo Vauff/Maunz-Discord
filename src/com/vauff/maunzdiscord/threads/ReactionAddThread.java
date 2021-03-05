@@ -5,7 +5,6 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Random;
 
@@ -58,13 +57,13 @@ public class ReactionAddThread implements Runnable
 					int code = 100000000 + rnd.nextInt(900000000);
 
 					Util.msg(event.getChannel().block(), event.getUser().block(), ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
-					Logger.log.error("Code " + code + ": " + ExceptionUtils.getStackTrace(e));
+					Logger.log.error(code, e);
 				}
 			}
 		}
 		catch (Exception e)
 		{
-			Logger.log.error(ExceptionUtils.getStackTrace(e));
+			Logger.log.error("", e);
 		}
 	}
 }
