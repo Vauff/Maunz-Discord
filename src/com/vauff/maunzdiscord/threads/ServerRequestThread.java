@@ -99,10 +99,30 @@ public class ServerRequestThread implements Runnable
 
 			HashMap<String, Object> serverInfo = server.getServerInfo();
 			long timestamp = 0;
-			String map = serverInfo.get("mapName").toString();
-			String name = serverInfo.get("serverName").toString();
-			int currentPlayers = Integer.parseInt(serverInfo.get("numberOfPlayers").toString());
-			int maxPlayers = Integer.parseInt(serverInfo.get("maxPlayers").toString());
+			String map = "";
+			String name = "N/A";
+			int currentPlayers = 0;
+			int maxPlayers = 0;
+
+			if (serverInfo.containsKey("mapName"))
+			{
+				map = serverInfo.get("mapName").toString();
+			}
+			else
+			{
+				Logger.log.warn("Null mapname received for server " + ipPort + ", automatically retrying in 1 minute");
+				cleanup(false);
+				return;
+			}
+
+			if (serverInfo.containsKey("serverName"))
+				name = serverInfo.get("serverName").toString();
+
+			if (serverInfo.containsKey("numberOfPlayers"))
+				currentPlayers = Integer.parseInt(serverInfo.get("numberOfPlayers").toString());
+
+			if (serverInfo.containsKey("maxPlayers"))
+				maxPlayers = Integer.parseInt(serverInfo.get("maxPlayers").toString());
 
 			if (currentPlayers > maxPlayers && maxPlayers >= 0)
 			{
