@@ -178,6 +178,11 @@ public class ServerRequestThread implements Runnable
 			for (ServiceProcessThread processThread : processThreads)
 				processThread.start();
 		}
+		else
+		{
+			for (ServiceProcessThread processThread : processThreads)
+				ServerTimer.threadRunning.put(processThread.id.toString(), false);
+		}
 
 		ServerTimer.waitingProcessThreads.get(id.toString()).clear();
 	}

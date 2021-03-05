@@ -34,7 +34,7 @@ public class ServiceProcessThread implements Runnable
 	private static final Pattern WILDCARD_PATTERN = Pattern.compile("(?i)[^*]+|(\\*)");
 
 	private Thread thread;
-	private ObjectId id;
+	public ObjectId id;
 	private Guild guild;
 
 	public ServiceProcessThread(ObjectId id, Guild guild)
