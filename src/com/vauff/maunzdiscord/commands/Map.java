@@ -60,7 +60,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 			}
 			else if (services.size() == 1)
 			{
-				runCmd(author, channel, services.get(0), event.getMessage().getContent().split(" "), false);
+				runCmd(author, channel, services.get(0), event.getMessage().getContent().split(" "), services.get(0).getBoolean("alwaysShowName"));
 			}
 			else
 			{
@@ -68,7 +68,7 @@ public class Map extends AbstractCommand<MessageCreateEvent>
 				{
 					if (doc.getLong("channelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(guildID, channel.getId().asLong()))
 					{
-						runCmd(author, channel, doc, event.getMessage().getContent().split(" "), false);
+						runCmd(author, channel, doc, event.getMessage().getContent().split(" "), doc.getBoolean("alwaysShowName"));
 						return;
 					}
 				}

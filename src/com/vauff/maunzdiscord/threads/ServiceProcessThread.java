@@ -70,7 +70,7 @@ public class ServiceProcessThread implements Runnable
 				channelExists = false;
 			}
 
-			if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")))
+			if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
 				msgServerName = "**" + serverDoc.getString("name") + "**";
 
 			if (serverDoc.getInteger("downtimeTimer") == serverDoc.getInteger("failedConnectionsThreshold"))
@@ -136,7 +136,7 @@ public class ServiceProcessThread implements Runnable
 
 				if (channelExists)
 				{
-					if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")))
+					if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
 						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), titledEmbed);
 					else
 						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), embed);
