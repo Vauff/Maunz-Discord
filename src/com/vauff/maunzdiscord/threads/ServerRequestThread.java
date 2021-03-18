@@ -104,7 +104,7 @@ public class ServerRequestThread implements Runnable
 			int currentPlayers = 0;
 			int maxPlayers = 0;
 
-			if (serverInfo.containsKey("mapName"))
+			if (serverInfo.containsKey("mapName")  && !Objects.isNull(serverInfo.get("mapName")))
 			{
 				map = serverInfo.get("mapName").toString();
 			}
@@ -115,13 +115,13 @@ public class ServerRequestThread implements Runnable
 				return;
 			}
 
-			if (serverInfo.containsKey("serverName"))
+			if (serverInfo.containsKey("serverName") && !Objects.isNull(serverInfo.get("serverName")))
 				name = serverInfo.get("serverName").toString();
 
-			if (serverInfo.containsKey("numberOfPlayers"))
+			if (serverInfo.containsKey("numberOfPlayers") && !Objects.isNull(serverInfo.get("numberOfPlayers")))
 				currentPlayers = Integer.parseInt(serverInfo.get("numberOfPlayers").toString());
 
-			if (serverInfo.containsKey("maxPlayers"))
+			if (serverInfo.containsKey("maxPlayers") && !Objects.isNull(serverInfo.get("maxPlayers")))
 				maxPlayers = Integer.parseInt(serverInfo.get("maxPlayers").toString());
 
 			if (currentPlayers > maxPlayers && maxPlayers >= 0)
