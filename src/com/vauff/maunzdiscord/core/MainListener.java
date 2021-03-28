@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoCollection;
 import com.vauff.maunzdiscord.commands.legacy.*;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.threads.InteractionCreateThread;
@@ -28,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
@@ -41,7 +43,9 @@ public class MainListener
 	 * Lists that hold all legacy/slash commands
 	 */
 	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
-	public static LinkedList<AbstractSlashCommand> slashCommands = new LinkedList<>();
+	public static LinkedList<AbstractSlashCommand<ApplicationCommandInteraction>> slashCommands = new LinkedList<>();
+	public static LinkedList<AbstractCommand> commands = new LinkedList<>();
+
 
 	/**
 	 * Holds the timestamp of the last time a user used a command
@@ -96,6 +100,10 @@ public class MainListener
 			legacyCommands.add(new Source());
 			legacyCommands.add(new Steam());
 			legacyCommands.add(new Stop());
+
+			commands.addAll(legacyCommands);
+			commands.addAll(slashCommands);
+			commands.sort(Comparator.comparing(AbstractCommand::getFirstAlias));
 
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
 			Main.gateway.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);

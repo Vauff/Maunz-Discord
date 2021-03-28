@@ -30,6 +30,6 @@ public class Ping extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("", "Makes Maunz respond to you with pong, useful for testing your connection.") };
+		return null;
 	}
 }

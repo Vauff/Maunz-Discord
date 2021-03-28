@@ -16,7 +16,7 @@ public abstract class AbstractSlashCommand<M extends ApplicationCommandInteracti
 	public abstract String exe(M interaction, MessageChannel channel, User author) throws Exception;
 
 	/**
-	 * Gets the ApplicationCommandRequest object so it can be registered with Discord
+	 * Returns the ApplicationCommandRequest object for this command
 	 */
 	public abstract ApplicationCommandRequest getCommand();
 
@@ -29,4 +29,8 @@ public abstract class AbstractSlashCommand<M extends ApplicationCommandInteracti
 
 	@Override
 	public final String[] getAliases() { return new String[] { getName() }; }
+
+	// Temporary, this will be expanded on when I'm more familiar with the structure
+	@Override
+	public final CommandHelp[] getHelp() { return new CommandHelp[] { new CommandHelp("", getCommand().description()) }; }
 }

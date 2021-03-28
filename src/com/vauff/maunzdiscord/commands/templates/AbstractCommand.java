@@ -58,6 +58,23 @@ public abstract class AbstractCommand
 	public abstract String[] getAliases();
 
 	/**
+	 * Helper method that returns the primary (first) alias
+	 *
+	 * @return The primary alias
+	 */
+	public final String getFirstAlias()
+	{
+		return getAliases()[0];
+	}
+
+	/**
+	 * An array of CommandHelp objects that hold information about the command to display in /help
+	 *
+	 * @return An array of {@link CommandHelp}
+	 */
+	public abstract CommandHelp[] getHelp();
+
+	/**
 	 * Permission level required to use this command
 	 *
 	 * @return The permission level

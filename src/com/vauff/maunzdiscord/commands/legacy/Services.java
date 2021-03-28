@@ -30,6 +30,6 @@ public class Services extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("", "Opens an interface for enabling specific services on a guild.") };
+		return null;
 	}
 }
