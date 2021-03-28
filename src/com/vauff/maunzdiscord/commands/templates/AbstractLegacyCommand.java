@@ -14,14 +14,6 @@ public abstract class AbstractLegacyCommand<M extends MessageCreateEvent> extend
 	 */
 	public abstract void exe(M event, MessageChannel channel, User author) throws Exception;
 
-	/**
-	 * Defines aliases that can be used to trigger the command.
-	 * The main alias should also be defined in here
-	 *
-	 * @return A string array of all valid aliases
-	 */
-	public abstract String[] getAliases();
-
 	// This needs to be moved to AbstractCommand at some point, but I'm currently unsure how I want to implement it there
 	/**
 	 * An array of objects that hold information about the command to display in *help

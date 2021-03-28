@@ -6,12 +6,12 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
-public class Services extends AbstractSlashCommand<ApplicationCommandInteraction>
+public class Ping extends AbstractSlashCommand<ApplicationCommandInteraction>
 {
 	@Override
 	public String exe(ApplicationCommandInteraction interaction, MessageChannel channel, User author) throws Exception
 	{
-		return "Responding";
+		return "Pong!";
 	}
 
 	@Override
@@ -19,14 +19,14 @@ public class Services extends AbstractSlashCommand<ApplicationCommandInteraction
 	{
 		return ApplicationCommandRequest.builder()
 				.name(getName())
-				.description("Master command for managing services on a guild")
+				.description("Makes Maunz respond with pong")
 				.build();
 	}
 
 	@Override
 	public String getName()
 	{
-		return "services";
+		return "ping";
 	}
 
 	@Override

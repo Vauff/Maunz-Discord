@@ -12,7 +12,7 @@ public class Ping extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		Util.msg(channel, author, "Pong!");
+		Util.msg(channel, author, "This command has been moved to a slash command available as **/ping**");
 	}
 
 	@Override

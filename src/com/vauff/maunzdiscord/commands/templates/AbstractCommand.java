@@ -50,11 +50,19 @@ public abstract class AbstractCommand
 	}
 
 	/**
+	 * Defines aliases that can be used to trigger the command.
+	 * The main alias should also be defined in here
+	 *
+	 * @return A string array of all valid aliases
+	 */
+	public abstract String[] getAliases();
+
+	/**
 	 * Permission level required to use this command
 	 *
 	 * @return The permission level
 	 */
-	public abstract AbstractLegacyCommand.BotPermission getPermissionLevel();
+	public abstract BotPermission getPermissionLevel();
 
 	/**
 	 * Sets up this command to await a reaction by the user who triggered this command

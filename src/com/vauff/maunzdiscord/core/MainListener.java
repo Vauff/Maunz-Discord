@@ -1,33 +1,15 @@
 package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoCollection;
-import com.vauff.maunzdiscord.commands.legacy.About;
-import com.vauff.maunzdiscord.commands.legacy.Benchmark;
-import com.vauff.maunzdiscord.commands.legacy.Blacklist;
-import com.vauff.maunzdiscord.commands.legacy.Changelog;
-import com.vauff.maunzdiscord.commands.legacy.Colour;
-import com.vauff.maunzdiscord.commands.legacy.Disable;
-import com.vauff.maunzdiscord.commands.legacy.Discord;
-import com.vauff.maunzdiscord.commands.legacy.Enable;
-import com.vauff.maunzdiscord.commands.legacy.Help;
-import com.vauff.maunzdiscord.commands.legacy.IsItDown;
-import com.vauff.maunzdiscord.commands.legacy.Map;
-import com.vauff.maunzdiscord.commands.legacy.Minecraft;
-import com.vauff.maunzdiscord.commands.legacy.Notify;
-import com.vauff.maunzdiscord.commands.legacy.Ping;
-import com.vauff.maunzdiscord.commands.legacy.Players;
-import com.vauff.maunzdiscord.commands.legacy.Reddit;
-import com.vauff.maunzdiscord.commands.legacy.Restart;
-import com.vauff.maunzdiscord.commands.legacy.Say;
-import com.vauff.maunzdiscord.commands.legacy.Services;
-import com.vauff.maunzdiscord.commands.legacy.Source;
-import com.vauff.maunzdiscord.commands.legacy.Steam;
-import com.vauff.maunzdiscord.commands.legacy.Stop;
+import com.vauff.maunzdiscord.commands.legacy.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.threads.InteractionCreateThread;
 import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
 import com.vauff.maunzdiscord.timers.*;
 import discord4j.common.util.Snowflake;
+import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -35,11 +17,15 @@ import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
+import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
+import discord4j.discordjson.json.ApplicationCommandData;
+import discord4j.rest.RestClient;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.time.StopWatch;
 import org.bson.Document;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -53,9 +39,10 @@ import static com.mongodb.client.model.Filters.eq;
 public class MainListener
 {
 	/**
-	 * Holds all commands
+	 * Lists that hold all legacy/slash commands
 	 */
 	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
+	public static LinkedList<AbstractSlashCommand> slashCommands = new LinkedList<>();
 
 	/**
 	 * Holds the timestamp of the last time a user used a command
@@ -79,8 +66,6 @@ public class MainListener
 			if (uptime.isStarted())
 				return;
 
-			JSONObject configJson = new JSONObject(Util.getFileContents("config.json"));
-
 			uptime.start();
 
 			for (Guild guild : Main.gateway.getGuilds().toIterable())
@@ -88,14 +73,6 @@ public class MainListener
 				setupGuild(guild);
 			}
 
-
-			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
-			Main.gateway.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
-			Main.gateway.getEventDispatcher().on(MessageDeleteEvent.class).subscribe(Logger::onMessageDelete);
-			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
-			Main.gateway.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
-			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(Logger::onGuildCreate);
-			Main.gateway.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
 			legacyCommands.add(new About());
 			legacyCommands.add(new Benchmark());
 			legacyCommands.add(new Blacklist());
@@ -110,18 +87,46 @@ public class MainListener
 			legacyCommands.add(new Minecraft());
 			legacyCommands.add(new Notify());
 			legacyCommands.add(new Ping());
+			slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Ping());
 			legacyCommands.add(new Players());
 			legacyCommands.add(new Reddit());
 			legacyCommands.add(new Restart());
 			legacyCommands.add(new Say());
 			legacyCommands.add(new Services());
+			slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Services());
 			legacyCommands.add(new Source());
 			legacyCommands.add(new Steam());
 			legacyCommands.add(new Stop());
 
+			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
+			Main.gateway.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
+			Main.gateway.getEventDispatcher().on(MessageDeleteEvent.class).subscribe(Logger::onMessageDelete);
+			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
+			Main.gateway.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
+			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(Logger::onGuildCreate);
+			Main.gateway.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
+			Main.gateway.getEventDispatcher().on(InteractionCreateEvent.class).subscribe(MainListener::onInteractionCreate);
 			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
 			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(MainListener::onGuildCreate);
+
+			JSONArray devGuilds = new JSONObject(Util.getFileContents("config.json")).getJSONArray("devGuilds");
+			RestClient restClient = Main.gateway.getRestClient();
+
+			if (devGuilds.length() > 0)
+			{
+				for (int i = 0; i < devGuilds.length(); i++)
+				{
+					for (AbstractSlashCommand<ApplicationCommandInteraction> cmd : slashCommands)
+						restClient.getApplicationService().createGuildApplicationCommand(restClient.getApplicationId().block(), devGuilds.getLong(i), cmd.getCommand()).block();
+				}
+			}
+			else
+			{
+				for (AbstractSlashCommand<ApplicationCommandInteraction> cmd : slashCommands)
+					restClient.getApplicationService().createGlobalApplicationCommand(restClient.getApplicationId().block(), cmd.getCommand()).block();
+			}
+
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 		}
@@ -141,6 +146,18 @@ public class MainListener
 		try
 		{
 			new MessageCreateThread(event, "messagereceived-" + event.getMessage().getId().asString()).start();
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
+	}
+
+	public static void onInteractionCreate(InteractionCreateEvent event)
+	{
+		try
+		{
+			new InteractionCreateThread(event, "interactioncreate-" + event.getInteraction().getId().asString()).start();
 		}
 		catch (Exception e)
 		{
