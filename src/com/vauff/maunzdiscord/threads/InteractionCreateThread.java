@@ -44,8 +44,6 @@ public class InteractionCreateThread implements Runnable
 	{
 		try
 		{
-			Logger.log.info("thread running");
-
 			if (event.getInteraction().getUser().isBot())
 				return;
 

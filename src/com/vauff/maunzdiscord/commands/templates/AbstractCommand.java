@@ -31,7 +31,7 @@ public abstract class AbstractCommand
 	}
 
 	/**
-	 * Gets called when a reaction is added to a message defined prior in {@link AbstractLegacyCommand#waitForReaction(Snowflake, Snowflake)}
+	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(Snowflake, Snowflake)}
 	 *
 	 * @param event   The event holding information about the added reaction
 	 * @param message The Message that was reacted to
@@ -41,7 +41,7 @@ public abstract class AbstractCommand
 	}
 
 	/**
-	 * Gets called when a specific user sends a reply defined prior in {@link AbstractLegacyCommand#waitForReply(Snowflake, Snowflake)}
+	 * Gets called when a specific user sends a reply defined prior in {@link AbstractCommand#waitForReply(Snowflake, Snowflake)}
 	 *
 	 * @param event The event holding information about the reply
 	 */
@@ -87,7 +87,7 @@ public abstract class AbstractCommand
 	}
 
 	/**
-	 * Defines if the default implementation of {@link AbstractLegacyCommand#onReactionAdd(ReactionAddEvent, Message)}
+	 * Defines if the default implementation of {@link AbstractCommand#onReactionAdd(ReactionAddEvent, Message)}
 	 *
 	 * @return true if the default behavior of said method should be used, false otherwise
 	 */

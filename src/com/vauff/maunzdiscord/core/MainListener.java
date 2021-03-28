@@ -20,7 +20,6 @@ import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
-import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.rest.RestClient;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.time.StopWatch;
