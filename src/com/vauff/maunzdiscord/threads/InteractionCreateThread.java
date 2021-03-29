@@ -12,7 +12,6 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
-import discord4j.rest.http.client.ClientException;
 
 import java.util.List;
 import java.util.Random;
@@ -71,14 +70,16 @@ public class InteractionCreateThread implements Runnable
 				// Fix this when enable/disable ported to slash commands
 				//if (!enabled && !(cmd instanceof Enable) && !(cmd instanceof Disable))
 				if (!enabled)
+				{
+					event.replyEphemeral("The bot is currently disabled").block();
 					return;
+				}
 
 				if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
 				{
 					if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
 					{
-						// Replace with interaction!
-						//Util.msg(channel, author, author.getMention() + " Slow down!");
+						event.replyEphemeral("Slow down!").block();
 						MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
 					}
 
@@ -104,44 +105,26 @@ public class InteractionCreateThread implements Runnable
 
 				if (blacklisted)
 				{
-					Util.msg(author.getPrivateChannel().block(), ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
+					event.replyEphemeral("A server administrator has blacklisted this command or the channel that you ran it in").block();
 					return;
 				}
 
 				try
 				{
-					try
+					if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
 					{
-						if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
-						{
-							// Replace with interaction!
-							//Util.msg(channel, author, "You do not have permission to use that command");
-							return;
-						}
+						event.replyEphemeral("You do not have permission to use that command").block();
+						return;
+					}
 
-						event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(cmd.exe(event.getInteraction().getCommandInteraction(), channel, author))).block();
-					}
-					catch (ClientException e)
-					{
-						if (e.getStatus().code() == 403)
-						{
-							// Replace with interaction!
-							//Util.msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
-							return;
-						}
-						else
-						{
-							throw e;
-						}
-					}
+					event.reply(cmd.exe(event.getInteraction().getCommandInteraction(), channel, author)).block();
 				}
 				catch (Exception e)
 				{
 					Random rnd = new Random();
 					int code = 100000000 + rnd.nextInt(900000000);
 
-					// Replace with interaction!
-					//Util.msg(channel, author, ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
+					event.replyEphemeral(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).block();
 					Logger.log.error(code, e);
 				}
 			}

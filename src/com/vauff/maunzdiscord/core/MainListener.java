@@ -164,6 +164,7 @@ public class MainListener
 	{
 		try
 		{
+			event.acknowledge();
 			new InteractionCreateThread(event, "interactioncreate-" + event.getInteraction().getId().asString()).start();
 		}
 		catch (Exception e)

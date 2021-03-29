@@ -32,6 +32,6 @@ public class Ping extends AbstractSlashCommand<ApplicationCommandInteraction>
 	@Override
 	public BotPermission getPermissionLevel()
 	{
-		return BotPermission.GUILD_ADMIN;
+		return BotPermission.EVERYONE;
 	}
 }
