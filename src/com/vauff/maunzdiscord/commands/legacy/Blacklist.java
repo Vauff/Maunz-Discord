@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.commands.legacy;
 
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
@@ -61,7 +62,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 							for (String entry : blacklist)
 							{
 								String channelSelector;
-								String command = Main.prefix + entry.split(":")[1];
+								String command = entry.split(":")[1];
 
 								if (entry.split(":")[0].equalsIgnoreCase("all"))
 								{
@@ -108,7 +109,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 					else
 					{
-						for (AbstractLegacyCommand<MessageCreateEvent> cmd : MainListener.legacyCommands)
+						for (AbstractCommand cmd : MainListener.commands)
 						{
 							for (String s : cmd.getAliases())
 							{
@@ -137,7 +138,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 								}
 								else
 								{
-									Util.msg(channel, author, "Removing the **" + Main.prefix + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
+									Util.msg(channel, author, "Removing the **" + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
 								}
 
 								Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", channel.getId().asString() + ":" + input)));
@@ -153,7 +154,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 							}
 							else
 							{
-								Util.msg(channel, author, "Adding the **" + Main.prefix + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
+								Util.msg(channel, author, "Adding the **" + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
 							}
 
 							Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", channel.getId().asString() + ":" + input)));
@@ -238,11 +239,11 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 									{
 										if (location.equalsIgnoreCase("all"))
 										{
-											Util.msg(channel, author, "Removing the **" + Main.prefix + input + "** command from this guilds blacklist for all channels!");
+											Util.msg(channel, author, "Removing the **" + input + "** command from this guilds blacklist for all channels!");
 										}
 										else
 										{
-											Util.msg(channel, author, "Removing the **" + Main.prefix + input + "** command from this guilds blacklist for <#" + location + ">!");
+											Util.msg(channel, author, "Removing the **" + input + "** command from this guilds blacklist for <#" + location + ">!");
 										}
 									}
 
@@ -268,11 +269,11 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 								{
 									if (location.equalsIgnoreCase("all"))
 									{
-										Util.msg(channel, author, "Adding the **" + Main.prefix + input + "** command to this guilds blacklist for all channels!");
+										Util.msg(channel, author, "Adding the **" + input + "** command to this guilds blacklist for all channels!");
 									}
 									else
 									{
-										Util.msg(channel, author, "Adding the **" + Main.prefix + input + "** command to this guilds blacklist for <#" + location + ">!");
+										Util.msg(channel, author, "Adding the **" + input + "** command to this guilds blacklist for <#" + location + ">!");
 									}
 								}
 
@@ -315,7 +316,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 				for (String entry : blacklist)
 				{
 					String channel;
-					String command = Main.prefix + entry.split(":")[1];
+					String command = entry.split(":")[1];
 
 					if (entry.split(":")[0].equalsIgnoreCase("all"))
 					{
@@ -348,7 +349,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 				for (String entry : blacklist)
 				{
 					String channel;
-					String command = Main.prefix + entry.split(":")[1];
+					String command = entry.split(":")[1];
 
 					if (entry.split(":")[0].equalsIgnoreCase("all"))
 					{
