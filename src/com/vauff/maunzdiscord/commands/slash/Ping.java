@@ -19,7 +19,7 @@ public class Ping extends AbstractSlashCommand<ApplicationCommandInteraction>
 	{
 		return ApplicationCommandRequest.builder()
 				.name(getName())
-				.description("Makes Maunz respond with pong")
+				.description("Make Maunz respond with pong")
 				.build();
 	}
 
