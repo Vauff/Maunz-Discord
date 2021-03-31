@@ -73,7 +73,7 @@ public class ServiceProcessThread implements Runnable
 			if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
 				msgServerName = "**" + serverDoc.getString("name") + "**";
 
-			if (serverDoc.getInteger("downtimeTimer") == serverDoc.getInteger("failedConnectionsThreshold"))
+			if (serverDoc.getInteger("downtimeTimer") == serverDoc.getInteger("failedConnectionsThreshold") && !doc.getBoolean("online"))
 			{
 				if (channelExists)
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has gone offline");
