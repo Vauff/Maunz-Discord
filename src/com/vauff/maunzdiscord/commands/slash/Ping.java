@@ -1,15 +1,15 @@
 package com.vauff.maunzdiscord.commands.slash;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
-public class Ping extends AbstractSlashCommand<ApplicationCommandInteraction>
+public class Ping extends AbstractSlashCommand<Interaction>
 {
 	@Override
-	public String exe(ApplicationCommandInteraction interaction, MessageChannel channel, User author) throws Exception
+	public String exe(Interaction interaction, MessageChannel channel, User author) throws Exception
 	{
 		return "Pong!";
 	}

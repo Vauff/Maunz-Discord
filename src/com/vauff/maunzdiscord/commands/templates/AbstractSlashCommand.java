@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.commands.templates;
 
-import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractSlashCommand<M extends ApplicationCommandInteraction> extends AbstractCommand
+public abstract class AbstractSlashCommand<M extends Interaction> extends AbstractCommand
 {
 	/**
 	 * Executes this command

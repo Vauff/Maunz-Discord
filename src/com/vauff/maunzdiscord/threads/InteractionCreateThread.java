@@ -7,7 +7,7 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.InteractionCreateEvent;
-import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -51,7 +51,7 @@ public class InteractionCreateThread implements Runnable
 			MessageChannel channel = event.getInteraction().getChannel().block();
 			Guild guild = event.getInteraction().getGuild().block();
 
-			for (AbstractSlashCommand<ApplicationCommandInteraction> cmd : MainListener.slashCommands)
+			for (AbstractSlashCommand<Interaction> cmd : MainListener.slashCommands)
 			{
 				if (!cmdName.equalsIgnoreCase(cmd.getName()))
 					continue;
@@ -117,7 +117,7 @@ public class InteractionCreateThread implements Runnable
 						return;
 					}
 
-					event.reply(cmd.exe(event.getInteraction().getCommandInteraction(), channel, author)).block();
+					event.reply(cmd.exe(event.getInteraction(), channel, author)).block();
 				}
 				catch (Exception e)
 				{

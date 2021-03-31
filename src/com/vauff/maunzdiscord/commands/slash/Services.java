@@ -1,7 +1,7 @@
 package com.vauff.maunzdiscord.commands.slash;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
@@ -9,10 +9,58 @@ import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.util.ApplicationCommandOptionType;
 
-public class Services extends AbstractSlashCommand<ApplicationCommandInteraction>
+public class Services extends AbstractSlashCommand<Interaction>
 {
 	@Override
-	public String exe(ApplicationCommandInteraction interaction, MessageChannel channel, User author) throws Exception
+	public String exe(Interaction interaction, MessageChannel channel, User author) throws Exception
+	{
+		if (interaction.getCommandInteraction().getOption("add").isPresent())
+			return exeAdd(interaction, channel, author);
+
+		if (interaction.getCommandInteraction().getOption("list").isPresent())
+			return exeList(interaction, channel, author);
+
+		if (interaction.getCommandInteraction().getOption("info").isPresent())
+			return exeInfo(interaction, channel, author);
+
+		if (interaction.getCommandInteraction().getOption("delete").isPresent())
+			return exeDelete(interaction, channel, author);
+
+		if (interaction.getCommandInteraction().getOption("edit").isPresent())
+			return exeEdit(interaction, channel, author);
+
+		if (interaction.getCommandInteraction().getOption("toggle").isPresent())
+			return exeToggle(interaction, channel, author);
+
+		throw new Exception("Failed to find subcommand");
+	}
+
+	private String exeAdd(Interaction interaction, MessageChannel channel, User author) throws Exception
+	{
+		return "Responding";
+	}
+
+	private String exeList(Interaction interaction, MessageChannel channel, User author) throws Exception
+	{
+		return "Responding";
+	}
+
+	private String exeInfo(Interaction interaction, MessageChannel channel, User author) throws Exception
+	{
+		return "Responding";
+	}
+
+	private String exeDelete(Interaction interaction, MessageChannel channel, User author) throws Exception
+	{
+		return "Responding";
+	}
+
+	private String exeEdit(Interaction interaction, MessageChannel channel, User author) throws Exception
+	{
+		return "Responding";
+	}
+
+	private String exeToggle(Interaction interaction, MessageChannel channel, User author) throws Exception
 	{
 		return "Responding";
 	}

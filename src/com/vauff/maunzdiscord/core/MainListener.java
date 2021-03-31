@@ -18,7 +18,7 @@ import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
-import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.rest.RestClient;
@@ -43,7 +43,7 @@ public class MainListener
 	 * Lists that hold all legacy/slash commands
 	 */
 	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
-	public static LinkedList<AbstractSlashCommand<ApplicationCommandInteraction>> slashCommands = new LinkedList<>();
+	public static LinkedList<AbstractSlashCommand<Interaction>> slashCommands = new LinkedList<>();
 	public static LinkedList<AbstractCommand> commands = new LinkedList<>();
 
 
@@ -124,13 +124,13 @@ public class MainListener
 			{
 				for (int i = 0; i < devGuilds.length(); i++)
 				{
-					for (AbstractSlashCommand<ApplicationCommandInteraction> cmd : slashCommands)
+					for (AbstractSlashCommand<Interaction> cmd : slashCommands)
 						restClient.getApplicationService().createGuildApplicationCommand(restClient.getApplicationId().block(), devGuilds.getLong(i), cmd.getCommand()).block();
 				}
 			}
 			else
 			{
-				for (AbstractSlashCommand<ApplicationCommandInteraction> cmd : slashCommands)
+				for (AbstractSlashCommand<Interaction> cmd : slashCommands)
 					restClient.getApplicationService().createGlobalApplicationCommand(restClient.getApplicationId().block(), cmd.getCommand()).block();
 			}
 
