@@ -1,10 +1,7 @@
 package com.vauff.maunzdiscord.commands.slash;
 
 import com.github.koraktor.steamcondenser.servers.SourceServer;
-import com.github.koraktor.steamcondenser.servers.SteamPlayer;
-import com.vauff.maunzdiscord.commands.legacy.Source;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.User;
@@ -18,10 +15,8 @@ import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
