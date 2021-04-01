@@ -3,8 +3,12 @@ package com.vauff.maunzdiscord.commands.slash;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
+import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.Interaction;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
@@ -24,55 +28,94 @@ import static com.mongodb.client.model.Filters.eq;
 public class Services extends AbstractSlashCommand<Interaction>
 {
 	@Override
-	public String exe(Interaction interaction, MessageChannel channel, User author) throws Exception
+	public String exe(Interaction interaction, Guild guild, MessageChannel channel, User author) throws Exception
 	{
 		if (interaction.getCommandInteraction().getOption("add").isPresent())
-			return exeAdd(interaction, channel, author);
+			return exeAdd(interaction, guild);
 
 		if (interaction.getCommandInteraction().getOption("list").isPresent())
-			return exeList(interaction, channel, author);
+			return exeList(interaction, guild, channel, author);
 
 		if (interaction.getCommandInteraction().getOption("info").isPresent())
-			return exeInfo(interaction, channel, author);
+			return exeInfo(interaction, guild, channel, author);
 
 		if (interaction.getCommandInteraction().getOption("delete").isPresent())
-			return exeDelete(interaction, channel, author);
+			return exeDelete(interaction, guild, channel, author);
 
 		if (interaction.getCommandInteraction().getOption("edit").isPresent())
-			return exeEdit(interaction, channel, author);
+			return exeEdit(interaction, guild, channel, author);
 
 		if (interaction.getCommandInteraction().getOption("toggle").isPresent())
-			return exeToggle(interaction, channel, author);
+			return exeToggle(interaction, guild, channel, author);
 
 		throw new Exception("Failed to find subcommand");
 	}
 
-	private String exeAdd(Interaction interaction, MessageChannel channel, User author)
+	private String exeAdd(Interaction interaction, Guild guild) throws Exception
+	{
+		ApplicationCommandInteractionOption subCmd = interaction.getCommandInteraction().getOption("add").get();
+		String ip = subCmd.getOption("ip").get().getValue().get().asString();
+		int port;
+		Channel channel = null;
+		long channelID = 0L;
+
+		try
+		{
+			String[] ipSplit = ip.split(":");
+
+			if (ipSplit.length > 2)
+				throw new Exception();
+
+			ip = ipSplit[0];
+			port = Integer.parseInt(ipSplit[1]);
+		}
+		catch (Exception e)
+		{
+			return "IP argument does not follow IP:Port format!";
+		}
+
+		if (!isServerOnline(ip, port))
+			return "Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly";
+
+		if (subCmd.getOption("channel").isPresent())
+		{
+			channel = subCmd.getOption("channel").get().getValue().get().asChannel().block();
+			channelID = channel.getId().asLong();
+		}
+
+		ObjectId serverId = getOrCreateServer(ip, port);
+		Document service = new Document("enabled", true).append("online", true).append("mapCharacterLimit", false).append("lastMap", "N/A").append("serverID", serverId).append("guildID", guild.getId().asLong())
+				.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
+
+		Main.mongoDatabase.getCollection("services").insertOne(service);
+
+		if (channelID == 0L)
+			return "Successfully added a service tracking " + ip + ":" + port + "!";
+		else
+			return "Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!";
+	}
+
+	private String exeList(Interaction interaction, Guild guild, MessageChannel channel, User author)
 	{
 		return "Responding";
 	}
 
-	private String exeList(Interaction interaction, MessageChannel channel, User author)
+	private String exeInfo(Interaction interaction, Guild guild, MessageChannel channel, User author)
 	{
 		return "Responding";
 	}
 
-	private String exeInfo(Interaction interaction, MessageChannel channel, User author)
+	private String exeDelete(Interaction interaction, Guild guild, MessageChannel channel, User author)
 	{
 		return "Responding";
 	}
 
-	private String exeDelete(Interaction interaction, MessageChannel channel, User author)
+	private String exeEdit(Interaction interaction, Guild guild, MessageChannel channel, User author)
 	{
 		return "Responding";
 	}
 
-	private String exeEdit(Interaction interaction, MessageChannel channel, User author)
-	{
-		return "Responding";
-	}
-
-	private String exeToggle(Interaction interaction, MessageChannel channel, User author)
+	private String exeToggle(Interaction interaction, Guild guild, MessageChannel channel, User author)
 	{
 		return "Responding";
 	}

@@ -117,7 +117,7 @@ public class InteractionCreateThread implements Runnable
 						return;
 					}
 
-					event.reply(cmd.exe(event.getInteraction(), channel, author)).block();
+					event.reply(cmd.exe(event.getInteraction(), guild, channel, author)).block();
 				}
 				catch (Exception e)
 				{

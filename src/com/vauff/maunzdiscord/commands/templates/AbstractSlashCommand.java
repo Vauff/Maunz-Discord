@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands.templates;
 
 import discord4j.core.object.command.Interaction;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
@@ -19,7 +20,7 @@ public abstract class AbstractSlashCommand<M extends Interaction> extends Abstra
 	 * @param interaction The interaction that executing this command creates
 	 * @throws Exception If an exception gets thrown by any implementing methods
 	 */
-	public abstract String exe(M interaction, MessageChannel channel, User author) throws Exception;
+	public abstract String exe(M interaction, Guild guild, MessageChannel channel, User author) throws Exception;
 
 	/**
 	 * Returns the ApplicationCommandRequest object for this command
