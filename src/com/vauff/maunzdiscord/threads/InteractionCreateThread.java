@@ -46,6 +46,8 @@ public class InteractionCreateThread implements Runnable
 			if (event.getInteraction().getUser().isBot())
 				return;
 
+			event.acknowledge().block();
+
 			String cmdName = event.getCommandName();
 			User author = event.getInteraction().getUser();
 			MessageChannel channel = event.getInteraction().getChannel().block();
@@ -71,7 +73,7 @@ public class InteractionCreateThread implements Runnable
 				//if (!enabled && !(cmd instanceof Enable) && !(cmd instanceof Disable))
 				if (!enabled)
 				{
-					event.replyEphemeral("The bot is currently disabled").block();
+					event.getInteractionResponse().createFollowupMessage("The bot is currently disabled").block();
 					return;
 				}
 
@@ -79,7 +81,7 @@ public class InteractionCreateThread implements Runnable
 				{
 					if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
 					{
-						event.replyEphemeral("Slow down!").block();
+						event.getInteractionResponse().createFollowupMessage("Slow down!").block();
 						MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
 					}
 
@@ -105,7 +107,7 @@ public class InteractionCreateThread implements Runnable
 
 				if (blacklisted)
 				{
-					event.replyEphemeral("A server administrator has blacklisted this command or the channel that you ran it in").block();
+					event.getInteractionResponse().createFollowupMessage("A server administrator has blacklisted this command or the channel that you ran it in").block();
 					return;
 				}
 
@@ -113,18 +115,18 @@ public class InteractionCreateThread implements Runnable
 				{
 					if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
 					{
-						event.replyEphemeral("You do not have permission to use that command").block();
+						event.getInteractionResponse().createFollowupMessage("You do not have permission to use that command").block();
 						return;
 					}
 
-					event.reply(cmd.exe(event.getInteraction(), guild, channel, author)).block();
+					event.getInteractionResponse().createFollowupMessage(cmd.exe(event.getInteraction(), guild, channel, author)).block();
 				}
 				catch (Exception e)
 				{
 					Random rnd = new Random();
 					int code = 100000000 + rnd.nextInt(900000000);
 
-					event.replyEphemeral(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).block();
+					event.getInteractionResponse().createFollowupMessage(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).block();
 					Logger.log.error(code, e);
 				}
 			}
