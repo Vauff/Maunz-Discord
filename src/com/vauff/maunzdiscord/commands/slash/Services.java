@@ -3,9 +3,9 @@ package com.vauff.maunzdiscord.commands.slash;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
+import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
-import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.Channel;
@@ -25,35 +25,35 @@ import java.util.Objects;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
-public class Services extends AbstractSlashCommand<Interaction>
+public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 {
 	@Override
-	public String exe(Interaction interaction, Guild guild, MessageChannel channel, User author) throws Exception
+	public void exe(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author) throws Exception
 	{
-		if (interaction.getCommandInteraction().getOption("add").isPresent())
-			return exeAdd(interaction, guild);
+		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction();
 
-		if (interaction.getCommandInteraction().getOption("list").isPresent())
-			return exeList(interaction, guild, channel, author);
+		if (interaction.getOption("add").isPresent())
+			exeAdd(event, guild);
 
-		if (interaction.getCommandInteraction().getOption("info").isPresent())
-			return exeInfo(interaction, guild, channel, author);
+		if (interaction.getOption("list").isPresent())
+			exeList(event, guild, channel, author);
 
-		if (interaction.getCommandInteraction().getOption("delete").isPresent())
-			return exeDelete(interaction, guild, channel, author);
+		if (interaction.getOption("info").isPresent())
+			exeInfo(event, guild, channel, author);
 
-		if (interaction.getCommandInteraction().getOption("edit").isPresent())
-			return exeEdit(interaction, guild, channel, author);
+		if (interaction.getOption("delete").isPresent())
+			exeDelete(event, guild, channel, author);
 
-		if (interaction.getCommandInteraction().getOption("toggle").isPresent())
-			return exeToggle(interaction, guild, channel, author);
+		if (interaction.getOption("edit").isPresent())
+			exeEdit(event, guild, channel, author);
 
-		throw new Exception("Failed to find subcommand");
+		if (interaction.getOption("toggle").isPresent())
+			exeToggle(event, guild, channel, author);
 	}
 
-	private String exeAdd(Interaction interaction, Guild guild) throws Exception
+	private void exeAdd(InteractionCreateEvent event, Guild guild) throws Exception
 	{
-		ApplicationCommandInteractionOption subCmd = interaction.getCommandInteraction().getOption("add").get();
+		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().getOption("add").get();
 		String ip = subCmd.getOption("ip").get().getValue().get().asString();
 		int port;
 		Channel channel = null;
@@ -71,11 +71,15 @@ public class Services extends AbstractSlashCommand<Interaction>
 		}
 		catch (Exception e)
 		{
-			return "IP argument does not follow IP:Port format!";
+			event.getInteractionResponse().createFollowupMessage("IP argument does not follow IP:Port format!").block();
+			return;
 		}
 
 		if (!isServerOnline(ip, port))
-			return "Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly";
+		{
+			event.getInteractionResponse().createFollowupMessage("Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly").block();
+			return;
+		}
 
 		if (subCmd.getOption("channel").isPresent())
 		{
@@ -90,34 +94,34 @@ public class Services extends AbstractSlashCommand<Interaction>
 		Main.mongoDatabase.getCollection("services").insertOne(service);
 
 		if (channelID == 0L)
-			return "Successfully added a service tracking " + ip + ":" + port + "!";
+			event.getInteractionResponse().createFollowupMessage("Successfully added a service tracking " + ip + ":" + port + "!").block();
 		else
-			return "Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!";
+			event.getInteractionResponse().createFollowupMessage("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
 	}
 
-	private String exeList(Interaction interaction, Guild guild, MessageChannel channel, User author)
+	private void exeList(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		return "Responding";
+		event.getInteractionResponse().createFollowupMessage("Responding").block();
 	}
 
-	private String exeInfo(Interaction interaction, Guild guild, MessageChannel channel, User author)
+	private void exeInfo(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		return "Responding";
+		event.getInteractionResponse().createFollowupMessage("Responding").block();
 	}
 
-	private String exeDelete(Interaction interaction, Guild guild, MessageChannel channel, User author)
+	private void exeDelete(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		return "Responding";
+		event.getInteractionResponse().createFollowupMessage("Responding").block();
 	}
 
-	private String exeEdit(Interaction interaction, Guild guild, MessageChannel channel, User author)
+	private void exeEdit(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		return "Responding";
+		event.getInteractionResponse().createFollowupMessage("Responding").block();
 	}
 
-	private String exeToggle(Interaction interaction, Guild guild, MessageChannel channel, User author)
+	private void exeToggle(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		return "Responding";
+		event.getInteractionResponse().createFollowupMessage("Responding").block();
 	}
 
 	private boolean isServerOnline(String ip, int port) throws Exception

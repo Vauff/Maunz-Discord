@@ -43,7 +43,7 @@ public class MainListener
 	 * Lists that hold all legacy/slash commands
 	 */
 	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
-	public static LinkedList<AbstractSlashCommand<Interaction>> slashCommands = new LinkedList<>();
+	public static LinkedList<AbstractSlashCommand<InteractionCreateEvent>> slashCommands = new LinkedList<>();
 	public static LinkedList<AbstractCommand> commands = new LinkedList<>();
 
 
@@ -124,13 +124,13 @@ public class MainListener
 			{
 				for (int i = 0; i < devGuilds.length(); i++)
 				{
-					for (AbstractSlashCommand<Interaction> cmd : slashCommands)
+					for (AbstractSlashCommand<InteractionCreateEvent> cmd : slashCommands)
 						restClient.getApplicationService().createGuildApplicationCommand(restClient.getApplicationId().block(), devGuilds.getLong(i), cmd.getCommand()).block();
 				}
 			}
 			else
 			{
-				for (AbstractSlashCommand<Interaction> cmd : slashCommands)
+				for (AbstractSlashCommand<InteractionCreateEvent> cmd : slashCommands)
 					restClient.getApplicationService().createGlobalApplicationCommand(restClient.getApplicationId().block(), cmd.getCommand()).block();
 			}
 

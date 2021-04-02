@@ -53,7 +53,7 @@ public class InteractionCreateThread implements Runnable
 			MessageChannel channel = event.getInteraction().getChannel().block();
 			Guild guild = event.getInteraction().getGuild().block();
 
-			for (AbstractSlashCommand<Interaction> cmd : MainListener.slashCommands)
+			for (AbstractSlashCommand<InteractionCreateEvent> cmd : MainListener.slashCommands)
 			{
 				if (!cmdName.equalsIgnoreCase(cmd.getName()))
 					continue;
@@ -119,7 +119,7 @@ public class InteractionCreateThread implements Runnable
 						return;
 					}
 
-					event.getInteractionResponse().createFollowupMessage(cmd.exe(event.getInteraction(), guild, channel, author)).block();
+					cmd.exe(event, guild, channel, author);
 				}
 				catch (Exception e)
 				{
