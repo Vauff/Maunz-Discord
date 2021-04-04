@@ -41,15 +41,6 @@ public abstract class AbstractCommand
 	}
 
 	/**
-	 * Gets called when a specific user sends a reply defined prior in {@link AbstractCommand#waitForReply(Snowflake, Snowflake)}
-	 *
-	 * @param event The event holding information about the reply
-	 */
-	public void onMessageReceived(MessageCreateEvent event) throws Exception
-	{
-	}
-
-	/**
 	 * Defines aliases that can be used to trigger the command.
 	 * The main alias should also be defined in here
 	 *
@@ -90,17 +81,6 @@ public abstract class AbstractCommand
 	public final void waitForReaction(Snowflake messageID, Snowflake userID)
 	{
 		AWAITED.put(messageID, new Await(userID, this));
-	}
-
-	/**
-	 * Sets up this command to await a reply by the user who triggered this command
-	 *
-	 * @param messageID The message which will get deleted afterwards
-	 * @param userID    The user who triggered this command
-	 */
-	public final void waitForReply(Snowflake messageID, Snowflake userID)
-	{
-		AWAITED.put(userID, new Await(messageID, this));
 	}
 
 	/**

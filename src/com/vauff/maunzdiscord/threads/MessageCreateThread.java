@@ -149,19 +149,6 @@ public class MessageCreateThread implements Runnable
 					}
 				}
 			}
-
-			try
-			{
-				if (AbstractCommand.AWAITED.containsKey(author.getId()) && channel.getId().equals(AbstractCommand.AWAITEDCHANNEL.get(author.getId())))
-				{
-					Main.gateway.getMessageById(channel.getId(), AbstractCommand.AWAITED.get(author.getId()).getID()).block().delete();
-					AbstractCommand.AWAITED.get(author.getId()).getCommand().onMessageReceived(event);
-				}
-			}
-			catch (NullPointerException e)
-			{
-				// This means that the message ID in AbstractCommand#AWAITED for the given user ID has already been deleted, we can safely just stop executing
-			}
 		}
 		catch (Exception e)
 		{
