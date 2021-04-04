@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.commands.slash;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
@@ -19,6 +20,7 @@ import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +29,12 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 {
+	/**
+	 * A HashMap storing guilds service object IDs, the order translated into user friendly integer IDs
+	 * Refreshed for a guild every time /services list is ran
+	 */
+	private static HashMap<Snowflake, List<ObjectId>> guildServiceIds = new HashMap<>();
+
 	@Override
 	public void exe(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author) throws Exception
 	{
@@ -101,7 +109,16 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 	private void exeList(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		event.getInteractionResponse().createFollowupMessage("Responding").block();
+		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
+		List<ObjectId> serviceIds = new ArrayList<>();
+
+		// We don't want to use index 0 (IDs start at 1)
+		serviceIds.add(null);
+
+		for (Document service : services)
+			serviceIds.add(service.getObjectId("_id"));
+
+		guildServiceIds.put(guild.getId(), serviceIds);
 	}
 
 	private void exeInfo(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
