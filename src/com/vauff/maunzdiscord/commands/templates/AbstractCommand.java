@@ -1,9 +1,6 @@
 package com.vauff.maunzdiscord.commands.templates;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.entity.Message;
 
 import java.util.HashMap;
 

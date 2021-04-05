@@ -27,7 +27,6 @@ import static com.mongodb.client.model.Filters.eq;
 public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
-	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
@@ -83,7 +82,6 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 
 							Message m = Util.buildPage(blacklistFormatted, "Blacklisted Channels/Commands", 10, page, 0, false, false, false, channel, author);
 
-							listMessages.put(author.getId(), m.getId());
 							waitForReaction(m.getId(), author.getId());
 							listPages.put(author.getId(), page);
 						}
@@ -305,75 +303,70 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (listMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(listMessages.get(event.getUser().block().getId())))
+		List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
+
+		if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
 		{
-			List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
+			ArrayList<String> blacklistArray = new ArrayList<>();
 
-			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
+			for (String entry : blacklist)
 			{
-				ArrayList<String> blacklistArray = new ArrayList<>();
+				String channel;
+				String command = entry.split(":")[1];
 
-				for (String entry : blacklist)
+				if (entry.split(":")[0].equalsIgnoreCase("all"))
 				{
-					String channel;
-					String command = entry.split(":")[1];
-
-					if (entry.split(":")[0].equalsIgnoreCase("all"))
-					{
-						channel = "All Channels";
-					}
-					else
-					{
-						channel = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
-					}
-
-					if (entry.split(":")[1].equalsIgnoreCase("all"))
-					{
-						command = "All Commands";
-					}
-
-					blacklistArray.add(channel + " **|** " + command);
+					channel = "All Channels";
+				}
+				else
+				{
+					channel = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
 				}
 
-				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) + 1, 0, false, false, false, event.getChannel().block(), event.getUser().block());
-
-				listMessages.put(event.getUser().block().getId(), m.getId());
-				waitForReaction(m.getId(), event.getUser().block().getId());
-				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
-			}
-
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
-			{
-				ArrayList<String> blacklistArray = new ArrayList<>();
-
-				for (String entry : blacklist)
+				if (entry.split(":")[1].equalsIgnoreCase("all"))
 				{
-					String channel;
-					String command = entry.split(":")[1];
-
-					if (entry.split(":")[0].equalsIgnoreCase("all"))
-					{
-						channel = "All Channels";
-					}
-					else
-					{
-						channel = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
-					}
-
-					if (entry.split(":")[1].equalsIgnoreCase("all"))
-					{
-						command = "All Commands";
-					}
-
-					blacklistArray.add(channel + " **|** " + command);
+					command = "All Commands";
 				}
 
-				Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) - 1, 0, false, false, false, event.getChannel().block(), event.getUser().block());
-
-				listMessages.put(event.getUser().block().getId(), m.getId());
-				waitForReaction(m.getId(), event.getUser().block().getId());
-				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
+				blacklistArray.add(channel + " **|** " + command);
 			}
+
+			Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) + 1, 0, false, false, false, event.getChannel().block(), event.getUser().block());
+
+			waitForReaction(m.getId(), event.getUser().block().getId());
+			listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
+		}
+
+		else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+		{
+			ArrayList<String> blacklistArray = new ArrayList<>();
+
+			for (String entry : blacklist)
+			{
+				String channel;
+				String command = entry.split(":")[1];
+
+				if (entry.split(":")[0].equalsIgnoreCase("all"))
+				{
+					channel = "All Channels";
+				}
+				else
+				{
+					channel = Main.gateway.getChannelById(Snowflake.of(entry.split(":")[0])).block().getMention();
+				}
+
+				if (entry.split(":")[1].equalsIgnoreCase("all"))
+				{
+					command = "All Commands";
+				}
+
+				blacklistArray.add(channel + " **|** " + command);
+			}
+
+			Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) - 1, 0, false, false, false, event.getChannel().block(), event.getUser().block());
+
+			waitForReaction(m.getId(), event.getUser().block().getId());
+			listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
 		}
 	}
 

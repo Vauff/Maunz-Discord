@@ -4,7 +4,6 @@ import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
@@ -16,7 +15,6 @@ import org.bson.Document;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +23,6 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Enable extends AbstractLegacyCommand<MessageCreateEvent>
 {
-	private static HashMap<Snowflake, Snowflake> menuMessages = new HashMap<>();
-
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
@@ -39,7 +35,6 @@ public class Enable extends AbstractLegacyCommand<MessageCreateEvent>
 				Message m = Util.msg(channel, author, "Please select whether you'd like to enable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Enable globally" + System.lineSeparator() + "**`[2]`**  |  Enable in guild only");
 
 				waitForReaction(m.getId(), author.getId());
-				menuMessages.put(author.getId(), m.getId());
 				Util.addNumberedReactions(m, true, 2);
 
 				ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
@@ -88,36 +83,33 @@ public class Enable extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (menuMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(menuMessages.get(event.getUser().block().getId())))
-		{
-			File file = new File(Util.getJarLocation() + "config.json");
-			JSONObject json = new JSONObject(Util.getFileContents(file));
-			boolean guildEnabled = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getBoolean("enabled");
+		File file = new File(Util.getJarLocation() + "config.json");
+		JSONObject json = new JSONObject(Util.getFileContents(file));
+		boolean guildEnabled = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getBoolean("enabled");
 
-			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("1⃣"))
+		if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("1⃣"))
+		{
+			if (!json.getBoolean("enabled"))
 			{
-				if (!json.getBoolean("enabled"))
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now enabled globally");
-					json.put("enabled", true);
-					FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
-				}
-				else
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "You silly, I was already enabled globally!");
-				}
+				Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now enabled globally");
+				json.put("enabled", true);
+				FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
 			}
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("2⃣"))
+			else
 			{
-				if (!guildEnabled)
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now enabled in this guild");
-					Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$set", new Document("enabled", true)));
-				}
-				else
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "You silly, I was already enabled in this guild!");
-				}
+				Util.msg(event.getChannel().block(), event.getUser().block(), "You silly, I was already enabled globally!");
+			}
+		}
+		else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("2⃣"))
+		{
+			if (!guildEnabled)
+			{
+				Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now enabled in this guild");
+				Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$set", new Document("enabled", true)));
+			}
+			else
+			{
+				Util.msg(event.getChannel().block(), event.getUser().block(), "You silly, I was already enabled in this guild!");
 			}
 		}
 	}

@@ -56,9 +56,9 @@ public class ReactionAddThread implements Runnable
 					AbstractCommand cmd = await.getCommand();
 
 					if (cmd instanceof AbstractLegacyCommand)
-						((AbstractLegacyCommand)cmd).onReactionAdd(event, message);
+						((AbstractLegacyCommand) cmd).onReactionAdd(event, message);
 					else if (cmd instanceof AbstractSlashCommand)
-						((AbstractSlashCommand)cmd).onReactionAdd(event, await.getInteractionEvent(), message);
+						((AbstractSlashCommand) cmd).onReactionAdd(event, await.getInteractionEvent(), message);
 				}
 				catch (Exception e)
 				{

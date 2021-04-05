@@ -19,9 +19,9 @@ public class Ping extends AbstractSlashCommand<InteractionCreateEvent>
 	public ApplicationCommandRequest getCommand()
 	{
 		return ApplicationCommandRequest.builder()
-				.name(getName())
-				.description("Make Maunz respond with pong")
-				.build();
+			.name(getName())
+			.description("Make Maunz respond with pong")
+			.build();
 	}
 
 	@Override

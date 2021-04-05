@@ -23,7 +23,6 @@ import java.util.Objects;
 public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
-	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
@@ -50,12 +49,13 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 					continue;
 
 				for (CommandHelp commandHelp : command.getHelp())
-					helpEntries.add("**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description);
+				{
+					helpEntries.add("**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
+				}
 			}
 
 			Message m = Util.buildPage(helpEntries, "Command List", 10, page, 0, false, false, false, channel, author);
 
-			listMessages.put(author.getId(), m.getId());
 			waitForReaction(m.getId(), author.getId());
 			listPages.put(author.getId(), page);
 		}
@@ -87,7 +87,9 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 						matchFound = true;
 
 						for (CommandHelp commandHelp : command.getHelp())
-							list += "**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description + System.lineSeparator();
+						{
+							list += "**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription() + System.lineSeparator();
+						}
 
 						list = StringUtils.removeEnd(list, System.lineSeparator());
 
@@ -110,9 +112,6 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (!listMessages.containsKey(event.getUser().block().getId()) || !message.getId().equals(listMessages.get(event.getUser().block().getId())))
-			return;
-
 		int pageChange = 0;
 		ArrayList<String> helpEntries = new ArrayList<>();
 
@@ -129,7 +128,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 
 			for (CommandHelp commandHelp : command.getHelp())
 			{
-				helpEntries.add("**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description);
+				helpEntries.add("**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
 			}
 		}
 
@@ -143,7 +142,6 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 
 		Message m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().block().getId()) + pageChange, 0, false, false, false, event.getChannel().block(), event.getUser().block());
 
-		listMessages.put(event.getUser().block().getId(), m.getId());
 		waitForReaction(m.getId(), event.getUser().block().getId());
 		listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + pageChange);
 	}

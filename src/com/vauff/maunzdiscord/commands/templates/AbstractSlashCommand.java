@@ -28,9 +28,9 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 	/**
 	 * Gets called when a reaction is added to a message defined prior in {@link AbstractSlashCommand#waitForReaction(Snowflake, Snowflake, InteractionCreateEvent)}
 	 *
-	 * @param reactionEvent     The event holding information about the added reaction
-	 * @param interactionEvent  The interaction event that triggered this
-	 * @param message           The Message that was reacted to
+	 * @param reactionEvent    The event holding information about the added reaction
+	 * @param interactionEvent The interaction event that triggered this
+	 * @param message          The Message that was reacted to
 	 */
 	public void onReactionAdd(ReactionAddEvent reactionEvent, InteractionCreateEvent interactionEvent, Message message) throws Exception
 	{
@@ -60,7 +60,10 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 	}
 
 	@Override
-	public final String[] getAliases() { return new String[] { getName() }; }
+	public final String[] getAliases()
+	{
+		return new String[] { getName() };
+	}
 
 	@Override
 	public final CommandHelp[] getHelp()
@@ -93,15 +96,15 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 			else
 			{
 				if (option.required().isAbsent() || !option.required().get())
-					commandHelp.arguments += "[" + option.name() + "] ";
+					commandHelp.setArguments(commandHelp.getArguments() + "[" + option.name() + "] ");
 				else
-					commandHelp.arguments += "<" + option.name() + "> ";
+					commandHelp.setArguments(commandHelp.getArguments() + "<" + option.name() + "> ");
 			}
 		}
 
 		if (noSubCmds)
 		{
-			commandHelp.arguments = commandHelp.arguments.trim();
+			commandHelp.setArguments(commandHelp.getArguments().trim());
 			commandHelps.add(commandHelp);
 		}
 
@@ -113,22 +116,22 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 		CommandHelp commandHelp = new CommandHelp("", subCommand.description());
 
 		if (!Objects.isNull(rootName))
-			commandHelp.arguments = rootName + " ";
+			commandHelp.setArguments(rootName + " ");
 
-		commandHelp.arguments += subCommand.name() + " ";
+		commandHelp.setArguments(commandHelp.getArguments() + subCommand.name() + " ");
 
 		if (!subCommand.options().isAbsent())
 		{
 			for (ApplicationCommandOptionData option : subCommand.options().get())
 			{
 				if (option.required().isAbsent() || !option.required().get())
-					commandHelp.arguments += "[" + option.name() + "] ";
+					commandHelp.setArguments(commandHelp.getArguments() + "[" + option.name() + "] ");
 				else
-					commandHelp.arguments += "<" + option.name() + "> ";
+					commandHelp.setArguments(commandHelp.getArguments() + "<" + option.name() + "> ");
 			}
 		}
 
-		commandHelp.arguments = commandHelp.arguments.trim();
+		commandHelp.setArguments(commandHelp.getArguments().trim());
 
 		return commandHelp;
 	}

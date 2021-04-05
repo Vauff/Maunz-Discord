@@ -20,7 +20,6 @@ import java.util.HashMap;
 public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
-	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
 	private static HashMap<Snowflake, String> listVersions = new HashMap<>();
 
 	@Override
@@ -84,7 +83,6 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 
 		Message m = Util.buildPage(changelog, title, 10, 1, 0, true, false, false, channel, author);
 
-		listMessages.put(author.getId(), m.getId());
 		listVersions.put(author.getId(), version);
 		waitForReaction(m.getId(), author.getId());
 		listPages.put(author.getId(), 1);
@@ -93,83 +91,78 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (listMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(listMessages.get(event.getUser().block().getId())))
+		if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
 		{
-			if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
+			Document doc;
+			ArrayList<String> changelog = new ArrayList<>();
+			String link;
+			String title;
+
+			link = "https://github.com/Vauff/Maunz-Discord/releases/tag/" + listVersions.get(event.getUser().block().getId());
+			title = "Maunz " + listVersions.get(event.getUser().block().getId());
+
+			try
 			{
-				Document doc;
-				ArrayList<String> changelog = new ArrayList<>();
-				String link;
-				String title;
-
-				link = "https://github.com/Vauff/Maunz-Discord/releases/tag/" + listVersions.get(event.getUser().block().getId());
-				title = "Maunz " + listVersions.get(event.getUser().block().getId());
-
-				try
-				{
-					doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
-				}
-				catch (HttpStatusException e)
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "That version of Maunz doesn't exist!");
-					return;
-				}
-
-				String html = doc.select("div[class=\"markdown-body\"]").html().replace("<strong>", "").replace("</strong>", "").replace("<ul>", "").replace("</ul>", "").replace("<li>", "").replace("</li>", "");
-				String[] split = html.split("\n");
-
-				for (int i = 1; i < split.length; i++)
-				{
-					if (!split[i].replace(" ", "").equals(""))
-					{
-						changelog.add("-" + split[i]);
-					}
-				}
-
-				Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) + 1, 0, true, false, false, event.getChannel().block(), event.getUser().block());
-
-				listMessages.put(event.getUser().block().getId(), m.getId());
-				waitForReaction(m.getId(), event.getUser().block().getId());
-				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
+				doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+			}
+			catch (HttpStatusException e)
+			{
+				Util.msg(event.getChannel().block(), event.getUser().block(), "That version of Maunz doesn't exist!");
+				return;
 			}
 
-			else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+			String html = doc.select("div[class=\"markdown-body\"]").html().replace("<strong>", "").replace("</strong>", "").replace("<ul>", "").replace("</ul>", "").replace("<li>", "").replace("</li>", "");
+			String[] split = html.split("\n");
+
+			for (int i = 1; i < split.length; i++)
 			{
-				Document doc;
-				ArrayList<String> changelog = new ArrayList<>();
-				String link;
-				String title;
-
-				link = "https://github.com/Vauff/Maunz-Discord/releases/tag/" + listVersions.get(event.getUser().block().getId());
-				title = "Maunz " + listVersions.get(event.getUser().block().getId());
-
-				try
+				if (!split[i].replace(" ", "").equals(""))
 				{
-					doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+					changelog.add("-" + split[i]);
 				}
-				catch (HttpStatusException e)
-				{
-					Util.msg(event.getChannel().block(), event.getUser().block(), "That version of Maunz doesn't exist!");
-					return;
-				}
-
-				String html = doc.select("div[class=\"markdown-body\"]").html().replace("<strong>", "").replace("</strong>", "").replace("<ul>", "").replace("</ul>", "").replace("<li>", "").replace("</li>", "");
-				String[] split = html.split("\n");
-
-				for (int i = 1; i < split.length; i++)
-				{
-					if (!split[i].replace(" ", "").equals(""))
-					{
-						changelog.add("-" + split[i]);
-					}
-				}
-
-				Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) - 1, 0, true, false, false, event.getChannel().block(), event.getUser().block());
-
-				listMessages.put(event.getUser().block().getId(), m.getId());
-				waitForReaction(m.getId(), event.getUser().block().getId());
-				listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
 			}
+
+			Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) + 1, 0, true, false, false, event.getChannel().block(), event.getUser().block());
+
+			waitForReaction(m.getId(), event.getUser().block().getId());
+			listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
+		}
+
+		else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+		{
+			Document doc;
+			ArrayList<String> changelog = new ArrayList<>();
+			String link;
+			String title;
+
+			link = "https://github.com/Vauff/Maunz-Discord/releases/tag/" + listVersions.get(event.getUser().block().getId());
+			title = "Maunz " + listVersions.get(event.getUser().block().getId());
+
+			try
+			{
+				doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+			}
+			catch (HttpStatusException e)
+			{
+				Util.msg(event.getChannel().block(), event.getUser().block(), "That version of Maunz doesn't exist!");
+				return;
+			}
+
+			String html = doc.select("div[class=\"markdown-body\"]").html().replace("<strong>", "").replace("</strong>", "").replace("<ul>", "").replace("</ul>", "").replace("<li>", "").replace("</li>", "");
+			String[] split = html.split("\n");
+
+			for (int i = 1; i < split.length; i++)
+			{
+				if (!split[i].replace(" ", "").equals(""))
+				{
+					changelog.add("-" + split[i]);
+				}
+			}
+
+			Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) - 1, 0, true, false, false, event.getChannel().block(), event.getUser().block());
+
+			waitForReaction(m.getId(), event.getUser().block().getId());
+			listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);
 		}
 	}
 

@@ -35,7 +35,6 @@ import static com.mongodb.client.model.Filters.eq;
 public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
-	private static HashMap<Snowflake, Snowflake> selectionMessages = new HashMap<>();
 	private static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
 	private static HashMap<Snowflake, String[]> args = new HashMap<>();
 
@@ -89,28 +88,25 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 		String emoji = event.getEmoji().asUnicodeEmoji().get().getRaw();
 		User user = event.getUser().block();
 
-		if (selectionMessages.containsKey(event.getUser().block().getId()) && message.getId().equals(selectionMessages.get(event.getUser().block().getId())))
+		if (emoji.equals("▶"))
 		{
-			if (emoji.equals("▶"))
-			{
-				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) + 1);
-				return;
-			}
+			runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) + 1);
+			return;
+		}
 
-			else if (emoji.equals("◀"))
-			{
-				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) - 1);
-				return;
-			}
+		else if (emoji.equals("◀"))
+		{
+			runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) - 1);
+			return;
+		}
 
-			int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
+		int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
 
-			if (i != -2)
+		if (i != -2)
+		{
+			if (selectionServices.get(event.getUser().block().getId()).size() >= i)
 			{
-				if (selectionServices.get(event.getUser().block().getId()).size() >= i)
-				{
-					runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i), args.get(user.getId()), true);
-				}
+				runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i), args.get(user.getId()), true);
 			}
 		}
 	}
@@ -370,7 +366,6 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel, user);
 
 		selectionServices.put(user.getId(), services);
-		selectionMessages.put(user.getId(), m.getId());
 		selectionPages.put(user.getId(), page);
 		waitForReaction(m.getId(), user.getId());
 

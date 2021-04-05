@@ -49,7 +49,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		if (interaction.getOption("add").isPresent())
 			exeAdd(event, guild);
 		else if (interaction.getOption("list").isPresent())
-			exeList(event, guild, channel, author);
+			exeList(event, guild, author);
 		else if (interaction.getOption("info").isPresent())
 			exeInfo(event, guild, channel, author);
 		else if (interaction.getOption("delete").isPresent())
@@ -111,7 +111,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 		ObjectId serverId = getOrCreateServer(ip, port);
 		Document service = new Document("enabled", true).append("online", true).append("mapCharacterLimit", false).append("lastMap", "N/A").append("serverID", serverId).append("guildID", guild.getId().asLong())
-				.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
+			.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
 
 		Main.mongoDatabase.getCollection("services").insertOne(service);
 
@@ -121,7 +121,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 			event.getInteractionResponse().createFollowupMessage("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
 	}
 
-	private void exeList(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
+	private void exeList(InteractionCreateEvent event, Guild guild, User author)
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().getOption("list").get();
 		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
@@ -137,7 +137,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		listServices.put(author.getId(), services);
 
 		if (subCmd.getOption("page").isPresent())
-			runListSelection(event, author, (int)subCmd.getOption("page").get().getValue().get().asLong());
+			runListSelection(event, author, (int) subCmd.getOption("page").get().getValue().get().asLong());
 		else
 			runListSelection(event, author, 1);
 	}
@@ -242,7 +242,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		}
 
 		Document server = new Document("enabled", true).append("ip", ip).append("port", port).append("name", "N/A").append("map", "N/A").append("timestamp", 0L).append("playerCount", "0/0").append("players", new ArrayList())
-				.append("downtimeTimer", 0).append("failedConnectionsThreshold", 3).append("mapDatabase", new ArrayList());
+			.append("downtimeTimer", 0).append("failedConnectionsThreshold", 3).append("mapDatabase", new ArrayList());
 
 		return Main.mongoDatabase.getCollection("servers").insertOne(server).getInsertedId().asObjectId().getValue();
 	}
