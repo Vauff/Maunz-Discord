@@ -54,7 +54,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run **" + Main.prefix + "services** to set one up");
+				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services** to set one up");
 				return;
 			}
 			else if (services.size() == 1)

@@ -127,6 +127,12 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
 		List<ObjectId> serviceIds = new ArrayList<>();
 
+		if (services.size() == 0)
+		{
+			event.getInteractionResponse().createFollowupMessage("No services have been added yet! Use **/services add** to add one").block();
+			return;
+		}
+
 		// We don't want to use index 0 (IDs start at 1)
 		serviceIds.add(null);
 
