@@ -1,5 +1,7 @@
 package com.vauff.maunzdiscord.core;
 
+import discord4j.common.util.Snowflake;
+import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -460,6 +462,25 @@ public class Util
 	}
 
 	/**
+	 * Builds a modular page message in response to an interaction for the given parameters
+	 *
+	 * @param entries           An ArrayList<String> that contains all the entries that should be in the page builder
+	 * @param title             The title to give all the pages
+	 * @param pageSize          How many entries should be in a specific page
+	 * @param pageNumber        Which page the method should build and send to the provided channel
+	 * @param numberStyle       Which style to use for numbered entries, 0 = none, 1 = standard, 2 = code block surrounded & unique per page
+	 * @param codeBlock         Whether to surround all the entries in a code block or not
+	 * @param numberedReactions Whether to add numbered reactions for each entry
+	 * @param cancellable       Whether to add an X emoji to close the page
+	 * @param event             The InteractionCreateEvent that is being responded to
+	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
+	 */
+	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, InteractionCreateEvent event)
+	{
+		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, null, null, event);
+	}
+
+	/**
 	 * Builds a modular page message for the given parameters
 	 *
 	 * @param entries           An ArrayList<String> that contains all the entries that should be in the page builder
@@ -470,15 +491,23 @@ public class Util
 	 * @param codeBlock         Whether to surround all the entries in a code block or not
 	 * @param numberedReactions Whether to add numbered reactions for each entry
 	 * @param cancellable       Whether to add an X emoji to close the page
-	 * @param channel           The MessageChannel that the page message should be sent to
-	 * @param user              The User that triggered the command's execution in the first place
+	 * @param channel           The MessageChannel that the page message should be sent to (if legacy command)
+	 * @param user              The User that triggered the command's execution in the first place (if legacy command)
 	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
 	 */
 	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user)
 	{
+		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, channel, user, null);
+	}
+
+	private static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user, InteractionCreateEvent event)
+	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
-			return Util.msg(channel, user, "That page doesn't exist!");
+			if (Objects.isNull(event))
+				return Util.msg(channel, user, "That page doesn't exist!");
+			else
+				return Main.gateway.getMessageById(event.getInteraction().getChannelId(), Snowflake.of(event.getInteractionResponse().createFollowupMessage("That page doesn't exist!").block().id())).block();
 		}
 		else
 		{
@@ -522,15 +551,17 @@ public class Util
 			}
 
 			Message m;
+			String msg;
 
 			if (pageNumber == 1 && (int) Math.ceil((float) entries.size() / (float) pageSize) == 1)
-			{
-				m = Util.msg(channel, user, "--- **" + title + "** ---" + System.lineSeparator() + list.toString());
-			}
+				msg = "--- **" + title + "** ---" + System.lineSeparator() + list.toString();
 			else
-			{
-				m = Util.msg(channel, user, "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString());
-			}
+				msg = "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString();
+
+			if (Objects.isNull(event))
+				m = Util.msg(channel, user, msg);
+			else
+				m = Main.gateway.getMessageById(event.getInteraction().getChannelId(), Snowflake.of(event.getInteractionResponse().createFollowupMessage(msg).block().id())).block();
 
 			final int finalUsedEntries = usedEntries;
 			ScheduledExecutorService reactionAddPool = Executors.newScheduledThreadPool(1);

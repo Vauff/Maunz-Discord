@@ -1,7 +1,10 @@
 package com.vauff.maunzdiscord.commands.templates;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
@@ -23,6 +26,17 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 	public abstract void exe(M interaction, Guild guild, MessageChannel channel, User author) throws Exception;
 
 	/**
+	 * Gets called when a reaction is added to a message defined prior in {@link AbstractSlashCommand#waitForReaction(Snowflake, Snowflake, InteractionCreateEvent)}
+	 *
+	 * @param reactionEvent     The event holding information about the added reaction
+	 * @param interactionEvent  The interaction event that triggered this
+	 * @param message           The Message that was reacted to
+	 */
+	public void onReactionAdd(ReactionAddEvent reactionEvent, InteractionCreateEvent interactionEvent, Message message) throws Exception
+	{
+	}
+
+	/**
 	 * Returns the ApplicationCommandRequest object for this command
 	 */
 	public abstract ApplicationCommandRequest getCommand();
@@ -33,6 +47,17 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 	 * @return A string containing the name of the command
 	 */
 	public abstract String getName();
+
+	/**
+	 * Sets up this command to await a reaction by the user who triggered this command
+	 *
+	 * @param messageID The message which should get reacted on
+	 * @param userID    The user who triggered this command
+	 */
+	public final void waitForReaction(Snowflake messageID, Snowflake userID, InteractionCreateEvent event)
+	{
+		AWAITED.put(messageID, new Await(userID, this, event));
+	}
 
 	@Override
 	public final String[] getAliases() { return new String[] { getName() }; }

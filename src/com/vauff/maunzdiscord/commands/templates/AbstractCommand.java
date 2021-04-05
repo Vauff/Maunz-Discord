@@ -10,11 +10,10 @@ import java.util.HashMap;
 public abstract class AbstractCommand
 {
 	/**
-	 * Holds all messages as keys which await a reaction or reply by a specific user.
+	 * Holds all messages as keys which await a reaction by a specific user.
 	 * The values hold an instance of {@link Await}
 	 */
 	public static final HashMap<Snowflake, Await> AWAITED = new HashMap<>();
-	public static final HashMap<Snowflake, Snowflake> AWAITEDCHANNEL = new HashMap<>();
 
 	/**
 	 * Enum holding the different bot permissions commands may require to use
@@ -28,16 +27,6 @@ public abstract class AbstractCommand
 		EVERYONE,
 		GUILD_ADMIN,
 		BOT_ADMIN
-	}
-
-	/**
-	 * Gets called when a reaction is added to a message defined prior in {@link AbstractCommand#waitForReaction(Snowflake, Snowflake)}
-	 *
-	 * @param event   The event holding information about the added reaction
-	 * @param message The Message that was reacted to
-	 */
-	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
-	{
 	}
 
 	/**
@@ -71,25 +60,4 @@ public abstract class AbstractCommand
 	 * @return The permission level
 	 */
 	public abstract BotPermission getPermissionLevel();
-
-	/**
-	 * Sets up this command to await a reaction by the user who triggered this command
-	 *
-	 * @param messageID The message which should get reacted on
-	 * @param userID    The user who triggered this command
-	 */
-	public final void waitForReaction(Snowflake messageID, Snowflake userID)
-	{
-		AWAITED.put(messageID, new Await(userID, this));
-	}
-
-	/**
-	 * Defines if the default implementation of {@link AbstractCommand#onReactionAdd(ReactionAddEvent, Message)}
-	 *
-	 * @return true if the default behavior of said method should be used, false otherwise
-	 */
-	public boolean confirmable()
-	{
-		return false;
-	}
 }

@@ -3,11 +3,14 @@ package com.vauff.maunzdiscord.commands.slash;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -35,6 +38,9 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 	 */
 	private static HashMap<Snowflake, List<ObjectId>> guildServiceIds = new HashMap<>();
 
+	private static HashMap<Snowflake, List<Document>> listServices = new HashMap<>();
+	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+
 	@Override
 	public void exe(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author) throws Exception
 	{
@@ -42,21 +48,29 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 		if (interaction.getOption("add").isPresent())
 			exeAdd(event, guild);
-
-		if (interaction.getOption("list").isPresent())
+		else if (interaction.getOption("list").isPresent())
 			exeList(event, guild, channel, author);
-
-		if (interaction.getOption("info").isPresent())
+		else if (interaction.getOption("info").isPresent())
 			exeInfo(event, guild, channel, author);
-
-		if (interaction.getOption("delete").isPresent())
+		else if (interaction.getOption("delete").isPresent())
 			exeDelete(event, guild, channel, author);
-
-		if (interaction.getOption("edit").isPresent())
+		else if (interaction.getOption("edit").isPresent())
 			exeEdit(event, guild, channel, author);
-
-		if (interaction.getOption("toggle").isPresent())
+		else if (interaction.getOption("toggle").isPresent())
 			exeToggle(event, guild, channel, author);
+	}
+
+	@Override
+	public void onReactionAdd(ReactionAddEvent reactionEvent, InteractionCreateEvent interactionEvent, Message message)
+	{
+		String emoji = reactionEvent.getEmoji().asUnicodeEmoji().get().getRaw();
+		User user = reactionEvent.getUser().block();
+
+		if (emoji.equals("▶"))
+			runListSelection(interactionEvent, user, listPages.get(user.getId()) + 1);
+
+		else if (emoji.equals("◀"))
+			runListSelection(interactionEvent, user, listPages.get(user.getId()) - 1);
 	}
 
 	private void exeAdd(InteractionCreateEvent event, Guild guild) throws Exception
@@ -109,6 +123,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 	private void exeList(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
+		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().getOption("list").get();
 		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
 		List<ObjectId> serviceIds = new ArrayList<>();
 
@@ -119,6 +134,12 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 			serviceIds.add(service.getObjectId("_id"));
 
 		guildServiceIds.put(guild.getId(), serviceIds);
+		listServices.put(author.getId(), services);
+
+		if (subCmd.getOption("page").isPresent())
+			runListSelection(event, author, (int)subCmd.getOption("page").get().getValue().get().asLong());
+		else
+			runListSelection(event, author, 1);
 	}
 
 	private void exeInfo(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
@@ -139,6 +160,40 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 	private void exeToggle(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
 		event.getInteractionResponse().createFollowupMessage("Responding").block();
+	}
+
+	private void runListSelection(InteractionCreateEvent event, User author, int page)
+	{
+		ArrayList<String> servicesDisplay = new ArrayList<>();
+		int id = 0;
+
+		for (Document service : listServices.get(author.getId()))
+		{
+			id++;
+
+			Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).first();
+			Channel serviceChannel;
+			String msg = id + " - " + server.getString("ip") + ":" + server.getInteger("port");
+
+			try
+			{
+				serviceChannel = Main.gateway.getChannelById(Snowflake.of(service.getLong("channelID"))).block();
+			}
+			catch (Exception e)
+			{
+				serviceChannel = null;
+			}
+
+			if (!Objects.isNull(serviceChannel))
+				msg += " tracking in " + serviceChannel.getMention();
+
+			servicesDisplay.add(msg);
+		}
+
+		Message m = Util.buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event);
+
+		listPages.put(author.getId(), page);
+		waitForReaction(m.getId(), author.getId(), event);
 	}
 
 	private boolean isServerOnline(String ip, int port) throws Exception
