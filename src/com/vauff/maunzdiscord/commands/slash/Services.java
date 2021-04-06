@@ -53,7 +53,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		else if (interaction.getOption("info").isPresent())
 			exeInfo(event, guild, channel, author);
 		else if (interaction.getOption("delete").isPresent())
-			exeDelete(event, guild, channel, author);
+			exeDelete(event, guild);
 		else if (interaction.getOption("edit").isPresent())
 			exeEdit(event, guild, channel, author);
 		else if (interaction.getOption("toggle").isPresent())
@@ -153,9 +153,46 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		event.getInteractionResponse().createFollowupMessage("Responding").block();
 	}
 
-	private void exeDelete(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
+	private void exeDelete(InteractionCreateEvent event, Guild guild)
 	{
-		event.getInteractionResponse().createFollowupMessage("Responding").block();
+		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().getOption("delete").get();
+		List<ObjectId> serviceIds = guildServiceIds.get(guild.getId());
+		int id = (int) subCmd.getOption("id").get().getValue().get().asLong();
+
+		if (serviceIds.size() <= id)
+		{
+			event.getInteractionResponse().createFollowupMessage("That service ID doesn't exist! Have you ran **/services list** yet to generate IDs?").block();
+			return;
+		}
+
+		ObjectId serviceId = serviceIds.get(id);
+		Document service = Main.mongoDatabase.getCollection("services").find(eq("_id", serviceId)).projection(new Document("serverID", 1).append("channelID", 1)).first();
+
+		if (Objects.isNull(service))
+		{
+			event.getInteractionResponse().createFollowupMessage("That service was already deleted!").block();
+			return;
+		}
+
+		Main.mongoDatabase.getCollection("services").deleteOne(eq("_id", serviceId));
+
+		Channel serviceChannel;
+		Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).projection(new Document("ip", 1).append("port", 1)).first();
+		String msg = "Successfully deleted the service tracking " + server.getString("ip") + ":" + server.getInteger("port");
+
+		try
+		{
+			serviceChannel = Main.gateway.getChannelById(Snowflake.of(service.getLong("channelID"))).block();
+		}
+		catch (Exception e)
+		{
+			serviceChannel = null;
+		}
+
+		if (!Objects.isNull(serviceChannel))
+			msg += " tracking in " + serviceChannel.getMention();
+
+		event.getInteractionResponse().createFollowupMessage(msg).block();
 	}
 
 	private void exeEdit(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
@@ -177,7 +214,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		{
 			id++;
 
-			Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).first();
+			Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).projection(new Document("ip", 1).append("port", 1)).first();
 			Channel serviceChannel;
 			String msg = id + " - " + server.getString("ip") + ":" + server.getInteger("port");
 

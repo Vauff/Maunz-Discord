@@ -84,7 +84,7 @@ public class ServiceProcessThread implements Runnable
 			if (serverDoc.getInteger("downtimeTimer") >= 10080)
 			{
 				if (channelExists)
-					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has now been offline for a week and its server tracking service was automatically disabled, it can be re-enabled by a guild administrator using the ***services** command");
+					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has now been offline for a week and its server tracking service was automatically disabled, it can be re-enabled by a guild administrator using **/services toggle <id> enabled**");
 
 				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
 			}

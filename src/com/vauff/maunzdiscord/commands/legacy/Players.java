@@ -46,7 +46,7 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services** to set one up");
+				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
 			}
 			else if (services.size() == 1)
 			{
