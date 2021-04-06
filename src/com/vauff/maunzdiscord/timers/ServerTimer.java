@@ -6,7 +6,6 @@ import com.vauff.maunzdiscord.threads.ServerRequestThread;
 import com.vauff.maunzdiscord.threads.ServiceProcessThread;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
-import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

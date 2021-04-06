@@ -104,7 +104,7 @@ public class ServerRequestThread implements Runnable
 			int currentPlayers = 0;
 			int maxPlayers = 0;
 
-			if (serverInfo.containsKey("mapName")  && !Objects.isNull(serverInfo.get("mapName")))
+			if (serverInfo.containsKey("mapName") && !Objects.isNull(serverInfo.get("mapName")))
 			{
 				map = serverInfo.get("mapName").toString();
 			}

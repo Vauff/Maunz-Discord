@@ -1,8 +1,9 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.vauff.maunzdiscord.commands.Disable;
-import com.vauff.maunzdiscord.commands.Enable;
+import com.vauff.maunzdiscord.commands.legacy.Disable;
+import com.vauff.maunzdiscord.commands.legacy.Enable;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
@@ -52,7 +53,7 @@ public class MessageCreateThread implements Runnable
 
 			if (cmdName.startsWith(Main.prefix))
 			{
-				for (AbstractCommand<MessageCreateEvent> cmd : MainListener.commands)
+				for (AbstractLegacyCommand<MessageCreateEvent> cmd : MainListener.legacyCommands)
 				{
 					for (String s : cmd.getAliases())
 					{
@@ -147,19 +148,6 @@ public class MessageCreateThread implements Runnable
 						}
 					}
 				}
-			}
-
-			try
-			{
-				if (AbstractCommand.AWAITED.containsKey(author.getId()) && channel.getId().equals(AbstractCommand.AWAITEDCHANNEL.get(author.getId())))
-				{
-					Main.gateway.getMessageById(channel.getId(), AbstractCommand.AWAITED.get(author.getId()).getID()).block().delete();
-					AbstractCommand.AWAITED.get(author.getId()).getCommand().onMessageReceived(event);
-				}
-			}
-			catch (NullPointerException e)
-			{
-				// This means that the message ID in AbstractCommand#AWAITED for the given user ID has already been deleted, we can safely just stop executing
 			}
 		}
 		catch (Exception e)

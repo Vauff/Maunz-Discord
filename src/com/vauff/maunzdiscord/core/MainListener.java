@@ -1,12 +1,17 @@
 package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoCollection;
-import com.vauff.maunzdiscord.commands.*;
+import com.vauff.maunzdiscord.commands.legacy.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.threads.InteractionCreateThread;
 import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
-import com.vauff.maunzdiscord.timers.*;
+import com.vauff.maunzdiscord.timers.ServerTimer;
+import com.vauff.maunzdiscord.timers.StatsTimer;
 import discord4j.common.util.Snowflake;
+import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -16,12 +21,15 @@ import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
+import discord4j.rest.RestClient;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.time.StopWatch;
 import org.bson.Document;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
@@ -32,9 +40,12 @@ import static com.mongodb.client.model.Filters.eq;
 public class MainListener
 {
 	/**
-	 * Holds all commands
+	 * Lists that hold all legacy/slash commands
 	 */
-	public static LinkedList<AbstractCommand<MessageCreateEvent>> commands = new LinkedList<>();
+	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
+	public static LinkedList<AbstractSlashCommand<InteractionCreateEvent>> slashCommands = new LinkedList<>();
+	public static LinkedList<AbstractCommand> commands = new LinkedList<>();
+
 
 	/**
 	 * Holds the timestamp of the last time a user used a command
@@ -58,8 +69,6 @@ public class MainListener
 			if (uptime.isStarted())
 				return;
 
-			JSONObject configJson = new JSONObject(Util.getFileContents("config.json"));
-
 			uptime.start();
 
 			for (Guild guild : Main.gateway.getGuilds().toIterable())
@@ -67,6 +76,34 @@ public class MainListener
 				setupGuild(guild);
 			}
 
+			legacyCommands.add(new About());
+			legacyCommands.add(new Benchmark());
+			legacyCommands.add(new Blacklist());
+			legacyCommands.add(new Changelog());
+			legacyCommands.add(new Colour());
+			legacyCommands.add(new Disable());
+			legacyCommands.add(new Discord());
+			legacyCommands.add(new Enable());
+			legacyCommands.add(new Help());
+			legacyCommands.add(new IsItDown());
+			legacyCommands.add(new Map());
+			legacyCommands.add(new Minecraft());
+			legacyCommands.add(new Notify());
+			legacyCommands.add(new Ping());
+			slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Ping());
+			legacyCommands.add(new Players());
+			legacyCommands.add(new Reddit());
+			legacyCommands.add(new Restart());
+			legacyCommands.add(new Say());
+			legacyCommands.add(new Services());
+			slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Services());
+			legacyCommands.add(new Source());
+			legacyCommands.add(new Steam());
+			legacyCommands.add(new Stop());
+
+			commands.addAll(legacyCommands);
+			commands.addAll(slashCommands);
+			commands.sort(Comparator.comparing(AbstractCommand::getFirstAlias));
 
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
 			Main.gateway.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
@@ -75,32 +112,28 @@ public class MainListener
 			Main.gateway.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
 			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(Logger::onGuildCreate);
 			Main.gateway.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
-			commands.add(new About());
-			commands.add(new Benchmark());
-			commands.add(new Blacklist());
-			commands.add(new Changelog());
-			commands.add(new Colour());
-			commands.add(new Disable());
-			commands.add(new Discord());
-			commands.add(new Enable());
-			commands.add(new Help());
-			commands.add(new IsItDown());
-			commands.add(new Map());
-			commands.add(new Minecraft());
-			commands.add(new Notify());
-			commands.add(new Ping());
-			commands.add(new Players());
-			commands.add(new Reddit());
-			commands.add(new Restart());
-			commands.add(new Say());
-			commands.add(new Services());
-			commands.add(new Source());
-			commands.add(new Steam());
-			commands.add(new Stop());
-
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
+			Main.gateway.getEventDispatcher().on(InteractionCreateEvent.class).subscribe(MainListener::onInteractionCreate);
 			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
 			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(MainListener::onGuildCreate);
+
+			JSONArray devGuilds = new JSONObject(Util.getFileContents("config.json")).getJSONArray("devGuilds");
+			RestClient restClient = Main.gateway.getRestClient();
+
+			if (devGuilds.length() > 0)
+			{
+				for (int i = 0; i < devGuilds.length(); i++)
+				{
+					for (AbstractSlashCommand<InteractionCreateEvent> cmd : slashCommands)
+						restClient.getApplicationService().createGuildApplicationCommand(restClient.getApplicationId().block(), devGuilds.getLong(i), cmd.getCommand()).block();
+				}
+			}
+			else
+			{
+				for (AbstractSlashCommand<InteractionCreateEvent> cmd : slashCommands)
+					restClient.getApplicationService().createGlobalApplicationCommand(restClient.getApplicationId().block(), cmd.getCommand()).block();
+			}
+
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 		}
@@ -120,6 +153,18 @@ public class MainListener
 		try
 		{
 			new MessageCreateThread(event, "messagereceived-" + event.getMessage().getId().asString()).start();
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
+	}
+
+	public static void onInteractionCreate(InteractionCreateEvent event)
+	{
+		try
+		{
+			new InteractionCreateThread(event, "interactioncreate-" + event.getInteraction().getId().asString()).start();
 		}
 		catch (Exception e)
 		{

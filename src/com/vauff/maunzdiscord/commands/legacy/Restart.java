@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
@@ -10,7 +10,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 
 import java.util.ArrayList;
 
-public class Restart extends AbstractCommand<MessageCreateEvent>
+public class Restart extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception

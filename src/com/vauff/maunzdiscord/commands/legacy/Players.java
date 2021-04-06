@@ -1,7 +1,7 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
 import com.mongodb.client.FindIterable;
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
@@ -25,10 +25,9 @@ import java.util.concurrent.TimeUnit;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
-public class Players extends AbstractCommand<MessageCreateEvent>
+public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
-	private static HashMap<Snowflake, Snowflake> selectionMessages = new HashMap<>();
 	private static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
 
 	@Override
@@ -47,7 +46,7 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator run **" + Main.prefix + "services** to set one up");
+				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
 			}
 			else if (services.size() == 1)
 			{
@@ -79,28 +78,25 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 		String emoji = event.getEmoji().asUnicodeEmoji().get().getRaw();
 		User user = event.getUser().block();
 
-		if (selectionMessages.containsKey(user.getId()) && message.getId().equals(selectionMessages.get(user.getId())))
+		if (emoji.equals("▶"))
 		{
-			if (emoji.equals("▶"))
-			{
-				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) + 1);
-				return;
-			}
+			runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) + 1);
+			return;
+		}
 
-			else if (emoji.equals("◀"))
-			{
-				runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) - 1);
-				return;
-			}
+		else if (emoji.equals("◀"))
+		{
+			runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) - 1);
+			return;
+		}
 
-			int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
+		int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
 
-			if (i != -2)
+		if (i != -2)
+		{
+			if (selectionServices.get(user.getId()).size() >= i)
 			{
-				if (selectionServices.get(user.getId()).size() >= i)
-				{
-					runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i));
-				}
+				runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i));
 			}
 		}
 	}
@@ -172,7 +168,6 @@ public class Players extends AbstractCommand<MessageCreateEvent>
 		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel, user);
 
 		selectionServices.put(user.getId(), services);
-		selectionMessages.put(user.getId(), m.getId());
 		selectionPages.put(user.getId(), page);
 		waitForReaction(m.getId(), user.getId());
 

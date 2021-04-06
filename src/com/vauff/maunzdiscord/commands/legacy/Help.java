@@ -1,6 +1,8 @@
-package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands.legacy;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.commands.templates.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
@@ -16,11 +18,11 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
-public class Help extends AbstractCommand<MessageCreateEvent>
+public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 {
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
-	private static HashMap<Snowflake, Snowflake> listMessages = new HashMap<>();
 
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
@@ -37,6 +39,9 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 			for (AbstractCommand command : MainListener.commands)
 			{
+				if (Objects.isNull(command.getHelp()))
+					continue;
+
 				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
 					continue;
 
@@ -45,13 +50,12 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 				for (CommandHelp commandHelp : command.getHelp())
 				{
-					helpEntries.add("**" + getEscapedPrefix() + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description);
+					helpEntries.add("**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
 				}
 			}
 
 			Message m = Util.buildPage(helpEntries, "Command List", 10, page, 0, false, false, false, channel, author);
 
-			listMessages.put(author.getId(), m.getId());
 			waitForReaction(m.getId(), author.getId());
 			listPages.put(author.getId(), page);
 		}
@@ -67,21 +71,24 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 			rootIteration:
 			for (AbstractCommand command : MainListener.commands)
 			{
+				if (Objects.isNull(command.getHelp()))
+					continue;
+
+				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
+					continue;
+
+				if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(author))
+					continue;
+
 				for (String alias : command.getAliases())
 				{
 					if (arg.equalsIgnoreCase(Main.prefix + alias))
 					{
-						if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block()))
-							continue;
-
-						if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(author))
-							continue;
-
 						matchFound = true;
 
 						for (CommandHelp commandHelp : command.getHelp())
 						{
-							list += "**" + getEscapedPrefix() + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description + System.lineSeparator();
+							list += "**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription() + System.lineSeparator();
 						}
 
 						list = StringUtils.removeEnd(list, System.lineSeparator());
@@ -105,14 +112,14 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 	@Override
 	public void onReactionAdd(ReactionAddEvent event, Message message) throws Exception
 	{
-		if (!listMessages.containsKey(event.getUser().block().getId()) || !message.getId().equals(listMessages.get(event.getUser().block().getId())))
-			return;
-
 		int pageChange = 0;
 		ArrayList<String> helpEntries = new ArrayList<>();
 
 		for (AbstractCommand command : MainListener.commands)
 		{
+			if (Objects.isNull(command.getHelp()))
+				continue;
+
 			if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(event.getUser().block(), event.getGuild().block()))
 				continue;
 
@@ -121,7 +128,7 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 			for (CommandHelp commandHelp : command.getHelp())
 			{
-				helpEntries.add("**" + getEscapedPrefix() + command.getAliases()[0] + (commandHelp.arguments.equals("") ? "" : " " + commandHelp.arguments) + "** - " + commandHelp.description);
+				helpEntries.add("**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
 			}
 		}
 
@@ -135,13 +142,14 @@ public class Help extends AbstractCommand<MessageCreateEvent>
 
 		Message m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().block().getId()) + pageChange, 0, false, false, false, event.getChannel().block(), event.getUser().block());
 
-		listMessages.put(event.getUser().block().getId(), m.getId());
 		waitForReaction(m.getId(), event.getUser().block().getId());
 		listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + pageChange);
 	}
 
-	private String getEscapedPrefix()
+	private String getPrefix(AbstractCommand cmd)
 	{
+		if (cmd instanceof AbstractSlashCommand)
+			return "/";
 		if (Main.prefix.equals("*") || Main.prefix.equals("_") || Main.prefix.equals("`") || Main.prefix.equals(">"))
 			return "\\" + Main.prefix;
 		else
