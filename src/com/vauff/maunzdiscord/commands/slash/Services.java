@@ -150,7 +150,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 	private void exeInfo(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		event.getInteractionResponse().createFollowupMessage("Responding").block();
+		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
 	}
 
 	private void exeDelete(InteractionCreateEvent event, Guild guild)
@@ -197,12 +197,12 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 	private void exeEdit(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		event.getInteractionResponse().createFollowupMessage("Responding").block();
+		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
 	}
 
 	private void exeToggle(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		event.getInteractionResponse().createFollowupMessage("Responding").block();
+		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
 	}
 
 	private void runListSelection(InteractionCreateEvent event, User author, int page)
