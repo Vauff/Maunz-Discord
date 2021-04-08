@@ -1,5 +1,7 @@
-package com.vauff.maunzdiscord.commands.templates;
+package com.vauff.maunzdiscord.objects;
 
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.InteractionCreateEvent;
 

@@ -3,7 +3,7 @@ package com.vauff.maunzdiscord.threads;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import com.vauff.maunzdiscord.commands.templates.Await;
+import com.vauff.maunzdiscord.objects.Await;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.ReactionAddEvent;

@@ -1,5 +1,7 @@
 package com.vauff.maunzdiscord.commands.templates;
 
+import com.vauff.maunzdiscord.objects.Await;
+import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 
 import java.util.HashMap;

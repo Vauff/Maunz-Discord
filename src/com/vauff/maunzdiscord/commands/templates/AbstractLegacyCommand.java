@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.commands.templates;
 
+import com.vauff.maunzdiscord.objects.Await;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;

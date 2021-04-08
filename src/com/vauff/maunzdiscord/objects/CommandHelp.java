@@ -1,4 +1,4 @@
-package com.vauff.maunzdiscord.commands.templates;
+package com.vauff.maunzdiscord.objects;
 
 public class CommandHelp
 {
