@@ -5,7 +5,7 @@ import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
@@ -44,7 +44,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 	@Override
 	public void exe(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author) throws Exception
 	{
-		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction();
+		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
 
 		if (interaction.getOption("add").isPresent())
 			exeAdd(event, guild);
@@ -75,7 +75,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 	private void exeAdd(InteractionCreateEvent event, Guild guild) throws Exception
 	{
-		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().getOption("add").get();
+		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("add").get();
 		String ip = subCmd.getOption("ip").get().getValue().get().asString();
 		int port;
 		Channel channel = null;
@@ -123,7 +123,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 	private void exeList(InteractionCreateEvent event, Guild guild, User author)
 	{
-		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().getOption("list").get();
+		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("list").get();
 		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
 		List<ObjectId> serviceIds = new ArrayList<>();
 
@@ -155,7 +155,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 
 	private void exeDelete(InteractionCreateEvent event, Guild guild)
 	{
-		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().getOption("delete").get();
+		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("delete").get();
 		List<ObjectId> serviceIds = guildServiceIds.get(guild.getId());
 		int id = (int) subCmd.getOption("id").get().getValue().get().asLong();
 

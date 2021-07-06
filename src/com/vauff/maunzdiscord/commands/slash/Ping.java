@@ -1,7 +1,7 @@
 package com.vauff.maunzdiscord.commands.slash;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;

@@ -3,7 +3,7 @@ package com.vauff.maunzdiscord.commands.templates;
 import com.vauff.maunzdiscord.objects.Await;
 import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;

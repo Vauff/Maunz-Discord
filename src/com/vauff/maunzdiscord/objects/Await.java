@@ -3,7 +3,7 @@ package com.vauff.maunzdiscord.objects;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 
 /**
  * Holds information about a message that needs a reaction/reply to continue further execution
