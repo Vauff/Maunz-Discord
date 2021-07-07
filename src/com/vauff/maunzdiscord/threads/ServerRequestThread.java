@@ -54,21 +54,15 @@ public class ServerRequestThread implements Runnable
 					server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
 					server.initialize();
 
-					try
-					{
-						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", server.getPlayers().keySet())));
-					}
-					catch (NullPointerException e)
-					{
-						Set<String> keySet = new HashSet<>();
+					Set<String> keySet = new HashSet<>();
 
-						for (SteamPlayer player : new ArrayList<>(server.getPlayers().values()))
-						{
+					for (SteamPlayer player : new ArrayList<>(server.getPlayers().values()))
+					{
+						if (!Objects.isNull(player.getName()))
 							keySet.add(player.getName());
-						}
-
-						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", keySet)));
 					}
+
+					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", keySet)));
 
 					break;
 				}
