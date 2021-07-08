@@ -2,9 +2,9 @@ package com.vauff.maunzdiscord.commands.legacy;
 
 import com.mongodb.client.FindIterable;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
-import com.vauff.maunzdiscord.objects.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -233,102 +233,216 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
 		List<Document> notificationDocs = doc.getList("notifications", Document.class);
-		String argument;
 		String[] args = messageContent.split(" ");
 
 		if (args.length == 1)
 		{
 			Util.msg(channel, user, "You need to specify an argument! See **" + Main.prefix + "help notify**");
+			return;
+		}
+
+		String argument = "";
+
+		for (int i = 1; i < args.length; i++)
+		{
+			if (!argument.equals("") && !argument.equals(" "))
+				break;
+
+			argument = args[i];
+		}
+
+		if (doc.getBoolean("mapCharacterLimit"))
+			argument = StringUtils.substring(argument, 0, 31);
+
+		boolean hasNotifications = false;
+
+		for (int i = 0; i < notificationDocs.size(); i++)
+		{
+			if (notificationDocs.get(i).getLong("userID") != user.getId().asLong() || notificationDocs.get(i).getList("notifications", String.class).size() == 0)
+				continue;
+
+			hasNotifications = true;
+			break;
+		}
+		if (argument.equalsIgnoreCase("list"))
+		{
+			if (!hasNotifications)
+			{
+				Util.msg(channel, user, "You do not have any map notifications set! Use **" + Main.prefix + "notify <mapname>** to add one");
+				return;
+			}
+
+			if (args.length == 2 || NumberUtils.isCreatable(args[2]))
+			{
+				int page;
+
+				if (args.length == 2)
+				{
+					page = 1;
+				}
+				else
+				{
+					page = Integer.parseInt(args[2]);
+				}
+
+				List<String> notifications = new ArrayList<>();
+
+				for (int i = 0; i < doc.getList("notifications", Document.class).size(); i++)
+				{
+					if (doc.getList("notifications", Document.class).get(i).getLong("userID") != user.getId().asLong())
+						continue;
+
+					notifications = doc.getList("notifications", Document.class).get(i).getList("notifications", String.class);
+					break;
+				}
+
+				Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, channel, user);
+
+				listMessages.put(user.getId(), m.getId());
+				waitForReaction(m.getId(), user.getId());
+				listPages.put(user.getId(), page);
+			}
+			else
+			{
+				Util.msg(channel, user, "Page numbers need to be numerical!");
+			}
+		}
+		else if (argument.equalsIgnoreCase("wipe"))
+		{
+			if (!hasNotifications)
+			{
+				Util.msg(channel, user, "You don't have any map notifications to wipe!");
+				return;
+			}
+
+			Message m = Util.msg(channel, user, "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+
+			waitForReaction(m.getId(), user.getId());
+			confirmationMaps.put(user.getId(), "wipe");
+			confirmationMessages.put(user.getId(), m.getId());
+
+			ArrayList<String> reactions = new ArrayList<>();
+
+			reactions.add("\u2705");
+			reactions.add("\u274C");
+			Util.addReactions(m, reactions);
+
+			ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
+
+			msgDeleterPool.schedule(() ->
+			{
+				msgDeleterPool.shutdown();
+				m.delete().block();
+			}, 120, TimeUnit.SECONDS);
 		}
 		else
 		{
-			if (doc.getBoolean("mapCharacterLimit"))
-			{
-				argument = StringUtils.substring(messageContent.split(" ")[1], 0, 31);
-			}
-			else
-			{
-				argument = messageContent.split(" ")[1];
-			}
+			boolean mapSet = false;
+			boolean mapExists = false;
+			int index = 0;
 
-			if (argument.equals(""))
+			for (int i = 0; i < notificationDocs.size(); i++)
 			{
-				Util.msg(channel, user, "Please keep to one space between arguments to prevent breakage");
-			}
-			else
-			{
-				boolean hasNotifications = false;
+				if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
+					continue;
 
-				for (int i = 0; i < notificationDocs.size(); i++)
+				List<String> notifications = notificationDocs.get(i).getList("notifications", String.class);
+
+				for (int j = 0; j < notifications.size(); j++)
 				{
-					if (notificationDocs.get(i).getLong("userID") != user.getId().asLong() || notificationDocs.get(i).getList("notifications", String.class).size() == 0)
-						continue;
+					String notification = notifications.get(j);
 
-					hasNotifications = true;
+					if (notification.equalsIgnoreCase(argument))
+					{
+						mapSet = true;
+						index = j;
+						break;
+					}
+				}
+			}
+
+			for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
+			{
+				String map = serverDoc.getList("mapDatabase", Document.class).get(i).getString("map");
+
+				if (map.equalsIgnoreCase(argument) || argument.contains("*"))
+				{
+					mapExists = true;
 					break;
 				}
-				if (argument.equalsIgnoreCase("list"))
+			}
+
+			if (mapSet)
+			{
+				removeNotification(doc, user, channel, argument, index);
+			}
+			else
+			{
+				if (mapExists)
 				{
-					if (!hasNotifications)
+					addNotification(doc, user, channel, argument);
+				}
+				else
+				{
+					String mapSuggestion = "";
+					Message m;
+					ArrayList<Long> mapDatabaseTimestamps = new ArrayList<>();
+					ArrayList<String> mapDatabase = new ArrayList<>();
+
+					for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
 					{
-						Util.msg(channel, user, "You do not have any map notifications set! Use **" + Main.prefix + "notify <mapname>** to add one");
-						return;
+						mapDatabaseTimestamps.add(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed"));
 					}
 
-					if (args.length == 2 || NumberUtils.isCreatable(args[2]))
+					Collections.sort(mapDatabaseTimestamps);
+					Collections.reverse(mapDatabaseTimestamps);
+
+					for (int i = 0; i < mapDatabaseTimestamps.size(); i++)
 					{
-						int page;
+						long timestamp = mapDatabaseTimestamps.get(i);
 
-						if (args.length == 2)
+						for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++)
 						{
-							page = 1;
+							Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(j);
+
+							if (databaseEntry.getLong("lastPlayed") == timestamp)
+								mapDatabase.add(databaseEntry.getString("map"));
 						}
-						else
+					}
+
+					for (int i = 0; i < mapDatabase.size(); i++)
+					{
+						String map = mapDatabase.get(i);
+
+						if (StringUtils.containsIgnoreCase(map, argument))
 						{
-							page = Integer.parseInt(args[2]);
-						}
-
-						List<String> notifications = new ArrayList<>();
-
-						for (int i = 0; i < doc.getList("notifications", Document.class).size(); i++)
-						{
-							if (doc.getList("notifications", Document.class).get(i).getLong("userID") != user.getId().asLong())
-								continue;
-
-							notifications = doc.getList("notifications", Document.class).get(i).getList("notifications", String.class);
+							mapSuggestion = map;
 							break;
 						}
+					}
 
-						Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, channel, user);
-
-						listMessages.put(user.getId(), m.getId());
+					if (mapSuggestion.equals(""))
+					{
+						m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 						waitForReaction(m.getId(), user.getId());
-						listPages.put(user.getId(), page);
+						confirmationMaps.put(user.getId(), argument);
+						confirmationMessages.put(user.getId(), m.getId());
+
+						ArrayList<String> reactions = new ArrayList<>();
+
+						reactions.add("\u2705");
+						reactions.add("\u274C");
+						Util.addReactions(m, reactions);
 					}
 					else
 					{
-						Util.msg(channel, user, "Page numbers need to be numerical!");
+						m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + mapSuggestion.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + argument.replace("_", "\\_"));
+						waitForReaction(m.getId(), user.getId());
+						confirmationMaps.put(user.getId(), argument);
+						confirmationSuggestionMaps.put(user.getId(), mapSuggestion);
+						confirmationMessages.put(user.getId(), m.getId());
+						Util.addNumberedReactions(m, true, 2);
 					}
-				}
-				else if (argument.equalsIgnoreCase("wipe"))
-				{
-					if (!hasNotifications)
-					{
-						Util.msg(channel, user, "You don't have any map notifications to wipe!");
-						return;
-					}
-
-					Message m = Util.msg(channel, user, "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
-
-					waitForReaction(m.getId(), user.getId());
-					confirmationMaps.put(user.getId(), "wipe");
-					confirmationMessages.put(user.getId(), m.getId());
-
-					ArrayList<String> reactions = new ArrayList<>();
-
-					reactions.add("\u2705");
-					reactions.add("\u274C");
-					Util.addReactions(m, reactions);
 
 					ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
 
@@ -337,125 +451,6 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 						msgDeleterPool.shutdown();
 						m.delete().block();
 					}, 120, TimeUnit.SECONDS);
-				}
-				else
-				{
-					boolean mapSet = false;
-					boolean mapExists = false;
-					int index = 0;
-
-					for (int i = 0; i < notificationDocs.size(); i++)
-					{
-						if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
-							continue;
-
-						List<String> notifications = notificationDocs.get(i).getList("notifications", String.class);
-
-						for (int j = 0; j < notifications.size(); j++)
-						{
-							String notification = notifications.get(j);
-
-							if (notification.equalsIgnoreCase(argument))
-							{
-								mapSet = true;
-								index = j;
-								break;
-							}
-						}
-					}
-
-					for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
-					{
-						String map = serverDoc.getList("mapDatabase", Document.class).get(i).getString("map");
-
-						if (map.equalsIgnoreCase(argument) || argument.contains("*"))
-						{
-							mapExists = true;
-							break;
-						}
-					}
-
-					if (mapSet)
-					{
-						removeNotification(doc, user, channel, argument, index);
-					}
-					else
-					{
-						if (mapExists)
-						{
-							addNotification(doc, user, channel, argument);
-						}
-						else
-						{
-							String mapSuggestion = "";
-							Message m;
-							ArrayList<Long> mapDatabaseTimestamps = new ArrayList<>();
-							ArrayList<String> mapDatabase = new ArrayList<>();
-
-							for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
-							{
-								mapDatabaseTimestamps.add(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed"));
-							}
-
-							Collections.sort(mapDatabaseTimestamps);
-							Collections.reverse(mapDatabaseTimestamps);
-
-							for (int i = 0; i < mapDatabaseTimestamps.size(); i++)
-							{
-								long timestamp = mapDatabaseTimestamps.get(i);
-
-								for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++)
-								{
-									Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(j);
-
-									if (databaseEntry.getLong("lastPlayed") == timestamp)
-										mapDatabase.add(databaseEntry.getString("map"));
-								}
-							}
-
-							for (int i = 0; i < mapDatabase.size(); i++)
-							{
-								String map = mapDatabase.get(i);
-
-								if (StringUtils.containsIgnoreCase(map, argument))
-								{
-									mapSuggestion = map;
-									break;
-								}
-							}
-
-							if (mapSuggestion.equals(""))
-							{
-								m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
-								waitForReaction(m.getId(), user.getId());
-								confirmationMaps.put(user.getId(), argument);
-								confirmationMessages.put(user.getId(), m.getId());
-
-								ArrayList<String> reactions = new ArrayList<>();
-
-								reactions.add("\u2705");
-								reactions.add("\u274C");
-								Util.addReactions(m, reactions);
-							}
-							else
-							{
-								m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + mapSuggestion.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + argument.replace("_", "\\_"));
-								waitForReaction(m.getId(), user.getId());
-								confirmationMaps.put(user.getId(), argument);
-								confirmationSuggestionMaps.put(user.getId(), mapSuggestion);
-								confirmationMessages.put(user.getId(), m.getId());
-								Util.addNumberedReactions(m, true, 2);
-							}
-
-							ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
-
-							msgDeleterPool.schedule(() ->
-							{
-								msgDeleterPool.shutdown();
-								m.delete().block();
-							}, 120, TimeUnit.SECONDS);
-						}
-					}
 				}
 			}
 		}
