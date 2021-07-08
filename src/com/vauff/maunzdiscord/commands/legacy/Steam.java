@@ -30,7 +30,8 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			try
 			{
-				Document site = Jsoup.connect("https://steamid.xyz/" + args[1]).get();
+				String url = "https://steamid.xyz/" + args[1].replace("\n", "").replace("\r", "");
+				Document site = Jsoup.connect(url).get();
 				String siteHtml = site.html();
 				String siteText = site.text();
 
