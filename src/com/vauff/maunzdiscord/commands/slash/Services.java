@@ -32,12 +32,6 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 {
-	/**
-	 * A HashMap storing guilds service object IDs, the order translated into user friendly integer IDs
-	 * Refreshed for a guild every time /services list is ran
-	 */
-	private static HashMap<Snowflake, List<ObjectId>> guildServiceIds = new HashMap<>();
-
 	private static HashMap<Snowflake, List<Document>> listServices = new HashMap<>();
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 
@@ -53,7 +47,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		else if (interaction.getOption("info").isPresent())
 			exeInfo(event, guild, channel, author);
 		else if (interaction.getOption("delete").isPresent())
-			exeDelete(event, guild);
+			exeDelete(event, author);
 		else if (interaction.getOption("edit").isPresent())
 			exeEdit(event, guild, channel, author);
 		else if (interaction.getOption("toggle").isPresent())
@@ -125,7 +119,6 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("list").get();
 		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
-		List<ObjectId> serviceIds = new ArrayList<>();
 
 		if (services.size() == 0)
 		{
@@ -133,13 +126,6 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 			return;
 		}
 
-		// We don't want to use index 0 (IDs start at 1)
-		serviceIds.add(null);
-
-		for (Document service : services)
-			serviceIds.add(service.getObjectId("_id"));
-
-		guildServiceIds.put(guild.getId(), serviceIds);
 		listServices.put(author.getId(), services);
 
 		if (subCmd.getOption("page").isPresent())
@@ -153,20 +139,19 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
 	}
 
-	private void exeDelete(InteractionCreateEvent event, Guild guild)
+	private void exeDelete(InteractionCreateEvent event, User author)
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("delete").get();
-		List<ObjectId> serviceIds = guildServiceIds.get(guild.getId());
+		List<Document> services = listServices.get(author.getId());
 		int id = (int) subCmd.getOption("id").get().getValue().get().asLong();
 
-		if (serviceIds.size() <= id)
+		if (services.size() < id)
 		{
 			event.getInteractionResponse().createFollowupMessage("That service ID doesn't exist! Have you ran **/services list** yet to generate IDs?").block();
 			return;
 		}
 
-		ObjectId serviceId = serviceIds.get(id);
-		Document service = Main.mongoDatabase.getCollection("services").find(eq("_id", serviceId)).projection(new Document("serverID", 1).append("channelID", 1)).first();
+		Document service = services.get(id - 1);
 
 		if (Objects.isNull(service))
 		{
@@ -174,7 +159,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 			return;
 		}
 
-		Main.mongoDatabase.getCollection("services").deleteOne(eq("_id", serviceId));
+		Main.mongoDatabase.getCollection("services").deleteOne(eq("_id", service.getObjectId("_id")));
 
 		Channel serviceChannel;
 		Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).projection(new Document("ip", 1).append("port", 1)).first();
