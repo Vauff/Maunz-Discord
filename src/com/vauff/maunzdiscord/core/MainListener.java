@@ -106,8 +106,6 @@ public class MainListener
 			commands.sort(Comparator.comparing(AbstractCommand::getFirstAlias));
 
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
-			Main.gateway.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
-			Main.gateway.getEventDispatcher().on(MessageDeleteEvent.class).subscribe(Logger::onMessageDelete);
 			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
 			Main.gateway.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
 			Main.gateway.getEventDispatcher().on(GuildCreateEvent.class).subscribe(Logger::onGuildCreate);

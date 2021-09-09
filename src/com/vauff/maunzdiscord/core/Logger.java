@@ -77,57 +77,6 @@ public class Logger
 		}
 	}
 
-	public static void onMessageUpdate(MessageUpdateEvent event)
-	{
-		try
-		{
-			Message message;
-
-			try
-			{
-				message = event.getMessage().block();
-			}
-			catch (ClientException e)
-			{
-				//this event can fire after an event was deleted if the msg contained a link that could be auto-embedded, in which case getMessage() will error
-				return;
-			}
-
-			if (message.getAuthor().isPresent() && !message.getContent().isEmpty())
-			{
-				String userName = message.getAuthor().get().getUsername();
-				String userId = message.getAuthor().get().getId().asString();
-				String messageID = message.getId().asString();
-				String messageContent = message.getContent();
-
-				Logger.log.debug(userName + " (" + userId + ") edited the message ID " + messageID + " to \"" + messageContent + "\"");
-			}
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
-
-	public static void onMessageDelete(MessageDeleteEvent event)
-	{
-		try
-		{
-			if (event.getMessage().isPresent() && event.getMessage().get().getAuthor().isPresent())
-			{
-				String userName = event.getMessage().get().getAuthor().get().getUsername();
-				String userId = event.getMessage().get().getAuthor().get().getId().asString();
-				String messageID = event.getMessage().get().getId().asString();
-
-				Logger.log.debug(userName + " (" + userId + ") deleted the message ID " + messageID);
-			}
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
-
 	public static void onReactionAdd(ReactionAddEvent event)
 	{
 		try
