@@ -137,7 +137,7 @@ public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 					else
 					{
-						threads = fullDesc.split("Threads</strong>: ")[1].split("<")[0];
+						threads = fullDesc.split("Threads:</strong> ")[1].split("<")[0];
 					}
 
 					ratio = fullDesc.split("Price:</strong>&nbsp;&nbsp;")[1].split("&")[0];
