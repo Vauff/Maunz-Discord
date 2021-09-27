@@ -1,8 +1,8 @@
 package com.vauff.maunzdiscord.commands.legacy;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
-import com.vauff.maunzdiscord.objects.CommandHelp;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.User;
@@ -12,7 +12,6 @@ import discord4j.rest.util.Color;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.function.Consumer;
 
 public class Colour extends AbstractLegacyCommand<MessageCreateEvent>
 {

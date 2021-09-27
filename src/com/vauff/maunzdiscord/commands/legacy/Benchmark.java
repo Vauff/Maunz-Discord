@@ -1,8 +1,8 @@
 package com.vauff.maunzdiscord.commands.legacy;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
-import com.vauff.maunzdiscord.objects.CommandHelp;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -10,8 +10,6 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
-import java.util.function.Consumer;
 
 public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 {

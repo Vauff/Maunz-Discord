@@ -1,9 +1,9 @@
 package com.vauff.maunzdiscord.commands.legacy;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
-import com.vauff.maunzdiscord.objects.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -13,7 +13,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.net.URL;
-import java.util.function.Consumer;
 
 public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 {
@@ -102,11 +101,6 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 
 					URL constructedURL = new URL(avatarURL);
-					final String finalRealName = realName;
-					final String finalCountry = country;
-					final String finalCreationDate = creationDate;
-					final String finalStatus = status;
-					final String finalBans = bans;
 
 					EmbedCreateSpec embed = EmbedCreateSpec.builder()
 						.color(Util.averageColorFromURL(constructedURL, true))
@@ -115,13 +109,13 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 						.title(nickname)
 						.url(link)
 						.addField("Name", nickname, true)
-						.addField("Real Name", finalRealName, true)
-						.addField("Country", finalCountry, true)
-						.addField("Account Created", finalCreationDate, true)
+						.addField("Real Name", realName, true)
+						.addField("Country", country, true)
+						.addField("Account Created", creationDate, true)
 						.addField("Last Logoff", lastLogoff, true)
-						.addField("Status", finalStatus, true)
+						.addField("Status", status, true)
 						.addField("Profile Visibility", visibility, true)
-						.addField("Bans", finalBans, true)
+						.addField("Bans", bans, true)
 						.addField("Steam ID", steamID, true)
 						.addField("Steam ID3", steamID3, true)
 						.addField("Steam32 ID", steam32ID, true)

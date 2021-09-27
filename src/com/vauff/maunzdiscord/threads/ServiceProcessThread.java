@@ -20,7 +20,6 @@ import org.jsoup.UnsupportedMimeTypeException;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,13 +120,12 @@ public class ServiceProcessThread implements Runnable
 					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(map, 0, 31) + ".jpg";
 				}
 
-				final String finalUrl = url;
-				final URL constructedUrl = new URL(url);
+				URL constructedUrl = new URL(url);
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(Util.averageColorFromURL(constructedUrl, true))
 					.timestamp(Instant.ofEpochMilli(timestamp))
-					.thumbnail(finalUrl)
+					.thumbnail(url)
 					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
 					.build();
 

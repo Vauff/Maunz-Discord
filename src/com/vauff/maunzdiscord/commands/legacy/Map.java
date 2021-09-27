@@ -2,9 +2,9 @@ package com.vauff.maunzdiscord.commands.legacy;
 
 import com.mongodb.client.FindIterable;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
-import com.vauff.maunzdiscord.objects.CommandHelp;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -145,13 +144,12 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 				url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(doc.getString("lastMap"), 0, 31) + ".jpg";
 			}
 
-			final String finalUrl = url;
-			final URL finalConstructedUrl = new URL(url);
+			URL constructedUrl = new URL(url);
 
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
-				.color(Util.averageColorFromURL(finalConstructedUrl, true))
+				.color(Util.averageColorFromURL(constructedUrl, true))
 				.timestamp(Instant.ofEpochMilli(serverDoc.getLong("timestamp")))
-				.thumbnail(finalUrl)
+				.thumbnail(url)
 				.description("Currently Playing: **" + doc.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + serverDoc.getString("playerCount") + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
 				.build();
 
@@ -228,18 +226,14 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + formattedMap + ".jpg";
 				}
 
-				final String finalUrl = url;
-				final URL finalConstructedUrl = new URL(url);
-				final String finalFormattedMap = formattedMap;
-				final String finalLastPlayed = lastPlayed;
-				final String finalFirstPlayed = firstPlayed;
+				URL constructedUrl = new URL(url);
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
-					.color(Util.averageColorFromURL(finalConstructedUrl, true))
-					.thumbnail(finalUrl)
-					.description("**" + finalFormattedMap + "**")
-					.addField("Last Played", finalLastPlayed, false)
-					.addField("First Played", finalFirstPlayed, false)
+					.color(Util.averageColorFromURL(constructedUrl, true))
+					.thumbnail(url)
+					.description("**" + formattedMap + "**")
+					.addField("Last Played", lastPlayed, false)
+					.addField("First Played", firstPlayed, false)
 					.build();
 
 				Util.msg(channel, user, embed);
@@ -326,18 +320,14 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 						url = "https://image.gametracker.com/images/maps/160x120/csgo/" + formattedMap + ".jpg";
 					}
 
-					final String finalUrl = url;
-					final URL finalConstructedUrl = new URL(url);
-					final String finalFormattedMap = formattedMap;
-					final String finalLastPlayed = lastPlayed;
-					final String finalFirstPlayed = firstPlayed;
+					URL constructedUrl = new URL(url);
 
 					EmbedCreateSpec embed = EmbedCreateSpec.builder()
-						.color(Util.averageColorFromURL(finalConstructedUrl, true))
-						.thumbnail(finalUrl)
-						.description("**" + finalFormattedMap + "**")
-						.addField("Last Played", finalLastPlayed, false)
-						.addField("First Played", finalFirstPlayed, false)
+						.color(Util.averageColorFromURL(constructedUrl, true))
+						.thumbnail(url)
+						.description("**" + formattedMap + "**")
+						.addField("Last Played", lastPlayed, false)
+						.addField("First Played", firstPlayed, false)
 						.build();
 
 					Util.msg(channel, user, embed);
