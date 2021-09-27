@@ -11,6 +11,7 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
+import discord4j.rest.util.AllowedMentions;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.Permission;
 import org.apache.commons.io.FileUtils;
@@ -221,7 +222,7 @@ public class Util
 	 */
 	public static Message msg(MessageChannel channel, User author, String message)
 	{
-		return channel.createMessage(message).block();
+		return channel.createMessage(message).withAllowedMentions(AllowedMentions.builder().build()).block();
 	}
 
 	/**
@@ -235,7 +236,7 @@ public class Util
 	{
 		try
 		{
-			return channel.createMessage(message).block();
+			return channel.createMessage(message).withAllowedMentions(AllowedMentions.builder().build()).block();
 		}
 		catch (ClientException e)
 		{
@@ -265,7 +266,7 @@ public class Util
 	 */
 	public static Message msg(MessageChannel channel, User author, EmbedCreateSpec embed)
 	{
-		return channel.createMessage().withEmbeds(embed).block();
+		return channel.createMessage().withEmbeds(embed).withAllowedMentions(AllowedMentions.builder().build()).block();
 	}
 
 	/**
@@ -279,7 +280,7 @@ public class Util
 	{
 		try
 		{
-			return channel.createMessage().withEmbeds(embed).block();
+			return channel.createMessage().withEmbeds(embed).withAllowedMentions(AllowedMentions.builder().build()).block();
 		}
 		catch (ClientException e)
 		{
