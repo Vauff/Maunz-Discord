@@ -77,20 +77,18 @@ public class Minecraft extends AbstractLegacyCommand<MessageCreateEvent>
 
 					String headURL = "https://cravatar.eu/helmavatar/" + status[1] + "/120";
 					URL constructedURL = new URL(headURL);
-					final String finalUuid = uuid;
 
-					Consumer<EmbedCreateSpec> embed = spec ->
-					{
-						spec.setColor(Util.averageColorFromURL(constructedURL, true));
-						spec.setThumbnail(headURL);
-						spec.setFooter("Powered by axis.iaero.me", "https://i.imgur.com/4o6K42Z.png");
-						spec.addField("Name", status[1], true);
-						spec.addField("Account Status", "Premium", true);
-						spec.addField("Migrated", StringUtils.capitalize(status[2]), true);
-						spec.addField("UUID", finalUuid, true);
-						spec.addField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true);
-						spec.addField("Raw Skin", "https://minotar.net/skin/" + status[1], true);
-					};
+					EmbedCreateSpec embed = EmbedCreateSpec.builder()
+						.color(Util.averageColorFromURL(constructedURL, true))
+						.thumbnail(headURL)
+						.footer("Powered by axis.iaero.me", "https://i.imgur.com/4o6K42Z.png")
+						.addField("Name", status[1], true)
+						.addField("Account Status", "Premium", true)
+						.addField("Migrated", StringUtils.capitalize(status[2]), true)
+						.addField("UUID", uuid, true)
+						.addField("Skin", "https://minotar.net/body/" + status[1] + "/500.png", true)
+						.addField("Raw Skin", "https://minotar.net/skin/" + status[1], true)
+						.build();
 
 					Util.msg(channel, author, embed);
 				}

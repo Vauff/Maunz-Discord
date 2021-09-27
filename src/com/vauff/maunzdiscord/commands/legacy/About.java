@@ -12,7 +12,6 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.util.Color;
 
 import java.net.JarURLConnection;
-import java.util.function.Consumer;
 
 public class About extends AbstractLegacyCommand<MessageCreateEvent>
 {
@@ -21,18 +20,17 @@ public class About extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		String buildDate = getBuildDate();
 
-		Consumer<EmbedCreateSpec> embed = spec ->
-		{
-			spec.setColor(Color.of(141, 99, 68));
-			spec.setThumbnail("https://i.imgur.com/Fzw48O4.jpg");
-			spec.setTitle("Maunz");
-			spec.setUrl("https://github.com/Vauff/Maunz-Discord");
-			spec.setDescription("Maunz is a Discord bot created by Vauff written in Java using the Discord4J library");
-			spec.addField("Version", Main.version, true);
-			spec.addField("Java Version", System.getProperty("java.version"), true);
-			spec.addField("Uptime", getUptime(), true);
-			spec.addField("Build Date", buildDate, true);
-		};
+		EmbedCreateSpec embed = EmbedCreateSpec.builder()
+			.color(Color.of(141, 99, 68))
+			.thumbnail("https://i.imgur.com/Fzw48O4.jpg")
+			.title("Maunz")
+			.url("https://github.com/Vauff/Maunz-Discord")
+			.description("Maunz is a Discord bot created by Vauff written in Java using the Discord4J library")
+			.addField("Version", Main.version, true)
+			.addField("Java Version", System.getProperty("java.version"), true)
+			.addField("Uptime", getUptime(), true)
+			.addField("Build Date", buildDate, true)
+			.build();
 
 		Util.msg(channel, author, embed);
 	}

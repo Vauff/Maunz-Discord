@@ -124,15 +124,14 @@ public class ServiceProcessThread implements Runnable
 				final String finalUrl = url;
 				final URL constructedUrl = new URL(url);
 
-				Consumer<EmbedCreateSpec> embed = spec ->
-				{
-					spec.setColor(Util.averageColorFromURL(constructedUrl, true));
-					spec.setTimestamp(Instant.ofEpochMilli(timestamp));
-					spec.setThumbnail(finalUrl);
-					spec.setDescription("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**");
-				};
+				EmbedCreateSpec embed = EmbedCreateSpec.builder()
+					.color(Util.averageColorFromURL(constructedUrl, true))
+					.timestamp(Instant.ofEpochMilli(timestamp))
+					.thumbnail(finalUrl)
+					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
+					.build();
 
-				Consumer<EmbedCreateSpec> titledEmbed = embed.andThen(spec -> spec.setTitle(name));
+				EmbedCreateSpec titledEmbed = embed.withTitle(name);
 
 				if (channelExists)
 				{

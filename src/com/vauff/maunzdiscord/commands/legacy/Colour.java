@@ -57,16 +57,13 @@ public class Colour extends AbstractLegacyCommand<MessageCreateEvent>
 				return;
 			}
 
-			final String finalUrl = url;
-
-			Consumer<EmbedCreateSpec> embed = spec ->
-			{
-				spec.setColor(color);
-				spec.setThumbnail(finalUrl);
-				spec.setTitle("Average Image Colour");
-				spec.addField("RGB", color.getRed() + ", " + color.getGreen() + ", " + color.getBlue(), true);
-				spec.addField("HTML/Hex", String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()), true);
-			};
+			EmbedCreateSpec embed = EmbedCreateSpec.builder()
+				.color(color)
+				.thumbnail(url)
+				.title("Average Image Colour")
+				.addField("RGB", color.getRed() + ", " + color.getGreen() + ", " + color.getBlue(), true)
+				.addField("HTML/Hex", String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()), true)
+				.build();
 
 			Util.msg(channel, author, embed);
 		}

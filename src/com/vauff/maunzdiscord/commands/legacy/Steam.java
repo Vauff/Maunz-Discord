@@ -108,26 +108,25 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 					final String finalStatus = status;
 					final String finalBans = bans;
 
-					Consumer<EmbedCreateSpec> embed = spec ->
-					{
-						spec.setColor(Util.averageColorFromURL(constructedURL, true));
-						spec.setThumbnail(avatarURL);
-						spec.setFooter("Powered by steamid.xyz", "https://i.imgur.com/GuXJIeX.png");
-						spec.setTitle(nickname);
-						spec.setUrl(link);
-						spec.addField("Name", nickname, true);
-						spec.addField("Real Name", finalRealName, true);
-						spec.addField("Country", finalCountry, true);
-						spec.addField("Account Created", finalCreationDate, true);
-						spec.addField("Last Logoff", lastLogoff, true);
-						spec.addField("Status", finalStatus, true);
-						spec.addField("Profile Visibility", visibility, true);
-						spec.addField("Bans", finalBans, true);
-						spec.addField("Steam ID", steamID, true);
-						spec.addField("Steam ID3", steamID3, true);
-						spec.addField("Steam32 ID", steam32ID, true);
-						spec.addField("Steam64 ID", steam64ID, true);
-					};
+					EmbedCreateSpec embed = EmbedCreateSpec.builder()
+						.color(Util.averageColorFromURL(constructedURL, true))
+						.thumbnail(avatarURL)
+						.footer("Powered by steamid.xyz", "https://i.imgur.com/GuXJIeX.png")
+						.title(nickname)
+						.url(link)
+						.addField("Name", nickname, true)
+						.addField("Real Name", finalRealName, true)
+						.addField("Country", finalCountry, true)
+						.addField("Account Created", finalCreationDate, true)
+						.addField("Last Logoff", lastLogoff, true)
+						.addField("Status", finalStatus, true)
+						.addField("Profile Visibility", visibility, true)
+						.addField("Bans", finalBans, true)
+						.addField("Steam ID", steamID, true)
+						.addField("Steam ID3", steamID3, true)
+						.addField("Steam32 ID", steam32ID, true)
+						.addField("Steam64 ID", steam64ID, true)
+						.build();
 
 					Util.msg(channel, author, embed);
 				}

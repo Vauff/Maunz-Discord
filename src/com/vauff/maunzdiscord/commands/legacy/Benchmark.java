@@ -110,26 +110,19 @@ public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 						ratio = "N/A";
 					}
 
-					final String finalLink = link;
-					final String finalSamples = samples;
-					final String finalDate = date;
-					final String finalPrice = price;
-					final String finalRatio = ratio;
-
-					Consumer<EmbedCreateSpec> embed = spec ->
-					{
-						spec.setColor(embedColor);
-						spec.setThumbnail("https://i.imgur.com/nAe3jfd.jpg");
-						spec.setTitle(name);
-						spec.setUrl(finalLink);
-						spec.setFooter("Powered by PassMark", "");
-						spec.addField("Score", score, true);
-						spec.addField("Rank", rank, true);
-						spec.addField("Samples", finalSamples, true);
-						spec.addField("First Benchmarked", finalDate, true);
-						spec.addField("Price", finalPrice, true);
-						spec.addField("Performance Per Dollar", finalRatio, true);
-					};
+					EmbedCreateSpec embed = EmbedCreateSpec.builder()
+						.color(embedColor)
+						.thumbnail("https://i.imgur.com/nAe3jfd.jpg")
+						.title(name)
+						.url(link)
+						.footer("Powered by PassMark", "")
+						.addField("Score", score, true)
+						.addField("Rank", rank, true)
+						.addField("Samples", samples, true)
+						.addField("First Benchmarked", date, true)
+						.addField("Price", price, true)
+						.addField("Performance Per Dollar", ratio, true)
+						.build();
 
 					Util.msg(channel, author, embed);
 				}
@@ -191,39 +184,26 @@ public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 						tdp = "N/A";
 					}
 
-					final String finalLink = link;
-					final String finalSamples = samples;
-					final String finalDate = date;
-					final String finalPrice = price;
-					final String finalRatio = ratio;
-					final String finalSingleThread = singleThread;
-					final String finalClockSpeed = clockSpeed;
-					final String finalTurboSpeed = turboSpeed;
-					final String finalSocket = socket;
-					final String finalTdp = tdp;
-					final String finalCores = cores;
-
-					Consumer<EmbedCreateSpec> embed = spec ->
-					{
-						spec.setColor(embedColor);
-						spec.setThumbnail("https://i.imgur.com/iKLrQQN.jpg");
-						spec.setTitle(name);
-						spec.setUrl(finalLink);
-						spec.setFooter("Powered by PassMark", "");
-						spec.addField("Score", score, true);
-						spec.addField("Single Thread Score", finalSingleThread, true);
-						spec.addField("Rank", rank, true);
-						spec.addField("Samples", finalSamples, true);
-						spec.addField("First Benchmarked", finalDate, true);
-						spec.addField("Cores", finalCores, true);
-						spec.addField("Threads", threads, true);
-						spec.addField("Price", finalPrice, true);
-						spec.addField("Performance Per Dollar", finalRatio, true);
-						spec.addField("Clock Speed", finalClockSpeed, true);
-						spec.addField("Turbo Speed", finalTurboSpeed, true);
-						spec.addField("Socket", finalSocket, true);
-						spec.addField("Typical TDP", finalTdp, true);
-					};
+					EmbedCreateSpec embed = EmbedCreateSpec.builder()
+						.color(embedColor)
+						.thumbnail("https://i.imgur.com/iKLrQQN.jpg")
+						.title(name)
+						.url(link)
+						.footer("Powered by PassMark", "")
+						.addField("Score", score, true)
+						.addField("Single Thread Score", singleThread, true)
+						.addField("Rank", rank, true)
+						.addField("Samples", samples, true)
+						.addField("First Benchmarked", date, true)
+						.addField("Cores", cores, true)
+						.addField("Threads", threads, true)
+						.addField("Price", price, true)
+						.addField("Performance Per Dollar", ratio, true)
+						.addField("Clock Speed", clockSpeed, true)
+						.addField("Turbo Speed", turboSpeed, true)
+						.addField("Socket", socket, true)
+						.addField("Typical TDP", tdp, true)
+						.build();
 
 					Util.msg(channel, author, embed);
 				}

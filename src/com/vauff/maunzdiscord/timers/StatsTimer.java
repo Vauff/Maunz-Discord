@@ -3,8 +3,8 @@ package com.vauff.maunzdiscord.timers;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-import discord4j.core.object.presence.Activity;
-import discord4j.core.object.presence.Presence;
+import discord4j.core.object.presence.ClientActivity;
+import discord4j.core.object.presence.ClientPresence;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -30,11 +30,11 @@ public class StatsTimer
 					{
 						if (Main.gateway.getGuilds().count().block() == 1L)
 						{
-							Main.gateway.updatePresence(Presence.online(Activity.playing(Main.gateway.getGuilds().count().block() + " guild"))).block();
+							Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.gateway.getGuilds().count().block() + " guild"))).block();
 						}
 						else
 						{
-							Main.gateway.updatePresence(Presence.online(Activity.playing(Main.gateway.getGuilds().count().block() + " guilds"))).block();
+							Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.gateway.getGuilds().count().block() + " guilds"))).block();
 						}
 						showingGuilds = true;
 					}
@@ -42,7 +42,7 @@ public class StatsTimer
 					{
 						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
 
-						Main.gateway.updatePresence(Presence.online(Activity.playing(json.getString("altPlayingText")))).block();
+						Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(json.getString("altPlayingText")))).block();
 						showingGuilds = false;
 					}
 				}

@@ -3,8 +3,6 @@ package com.vauff.maunzdiscord.core;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.MessageDeleteEvent;
-import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.Embed;
@@ -41,8 +39,8 @@ public class Logger
 				else
 				{
 					PrivateChannel channel = (PrivateChannel) event.getMessage().getChannel().block();
-					String recipientName = channel.getRecipients().next().block().getUsername();
-					String recipientId = channel.getRecipients().next().block().getId().asString();
+					String recipientName = channel.getRecipients().iterator().next().getUsername();
+					String recipientId = channel.getRecipients().iterator().next().getId().asString();
 
 					if (recipientId.equals(userId))
 					{

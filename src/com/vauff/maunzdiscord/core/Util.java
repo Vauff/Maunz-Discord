@@ -264,9 +264,9 @@ public class Util
 	 * @param embed   The embed
 	 * @return The message object
 	 */
-	public static Message msg(MessageChannel channel, User author, Consumer<EmbedCreateSpec> embed)
+	public static Message msg(MessageChannel channel, User author, EmbedCreateSpec embed)
 	{
-		return channel.createEmbed(embed).block();
+		return channel.createMessage().withEmbeds(embed).block();
 	}
 
 	/**
@@ -276,11 +276,11 @@ public class Util
 	 * @param embed   The embed
 	 * @return The message object
 	 */
-	public static Message msg(MessageChannel channel, Consumer<EmbedCreateSpec> embed)
+	public static Message msg(MessageChannel channel, EmbedCreateSpec embed)
 	{
 		try
 		{
-			return channel.createEmbed(embed).block();
+			return channel.createMessage().withEmbeds(embed).block();
 		}
 		catch (ClientException e)
 		{

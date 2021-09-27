@@ -148,17 +148,16 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 			final String finalUrl = url;
 			final URL finalConstructedUrl = new URL(url);
 
-			Consumer<EmbedCreateSpec> embed = spec ->
-			{
-				spec.setColor(Util.averageColorFromURL(finalConstructedUrl, true));
-				spec.setTimestamp(Instant.ofEpochMilli(serverDoc.getLong("timestamp")));
-				spec.setThumbnail(finalUrl);
-				spec.setDescription("Currently Playing: **" + doc.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + serverDoc.getString("playerCount") + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**");
-			};
+			EmbedCreateSpec embed = EmbedCreateSpec.builder()
+				.color(Util.averageColorFromURL(finalConstructedUrl, true))
+				.timestamp(Instant.ofEpochMilli(serverDoc.getLong("timestamp")))
+				.thumbnail(finalUrl)
+				.description("Currently Playing: **" + doc.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + serverDoc.getString("playerCount") + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
+				.build();
 
 			if (includeName)
 			{
-				Util.msg(channel, user, embed.andThen(spec -> spec.setTitle(serverDoc.getString("name"))));
+				Util.msg(channel, user, embed.withTitle(serverDoc.getString("name")));
 			}
 			else
 			{
@@ -235,14 +234,13 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 				final String finalLastPlayed = lastPlayed;
 				final String finalFirstPlayed = firstPlayed;
 
-				Consumer<EmbedCreateSpec> embed = spec ->
-				{
-					spec.setColor(Util.averageColorFromURL(finalConstructedUrl, true));
-					spec.setThumbnail(finalUrl);
-					spec.setDescription("**" + finalFormattedMap + "**");
-					spec.addField("Last Played", finalLastPlayed, false);
-					spec.addField("First Played", finalFirstPlayed, false);
-				};
+				EmbedCreateSpec embed = EmbedCreateSpec.builder()
+					.color(Util.averageColorFromURL(finalConstructedUrl, true))
+					.thumbnail(finalUrl)
+					.description("**" + finalFormattedMap + "**")
+					.addField("Last Played", finalLastPlayed, false)
+					.addField("First Played", finalFirstPlayed, false)
+					.build();
 
 				Util.msg(channel, user, embed);
 			}
@@ -334,14 +332,13 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 					final String finalLastPlayed = lastPlayed;
 					final String finalFirstPlayed = firstPlayed;
 
-					Consumer<EmbedCreateSpec> embed = spec ->
-					{
-						spec.setColor(Util.averageColorFromURL(finalConstructedUrl, true));
-						spec.setThumbnail(finalUrl);
-						spec.setDescription("**" + finalFormattedMap + "**");
-						spec.addField("Last Played", finalLastPlayed, false);
-						spec.addField("First Played", finalFirstPlayed, false);
-					};
+					EmbedCreateSpec embed = EmbedCreateSpec.builder()
+						.color(Util.averageColorFromURL(finalConstructedUrl, true))
+						.thumbnail(finalUrl)
+						.description("**" + finalFormattedMap + "**")
+						.addField("Last Played", finalLastPlayed, false)
+						.addField("First Played", finalFirstPlayed, false)
+						.build();
 
 					Util.msg(channel, user, embed);
 				}

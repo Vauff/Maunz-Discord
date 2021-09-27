@@ -5,13 +5,13 @@ import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
-import discord4j.rest.util.ApplicationCommandOptionType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,21 +71,21 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 	public final CommandHelp[] getHelp()
 	{
 		if (getCommand().options().isAbsent())
-			return new CommandHelp[] { new CommandHelp("", getCommand().description()) };
+			return new CommandHelp[] { new CommandHelp("", getCommand().description().get()) };
 
 		List<CommandHelp> commandHelps = new ArrayList<>();
-		CommandHelp commandHelp = new CommandHelp("", getCommand().description());
+		CommandHelp commandHelp = new CommandHelp("", getCommand().description().get());
 		boolean noSubCmds = true;
 
 		for (ApplicationCommandOptionData option : getCommand().options().get())
 		{
-			if (option.type() == ApplicationCommandOptionType.SUB_COMMAND.getValue())
+			if (option.type() == ApplicationCommandOption.Type.SUB_COMMAND.getValue())
 			{
 				noSubCmds = false;
 
 				commandHelps.add(parseHelpSubCommand(option, null));
 			}
-			else if (option.type() == ApplicationCommandOptionType.SUB_COMMAND_GROUP.getValue())
+			else if (option.type() == ApplicationCommandOption.Type.SUB_COMMAND_GROUP.getValue())
 			{
 				noSubCmds = false;
 
