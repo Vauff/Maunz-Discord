@@ -13,6 +13,7 @@ import com.vauff.maunzdiscord.timers.StatsTimer;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -103,6 +104,7 @@ public class MainListener
 			commands.addAll(slashCommands);
 			commands.sort(Comparator.comparing(AbstractCommand::getFirstAlias));
 
+			Main.gateway.getEventDispatcher().on(ChatInputInteractionEvent.class).subscribe(Logger::onChatInputInteraction);
 			Main.gateway.getEventDispatcher().on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
 			Main.gateway.getEventDispatcher().on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
 			Main.gateway.getEventDispatcher().on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
