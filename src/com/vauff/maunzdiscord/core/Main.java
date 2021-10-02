@@ -6,13 +6,14 @@ import com.vauff.maunzdiscord.commands.legacy.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.timers.ServerTimer;
+import com.vauff.maunzdiscord.timers.StatsTimer;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
-import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
@@ -27,6 +28,8 @@ import reactor.core.publisher.Mono;
 import java.io.File;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Main
 {
@@ -125,10 +128,9 @@ public class Main
 	{
 		gateway = DiscordClient.builder(token).build().gateway().withEventDispatcher(eventDispatcher ->
 			{
-				var event1 = eventDispatcher.on(ReadyEvent.class).doOnNext(event -> MainListener.onReady());
-				var event2 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
-				var event3 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
-				return Mono.when(event1, event2, event3);
+				var event1 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
+				var event2 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
+				return Mono.when(event1, event2);
 			})
 			.login().block();
 
@@ -188,6 +190,9 @@ public class Main
 		gateway.on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
 		gateway.on(InteractionCreateEvent.class).subscribe(MainListener::onInteractionCreate);
 		gateway.on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
+
+		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
+		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
 
 		// Keep app alive by waiting for disconnect
 		gateway.onDisconnect().block();

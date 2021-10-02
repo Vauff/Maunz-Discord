@@ -4,8 +4,6 @@ import com.mongodb.client.MongoCollection;
 import com.vauff.maunzdiscord.threads.InteractionCreateThread;
 import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
-import com.vauff.maunzdiscord.timers.ServerTimer;
-import com.vauff.maunzdiscord.timers.StatsTimer;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
@@ -17,8 +15,6 @@ import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -33,28 +29,6 @@ public class MainListener
 	 * Holds the timestamp of the last time a user was given the command cooldown message
 	 */
 	public static HashMap<Snowflake, Long> cooldownMessageTimestamps = new HashMap<>();
-
-	/**
-	 * Whether onReady has been fired during this bot session
-	 */
-	private static boolean onReadyFired = false;
-
-	public static void onReady()
-	{
-		try
-		{
-			if (onReadyFired)
-				return;
-
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
-			onReadyFired = true;
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
 
 	public static void onGuildCreate(GuildCreateEvent event)
 	{
