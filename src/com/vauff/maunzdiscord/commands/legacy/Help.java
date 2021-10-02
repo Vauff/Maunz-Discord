@@ -4,7 +4,6 @@ import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
@@ -37,7 +36,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			ArrayList<String> helpEntries = new ArrayList<>();
 
-			for (AbstractCommand command : MainListener.commands)
+			for (AbstractCommand command : Main.commands)
 			{
 				if (Objects.isNull(command.getHelp()))
 					continue;
@@ -69,7 +68,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 				arg = Main.prefix + arg;
 
 			rootIteration:
-			for (AbstractCommand command : MainListener.commands)
+			for (AbstractCommand command : Main.commands)
 			{
 				if (Objects.isNull(command.getHelp()))
 					continue;
@@ -115,7 +114,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 		int pageChange = 0;
 		ArrayList<String> helpEntries = new ArrayList<>();
 
-		for (AbstractCommand command : MainListener.commands)
+		for (AbstractCommand command : Main.commands)
 		{
 			if (Objects.isNull(command.getHelp()))
 				continue;

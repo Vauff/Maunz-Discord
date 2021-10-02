@@ -53,7 +53,7 @@ public class MessageCreateThread implements Runnable
 
 			if (cmdName.startsWith(Main.prefix))
 			{
-				for (AbstractLegacyCommand<MessageCreateEvent> cmd : MainListener.legacyCommands)
+				for (AbstractLegacyCommand<MessageCreateEvent> cmd : Main.legacyCommands)
 				{
 					for (String s : cmd.getAliases())
 					{

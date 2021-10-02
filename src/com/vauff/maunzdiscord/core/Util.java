@@ -41,11 +41,6 @@ import static com.mongodb.client.model.Filters.eq;
 public class Util
 {
 	/**
-	 * The Discord API token of the bot, gets set in {@link Main#main(String[])}
-	 */
-	public static String token;
-
-	/**
 	 * @return The path at which the running jar file is located
 	 * @throws Exception
 	 */

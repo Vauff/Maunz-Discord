@@ -25,7 +25,7 @@ public class Logger
 		String userName = event.getInteraction().getUser().getUsername();
 		String userId = event.getInteraction().getUser().getId().asString();
 		String channelId = event.getInteraction().getChannel().block().getId().asString();
-		String channelName = ((GuildChannel)event.getInteraction().getChannel().block()).getName();
+		String channelName = ((GuildChannel) event.getInteraction().getChannel().block()).getName();
 		String guildName = event.getInteraction().getGuild().block().getName();
 		String guildId = event.getInteraction().getGuild().block().getId().asString();
 		String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
@@ -218,7 +218,7 @@ public class Logger
 						arguments += " " + option.getValue().get().asBoolean();
 						break;
 					case CHANNEL:
-						arguments += " #" + ((GuildChannel)option.getValue().get().asChannel().block()).getName();
+						arguments += " #" + ((GuildChannel) option.getValue().get().asChannel().block()).getName();
 						break;
 					case INTEGER:
 						arguments += " " + option.getValue().get().asLong();

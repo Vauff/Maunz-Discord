@@ -2,15 +2,31 @@ package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.vauff.maunzdiscord.commands.legacy.*;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.guild.GuildDeleteEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.event.domain.message.ReactionRemoveEvent;
+import discord4j.rest.RestClient;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.util.Comparator;
+import java.util.LinkedList;
 
 public class Main
 {
@@ -18,6 +34,18 @@ public class Main
 	public static MongoDatabase mongoDatabase;
 	public static String version = "r38";
 	public static String prefix;
+
+	/**
+	 * A watch to keep track of the uptime of the bot
+	 */
+	public static StopWatch uptime = new StopWatch();
+
+	/**
+	 * Lists that hold all legacy/slash commands
+	 */
+	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
+	public static LinkedList<AbstractSlashCommand<InteractionCreateEvent>> slashCommands = new LinkedList<>();
+	public static LinkedList<AbstractCommand> commands = new LinkedList<>();
 
 	public static void main(String[] args)
 	{
@@ -69,7 +97,6 @@ public class Main
 			}
 
 			Logger.log.info("Starting Maunz-Discord " + version + "...");
-			Util.token = json.getString("discordToken");
 			Logger.log.info("Connecting to MongoDB (" + json.getJSONObject("mongoDatabase").getString("connectionString") + ")");
 
 			try
@@ -83,15 +110,86 @@ public class Main
 				System.exit(1);
 			}
 
-			DiscordClient client = DiscordClient.builder(Util.token).build();
-
-			gateway = client.login().block();
-			gateway.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> MainListener.onReady());
-			gateway.onDisconnect().block();
+			buildBot(json.getString("discordToken"));
 		}
 		catch (Exception e)
 		{
 			Logger.log.error("", e);
 		}
+	}
+
+	/**
+	 * Builds and sets up the primary Discord4J bot object
+	 */
+	public static void buildBot(String token) throws Exception
+	{
+		gateway = DiscordClient.builder(token).build().gateway().withEventDispatcher(eventDispatcher ->
+			{
+				var event1 = eventDispatcher.on(ReadyEvent.class).doOnNext(event -> MainListener.onReady());
+				var event2 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
+				var event3 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
+				return Mono.when(event1, event2, event3);
+			})
+			.login().block();
+
+		uptime.start();
+
+		JSONArray devGuilds = new JSONObject(Util.getFileContents("config.json")).getJSONArray("devGuilds");
+		RestClient restClient = gateway.getRestClient();
+
+		if (devGuilds.length() > 0)
+		{
+			for (int i = 0; i < devGuilds.length(); i++)
+			{
+				for (AbstractSlashCommand<InteractionCreateEvent> cmd : slashCommands)
+					restClient.getApplicationService().createGuildApplicationCommand(restClient.getApplicationId().block(), devGuilds.getLong(i), cmd.getCommand()).block();
+			}
+		}
+		else
+		{
+			for (AbstractSlashCommand<InteractionCreateEvent> cmd : slashCommands)
+				restClient.getApplicationService().createGlobalApplicationCommand(restClient.getApplicationId().block(), cmd.getCommand()).block();
+		}
+
+		legacyCommands.add(new About());
+		legacyCommands.add(new Benchmark());
+		legacyCommands.add(new Blacklist());
+		legacyCommands.add(new Changelog());
+		legacyCommands.add(new Colour());
+		legacyCommands.add(new Disable());
+		legacyCommands.add(new Discord());
+		legacyCommands.add(new Enable());
+		legacyCommands.add(new Help());
+		legacyCommands.add(new IsItDown());
+		legacyCommands.add(new Map());
+		legacyCommands.add(new Minecraft());
+		legacyCommands.add(new Notify());
+		legacyCommands.add(new Ping());
+		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Ping());
+		legacyCommands.add(new Players());
+		legacyCommands.add(new Reddit());
+		legacyCommands.add(new Restart());
+		legacyCommands.add(new Say());
+		legacyCommands.add(new Services());
+		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Services());
+		legacyCommands.add(new Source());
+		legacyCommands.add(new Steam());
+		legacyCommands.add(new Stop());
+
+		commands.addAll(legacyCommands);
+		commands.addAll(slashCommands);
+		commands.sort(Comparator.comparing(AbstractCommand::getFirstAlias));
+
+		gateway.on(ChatInputInteractionEvent.class).subscribe(Logger::onChatInputInteraction);
+		gateway.on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
+		gateway.on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
+		gateway.on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
+		gateway.on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
+		gateway.on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
+		gateway.on(InteractionCreateEvent.class).subscribe(MainListener::onInteractionCreate);
+		gateway.on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
+
+		// Keep app alive by waiting for disconnect
+		gateway.onDisconnect().block();
 	}
 }

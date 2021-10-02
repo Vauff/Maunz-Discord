@@ -3,7 +3,6 @@ package com.vauff.maunzdiscord.commands.legacy;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
@@ -107,7 +106,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 					else
 					{
-						for (AbstractCommand cmd : MainListener.commands)
+						for (AbstractCommand cmd : Main.commands)
 						{
 							for (String s : cmd.getAliases())
 							{
@@ -199,7 +198,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 						}
 						else
 						{
-							for (AbstractLegacyCommand<MessageCreateEvent> cmd : MainListener.legacyCommands)
+							for (AbstractLegacyCommand<MessageCreateEvent> cmd : Main.legacyCommands)
 							{
 								for (String s : cmd.getAliases())
 								{

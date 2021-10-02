@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.commands.legacy;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -61,9 +60,9 @@ public class About extends AbstractLegacyCommand<MessageCreateEvent>
 	 */
 	private static String getUptime()
 	{
-		MainListener.uptime.split();
+		Main.uptime.split();
 
-		String uptimeRaw = MainListener.uptime.toSplitString().split("\\.")[0];
+		String uptimeRaw = Main.uptime.toSplitString().split("\\.")[0];
 		String secondText = "seconds";
 		String minuteText = "minutes";
 		String hourText = "hours";

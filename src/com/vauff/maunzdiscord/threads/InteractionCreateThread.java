@@ -52,7 +52,7 @@ public class InteractionCreateThread implements Runnable
 			MessageChannel channel = event.getInteraction().getChannel().block();
 			Guild guild = event.getInteraction().getGuild().block();
 
-			for (AbstractSlashCommand<InteractionCreateEvent> cmd : MainListener.slashCommands)
+			for (AbstractSlashCommand<InteractionCreateEvent> cmd : Main.slashCommands)
 			{
 				if (!cmdName.equalsIgnoreCase(cmd.getName()))
 					continue;
