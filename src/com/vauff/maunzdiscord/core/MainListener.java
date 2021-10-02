@@ -32,18 +32,25 @@ public class MainListener
 
 	public static void onGuildCreate(GuildCreateEvent event)
 	{
-		long guildId = event.getGuild().getId().asLong();
-		String guildName = event.getGuild().getName();
-		MongoCollection<Document> col = Main.mongoDatabase.getCollection("guilds");
+		try
+		{
+			long guildId = event.getGuild().getId().asLong();
+			String guildName = event.getGuild().getName();
+			MongoCollection<Document> col = Main.mongoDatabase.getCollection("guilds");
 
-		if (col.countDocuments(eq("guildId", guildId)) == 0L)
-		{
-			Document doc = new Document("guildId", guildId).append("enabled", true).append("lastGuildName", guildName).append("blacklist", new ArrayList());
-			col.insertOne(doc);
+			if (col.countDocuments(eq("guildId", guildId)) == 0L)
+			{
+				Document doc = new Document("guildId", guildId).append("enabled", true).append("lastGuildName", guildName).append("blacklist", new ArrayList());
+				col.insertOne(doc);
+			}
+			else if (!col.find(eq("guildId", guildId)).first().getString("lastGuildName").equals(guildName))
+			{
+				col.updateOne(eq("guildId", guildId), new Document("$set", new Document("lastGuildName", guildName)));
+			}
 		}
-		else if (!col.find(eq("guildId", guildId)).first().getString("lastGuildName").equals(guildName))
+		catch (Exception e)
 		{
-			col.updateOne(eq("guildId", guildId), new Document("$set", new Document("lastGuildName", guildName)));
+			Logger.log.error("", e);
 		}
 	}
 
