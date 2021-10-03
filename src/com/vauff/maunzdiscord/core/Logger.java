@@ -55,54 +55,51 @@ public class Logger
 
 	private static void logMessage(Message msg)
 	{
-		if (msg.getAuthor().isPresent())
+		String userName = msg.getAuthor().get().getUsername();
+		String userId = msg.getAuthor().get().getId().asString();
+		String channelId = msg.getChannelId().asString();
+		String messageID = msg.getId().asString();
+		String logMsg;
+
+		if (!(msg.getChannel().block() instanceof PrivateChannel))
 		{
-			String userName = msg.getAuthor().get().getUsername();
-			String userId = msg.getAuthor().get().getId().asString();
-			String channelId = msg.getChannelId().asString();
-			String messageID = msg.getId().asString();
-			String logMsg;
+			String channelName = ((GuildChannel) msg.getChannel().block()).getName();
+			String guildName = msg.getGuild().block().getName();
+			String guildId = msg.getGuild().block().getId().asString();
 
-			if (!(msg.getChannel().block() instanceof PrivateChannel))
+			logMsg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | ";
+		}
+		else
+		{
+			PrivateChannel channel = (PrivateChannel) msg.getChannel().block();
+			String recipientName = channel.getRecipients().iterator().next().getUsername();
+			String recipientId = channel.getRecipients().iterator().next().getId().asString();
+
+			if (recipientId.equals(userId))
 			{
-				String channelName = ((GuildChannel) msg.getChannel().block()).getName();
-				String guildName = msg.getGuild().block().getName();
-				String guildId = msg.getGuild().block().getId().asString();
-
-				logMsg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | ";
+				logMsg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") | ";
 			}
 			else
 			{
-				PrivateChannel channel = (PrivateChannel) msg.getChannel().block();
-				String recipientName = channel.getRecipients().iterator().next().getUsername();
-				String recipientId = channel.getRecipients().iterator().next().getId().asString();
-
-				if (recipientId.equals(userId))
-				{
-					logMsg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") | ";
-				}
-				else
-				{
-					logMsg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") | ";
-				}
+				logMsg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") | ";
 			}
-
-			if (!msg.getContent().isEmpty())
-			{
-				logMsg += msg.getContent();
-			}
-
-			for (Attachment attachment : msg.getAttachments())
-			{
-				logMsg += "[Attachment " + attachment.getUrl() + "]";
-			}
-			for (Embed embed : msg.getEmbeds())
-			{
-				logMsg += "[Embed]";
-			}
-
-			Logger.log.debug(logMsg);
 		}
+
+		if (!msg.getContent().isEmpty())
+		{
+			logMsg += msg.getContent();
+		}
+
+		for (Attachment attachment : msg.getAttachments())
+		{
+			logMsg += "[Attachment " + attachment.getUrl() + "]";
+		}
+		for (Embed embed : msg.getEmbeds())
+		{
+			logMsg += "[Embed]";
+		}
+
+		Logger.log.debug(logMsg);
 	}
 
 	public static void onReactionAdd(ReactionAddEvent event)
