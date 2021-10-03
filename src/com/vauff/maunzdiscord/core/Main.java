@@ -13,7 +13,6 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -48,7 +47,7 @@ public class Main
 	 * Lists that hold all legacy/slash commands
 	 */
 	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
-	public static LinkedList<AbstractSlashCommand<InteractionCreateEvent>> slashCommands = new LinkedList<>();
+	public static LinkedList<AbstractSlashCommand<ChatInputInteractionEvent>> slashCommands = new LinkedList<>();
 	public static LinkedList<AbstractCommand> commands = new LinkedList<>();
 
 	public static void main(String[] args)
@@ -144,13 +143,13 @@ public class Main
 		{
 			for (int i = 0; i < devGuilds.length(); i++)
 			{
-				for (AbstractSlashCommand<InteractionCreateEvent> cmd : slashCommands)
+				for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : slashCommands)
 					restClient.getApplicationService().createGuildApplicationCommand(restClient.getApplicationId().block(), devGuilds.getLong(i), cmd.getCommand()).block();
 			}
 		}
 		else
 		{
-			for (AbstractSlashCommand<InteractionCreateEvent> cmd : slashCommands)
+			for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : slashCommands)
 				restClient.getApplicationService().createGlobalApplicationCommand(restClient.getApplicationId().block(), cmd.getCommand()).block();
 		}
 
@@ -190,7 +189,7 @@ public class Main
 		gateway.on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
 		gateway.on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
 		gateway.on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
-		gateway.on(InteractionCreateEvent.class).subscribe(MainListener::onInteractionCreate);
+		gateway.on(ChatInputInteractionEvent.class).subscribe(MainListener::onChatInputInteraction);
 		gateway.on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
 
 		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);

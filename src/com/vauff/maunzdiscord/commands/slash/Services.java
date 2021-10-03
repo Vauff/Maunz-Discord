@@ -5,7 +5,7 @@ import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
@@ -30,13 +30,13 @@ import java.util.Objects;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
-public class Services extends AbstractSlashCommand<InteractionCreateEvent>
+public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	private static HashMap<Snowflake, List<Document>> listServices = new HashMap<>();
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 
 	@Override
-	public void exe(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
 
@@ -55,7 +55,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent reactionEvent, InteractionCreateEvent interactionEvent, Message message)
+	public void onReactionAdd(ReactionAddEvent reactionEvent, ChatInputInteractionEvent interactionEvent, Message message)
 	{
 		String emoji = reactionEvent.getEmoji().asUnicodeEmoji().get().getRaw();
 		User user = reactionEvent.getUser().block();
@@ -67,7 +67,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 			runListSelection(interactionEvent, user, listPages.get(user.getId()) - 1);
 	}
 
-	private void exeAdd(InteractionCreateEvent event, Guild guild) throws Exception
+	private void exeAdd(ChatInputInteractionEvent event, Guild guild) throws Exception
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("add").get();
 		String ip = subCmd.getOption("ip").get().getValue().get().asString();
@@ -115,7 +115,7 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 			event.getInteractionResponse().createFollowupMessage("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
 	}
 
-	private void exeList(InteractionCreateEvent event, Guild guild, User author)
+	private void exeList(ChatInputInteractionEvent event, Guild guild, User author)
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("list").get();
 		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
@@ -134,12 +134,12 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 			runListSelection(event, author, 1);
 	}
 
-	private void exeInfo(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
+	private void exeInfo(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
 	{
 		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
 	}
 
-	private void exeDelete(InteractionCreateEvent event, User author)
+	private void exeDelete(ChatInputInteractionEvent event, User author)
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("delete").get();
 		List<Document> services = listServices.get(author.getId());
@@ -180,17 +180,17 @@ public class Services extends AbstractSlashCommand<InteractionCreateEvent>
 		event.getInteractionResponse().createFollowupMessage(msg).block();
 	}
 
-	private void exeEdit(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
+	private void exeEdit(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
 	{
 		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
 	}
 
-	private void exeToggle(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author)
+	private void exeToggle(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
 	{
 		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
 	}
 
-	private void runListSelection(InteractionCreateEvent event, User author, int page)
+	private void runListSelection(ChatInputInteractionEvent event, User author, int page)
 	{
 		ArrayList<String> servicesDisplay = new ArrayList<>();
 		int id = 0;

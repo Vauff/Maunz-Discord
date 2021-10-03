@@ -6,7 +6,7 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -17,13 +17,13 @@ import java.util.Random;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class InteractionCreateThread implements Runnable
+public class ChatInputInteractionThread implements Runnable
 {
-	private InteractionCreateEvent event;
+	private ChatInputInteractionEvent event;
 	private Thread thread;
 	private String name;
 
-	public InteractionCreateThread(InteractionCreateEvent passedEvent, String passedName)
+	public ChatInputInteractionThread(ChatInputInteractionEvent passedEvent, String passedName)
 	{
 		name = passedName;
 		event = passedEvent;
@@ -52,7 +52,7 @@ public class InteractionCreateThread implements Runnable
 			MessageChannel channel = event.getInteraction().getChannel().block();
 			Guild guild = event.getInteraction().getGuild().block();
 
-			for (AbstractSlashCommand<InteractionCreateEvent> cmd : Main.slashCommands)
+			for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : Main.slashCommands)
 			{
 				if (!cmdName.equalsIgnoreCase(cmd.getName()))
 					continue;

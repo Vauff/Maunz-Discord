@@ -1,16 +1,16 @@
 package com.vauff.maunzdiscord.commands.slash;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
-public class Ping extends AbstractSlashCommand<InteractionCreateEvent>
+public class Ping extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(InteractionCreateEvent event, Guild guild, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
 	{
 		event.getInteractionResponse().createFollowupMessage("Pong!").block();
 	}

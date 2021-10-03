@@ -1,7 +1,7 @@
 package com.vauff.maunzdiscord.core;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -467,10 +467,10 @@ public class Util
 	 * @param codeBlock         Whether to surround all the entries in a code block or not
 	 * @param numberedReactions Whether to add numbered reactions for each entry
 	 * @param cancellable       Whether to add an X emoji to close the page
-	 * @param event             The InteractionCreateEvent that is being responded to
+	 * @param event             The ChatInputInteractionEvent that is being responded to
 	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
 	 */
-	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, InteractionCreateEvent event)
+	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, ChatInputInteractionEvent event)
 	{
 		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, null, null, event);
 	}
@@ -495,7 +495,7 @@ public class Util
 		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, channel, user, null);
 	}
 
-	private static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user, InteractionCreateEvent event)
+	private static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user, ChatInputInteractionEvent event)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{

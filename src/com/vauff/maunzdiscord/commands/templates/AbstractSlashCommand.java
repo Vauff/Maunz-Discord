@@ -3,7 +3,7 @@ package com.vauff.maunzdiscord.commands.templates;
 import com.vauff.maunzdiscord.objects.Await;
 import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Guild;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> extends AbstractCommand
+public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> extends AbstractCommand
 {
 	/**
 	 * Executes this command
@@ -28,13 +28,13 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 	public abstract void exe(M interaction, Guild guild, MessageChannel channel, User author) throws Exception;
 
 	/**
-	 * Gets called when a reaction is added to a message defined prior in {@link AbstractSlashCommand#waitForReaction(Snowflake, Snowflake, InteractionCreateEvent)}
+	 * Gets called when a reaction is added to a message defined prior in {@link AbstractSlashCommand#waitForReaction(Snowflake, Snowflake, ChatInputInteractionEvent)}
 	 *
 	 * @param reactionEvent    The event holding information about the added reaction
 	 * @param interactionEvent The interaction event that triggered this
 	 * @param message          The Message that was reacted to
 	 */
-	public void onReactionAdd(ReactionAddEvent reactionEvent, InteractionCreateEvent interactionEvent, Message message) throws Exception
+	public void onReactionAdd(ReactionAddEvent reactionEvent, ChatInputInteractionEvent interactionEvent, Message message) throws Exception
 	{
 	}
 
@@ -56,7 +56,7 @@ public abstract class AbstractSlashCommand<M extends InteractionCreateEvent> ext
 	 * @param messageID The message which should get reacted on
 	 * @param userID    The user who triggered this command
 	 */
-	public final void waitForReaction(Snowflake messageID, Snowflake userID, InteractionCreateEvent event)
+	public final void waitForReaction(Snowflake messageID, Snowflake userID, ChatInputInteractionEvent event)
 	{
 		AWAITED.put(messageID, new Await(userID, this, event));
 	}
