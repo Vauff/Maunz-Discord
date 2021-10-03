@@ -4,6 +4,7 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.Embed;
@@ -29,69 +30,78 @@ public class Logger
 		String guildName = event.getInteraction().getGuild().block().getName();
 		String guildId = event.getInteraction().getGuild().block().getId().asString();
 		String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
-		String msg;
 
-		msg = userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions());
-		Logger.log.debug(msg);
+		Logger.log.debug(userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
 	}
 
 	public static void onMessageCreate(MessageCreateEvent event)
 	{
 		try
 		{
-			if (event.getMessage().getAuthor().isPresent())
-			{
-				String userName = event.getMessage().getAuthor().get().getUsername();
-				String userId = event.getMessage().getAuthor().get().getId().asString();
-				String channelId = event.getMessage().getChannelId().asString();
-				String messageID = event.getMessage().getId().asString();
-				String msg;
-
-				if (!(event.getMessage().getChannel().block() instanceof PrivateChannel))
-				{
-					String channelName = ((GuildChannel) event.getMessage().getChannel().block()).getName();
-					String guildName = event.getGuild().block().getName();
-					String guildId = event.getGuild().block().getId().asString();
-
-					msg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | ";
-				}
-				else
-				{
-					PrivateChannel channel = (PrivateChannel) event.getMessage().getChannel().block();
-					String recipientName = channel.getRecipients().iterator().next().getUsername();
-					String recipientId = channel.getRecipients().iterator().next().getId().asString();
-
-					if (recipientId.equals(userId))
-					{
-						msg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") | ";
-					}
-					else
-					{
-						msg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") | ";
-					}
-				}
-
-				// This doesn't seem to work with interaction response messages? Needs further investigation because it should work...
-				if (!event.getMessage().getContent().isEmpty())
-				{
-					msg += event.getMessage().getContent();
-				}
-
-				for (Attachment attachment : event.getMessage().getAttachments())
-				{
-					msg += "[Attachment " + attachment.getUrl() + "]";
-				}
-				for (Embed embed : event.getMessage().getEmbeds())
-				{
-					msg += "[Embed]";
-				}
-
-				Logger.log.debug(msg);
-			}
+			if (event.getMessage().getAuthor().isPresent() && !event.getMessage().getFlags().contains(Message.Flag.LOADING))
+				logMessage(event.getMessage());
 		}
 		catch (Exception e)
 		{
 			Logger.log.error("", e);
+		}
+	}
+
+	public static void onMessageUpdate(MessageUpdateEvent event)
+	{
+		if (event.getMessage().block().getAuthor().isPresent() && event.getMessage().block().getAuthor().get().equals(Main.gateway.getSelf().block()))
+			logMessage(event.getMessage().block());
+	}
+
+	private static void logMessage(Message msg)
+	{
+		if (msg.getAuthor().isPresent())
+		{
+			String userName = msg.getAuthor().get().getUsername();
+			String userId = msg.getAuthor().get().getId().asString();
+			String channelId = msg.getChannelId().asString();
+			String messageID = msg.getId().asString();
+			String logMsg;
+
+			if (!(msg.getChannel().block() instanceof PrivateChannel))
+			{
+				String channelName = ((GuildChannel) msg.getChannel().block()).getName();
+				String guildName = msg.getGuild().block().getName();
+				String guildId = msg.getGuild().block().getId().asString();
+
+				logMsg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | ";
+			}
+			else
+			{
+				PrivateChannel channel = (PrivateChannel) msg.getChannel().block();
+				String recipientName = channel.getRecipients().iterator().next().getUsername();
+				String recipientId = channel.getRecipients().iterator().next().getId().asString();
+
+				if (recipientId.equals(userId))
+				{
+					logMsg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") | ";
+				}
+				else
+				{
+					logMsg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") | ";
+				}
+			}
+
+			if (!msg.getContent().isEmpty())
+			{
+				logMsg += msg.getContent();
+			}
+
+			for (Attachment attachment : msg.getAttachments())
+			{
+				logMsg += "[Attachment " + attachment.getUrl() + "]";
+			}
+			for (Embed embed : msg.getEmbeds())
+			{
+				logMsg += "[Embed]";
+			}
+
+			Logger.log.debug(logMsg);
 		}
 	}
 

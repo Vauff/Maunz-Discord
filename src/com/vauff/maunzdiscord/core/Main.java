@@ -15,6 +15,7 @@ import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.rest.RestClient;
@@ -184,6 +185,7 @@ public class Main
 
 		gateway.on(ChatInputInteractionEvent.class).subscribe(Logger::onChatInputInteraction);
 		gateway.on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
+		gateway.on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
 		gateway.on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
 		gateway.on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
 		gateway.on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
