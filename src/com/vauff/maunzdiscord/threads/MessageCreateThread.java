@@ -112,7 +112,16 @@ public class MessageCreateThread implements Runnable
 						{
 							try
 							{
-								channel.type().block();
+								try
+								{
+									channel.type().block();
+								}
+								catch (ClientException e)
+								{
+									// Apparently Discord will randomly 403 this endpoint whenever they feel like it
+									if (e.getStatus().code() != 403)
+										throw e;
+								}
 
 								//if msg shows up too quickly, message history can somehow get out of order
 								Thread.sleep(250);
