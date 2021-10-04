@@ -215,6 +215,9 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 			if (!Objects.isNull(serviceChannel))
 				msg += " tracking in " + serviceChannel.getMention();
 
+			if (!service.getBoolean("enabled"))
+				msg += " (disabled)";
+
 			servicesDisplay.add(msg);
 		}
 
