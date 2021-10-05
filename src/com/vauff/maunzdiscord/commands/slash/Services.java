@@ -145,7 +145,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		List<Document> services = listServices.get(author.getId());
 		int id = (int) subCmd.getOption("id").get().getValue().get().asLong();
 
-		if (services.size() < id)
+		if (!listServices.containsKey(author.getId()) || services.size() < id)
 		{
 			event.getInteractionResponse().createFollowupMessage("That service ID doesn't exist! Have you ran **/services list** yet to generate IDs?").block();
 			return;
