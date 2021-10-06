@@ -99,11 +99,11 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (matchFound)
 			{
-				Util.msg(channel, author, list);
+				Util.msg(channel, list);
 			}
 			else
 			{
-				Util.msg(channel, author, "The command **" + arg + "** either doesn't exist, or you don't have access to it.");
+				Util.msg(channel, "The command **" + arg + "** either doesn't exist, or you don't have access to it.");
 			}
 		}
 	}

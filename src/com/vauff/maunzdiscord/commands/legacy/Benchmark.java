@@ -20,7 +20,7 @@ public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "You need to provide a GPU/CPU name to benchmark!");
+			Util.msg(channel, "You need to provide a GPU/CPU name to benchmark!");
 		}
 		else
 		{
@@ -122,7 +122,7 @@ public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 						.addField("Performance Per Dollar", ratio, true)
 						.build();
 
-					Util.msg(channel, author, embed);
+					Util.msg(channel, embed);
 				}
 				else if (link.contains("cpu.php"))
 				{
@@ -203,12 +203,12 @@ public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 						.addField("Typical TDP", tdp, true)
 						.build();
 
-					Util.msg(channel, author, embed);
+					Util.msg(channel, embed);
 				}
 			}
 			else
 			{
-				Util.msg(channel, author, "I couldn't find any results for \"" + Util.addArgs(args, 1) + "\"!");
+				Util.msg(channel, "I couldn't find any results for \"" + Util.addArgs(args, 1) + "\"!");
 			}
 		}
 	}

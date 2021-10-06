@@ -23,7 +23,7 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "You need to provide a Steam ID! **Usage: " + Main.prefix + "steam <steamid>**");
+			Util.msg(channel, "You need to provide a Steam ID! **Usage: " + Main.prefix + "steam <steamid>**");
 		}
 		else
 		{
@@ -36,7 +36,7 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 
 				if (siteText.contains("Player Not Found :( or hasn't set public profile Supported inputs") || siteText.contains("Steam Id Finder - is the simplest way to find steam id online by anything you know:"))
 				{
-					Util.msg(channel, author, "Couldn't find a Steam profile with that given ID!");
+					Util.msg(channel, "Couldn't find a Steam profile with that given ID!");
 				}
 				else
 				{
@@ -122,12 +122,12 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 						.addField("Steam64 ID", steam64ID, true)
 						.build();
 
-					Util.msg(channel, author, embed);
+					Util.msg(channel, embed);
 				}
 			}
 			catch (HttpStatusException e)
 			{
-				Util.msg(channel, author, "Couldn't find a Steam profile with that given ID!");
+				Util.msg(channel, "Couldn't find a Steam profile with that given ID!");
 			}
 		}
 	}

@@ -75,7 +75,7 @@ public class ServiceProcessThread implements Runnable
 			if (serverDoc.getInteger("downtimeTimer") >= serverDoc.getInteger("failedConnectionsThreshold") && doc.getBoolean("online"))
 			{
 				if (channelExists)
-					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has gone offline");
+					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, msgServerName + " has gone offline");
 
 				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("online", false)));
 			}
@@ -83,7 +83,7 @@ public class ServiceProcessThread implements Runnable
 			if (serverDoc.getInteger("downtimeTimer") >= 10080)
 			{
 				if (channelExists)
-					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has now been offline for a week and its server tracking service was automatically disabled, it can be re-enabled by a guild administrator using **/services toggle <id> enabled**");
+					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, msgServerName + " has now been offline for a week and its server tracking service was automatically disabled, it can be re-enabled by a guild administrator using **/services toggle <id> enabled**");
 
 				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
 			}
@@ -94,7 +94,7 @@ public class ServiceProcessThread implements Runnable
 			if (!doc.getBoolean("online"))
 			{
 				if (channelExists)
-					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), msgServerName + " has come back online");
+					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, msgServerName + " has come back online");
 
 				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("online", true)));
 			}
@@ -134,9 +134,9 @@ public class ServiceProcessThread implements Runnable
 				if (channelExists)
 				{
 					if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
-						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), titledEmbed);
+						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, titledEmbed);
 					else
-						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), embed);
+						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, embed);
 				}
 
 				parentLoop:
@@ -159,7 +159,7 @@ public class ServiceProcessThread implements Runnable
 								continue parentLoop;
 							}
 
-							Util.msg(member.getPrivateChannel().block(), titledEmbed);
+							Util.msg(member.getPrivateChannel().block(), true, titledEmbed);
 							break;
 						}
 					}

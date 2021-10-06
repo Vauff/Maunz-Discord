@@ -78,7 +78,7 @@ public class MessageCreateThread implements Runnable
 						{
 							if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
 							{
-								Util.msg(channel, author, author.getMention() + " Slow down!");
+								Util.msg(channel, true, true, author.getMention() + " Slow down!", null);
 								MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
 							}
 
@@ -104,7 +104,7 @@ public class MessageCreateThread implements Runnable
 
 						if (blacklisted)
 						{
-							Util.msg(author.getPrivateChannel().block(), ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
+							Util.msg(author.getPrivateChannel().block(), true, ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
 							return;
 						}
 
@@ -128,7 +128,7 @@ public class MessageCreateThread implements Runnable
 
 								if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, event.getGuild().block())) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
 								{
-									Util.msg(channel, author, "You do not have permission to use that command");
+									Util.msg(channel, "You do not have permission to use that command");
 									return;
 								}
 
@@ -138,7 +138,7 @@ public class MessageCreateThread implements Runnable
 							{
 								if (e.getStatus().code() == 403)
 								{
-									Util.msg(author.getPrivateChannel().block(), ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+									Util.msg(author.getPrivateChannel().block(), true, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
 									return;
 								}
 								else
@@ -152,7 +152,7 @@ public class MessageCreateThread implements Runnable
 							Random rnd = new Random();
 							int code = 100000000 + rnd.nextInt(900000000);
 
-							Util.msg(channel, author, ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
+							Util.msg(channel, true, ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
 							Logger.log.error(code, e);
 						}
 					}

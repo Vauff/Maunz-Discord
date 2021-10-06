@@ -12,7 +12,7 @@ public class Services extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		Util.msg(channel, author, "This command has been moved to a slash command available as **/services**");
+		Util.msg(channel, "This command has been moved to a slash command available as **/services**");
 	}
 
 	@Override

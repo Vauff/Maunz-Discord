@@ -21,13 +21,13 @@ public class Say extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (channel instanceof PrivateChannel)
 		{
-			Util.msg(channel, author, "This command can't be done in a PM, only in a guild in which you have the administrator permission in");
+			Util.msg(channel, "This command can't be done in a PM, only in a guild in which you have the administrator permission in");
 			return;
 		}
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "I need a message to send! **Usage: " + Main.prefix + "say [channel] <message>**");
+			Util.msg(channel, "I need a message to send! **Usage: " + Main.prefix + "say [channel] <message>**");
 			return;
 		}
 
@@ -35,7 +35,7 @@ public class Say extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			if (args.length == 2)
 			{
-				Util.msg(channel, author, "I need a message to send! **Usage: " + Main.prefix + "say [channel] <message>**");
+				Util.msg(channel, "I need a message to send! **Usage: " + Main.prefix + "say [channel] <message>**");
 				return;
 			}
 
@@ -47,24 +47,24 @@ public class Say extends AbstractLegacyCommand<MessageCreateEvent>
 			}
 			catch (ClientException e)
 			{
-				Util.msg(channel, author, "Failed to send message, that channel is in another guild!");
+				Util.msg(channel, "Failed to send message, that channel is in another guild!");
 				return;
 			}
 
 			if (!sendChannel.getGuild().block().equals(event.getGuild().block()))
 			{
-				Util.msg(channel, author, "Failed to send message, that channel is in another guild!");
+				Util.msg(channel, "Failed to send message, that channel is in another guild!");
 				return;
 			}
 
-			if (Util.msg((MessageChannel) sendChannel, Util.addArgs(args, 2)) != null)
+			if (Util.msg((MessageChannel) sendChannel, true, Util.addArgs(args, 2)) != null)
 			{
 				if (!sendChannel.equals(channel))
-					Util.msg(channel, author, "Successfully sent message!");
+					Util.msg(channel, "Successfully sent message!");
 			}
 			else
 			{
-				Util.msg(channel, author, "Failed to send message, the bot doesn't have permissions for this channel");
+				Util.msg(channel, "Failed to send message, the bot doesn't have permissions for this channel");
 			}
 		}
 		else

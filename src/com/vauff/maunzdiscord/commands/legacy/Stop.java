@@ -13,7 +13,7 @@ public class Stop extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		Util.msg(channel, author, "Maunz is stopping...");
+		Util.msg(channel, "Maunz is stopping...");
 		Logger.log.info("Maunz is stopping...");
 		System.exit(0);
 	}

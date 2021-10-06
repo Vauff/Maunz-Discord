@@ -23,7 +23,7 @@ public class Minecraft extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "You need to provide a username! **Usage: " + Main.prefix + "minecraft <uuid/username>**");
+			Util.msg(channel, "You need to provide a username! **Usage: " + Main.prefix + "minecraft <uuid/username>**");
 		}
 		else
 		{
@@ -46,23 +46,23 @@ public class Minecraft extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (username.contains("#") || username.contains("&"))
 			{
-				Util.msg(channel, author, "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
+				Util.msg(channel, "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
 			}
 			else
 			{
 				if (statusRaw.equalsIgnoreCase("unknown username"))
 				{
-					Util.msg(channel, author, "The Minecraft account name **" + username + "** is free and does not belong to any account!");
+					Util.msg(channel, "The Minecraft account name **" + username + "** is free and does not belong to any account!");
 				}
 
 				else if (statusRaw.equalsIgnoreCase("Username must be 16 characters or less."))
 				{
-					Util.msg(channel, author, "The Minecraft account name **" + username + "** must be 16 characters or less.");
+					Util.msg(channel, "The Minecraft account name **" + username + "** must be 16 characters or less.");
 				}
 
 				else if (statusRaw.equalsIgnoreCase("Username must be alphanumerical (or contain '_')."))
 				{
-					Util.msg(channel, author, "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
+					Util.msg(channel, "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
 				}
 
 				else if (statusRaw.contains(","))
@@ -89,7 +89,7 @@ public class Minecraft extends AbstractLegacyCommand<MessageCreateEvent>
 						.addField("Raw Skin", "https://minotar.net/skin/" + status[1], true)
 						.build();
 
-					Util.msg(channel, author, embed);
+					Util.msg(channel, embed);
 				}
 			}
 		}

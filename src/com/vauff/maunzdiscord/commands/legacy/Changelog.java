@@ -64,7 +64,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 		}
 		catch (HttpStatusException e)
 		{
-			Util.msg(channel, author, "That version of Maunz doesn't exist!");
+			Util.msg(channel, "That version of Maunz doesn't exist!");
 			return;
 		}
 
@@ -79,7 +79,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 			}
 		}
 
-		Util.msg(channel, author, "GitHub link: " + "<" + link + ">");
+		Util.msg(channel, "GitHub link: " + "<" + link + ">");
 
 		Message m = Util.buildPage(changelog, title, 10, 1, 0, true, false, false, channel, author);
 
@@ -107,7 +107,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 			}
 			catch (HttpStatusException e)
 			{
-				Util.msg(event.getChannel().block(), event.getUser().block(), "That version of Maunz doesn't exist!");
+				Util.msg(event.getChannel().block(), "That version of Maunz doesn't exist!");
 				return;
 			}
 
@@ -144,7 +144,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 			}
 			catch (HttpStatusException e)
 			{
-				Util.msg(event.getChannel().block(), event.getUser().block(), "That version of Maunz doesn't exist!");
+				Util.msg(event.getChannel().block(), "That version of Maunz doesn't exist!");
 				return;
 			}
 

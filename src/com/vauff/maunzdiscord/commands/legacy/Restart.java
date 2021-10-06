@@ -20,7 +20,7 @@ public class Restart extends AbstractLegacyCommand<MessageCreateEvent>
 		command.add("java");
 		command.add("-jar");
 		command.add("Maunz-Discord.jar");
-		Util.msg(channel, author, "Maunz is restarting...");
+		Util.msg(channel, "Maunz is restarting...");
 		Logger.log.info("Maunz is restarting...");
 		new ProcessBuilder(command).start();
 		System.exit(0);

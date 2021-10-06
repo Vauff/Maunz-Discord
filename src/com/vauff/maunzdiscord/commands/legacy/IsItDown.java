@@ -27,7 +27,7 @@ public class IsItDown extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "You need to specify an argument! **Usage: " + Main.prefix + "isitdown <hostname>**");
+			Util.msg(channel, "You need to specify an argument! **Usage: " + Main.prefix + "isitdown <hostname>**");
 		}
 		else
 		{
@@ -55,17 +55,17 @@ public class IsItDown extends AbstractLegacyCommand<MessageCreateEvent>
 
 				if (host == null)
 				{
-					Util.msg(channel, author, "Please specify a valid hostname or URI.");
+					Util.msg(channel, "Please specify a valid hostname or URI.");
 					return;
 				}
 
 				isUp = pingHost(host, port, cleanedUri);
 
-				Util.msg(channel, author, (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
+				Util.msg(channel, (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
 			}
 			catch (Exception e)
 			{
-				Util.msg(channel, author, "Please specify a valid hostname or URI.");
+				Util.msg(channel, "Please specify a valid hostname or URI.");
 			}
 		}
 	}

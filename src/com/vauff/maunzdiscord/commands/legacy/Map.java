@@ -53,7 +53,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
+				Util.msg(channel, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
 				return;
 			}
 			else if (services.size() == 1)
@@ -77,7 +77,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 		}
 		else
 		{
-			Util.msg(channel, author, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
+			Util.msg(channel, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 		}
 	}
 
@@ -119,13 +119,13 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			if (!doc.getBoolean("online"))
 			{
-				Util.msg(channel, user, "The server currently appears to be offline");
+				Util.msg(channel, "The server currently appears to be offline");
 				return;
 			}
 
 			if (doc.getString("lastMap").equals("N/A"))
 			{
-				Util.msg(channel, user, "There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again");
+				Util.msg(channel, "There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again");
 				return;
 			}
 
@@ -155,11 +155,11 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (includeName)
 			{
-				Util.msg(channel, user, embed.withTitle(serverDoc.getString("name")));
+				Util.msg(channel, embed.withTitle(serverDoc.getString("name")));
 			}
 			else
 			{
-				Util.msg(channel, user, embed);
+				Util.msg(channel, embed);
 			}
 		}
 		else
@@ -236,7 +236,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 					.addField("First Played", firstPlayed, false)
 					.build();
 
-				Util.msg(channel, user, embed);
+				Util.msg(channel, embed);
 			}
 			else
 			{
@@ -330,11 +330,11 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 						.addField("First Played", firstPlayed, false)
 						.build();
 
-					Util.msg(channel, user, embed);
+					Util.msg(channel, embed);
 				}
 				else
 				{
-					Util.msg(channel, user, "The map **" + argument + "** doesn't exist!");
+					Util.msg(channel, "The map **" + argument + "** doesn't exist!");
 				}
 			}
 		}

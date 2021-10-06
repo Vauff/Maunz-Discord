@@ -31,7 +31,7 @@ public class About extends AbstractLegacyCommand<MessageCreateEvent>
 			.addField("Build Date", buildDate, true)
 			.build();
 
-		Util.msg(channel, author, embed);
+		Util.msg(channel, embed);
 	}
 
 	/**

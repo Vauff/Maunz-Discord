@@ -32,7 +32,7 @@ public class Disable extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (Util.hasPermission(author))
 			{
-				Message m = Util.msg(channel, author, "Please select whether you'd like to disable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Disable globally" + System.lineSeparator() + "**`[2]`**  |  Disable in guild only");
+				Message m = Util.msg(channel, "Please select whether you'd like to disable the bot globally or only in this guild" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  Disable globally" + System.lineSeparator() + "**`[2]`**  |  Disable in guild only");
 
 				waitForReaction(m.getId(), author.getId());
 				Util.addNumberedReactions(m, true, 2);
@@ -49,12 +49,12 @@ public class Disable extends AbstractLegacyCommand<MessageCreateEvent>
 			{
 				if (guildEnabled)
 				{
-					Util.msg(channel, author, "Maunz is now disabled in this guild");
+					Util.msg(channel, "Maunz is now disabled in this guild");
 					Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$set", new Document("enabled", false)));
 				}
 				else
 				{
-					Util.msg(channel, author, "You silly, I was already disabled in this guild!");
+					Util.msg(channel, "You silly, I was already disabled in this guild!");
 				}
 			}
 		}
@@ -65,18 +65,18 @@ public class Disable extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (json.getBoolean("enabled"))
 			{
-				Util.msg(channel, author, "Maunz is now disabled globally");
+				Util.msg(channel, "Maunz is now disabled globally");
 				json.put("enabled", false);
 				FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
 			}
 			else
 			{
-				Util.msg(channel, author, "You silly, I was already disabled globally!");
+				Util.msg(channel, "You silly, I was already disabled globally!");
 			}
 		}
 		else
 		{
-			Util.msg(channel, author, "You do not have permission to use that command");
+			Util.msg(channel, "You do not have permission to use that command");
 		}
 	}
 
@@ -91,25 +91,25 @@ public class Disable extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			if (json.getBoolean("enabled"))
 			{
-				Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now disabled globally");
+				Util.msg(event.getChannel().block(), "Maunz is now disabled globally");
 				json.put("enabled", false);
 				FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
 			}
 			else
 			{
-				Util.msg(event.getChannel().block(), event.getUser().block(), "You silly, I was already disabled globally!");
+				Util.msg(event.getChannel().block(), "You silly, I was already disabled globally!");
 			}
 		}
 		else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("2⃣"))
 		{
 			if (guildEnabled)
 			{
-				Util.msg(event.getChannel().block(), event.getUser().block(), "Maunz is now disabled in this guild");
+				Util.msg(event.getChannel().block(), "Maunz is now disabled in this guild");
 				Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$set", new Document("enabled", false)));
 			}
 			else
 			{
-				Util.msg(event.getChannel().block(), event.getUser().block(), "You silly, I was already disabled in this guild!");
+				Util.msg(event.getChannel().block(), "You silly, I was already disabled in this guild!");
 			}
 		}
 	}

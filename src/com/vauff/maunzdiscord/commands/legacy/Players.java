@@ -46,7 +46,7 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
+				Util.msg(channel, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
 			}
 			else if (services.size() == 1)
 			{
@@ -68,7 +68,7 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 		}
 		else
 		{
-			Util.msg(channel, author, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
+			Util.msg(channel, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 		}
 	}
 
@@ -108,7 +108,7 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (!doc.getBoolean("online"))
 		{
-			Util.msg(channel, user, "The server currently appears to be offline");
+			Util.msg(channel, "The server currently appears to be offline");
 			return;
 		}
 
@@ -116,7 +116,7 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (numberOfPlayers == 0)
 		{
-			Util.msg(channel, user, "There are currently no players online!");
+			Util.msg(channel, "There are currently no players online!");
 			return;
 		}
 
@@ -136,13 +136,13 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 
 		try
 		{
-			Util.msg((!sizeIsSmall ? user.getPrivateChannel().block() : channel), user, playersList.toString());
+			Util.msg((!sizeIsSmall ? user.getPrivateChannel().block() : channel), playersList.toString());
 		}
 		catch (ClientException e)
 		{
 			if (!sizeIsSmall)
 			{
-				Util.msg(channel, user, "An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked");
+				Util.msg(channel, "An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked");
 				return;
 			}
 			else
@@ -152,7 +152,7 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 		}
 
 		if (!sizeIsSmall)
-			Util.msg(channel, user, "Sending the online player list to you in a PM!");
+			Util.msg(channel, "Sending the online player list to you in a PM!");
 	}
 
 	private void runSelection(User user, MessageChannel channel, List<Document> services, int page)

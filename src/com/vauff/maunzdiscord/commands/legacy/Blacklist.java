@@ -86,12 +86,12 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 						}
 						else
 						{
-							Util.msg(channel, author, "Page numbers need to be numerical!");
+							Util.msg(channel, "Page numbers need to be numerical!");
 						}
 					}
 					else
 					{
-						Util.msg(channel, author, "This guild doesn't have any commands/channels blacklisted, use **" + Main.prefix + "blacklist [all/channel] \\<all/command>** to add one");
+						Util.msg(channel, "This guild doesn't have any commands/channels blacklisted, use **" + Main.prefix + "blacklist [all/channel] \\<all/command>** to add one");
 					}
 				}
 
@@ -131,11 +131,11 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 
 								if (input.equalsIgnoreCase("all"))
 								{
-									Util.msg(channel, author, "Removing all commands from this guilds blacklist for <#" + channel.getId().asString() + ">!");
+									Util.msg(channel, "Removing all commands from this guilds blacklist for <#" + channel.getId().asString() + ">!");
 								}
 								else
 								{
-									Util.msg(channel, author, "Removing the **" + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
+									Util.msg(channel, "Removing the **" + input + "** command from this guilds blacklist for <#" + channel.getId().asString() + ">!");
 								}
 
 								Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$pull", new Document("blacklist", channel.getId().asString() + ":" + input)));
@@ -147,11 +147,11 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 						{
 							if (input.equalsIgnoreCase("all"))
 							{
-								Util.msg(channel, author, "Adding all commands to this guilds blacklist for <#" + channel.getId().asString() + ">!");
+								Util.msg(channel, "Adding all commands to this guilds blacklist for <#" + channel.getId().asString() + ">!");
 							}
 							else
 							{
-								Util.msg(channel, author, "Adding the **" + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
+								Util.msg(channel, "Adding the **" + input + "** command to this guilds blacklist for <#" + channel.getId().asString() + ">!");
 							}
 
 							Main.mongoDatabase.getCollection("guilds").updateOne(eq("guildId", event.getGuild().block().getId().asLong()), new Document("$push", new Document("blacklist", channel.getId().asString() + ":" + input)));
@@ -159,7 +159,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 					else
 					{
-						Util.msg(channel, author, "The command **" + args[1] + "** doesn't exist!");
+						Util.msg(channel, "The command **" + args[1] + "** doesn't exist!");
 					}
 				}
 				else
@@ -178,7 +178,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 							}
 							else
 							{
-								Util.msg(channel, author, "That channel is in another guild!"); //test this works
+								Util.msg(channel, "That channel is in another guild!"); //test this works
 							}
 						}
 					}
@@ -225,22 +225,22 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 									{
 										if (location.equalsIgnoreCase("all"))
 										{
-											Util.msg(channel, author, "Removing all commands from this guilds blacklist for all channels!");
+											Util.msg(channel, "Removing all commands from this guilds blacklist for all channels!");
 										}
 										else
 										{
-											Util.msg(channel, author, "Removing all commands from this guilds blacklist for <#" + location + ">!");
+											Util.msg(channel, "Removing all commands from this guilds blacklist for <#" + location + ">!");
 										}
 									}
 									else
 									{
 										if (location.equalsIgnoreCase("all"))
 										{
-											Util.msg(channel, author, "Removing the **" + input + "** command from this guilds blacklist for all channels!");
+											Util.msg(channel, "Removing the **" + input + "** command from this guilds blacklist for all channels!");
 										}
 										else
 										{
-											Util.msg(channel, author, "Removing the **" + input + "** command from this guilds blacklist for <#" + location + ">!");
+											Util.msg(channel, "Removing the **" + input + "** command from this guilds blacklist for <#" + location + ">!");
 										}
 									}
 
@@ -255,22 +255,22 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 								{
 									if (location.equalsIgnoreCase("all"))
 									{
-										Util.msg(channel, author, "Adding all commands to this guilds blacklist for all channels!");
+										Util.msg(channel, "Adding all commands to this guilds blacklist for all channels!");
 									}
 									else
 									{
-										Util.msg(channel, author, "Adding all commands to this guilds blacklist for <#" + location + ">!");
+										Util.msg(channel, "Adding all commands to this guilds blacklist for <#" + location + ">!");
 									}
 								}
 								else
 								{
 									if (location.equalsIgnoreCase("all"))
 									{
-										Util.msg(channel, author, "Adding the **" + input + "** command to this guilds blacklist for all channels!");
+										Util.msg(channel, "Adding the **" + input + "** command to this guilds blacklist for all channels!");
 									}
 									else
 									{
-										Util.msg(channel, author, "Adding the **" + input + "** command to this guilds blacklist for <#" + location + ">!");
+										Util.msg(channel, "Adding the **" + input + "** command to this guilds blacklist for <#" + location + ">!");
 									}
 								}
 
@@ -279,23 +279,23 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 						}
 						else
 						{
-							Util.msg(channel, author, "The command **" + args[2] + "** doesn't exist!");
+							Util.msg(channel, "The command **" + args[2] + "** doesn't exist!");
 						}
 					}
 					else
 					{
-						Util.msg(channel, author, "The channel **" + args[1] + "** doesn't exist!");
+						Util.msg(channel, "The channel **" + args[1] + "** doesn't exist!");
 					}
 				}
 			}
 			else
 			{
-				Util.msg(channel, author, "You need to specify arguments! See **" + Main.prefix + "help blacklist**");
+				Util.msg(channel, "You need to specify arguments! See **" + Main.prefix + "help blacklist**");
 			}
 		}
 		else
 		{
-			Util.msg(channel, author, "This command can't be done in a PM, only in a guild in which you have the administrator permission in");
+			Util.msg(channel, "This command can't be done in a PM, only in a guild in which you have the administrator permission in");
 		}
 	}
 

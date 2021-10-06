@@ -46,13 +46,13 @@ public class Colour extends AbstractLegacyCommand<MessageCreateEvent>
 
 				if (color == null)
 				{
-					Util.msg(channel, author, "Could not get an image from the provided attachment or link!");
+					Util.msg(channel, "Could not get an image from the provided attachment or link!");
 					return;
 				}
 			}
 			catch (MalformedURLException e)
 			{
-				Util.msg(channel, author, "Could not get an image from the provided attachment or link!");
+				Util.msg(channel, "Could not get an image from the provided attachment or link!");
 				return;
 			}
 
@@ -64,11 +64,11 @@ public class Colour extends AbstractLegacyCommand<MessageCreateEvent>
 				.addField("HTML/Hex", String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()), true)
 				.build();
 
-			Util.msg(channel, author, embed);
+			Util.msg(channel, embed);
 		}
 		else
 		{
-			Util.msg(channel, author, "Could not get an image from the provided attachment or link!");
+			Util.msg(channel, "Could not get an image from the provided attachment or link!");
 		}
 	}
 

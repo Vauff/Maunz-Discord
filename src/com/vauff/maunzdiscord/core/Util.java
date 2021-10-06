@@ -10,6 +10,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.MessageCreateMono;
 import discord4j.rest.http.client.ClientException;
 import discord4j.rest.util.AllowedMentions;
 import discord4j.rest.util.Color;
@@ -172,7 +173,7 @@ public class Util
 	 */
 	public static boolean hasPermission(User user) throws Exception
 	{
-		JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+		JSONObject json = new JSONObject(getFileContents(new File(getJarLocation() + "config.json")));
 
 		for (int i = 0; i < json.getJSONArray("botOwners").length(); i++)
 		{
@@ -205,37 +206,41 @@ public class Util
 		return (user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.ADMINISTRATOR) || user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.MANAGE_GUILD) ? true : false);
 	}
 
-	//TODO: Remove the msg methods for responding to users, they are basically useless now with error handling for them moved to MessageCreateThread
-
 	/**
 	 * Sends a message to a channel
 	 *
-	 * @param channel The channel
-	 * @param author  The author
-	 * @param message The message
+	 * @param channel              The channel
+	 * @param permissionExHandling Whether to handle missing permissions exceptions (403)
+	 * @param allowUserMentions    Whether to allow users to be mentioned in this message
+	 * @param message              The string message (null for none)
+	 * @param embed                The embed (null for none)
 	 * @return The message object
 	 */
-	public static Message msg(MessageChannel channel, User author, String message)
-	{
-		return channel.createMessage(message).withAllowedMentions(AllowedMentions.builder().build()).block();
-	}
-
-	/**
-	 * Sends a message to a channel
-	 *
-	 * @param channel The channel
-	 * @param message The message
-	 * @return The message object
-	 */
-	public static Message msg(MessageChannel channel, String message)
+	public static Message msg(MessageChannel channel, boolean permissionExHandling, boolean allowUserMentions, String message, EmbedCreateSpec embed)
 	{
 		try
 		{
-			return channel.createMessage(message).withAllowedMentions(AllowedMentions.builder().build()).block();
+			MessageCreateMono msg;
+			AllowedMentions mentions;
+
+			if (!Objects.isNull(message))
+				msg = channel.createMessage(message);
+			else
+				msg = channel.createMessage();
+
+			if (!Objects.isNull(embed))
+				msg = msg.withEmbeds(embed);
+
+			if (allowUserMentions)
+				mentions = AllowedMentions.builder().parseType(AllowedMentions.Type.USER).build();
+			else
+				mentions = AllowedMentions.suppressAll();
+
+			return msg.withAllowedMentions(mentions).block();
 		}
 		catch (ClientException e)
 		{
-			if (e.getStatus().code() == 403)
+			if (permissionExHandling && e.getStatus().code() == 403)
 			{
 				if (!(channel instanceof PrivateChannel))
 				{
@@ -252,20 +257,45 @@ public class Util
 	}
 
 	/**
-	 * Sends an embed to a channel
+	 * Sends a message to a channel with mentions disabled
 	 *
-	 * @param channel The channel
-	 * @param author  The author
-	 * @param embed   The embed
+	 * @param channel              The channel
+	 * @param permissionExHandling Whether to handle missing permissions exceptions (403)
+	 * @param message              The string message
 	 * @return The message object
 	 */
-	public static Message msg(MessageChannel channel, User author, EmbedCreateSpec embed)
+	public static Message msg(MessageChannel channel, boolean permissionExHandling, String message)
 	{
-		return channel.createMessage().withEmbeds(embed).withAllowedMentions(AllowedMentions.builder().build()).block();
+		return msg(channel, permissionExHandling, false, message, null);
 	}
 
 	/**
-	 * Sends an embed to a channel
+	 * Sends a message to a channel with mentions disabled
+	 *
+	 * @param channel              The channel
+	 * @param permissionExHandling Whether to handle missing permissions exceptions (403)
+	 * @param embed                The embed
+	 * @return The message object
+	 */
+	public static Message msg(MessageChannel channel, boolean permissionExHandling, EmbedCreateSpec embed)
+	{
+		return msg(channel, permissionExHandling, false, null, embed);
+	}
+
+	/**
+	 * Sends a message to a channel with permission exception handling and mentions disabled
+	 *
+	 * @param channel The channel
+	 * @param message The string message
+	 * @return The message object
+	 */
+	public static Message msg(MessageChannel channel, String message)
+	{
+		return msg(channel, false, false, message, null);
+	}
+
+	/**
+	 * Sends a message to a channel with permission exception handling and mentions disabled
 	 *
 	 * @param channel The channel
 	 * @param embed   The embed
@@ -273,26 +303,7 @@ public class Util
 	 */
 	public static Message msg(MessageChannel channel, EmbedCreateSpec embed)
 	{
-		try
-		{
-			return channel.createMessage().withEmbeds(embed).withAllowedMentions(AllowedMentions.builder().build()).block();
-		}
-		catch (ClientException e)
-		{
-			if (e.getStatus().code() == 403)
-			{
-				if (!(channel instanceof PrivateChannel))
-				{
-					Logger.log.warn("Missing permissions to send embed to channel #" + ((GuildChannel) channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel) channel).getGuild().block().getName() + " (" + ((GuildChannel) channel).getGuild().block().getId().asString() + ")");
-				}
-
-				return null;
-			}
-			else
-			{
-				throw e;
-			}
-		}
+		return msg(channel, false, false, null, embed);
 	}
 
 	/**
@@ -439,7 +450,7 @@ public class Util
 	 */
 	public static boolean isEnabled() throws Exception
 	{
-		JSONObject botJson = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
+		JSONObject botJson = new JSONObject(getFileContents(new File(getJarLocation() + "config.json")));
 
 		return botJson.getBoolean("enabled");
 	}
@@ -500,7 +511,7 @@ public class Util
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
 			if (Objects.isNull(event))
-				return Util.msg(channel, user, "That page doesn't exist!");
+				return msg(channel, "That page doesn't exist!");
 			else
 				return Main.gateway.getMessageById(event.getInteraction().getChannelId(), Snowflake.of(event.getInteractionResponse().createFollowupMessage("That page doesn't exist!").block().id())).block();
 		}
@@ -554,7 +565,7 @@ public class Util
 				msg = "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString();
 
 			if (Objects.isNull(event))
-				m = Util.msg(channel, user, msg);
+				m = msg(channel, msg);
 			else
 				m = Main.gateway.getMessageById(event.getInteraction().getChannelId(), Snowflake.of(event.getInteractionResponse().createFollowupMessage(msg).block().id())).block();
 
@@ -571,7 +582,7 @@ public class Util
 				}
 				if (numberedReactions)
 				{
-					Util.addNumberedReactions(m, false, finalUsedEntries);
+					addNumberedReactions(m, false, finalUsedEntries);
 				}
 				if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
 				{
@@ -579,7 +590,7 @@ public class Util
 				}
 				if (cancellable)
 				{
-					Util.addReaction(m, "\u274C");
+					addReaction(m, "\u274C");
 				}
 			}, 250, TimeUnit.MILLISECONDS);
 

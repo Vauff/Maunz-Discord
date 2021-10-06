@@ -60,7 +60,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, author, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
+				Util.msg(channel, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
 			}
 			else if (services.size() == 1)
 			{
@@ -85,7 +85,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 		}
 		else
 		{
-			Util.msg(channel, author, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
+			Util.msg(channel, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 		}
 	}
 
@@ -141,7 +141,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 
 						Main.mongoDatabase.getCollection("services").updateOne(eq("_id", serviceDoc.getObjectId("_id")), new Document("$unset", new Document("notifications." + i, 1)));
 						Main.mongoDatabase.getCollection("services").updateOne(eq("_id", serviceDoc.getObjectId("_id")), new Document("$pull", new Document("notifications", null)));
-						Util.msg(event.getChannel().block(), user, "Successfully wiped all of your map notifications!");
+						Util.msg(event.getChannel().block(), "Successfully wiped all of your map notifications!");
 						break;
 					}
 				}
@@ -237,7 +237,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, user, "You need to specify an argument! See **" + Main.prefix + "help notify**");
+			Util.msg(channel, "You need to specify an argument! See **" + Main.prefix + "help notify**");
 			return;
 		}
 
@@ -268,7 +268,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			if (!hasNotifications)
 			{
-				Util.msg(channel, user, "You do not have any map notifications set! Use **" + Main.prefix + "notify <mapname>** to add one");
+				Util.msg(channel, "You do not have any map notifications set! Use **" + Main.prefix + "notify <mapname>** to add one");
 				return;
 			}
 
@@ -304,18 +304,18 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 			}
 			else
 			{
-				Util.msg(channel, user, "Page numbers need to be numerical!");
+				Util.msg(channel, "Page numbers need to be numerical!");
 			}
 		}
 		else if (argument.equalsIgnoreCase("wipe"))
 		{
 			if (!hasNotifications)
 			{
-				Util.msg(channel, user, "You don't have any map notifications to wipe!");
+				Util.msg(channel, "You don't have any map notifications to wipe!");
 				return;
 			}
 
-			Message m = Util.msg(channel, user, "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+			Message m = Util.msg(channel, "Are you sure you would like to wipe **ALL** of your map notifications? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 
 			waitForReaction(m.getId(), user.getId());
 			confirmationMaps.put(user.getId(), "wipe");
@@ -423,7 +423,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 
 					if (mapSuggestion.equals(""))
 					{
-						m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
+						m = Util.msg(channel, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it? Press  :white_check_mark:  to confirm or  :x:  to cancel");
 						waitForReaction(m.getId(), user.getId());
 						confirmationMaps.put(user.getId(), argument);
 						confirmationMessages.put(user.getId(), m.getId());
@@ -436,7 +436,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 					else
 					{
-						m = Util.msg(channel, user, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + mapSuggestion.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + argument.replace("_", "\\_"));
+						m = Util.msg(channel, "The map **" + argument.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose" + System.lineSeparator() + System.lineSeparator() + "**`[1]`**  |  " + mapSuggestion.replace("_", "\\_") + System.lineSeparator() + "**`[2]`**  |  " + argument.replace("_", "\\_"));
 						waitForReaction(m.getId(), user.getId());
 						confirmationMaps.put(user.getId(), argument);
 						confirmationSuggestionMaps.put(user.getId(), mapSuggestion);
@@ -486,7 +486,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		List<Document> notificationDocs = serviceDoc.getList("notifications", Document.class);
 
-		Util.msg(channel, user, "Adding **" + notification.replace("_", "\\_") + "** to your map notifications!");
+		Util.msg(channel, "Adding **" + notification.replace("_", "\\_") + "** to your map notifications!");
 
 		for (int i = 0; i < notificationDocs.size(); i++)
 		{
@@ -511,7 +511,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		List<Document> notificationDocs = serviceDoc.getList("notifications", Document.class);
 
-		Util.msg(channel, user, "Removing **" + notification.replace("_", "\\_") + "** from your map notifications!");
+		Util.msg(channel, "Removing **" + notification.replace("_", "\\_") + "** from your map notifications!");
 
 		for (int i = 0; i < notificationDocs.size(); i++)
 		{

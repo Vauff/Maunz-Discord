@@ -18,7 +18,7 @@ public class Reddit extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, author, "You need to provide a subreddit!");
+			Util.msg(channel, "You need to provide a subreddit!");
 		}
 		else
 		{
@@ -42,15 +42,15 @@ public class Reddit extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (reddit.title().contains(": page not found") || reddit.title().equals("search results"))
 			{
-				Util.msg(channel, author, "That subreddit doesn't exist!");
+				Util.msg(channel, "That subreddit doesn't exist!");
 			}
 			else if (reddit.title().contains(": banned"))
 			{
-				Util.msg(channel, author, "That subreddit is banned!");
+				Util.msg(channel, "That subreddit is banned!");
 			}
 			else
 			{
-				Util.msg(channel, author, "https://reddit.com/r/" + url);
+				Util.msg(channel, "https://reddit.com/r/" + url);
 			}
 		}
 	}

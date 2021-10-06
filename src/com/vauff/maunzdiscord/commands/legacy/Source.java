@@ -12,7 +12,7 @@ public class Source extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		Util.msg(channel, author, "My source is available at https://github.com/Vauff/Maunz-Discord");
+		Util.msg(channel, "My source is available at https://github.com/Vauff/Maunz-Discord");
 	}
 
 	@Override
