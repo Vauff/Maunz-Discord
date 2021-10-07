@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.threads;
 
+import com.github.koraktor.steamcondenser.servers.GameServer;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.github.koraktor.steamcondenser.servers.SteamPlayer;
 import com.vauff.maunzdiscord.core.Logger;
@@ -20,7 +21,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class ServerRequestThread implements Runnable
 {
-	private SourceServer server;
+	private GameServer server;
 	private Thread thread;
 	private ObjectId id;
 	private String ipPort;
