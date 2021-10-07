@@ -85,12 +85,12 @@ public class ServerTimer
 
 					for (Document doc : serverDocs)
 					{
-						if (!ServerTimer.waitingProcessThreads.containsKey(doc.getObjectId("_id").toString()))
-							continue;
-
 						ObjectId id = doc.getObjectId("_id");
 						String idString = id.toString();
 						String ipPort = doc.getString("ip") + ":" + doc.getInteger("port");
+
+						if (!waitingProcessThreads.containsKey(idString) || waitingProcessThreads.get(idString).size() == 0)
+							continue;
 
 						threadRunning.putIfAbsent(idString, false);
 
