@@ -175,7 +175,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		}
 
 		if (!Objects.isNull(serviceChannel))
-			msg += " tracking in " + serviceChannel.getMention();
+			msg += " in " + serviceChannel.getMention();
 
 		event.getInteractionResponse().createFollowupMessage(msg).block();
 	}
