@@ -58,7 +58,7 @@ public class Logger
 	{
 		try
 		{
-			if (event.getMessage().block().getAuthor().isPresent() && event.getOld().get().getFlags().contains(Message.Flag.LOADING))
+			if (event.getMessage().block().getAuthor().isPresent() && event.getOld().isPresent() && event.getOld().get().getFlags().contains(Message.Flag.LOADING))
 				logMessage(event.getMessage().block());
 		}
 		catch (Exception e)
