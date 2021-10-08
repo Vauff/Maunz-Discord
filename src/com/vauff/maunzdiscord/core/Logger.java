@@ -23,15 +23,22 @@ public class Logger
 
 	public static void onChatInputInteraction(ChatInputInteractionEvent event)
 	{
-		String userName = event.getInteraction().getUser().getUsername();
-		String userId = event.getInteraction().getUser().getId().asString();
-		String channelId = event.getInteraction().getChannel().block().getId().asString();
-		String channelName = ((GuildChannel) event.getInteraction().getChannel().block()).getName();
-		String guildName = event.getInteraction().getGuild().block().getName();
-		String guildId = event.getInteraction().getGuild().block().getId().asString();
-		String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
+		try
+		{
+			String userName = event.getInteraction().getUser().getUsername();
+			String userId = event.getInteraction().getUser().getId().asString();
+			String channelId = event.getInteraction().getChannel().block().getId().asString();
+			String channelName = ((GuildChannel) event.getInteraction().getChannel().block()).getName();
+			String guildName = event.getInteraction().getGuild().block().getName();
+			String guildId = event.getInteraction().getGuild().block().getId().asString();
+			String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
 
-		Logger.log.debug(userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
+			Logger.log.debug(userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
 	}
 
 	public static void onMessageCreate(MessageCreateEvent event)
@@ -49,8 +56,15 @@ public class Logger
 
 	public static void onMessageUpdate(MessageUpdateEvent event)
 	{
-		if (event.getMessage().block().getAuthor().isPresent() && event.getMessage().block().getAuthor().get().equals(Main.gateway.getSelf().block()))
-			logMessage(event.getMessage().block());
+		try
+		{
+			if (event.getMessage().block().getAuthor().isPresent() && event.getOld().get().getFlags().contains(Message.Flag.LOADING))
+				logMessage(event.getMessage().block());
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
 	}
 
 	private static void logMessage(Message msg)
@@ -67,7 +81,7 @@ public class Logger
 			String guildName = msg.getGuild().block().getName();
 			String guildId = msg.getGuild().block().getId().asString();
 
-			logMsg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | ";
+			logMsg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") |";
 		}
 		else
 		{
@@ -77,26 +91,26 @@ public class Logger
 
 			if (recipientId.equals(userId))
 			{
-				logMsg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") | ";
+				logMsg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") |";
 			}
 			else
 			{
-				logMsg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") | ";
+				logMsg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") |";
 			}
 		}
 
 		if (!msg.getContent().isEmpty())
 		{
-			logMsg += msg.getContent();
+			logMsg += " " + msg.getContent();
 		}
 
 		for (Attachment attachment : msg.getAttachments())
 		{
-			logMsg += "[Attachment " + attachment.getUrl() + "]";
+			logMsg += " [Attachment " + attachment.getUrl() + "]";
 		}
 		for (Embed embed : msg.getEmbeds())
 		{
-			logMsg += "[Embed]";
+			logMsg += " [Embed]";
 		}
 
 		Logger.log.debug(logMsg);
