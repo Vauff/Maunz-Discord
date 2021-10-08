@@ -37,7 +37,7 @@ public class About extends AbstractLegacyCommand<MessageCreateEvent>
 	/**
 	 * Gets the time at which the JAR-File got built
 	 *
-	 * @return The time in the format as defined by {@link Util#getTime()}
+	 * @return The time in Discord's "F" format
 	 */
 	private String getBuildDate() throws Exception
 	{
@@ -45,7 +45,7 @@ public class About extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			long unparsedTime = ((JarURLConnection) ClassLoader.getSystemResource(Main.class.getName().replace('.', '/') + ".class").openConnection()).getJarFile().getEntry("META-INF/MANIFEST.MF").getTime();
 
-			return Util.getTime(unparsedTime);
+			return "<t:" + (unparsedTime / 1000) + ":F>";
 		}
 		catch (ClassCastException e)
 		{

@@ -189,7 +189,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 
 					if (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed") != 0)
 					{
-						lastPlayed = Util.getTime(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed"));
+						lastPlayed = "<t:" + (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed") / 1000) + ":F>";
 					}
 					else
 					{
@@ -198,7 +198,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 
 					if (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed") != 0)
 					{
-						firstPlayed = Util.getTime(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed"));
+						firstPlayed = "<t:" + (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed") / 1000) + ":F>";
 					}
 					else
 					{
@@ -283,7 +283,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 					{
 						if (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed") != 0)
 						{
-							lastPlayed = Util.getTime(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed"));
+							lastPlayed = "<t:" + (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("lastPlayed") / 1000) + ":F>";
 						}
 						else
 						{
@@ -292,7 +292,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 
 						if (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed") != 0)
 						{
-							firstPlayed = Util.getTime(serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed"));
+							firstPlayed = "<t:" + (serverDoc.getList("mapDatabase", Document.class).get(i).getLong("firstPlayed") / 1000) + ":F>";
 						}
 						else
 						{

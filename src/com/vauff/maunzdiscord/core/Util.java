@@ -24,12 +24,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -86,35 +83,6 @@ public class Util
 	public static String getFileContents(File arg) throws Exception
 	{
 		return FileUtils.readFileToString(arg, "UTF-8");
-	}
-
-	/**
-	 * Formats the current time into a string
-	 *
-	 * @return The current time as a String in the format
-	 * EEEE MMMM d'st/nd/rd/th', yyyy, h:mm a z
-	 * as defined in {@link SimpleDateFormat}
-	 */
-	public static String getTime()
-	{
-		return getTime(System.currentTimeMillis());
-	}
-
-	/**
-	 * Formats the given time into a string
-	 *
-	 * @param time The time in milliseconds to format as a string
-	 * @return The given time as a String in the format
-	 * EEEE MMMM d'st/nd/rd/th', yyyy, h:mm a z
-	 * as defined in {@link SimpleDateFormat}
-	 */
-	public static String getTime(long time)
-	{
-		Date date = new Date(time);
-		SimpleDateFormat sdf = new SimpleDateFormat("EEEE MMMM d'" + getOrdinal(date.getDate()) + "', yyyy, h:mm a z");
-
-		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-		return sdf.format(date);
 	}
 
 	/**
