@@ -103,7 +103,8 @@ public class ServiceProcessThread implements Runnable
 			String map = serverDoc.getString("map");
 			String name = serverDoc.getString("name");
 			String playerCount = serverDoc.getString("playerCount");
-			String url = "https://vauff.com/mapimgs/" + StringUtils.substring(map, 0, 31) + ".jpg";
+			String mapUrlSafe = StringUtils.substring(map, 0, 31).replace(" ", "%20");
+			String url = "https://vauff.com/mapimgs/" + mapUrlSafe + ".jpg";
 
 			if (!map.equals("") && !doc.getString("lastMap").equalsIgnoreCase(map))
 			{
@@ -117,7 +118,7 @@ public class ServiceProcessThread implements Runnable
 				}
 				catch (Exception e)
 				{
-					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(map, 0, 31) + ".jpg";
+					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + mapUrlSafe + ".jpg";
 				}
 
 				URL constructedUrl = new URL(url);
