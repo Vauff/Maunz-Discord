@@ -129,7 +129,8 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 				return;
 			}
 
-			String url = "https://vauff.com/mapimgs/" + StringUtils.substring(doc.getString("lastMap"), 0, 31) + ".jpg";
+			String mapUrlSafe = StringUtils.substring(doc.getString("lastMap"), 0, 31).replace(" ", "%20");
+			String url = "https://vauff.com/mapimgs/" + mapUrlSafe + ".jpg";
 
 			try
 			{
@@ -141,7 +142,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 			}
 			catch (Exception e)
 			{
-				url = "https://image.gametracker.com/images/maps/160x120/csgo/" + StringUtils.substring(doc.getString("lastMap"), 0, 31) + ".jpg";
+				url = "https://image.gametracker.com/images/maps/160x120/csgo/" + mapUrlSafe + ".jpg";
 			}
 
 			URL constructedUrl = new URL(url);
@@ -211,7 +212,8 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (mapExists)
 			{
-				String url = "https://vauff.com/mapimgs/" + formattedMap + ".jpg";
+				String mapUrlSafe = StringUtils.substring(formattedMap, 0, 31).replace(" ", "%20");
+				String url = "https://vauff.com/mapimgs/" + mapUrlSafe + ".jpg";
 
 				try
 				{
@@ -223,7 +225,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 				}
 				catch (Exception e)
 				{
-					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + formattedMap + ".jpg";
+					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + mapUrlSafe + ".jpg";
 				}
 
 				URL constructedUrl = new URL(url);
@@ -305,7 +307,8 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 
 				if (!formattedMap.equals(""))
 				{
-					String url = "https://vauff.com/mapimgs/" + formattedMap + ".jpg";
+					String mapUrlSafe = StringUtils.substring(formattedMap, 0, 31).replace(" ", "%20");
+					String url = "https://vauff.com/mapimgs/" + mapUrlSafe + ".jpg";
 
 					try
 					{
@@ -317,7 +320,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 					catch (Exception e)
 					{
-						url = "https://image.gametracker.com/images/maps/160x120/csgo/" + formattedMap + ".jpg";
+						url = "https://image.gametracker.com/images/maps/160x120/csgo/" + mapUrlSafe + ".jpg";
 					}
 
 					URL constructedUrl = new URL(url);

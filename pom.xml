@@ -14,7 +14,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>1.11</release>
+                    <release>1.17</release>
                 </configuration>
             </plugin>
         </plugins>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.github.Vauff</groupId>
             <artifactId>steam-condenser-java</artifactId>
-            <version>c97e2394e8</version>
+            <version>404064d086</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
@@ -67,5 +67,5 @@
             <version>4.3.3</version>
         </dependency>
     </dependencies>
-    <version>r40</version>
+    <version>r41</version>
 </project>
