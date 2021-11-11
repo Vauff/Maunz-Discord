@@ -81,7 +81,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 
 		Util.msg(channel, "GitHub link: " + "<" + link + ">");
 
-		Message m = Util.buildPage(changelog, title, 10, 1, 0, true, false, false, channel, author);
+		Message m = Util.buildPage(changelog, title, 10, 1, 0, true, false, false, channel);
 
 		listVersions.put(author.getId(), version);
 		waitForReaction(m.getId(), author.getId());
@@ -122,7 +122,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 				}
 			}
 
-			Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) + 1, 0, true, false, false, event.getChannel().block(), event.getUser().block());
+			Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) + 1, 0, true, false, false, event.getChannel().block());
 
 			waitForReaction(m.getId(), event.getUser().block().getId());
 			listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
@@ -159,7 +159,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 				}
 			}
 
-			Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) - 1, 0, true, false, false, event.getChannel().block(), event.getUser().block());
+			Message m = Util.buildPage(changelog, title, 10, listPages.get(event.getUser().block().getId()) - 1, 0, true, false, false, event.getChannel().block());
 
 			waitForReaction(m.getId(), event.getUser().block().getId());
 			listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);

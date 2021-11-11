@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.threads;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.Await;
@@ -38,7 +37,7 @@ public class ReactionAddThread implements Runnable
 	{
 		try
 		{
-			if (AbstractCommand.AWAITED.containsKey(message.getId()) && event.getUser().block().getId().equals(AbstractCommand.AWAITED.get(message.getId()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
+			if (AbstractLegacyCommand.AWAITED.containsKey(message.getId()) && event.getUser().block().getId().equals(AbstractLegacyCommand.AWAITED.get(message.getId()).getID()) && event.getEmoji().asUnicodeEmoji().isPresent())
 			{
 				try
 				{
@@ -52,13 +51,11 @@ public class ReactionAddThread implements Runnable
 
 				try
 				{
-					Await await = AbstractCommand.AWAITED.get(message.getId());
+					Await await = AbstractLegacyCommand.AWAITED.get(message.getId());
 					AbstractCommand cmd = await.getCommand();
 
 					if (cmd instanceof AbstractLegacyCommand)
 						((AbstractLegacyCommand) cmd).onReactionAdd(event, message);
-					else if (cmd instanceof AbstractSlashCommand)
-						((AbstractSlashCommand) cmd).onReactionAdd(event, await.getInteractionEvent(), message);
 				}
 				catch (Exception e)
 				{

@@ -353,7 +353,7 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 			servers.add(serverDoc.getString("name"));
 		}
 
-		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel, user);
+		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel);
 
 		selectionServices.put(user.getId(), services);
 		selectionPages.put(user.getId(), page);

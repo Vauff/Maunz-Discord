@@ -221,7 +221,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 				break;
 			}
 
-			Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, event.getChannel().block(), user);
+			Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, event.getChannel().block());
 
 			listMessages.put(user.getId(), m.getId());
 			waitForReaction(m.getId(), user.getId());
@@ -296,7 +296,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 					break;
 				}
 
-				Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, channel, user);
+				Message m = Util.buildPage(notifications, "Notification List", 10, page, 0, true, false, false, channel);
 
 				listMessages.put(user.getId(), m.getId());
 				waitForReaction(m.getId(), user.getId());
@@ -466,7 +466,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 			servers.add(serverDoc.getString("name"));
 		}
 
-		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel, user);
+		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel);
 
 		selectionServices.put(user.getId(), services);
 		selectionMessages.put(user.getId(), m.getId());

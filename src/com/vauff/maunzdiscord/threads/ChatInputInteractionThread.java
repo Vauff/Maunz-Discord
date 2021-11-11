@@ -45,7 +45,7 @@ public class ChatInputInteractionThread implements Runnable
 			if (event.getInteraction().getUser().isBot())
 				return;
 
-			event.acknowledge().block();
+			event.deferReply().block();
 
 			String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
 			User author = event.getInteraction().getUser();

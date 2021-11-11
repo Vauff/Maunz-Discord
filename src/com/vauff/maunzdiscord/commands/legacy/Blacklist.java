@@ -79,7 +79,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 								blacklistFormatted.add(channelSelector + " **|** " + command);
 							}
 
-							Message m = Util.buildPage(blacklistFormatted, "Blacklisted Channels/Commands", 10, page, 0, false, false, false, channel, author);
+							Message m = Util.buildPage(blacklistFormatted, "Blacklisted Channels/Commands", 10, page, 0, false, false, false, channel);
 
 							waitForReaction(m.getId(), author.getId());
 							listPages.put(author.getId(), page);
@@ -330,7 +330,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 				blacklistArray.add(channel + " **|** " + command);
 			}
 
-			Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) + 1, 0, false, false, false, event.getChannel().block(), event.getUser().block());
+			Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) + 1, 0, false, false, false, event.getChannel().block());
 
 			waitForReaction(m.getId(), event.getUser().block().getId());
 			listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + 1);
@@ -362,7 +362,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 				blacklistArray.add(channel + " **|** " + command);
 			}
 
-			Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) - 1, 0, false, false, false, event.getChannel().block(), event.getUser().block());
+			Message m = Util.buildPage(blacklistArray, "Blacklisted Channels/Commands", 10, listPages.get(event.getUser().block().getId()) - 1, 0, false, false, false, event.getChannel().block());
 
 			waitForReaction(m.getId(), event.getUser().block().getId());
 			listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) - 1);

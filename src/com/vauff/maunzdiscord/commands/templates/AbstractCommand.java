@@ -1,19 +1,9 @@
 package com.vauff.maunzdiscord.commands.templates;
 
-import com.vauff.maunzdiscord.objects.Await;
 import com.vauff.maunzdiscord.objects.CommandHelp;
-import discord4j.common.util.Snowflake;
-
-import java.util.HashMap;
 
 public abstract class AbstractCommand
 {
-	/**
-	 * Holds all messages as keys which await a reaction by a specific user.
-	 * The values hold an instance of {@link Await}
-	 */
-	public static final HashMap<Snowflake, Await> AWAITED = new HashMap<>();
-
 	/**
 	 * Enum holding the different bot permissions commands may require to use
 	 *

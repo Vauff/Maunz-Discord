@@ -53,7 +53,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 				}
 			}
 
-			Message m = Util.buildPage(helpEntries, "Command List", 10, page, 0, false, false, false, channel, author);
+			Message m = Util.buildPage(helpEntries, "Command List", 10, page, 0, false, false, false, channel);
 
 			waitForReaction(m.getId(), author.getId());
 			listPages.put(author.getId(), page);
@@ -139,7 +139,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 		if (pageChange == 0)
 			return;
 
-		Message m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().block().getId()) + pageChange, 0, false, false, false, event.getChannel().block(), event.getUser().block());
+		Message m = Util.buildPage(helpEntries, "Command List", 10, listPages.get(event.getUser().block().getId()) + pageChange, 0, false, false, false, event.getChannel().block());
 
 		waitForReaction(m.getId(), event.getUser().block().getId());
 		listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + pageChange);

@@ -1,11 +1,13 @@
 package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoCollection;
+import com.vauff.maunzdiscord.threads.ButtonInteractionThread;
 import com.vauff.maunzdiscord.threads.ChatInputInteractionThread;
 import com.vauff.maunzdiscord.threads.MessageCreateThread;
 import com.vauff.maunzdiscord.threads.ReactionAddThread;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -71,6 +73,18 @@ public class MainListener
 		try
 		{
 			new ChatInputInteractionThread(event, "chatinputinteraction-" + event.getInteraction().getId().asString()).start();
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
+	}
+
+	public static void onButtonInteraction(ButtonInteractionEvent event)
+	{
+		try
+		{
+			new ButtonInteractionThread(event, "buttoninteraction-" + event.getInteraction().getId().asString()).start();
 		}
 		catch (Exception e)
 		{
