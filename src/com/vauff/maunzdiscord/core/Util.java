@@ -1,12 +1,10 @@
 package com.vauff.maunzdiscord.core;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import discord4j.common.util.Snowflake;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.component.ActionComponent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
-import discord4j.core.object.component.LayoutComponent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -16,7 +14,6 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateMono;
-import discord4j.discordjson.json.MessageData;
 import discord4j.rest.http.client.ClientException;
 import discord4j.rest.util.AllowedMentions;
 import discord4j.rest.util.Color;
@@ -485,9 +482,14 @@ public class Util
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
 			if (Objects.isNull(event))
+			{
 				return msg(channel, "That page doesn't exist!");
+			}
 			else
-				return Main.gateway.getMessageById(event.getInteraction().getChannelId(), Snowflake.of(event.getInteractionResponse().createFollowupMessage("That page doesn't exist!").block().id())).block();
+			{
+				event.editReply("That page doesn't exist!").block();
+				return null;
+			}
 		}
 		else
 		{

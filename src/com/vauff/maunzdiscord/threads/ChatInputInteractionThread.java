@@ -72,7 +72,7 @@ public class ChatInputInteractionThread implements Runnable
 				//if (!enabled && !(cmd instanceof Enable) && !(cmd instanceof Disable))
 				if (!enabled)
 				{
-					event.getInteractionResponse().createFollowupMessage("The bot is currently disabled").block();
+					event.editReply("The bot is currently disabled").block();
 					return;
 				}
 
@@ -80,7 +80,7 @@ public class ChatInputInteractionThread implements Runnable
 				{
 					if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
 					{
-						event.getInteractionResponse().createFollowupMessage("Slow down!").block();
+						event.editReply("Slow down!").block();
 						MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
 					}
 
@@ -106,7 +106,7 @@ public class ChatInputInteractionThread implements Runnable
 
 				if (blacklisted)
 				{
-					event.getInteractionResponse().createFollowupMessage("A server administrator has blacklisted this command or the channel that you ran it in").block();
+					event.editReply("A server administrator has blacklisted this command or the channel that you ran it in").block();
 					return;
 				}
 
@@ -114,7 +114,7 @@ public class ChatInputInteractionThread implements Runnable
 				{
 					if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
 					{
-						event.getInteractionResponse().createFollowupMessage("You do not have permission to use that command").block();
+						event.editReply("You do not have permission to use that command").block();
 						return;
 					}
 
@@ -125,7 +125,7 @@ public class ChatInputInteractionThread implements Runnable
 					Random rnd = new Random();
 					int code = 100000000 + rnd.nextInt(900000000);
 
-					event.getInteractionResponse().createFollowupMessage(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).block();
+					event.editReply(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).block();
 					Logger.log.error(code, e);
 				}
 			}

@@ -32,6 +32,8 @@ public class ButtonInteractionThread implements Runnable
 	{
 		try
 		{
+			event.deferReply().block();
+
 			String buttonId = event.getCustomId();
 
 			for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : Main.slashCommands)
@@ -40,6 +42,9 @@ public class ButtonInteractionThread implements Runnable
 				{
 					if (!button.getCustomId().get().equals(buttonId))
 						continue;
+
+					if (event.getMessage().isPresent())
+						event.getMessage().get().delete().block();
 
 					cmd.buttonExe(event, buttonId);
 					return;
