@@ -72,8 +72,8 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("add").get();
 		String ip = subCmd.getOption("ip").get().getValue().get().asString();
 		int port;
-		Channel channel = null;
-		long channelID = 0L;
+		Channel channel = subCmd.getOption("channel").get().getValue().get().asChannel().block();
+		long channelID = channel.getId().asLong();
 
 		try
 		{
@@ -95,12 +95,6 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		{
 			event.getInteractionResponse().createFollowupMessage("Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly").block();
 			return;
-		}
-
-		if (subCmd.getOption("channel").isPresent())
-		{
-			channel = subCmd.getOption("channel").get().getValue().get().asChannel().block();
-			channelID = channel.getId().asLong();
 		}
 
 		ObjectId serverId = getOrCreateServer(ip, port);
@@ -298,6 +292,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.name("channel")
 					.description("The channel to send server tracking messages to")
 					.type(ApplicationCommandOption.Type.CHANNEL.getValue())
+					.required(true)
 					.build())
 				.build())
 			.addOption(ApplicationCommandOptionData.builder()
