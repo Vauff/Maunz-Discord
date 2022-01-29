@@ -1,7 +1,5 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.vauff.maunzdiscord.commands.legacy.Disable;
-import com.vauff.maunzdiscord.commands.legacy.Enable;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.core.Logger;
@@ -59,20 +57,6 @@ public class MessageCreateThread implements Runnable
 					{
 						if (!cmdName.equalsIgnoreCase(Main.prefix + s))
 							continue;
-
-						boolean enabled;
-
-						if (channel instanceof PrivateChannel)
-						{
-							enabled = Util.isEnabled();
-						}
-						else
-						{
-							enabled = Util.isEnabled(event.getGuild().block());
-						}
-
-						if (!enabled && !(cmd instanceof Enable) && !(cmd instanceof Disable))
-							return;
 
 						if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
 						{

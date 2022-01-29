@@ -102,11 +102,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 			.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
 
 		Main.mongoDatabase.getCollection("services").insertOne(service);
-
-		if (channelID == 0L)
-			event.getInteractionResponse().createFollowupMessage("Successfully added a service tracking " + ip + ":" + port + "!").block();
-		else
-			event.getInteractionResponse().createFollowupMessage("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
+		event.getInteractionResponse().createFollowupMessage("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
 	}
 
 	private void exeList(ChatInputInteractionEvent event, Guild guild, User author)

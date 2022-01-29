@@ -411,31 +411,6 @@ public class Util
 	}
 
 	/**
-	 * Checks whether the bot is enabled globally
-	 *
-	 * @return true if the bot is enabled globally, false otherwise
-	 * @throws Exception
-	 */
-	public static boolean isEnabled() throws Exception
-	{
-		JSONObject botJson = new JSONObject(getFileContents(new File(getJarLocation() + "config.json")));
-
-		return botJson.getBoolean("enabled");
-	}
-
-	/**
-	 * Checks whether the bot is enabled both for a specific guild and globally
-	 *
-	 * @param guild The Guild for which to check if the bot is enabled
-	 * @return true if the bot is enabled in both, false otherwise
-	 * @throws Exception
-	 */
-	public static boolean isEnabled(Guild guild) throws Exception
-	{
-		return isEnabled() && Main.mongoDatabase.getCollection("guilds").find(eq("guildId", guild.getId().asLong())).first().getBoolean("enabled");
-	}
-
-	/**
 	 * Builds a modular page message in response to an interaction for the given parameters
 	 *
 	 * @param entries           An ArrayList<String> that contains all the entries that should be in the page builder

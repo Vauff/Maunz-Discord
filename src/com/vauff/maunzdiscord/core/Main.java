@@ -66,7 +66,6 @@ public class Main
 			{
 				json = new JSONObject();
 				file.createNewFile();
-				json.put("enabled", true);
 				json.put("discordToken", "");
 				json.put("altPlayingText", "discord.gg/v55fW9b");
 				json.put("userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
@@ -158,23 +157,17 @@ public class Main
 		legacyCommands.add(new Blacklist());
 		legacyCommands.add(new Changelog());
 		legacyCommands.add(new Colour());
-		legacyCommands.add(new Disable());
 		legacyCommands.add(new Discord());
-		legacyCommands.add(new Enable());
 		legacyCommands.add(new Help());
 		legacyCommands.add(new IsItDown());
 		legacyCommands.add(new Map());
 		legacyCommands.add(new Minecraft());
 		legacyCommands.add(new Notify());
-		legacyCommands.add(new Ping());
 		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Ping());
 		legacyCommands.add(new Players());
 		legacyCommands.add(new Reddit());
-		legacyCommands.add(new Restart());
 		legacyCommands.add(new Say());
-		legacyCommands.add(new Services());
 		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Services());
-		legacyCommands.add(new Source());
 		legacyCommands.add(new Steam());
 		legacyCommands.add(new Stop());
 
