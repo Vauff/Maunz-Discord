@@ -88,6 +88,6 @@ public class Say extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("[channel] <message>", "Makes Maunz say whatever you want her to.") };
+		return new CommandHelp[] { new CommandHelp("[channel] <message>", "Makes Maunz say whatever you want her to") };
 	}
 }

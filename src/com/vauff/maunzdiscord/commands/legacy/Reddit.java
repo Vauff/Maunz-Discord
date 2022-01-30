@@ -70,6 +70,6 @@ public class Reddit extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("<subreddit>", "Links you to the subreddit name that you provide.") };
+		return new CommandHelp[] { new CommandHelp("<subreddit>", "Links you to the subreddit name that you provide") };
 	}
 }

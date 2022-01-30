@@ -386,8 +386,8 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		CommandHelp[] commandHelps = new CommandHelp[2];
 
-		commandHelps[0] = new CommandHelp("[all/channel] <all/command>", "Allows you to blacklist the usage of different command/channel combinations (or all).");
-		commandHelps[1] = new CommandHelp("list [page]", "Lists the currently blacklisted commands/channels.");
+		commandHelps[0] = new CommandHelp("[all/channel] <all/command>", "Allows you to blacklist the usage of different command/channel combinations (or all)");
+		commandHelps[1] = new CommandHelp("list [page]", "Lists the currently blacklisted commands/channels");
 
 		return commandHelps;
 	}

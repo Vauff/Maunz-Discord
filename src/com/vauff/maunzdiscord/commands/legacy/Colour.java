@@ -90,6 +90,6 @@ public class Colour extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("[link]", "Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.") };
+		return new CommandHelp[] { new CommandHelp("[link]", "Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify") };
 	}
 }

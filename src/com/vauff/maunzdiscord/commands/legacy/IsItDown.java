@@ -140,6 +140,6 @@ public class IsItDown extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("<hostname>", "Tells you if the given hostname is down or not.") };
+		return new CommandHelp[] { new CommandHelp("<hostname>", "Tells you if the given hostname is down or not") };
 	}
 }

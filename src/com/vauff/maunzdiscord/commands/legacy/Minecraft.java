@@ -110,6 +110,6 @@ public class Minecraft extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("<uuid/username>", "Gives you full information about any Minecraft account.") };
+		return new CommandHelp[] { new CommandHelp("<uuid/username>", "Gives you full information about any Minecraft account") };
 	}
 }

@@ -385,8 +385,8 @@ public class Map extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		CommandHelp[] commandHelps = new CommandHelp[2];
 
-		commandHelps[0] = new CommandHelp("", "Tells you which map a server is playing outside of its standard map tracking channel.");
-		commandHelps[1] = new CommandHelp("[mapname]", "Gives you information on a specific map such as last time played.");
+		commandHelps[0] = new CommandHelp("", "Tells you which map a server is playing outside of its standard map tracking channel");
+		commandHelps[1] = new CommandHelp("<mapname>", "Gives you information on a specific map such as last time played");
 
 		return commandHelps;
 	}

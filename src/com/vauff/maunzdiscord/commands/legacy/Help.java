@@ -172,8 +172,8 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		CommandHelp[] commandHelps = new CommandHelp[2];
 
-		commandHelps[0] = new CommandHelp("[page]", "Lists all the available bot commands and the syntax for using each.");
-		commandHelps[1] = new CommandHelp("<command>", "Gives you help on how to use a specific command.");
+		commandHelps[0] = new CommandHelp("[page]", "Lists all the available bot commands and the syntax for using each");
+		commandHelps[1] = new CommandHelp("<command>", "Gives you help on how to use a specific command");
 
 		return commandHelps;
 	}

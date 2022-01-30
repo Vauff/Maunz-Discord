@@ -181,6 +181,6 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("[version]", "Shows you the changelog of the Maunz version you specify.") };
+		return new CommandHelp[] { new CommandHelp("[version]", "Shows you the changelog of the Maunz version you specify") };
 	}
 }

@@ -147,6 +147,6 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("<steamid>", "Gives full information on a Steam account for the given input.") };
+		return new CommandHelp[] { new CommandHelp("<steamid>", "Gives full information on a Steam account for the given input") };
 	}
 }
