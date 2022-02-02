@@ -49,13 +49,13 @@ public class MessageCreateThread implements Runnable
 			User author = event.getMessage().getAuthor().get();
 			MessageChannel channel = event.getMessage().getChannel().block();
 
-			if (cmdName.startsWith(Main.prefix))
+			if (cmdName.startsWith(Main.cfg.getPrefix()))
 			{
 				for (AbstractLegacyCommand<MessageCreateEvent> cmd : Main.legacyCommands)
 				{
 					for (String s : cmd.getAliases())
 					{
-						if (!cmdName.equalsIgnoreCase(Main.prefix + s))
+						if (!cmdName.equalsIgnoreCase(Main.cfg.getPrefix() + s))
 							continue;
 
 						if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
@@ -78,7 +78,7 @@ public class MessageCreateThread implements Runnable
 
 							for (String entry : blacklist)
 							{
-								if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.prefix, "")) || entry.split(":")[1].equalsIgnoreCase("all")))
+								if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.cfg.getPrefix(), "")) || entry.split(":")[1].equalsIgnoreCase("all")))
 								{
 									blacklisted = true;
 									break;

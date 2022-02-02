@@ -19,14 +19,10 @@ import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.RestClient;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import reactor.core.publisher.Mono;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -38,7 +34,7 @@ public class Main
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
 	public static String version = "r42";
-	public static String prefix;
+	public static Config cfg;
 
 	/**
 	 * A watch to keep track of the uptime of the bot
@@ -56,40 +52,18 @@ public class Main
 	{
 		try
 		{
-			File file = new File(Util.getJarLocation() + "config.json");
 			boolean exit = false;
-			JSONObject json;
-
-			if (file.exists())
-			{
-				json = new JSONObject(Util.getFileContents(file));
-			}
-			else
-			{
-				json = new JSONObject();
-				file.createNewFile();
-				json.put("discordToken", "");
-				json.put("altPlayingText", "discord.gg/v55fW9b");
-				json.put("userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
-				json.put("botOwners", new JSONArray());
-				json.put("devGuilds", new JSONArray());
-				json.put("prefix", "*");
-				json.put("mongoDatabase", new JSONObject());
-				json.getJSONObject("mongoDatabase").put("connectionString", "");
-				json.getJSONObject("mongoDatabase").put("database", "");
-				FileUtils.writeStringToFile(file, json.toString(4), "UTF-8");
-			}
 
 			Logger.log = LogManager.getLogger(Main.class);
-			prefix = json.getString("prefix");
+			cfg = new Config();
 
-			if (json.getString("discordToken").equals(""))
+			if (cfg.getToken().equals(""))
 			{
 				Logger.log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discord.com/developers/applications to the discordToken option in config.json");
 				exit = true;
 			}
 
-			if (json.getJSONObject("mongoDatabase").getString("connectionString").equals("") || json.getJSONObject("mongoDatabase").getString("database").equals(""))
+			if (cfg.getConnectionString().equals("") || cfg.getDatabase().equals(""))
 			{
 				Logger.log.fatal("You need to fill in all values of the mongoDatabase section of config.json to run Maunz");
 				exit = true;
@@ -101,11 +75,11 @@ public class Main
 			}
 
 			Logger.log.info("Starting Maunz-Discord " + version + "...");
-			Logger.log.info("Connecting to MongoDB (" + json.getJSONObject("mongoDatabase").getString("connectionString") + ")");
+			Logger.log.info("Connecting to MongoDB (" + cfg.getConnectionString() + ")");
 
 			try
 			{
-				mongoDatabase = MongoClients.create(json.getJSONObject("mongoDatabase").getString("connectionString")).getDatabase(json.getJSONObject("mongoDatabase").getString("database"));
+				mongoDatabase = MongoClients.create(cfg.getConnectionString()).getDatabase(cfg.getDatabase());
 			}
 			catch (Exception e)
 			{
@@ -114,7 +88,7 @@ public class Main
 				System.exit(1);
 			}
 
-			buildBot(json.getString("discordToken"));
+			buildBot(cfg.getToken());
 		}
 		catch (Exception e)
 		{
@@ -125,7 +99,7 @@ public class Main
 	/**
 	 * Builds and sets up the primary Discord4J bot object
 	 */
-	public static void buildBot(String token) throws Exception
+	public static void buildBot(String token)
 	{
 		gateway = DiscordClient.builder(token).build().gateway().withEventDispatcher(eventDispatcher ->
 			{
@@ -160,7 +134,6 @@ public class Main
 		commands.addAll(slashCommands);
 		commands.sort(Comparator.comparing(AbstractCommand::getFirstAlias));
 
-		JSONArray devGuilds = new JSONObject(Util.getFileContents("config.json")).getJSONArray("devGuilds");
 		RestClient restClient = gateway.getRestClient();
 		long appID = restClient.getApplicationId().block();
 		ArrayList<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
@@ -168,10 +141,10 @@ public class Main
 		for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : slashCommands)
 			cmdRequests.add(cmd.getCommand());
 
-		if (devGuilds.length() > 0)
+		if (cfg.getDevGuilds().length > 0)
 		{
-			for (int i = 0; i < devGuilds.length(); i++)
-				restClient.getApplicationService().bulkOverwriteGuildApplicationCommand(appID, devGuilds.getLong(i), cmdRequests).blockLast();
+			for (int i = 0; i < cfg.getDevGuilds().length; i++)
+				restClient.getApplicationService().bulkOverwriteGuildApplicationCommand(appID, cfg.getDevGuilds()[i], cmdRequests).blockLast();
 
 			// Remove all global commands while in dev mode
 			cmdRequests = new ArrayList<>();

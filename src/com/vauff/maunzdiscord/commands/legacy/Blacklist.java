@@ -91,13 +91,13 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 					else
 					{
-						Util.msg(channel, "This guild doesn't have any commands/channels blacklisted, use **" + Main.prefix + "blacklist [all/channel] \\<all/command>** to add one");
+						Util.msg(channel, "This guild doesn't have any commands/channels blacklisted, use **" + Main.cfg.getPrefix() + "blacklist [all/channel] \\<all/command>** to add one");
 					}
 				}
 
 				else if (args.length == 2)
 				{
-					String input = args[1].replace(Main.prefix, "");
+					String input = args[1].replace(Main.cfg.getPrefix(), "");
 					boolean commandExists = false;
 
 					if (input.equalsIgnoreCase("all"))
@@ -189,7 +189,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 
 					if (!location.equalsIgnoreCase(""))
 					{
-						String input = args[2].replace(Main.prefix, "");
+						String input = args[2].replace(Main.cfg.getPrefix(), "");
 						boolean commandExists = false;
 
 						if (input.equalsIgnoreCase("all"))
@@ -290,7 +290,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 			}
 			else
 			{
-				Util.msg(channel, "You need to specify arguments! See **" + Main.prefix + "help blacklist**");
+				Util.msg(channel, "You need to specify arguments! See **" + Main.cfg.getPrefix() + "help blacklist**");
 			}
 		}
 		else

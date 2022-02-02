@@ -17,7 +17,6 @@ import discord4j.rest.util.Color;
 import discord4j.rest.util.Permission;
 import org.apache.commons.io.FileUtils;
 import org.bson.Document;
-import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -139,13 +138,11 @@ public class Util
 	 * @return true if user is a bot administrator, false otherwise
 	 * @throws Exception
 	 */
-	public static boolean hasPermission(User user) throws Exception
+	public static boolean hasPermission(User user)
 	{
-		JSONObject json = new JSONObject(getFileContents(new File(getJarLocation() + "config.json")));
-
-		for (int i = 0; i < json.getJSONArray("botOwners").length(); i++)
+		for (int i = 0; i < Main.cfg.getOwners().length; i++)
 		{
-			if (user.getId().asLong() == json.getJSONArray("botOwners").getLong(i))
+			if (user.getId().asLong() == Main.cfg.getOwners()[i])
 			{
 				return true;
 			}
@@ -288,7 +285,7 @@ public class Util
 		try
 		{
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestProperty("User-Agent", getUserAgent());
+			connection.setRequestProperty("User-Agent", Main.cfg.getUserAgent());
 			connection.setConnectTimeout(5000);
 			connection.setReadTimeout(5000);
 			image = ImageIO.read(connection.getInputStream());
@@ -589,18 +586,6 @@ public class Util
 		{
 			return -1;
 		}
-	}
-
-	/**
-	 * Provides the bots global user agent from config.json
-	 *
-	 * @return The user agent
-	 */
-	public static String getUserAgent() throws Exception
-	{
-		JSONObject json = new JSONObject(getFileContents("config.json"));
-
-		return json.getString("userAgent");
 	}
 
 	/**

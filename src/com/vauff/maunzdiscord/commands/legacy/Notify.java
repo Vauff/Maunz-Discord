@@ -237,7 +237,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, "You need to specify an argument! See **" + Main.prefix + "help notify**");
+			Util.msg(channel, "You need to specify an argument! See **" + Main.cfg.getPrefix() + "help notify**");
 			return;
 		}
 
@@ -268,7 +268,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			if (!hasNotifications)
 			{
-				Util.msg(channel, "You do not have any map notifications set! Use **" + Main.prefix + "notify <mapname>** to add one");
+				Util.msg(channel, "You do not have any map notifications set! Use **" + Main.cfg.getPrefix() + "notify <mapname>** to add one");
 				return;
 			}
 

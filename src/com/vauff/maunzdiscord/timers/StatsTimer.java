@@ -2,12 +2,8 @@ package com.vauff.maunzdiscord.timers;
 
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
-import org.json.JSONObject;
-
-import java.io.File;
 
 /**
  * Holds a timer to set the playing text in Discord
@@ -40,9 +36,7 @@ public class StatsTimer
 					}
 					else
 					{
-						JSONObject json = new JSONObject(Util.getFileContents(new File(Util.getJarLocation() + "config.json")));
-
-						Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(json.getString("altPlayingText")))).block();
+						Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.cfg.getPlayingText()))).block();
 						showingGuilds = false;
 					}
 				}

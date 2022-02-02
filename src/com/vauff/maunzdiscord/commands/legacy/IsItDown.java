@@ -27,7 +27,7 @@ public class IsItDown extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, "You need to specify an argument! **Usage: " + Main.prefix + "isitdown <hostname>**");
+			Util.msg(channel, "You need to specify an argument! **Usage: " + Main.cfg.getPrefix() + "isitdown <hostname>**");
 		}
 		else
 		{
@@ -88,7 +88,7 @@ public class IsItDown extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (port == 80 || port == 443)
 			{
-				Jsoup.connect((port == 80 ? "http" : "https") + "://" + uri).userAgent(Util.getUserAgent()).get();
+				Jsoup.connect((port == 80 ? "http" : "https") + "://" + uri).userAgent(Main.cfg.getUserAgent()).get();
 			}
 
 			return true;

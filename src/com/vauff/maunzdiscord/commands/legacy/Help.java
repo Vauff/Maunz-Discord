@@ -64,8 +64,8 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 			String list = "";
 			boolean matchFound = false;
 
-			if (!arg.startsWith(Main.prefix))
-				arg = Main.prefix + arg;
+			if (!arg.startsWith(Main.cfg.getPrefix()))
+				arg = Main.cfg.getPrefix() + arg;
 
 			rootIteration:
 			for (AbstractCommand command : Main.commands)
@@ -81,7 +81,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 
 				for (String alias : command.getAliases())
 				{
-					if (arg.equalsIgnoreCase(Main.prefix + alias))
+					if (arg.equalsIgnoreCase(Main.cfg.getPrefix() + alias))
 					{
 						matchFound = true;
 
@@ -147,12 +147,14 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 
 	private String getPrefix(AbstractCommand cmd)
 	{
+		String prefix = Main.cfg.getPrefix();
+
 		if (cmd instanceof AbstractSlashCommand)
 			return "/";
-		if (Main.prefix.equals("*") || Main.prefix.equals("_") || Main.prefix.equals("`") || Main.prefix.equals(">"))
-			return "\\" + Main.prefix;
+		if (prefix.equals("*") || prefix.equals("_") || prefix.equals("`") || prefix.equals(">"))
+			return "\\" + prefix;
 		else
-			return Main.prefix;
+			return prefix;
 	}
 
 	@Override

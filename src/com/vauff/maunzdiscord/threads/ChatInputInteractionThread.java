@@ -77,7 +77,7 @@ public class ChatInputInteractionThread implements Runnable
 
 					for (String entry : blacklist)
 					{
-						if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.prefix, "")) || entry.split(":")[1].equalsIgnoreCase("all")))
+						if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.cfg.getPrefix(), "")) || entry.split(":")[1].equalsIgnoreCase("all")))
 						{
 							blacklisted = true;
 							break;

@@ -23,7 +23,7 @@ public class Minecraft extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, "You need to provide a username! **Usage: " + Main.prefix + "minecraft <uuid/username>**");
+			Util.msg(channel, "You need to provide a username! **Usage: " + Main.cfg.getPrefix() + "minecraft <uuid/username>**");
 		}
 		else
 		{

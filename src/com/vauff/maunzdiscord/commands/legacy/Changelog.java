@@ -60,7 +60,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 
 		try
 		{
-			doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+			doc = Jsoup.connect(link).userAgent(Main.cfg.getUserAgent()).get();
 		}
 		catch (HttpStatusException e)
 		{
@@ -103,7 +103,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 
 			try
 			{
-				doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+				doc = Jsoup.connect(link).userAgent(Main.cfg.getUserAgent()).get();
 			}
 			catch (HttpStatusException e)
 			{
@@ -140,7 +140,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 
 			try
 			{
-				doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+				doc = Jsoup.connect(link).userAgent(Main.cfg.getUserAgent()).get();
 			}
 			catch (HttpStatusException e)
 			{

@@ -23,7 +23,7 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, "You need to provide a Steam ID! **Usage: " + Main.prefix + "steam <steamid>**");
+			Util.msg(channel, "You need to provide a Steam ID! **Usage: " + Main.cfg.getPrefix() + "steam <steamid>**");
 		}
 		else
 		{
