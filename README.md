@@ -2,62 +2,70 @@
 
 ![Version](https://img.shields.io/github/release/Vauff/Maunz-Discord.svg?color=4CC61E&label=version) [![Add Bot to Server](https://img.shields.io/badge/add%20bot%20on-Discord-7289da.svg)](https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=104193601&scope=bot%20applications.commands)
 
-Maunz is a Discord bot created by Vauff written in Java using the Discord4J library. You can add Maunz to your guild by clicking on the Discord badge above. This project is a Discord port of my [IRC bot Maunz](https://github.com/Vauff/Maunz). If you'd like to suggest features, report bugs, receive assistance on using the bot or just follow development you're free to join the official [Maunz Discord server](https://discord.gg/v55fW9b).
+Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it is developed by Vauff using the Discord4J library. You can add Maunz to your Discord server by clicking on the add bot badge above. If you'd like to suggest features, report bugs, receive assistance on using the bot or just follow development you're free to join the official [Maunz Discord server](https://discord.gg/v55fW9b).
 
 # Commands
 
-Italic ones are permission restricted commands to either bot or guild administrators. [] indicates that the argument is optional, \<> indicates the argument is required.
+[] indicates that the argument is optional, \<> indicates the argument is required.
 
-*about - Gives information about Maunz such as version and uptime.
+## Public
 
-*benchmark \<gpu/cpu> - Provides complete benchmark information on a GPU or CPU powered by PassMark.
+`*about` - Gives information about Maunz such as version and uptime
 
-_*blacklist [all/channel] \<all/command>_ - Allows you to blacklist the usage of different command/channel combinations.
+`*benchmark <gpu/cpu>` - Provides complete benchmark information on a GPU or CPU powered by PassMark
 
-_*blacklist list [page]_ - Lists the currently blacklisted commands/channels
+`*changelog [version]` - Shows you the changelog of the Maunz version you specify
 
-*changelog [version] - Shows you the changelog of the Maunz version you specify.
+`*colour [link]` - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify
 
-*colour [link] - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify.
+`*discord` - Sends an invite link to add the bot to your own server, and an invite link to the Maunz Hub server
 
-_*disable_ - Disables Maunz either in a specific guild or globally.
+`*help [page]` - Lists all the available bot commands and the syntax for using each
 
-*discord - Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.
+`*help <command>` - Gives you help on how to use a specific command
 
-_*enable_ - Enables Maunz either in a specific guild or globally.
+`*isitdown <hostname>` - Tells you if the given hostname is down or not
 
-*help [page] - Lists all the available bot commands and the syntax for using each.
+`*map` - Tells you which map a server is playing outside of its standard map tracking channel
 
-*help \<command> - Gives you help on how to use a specific command.
+`*map <mapname>` - Gives you information on a specific map such as last time played
 
-*isitdown \<hostname> - Tells you if the given hostname is down or not.
+`*minecraft <uuid/username>` - Gives you full information about any Minecraft account
 
-*map - Tells you which map a server is playing outside of its standard map tracking channel.
+`*notify list [page]` - Lists your current map notifications
 
-*map [mapname] - Gives you information on a specific map such as last time played.
+`*notify wipe` - Wipes ALL of your map notifications
 
-*minecraft \<uuid/username> - Gives you full information about any Minecraft account.
+`*notify <mapname>` - Adds or removes a map to/from your map notifications, wildcard characters are also supported here
 
-*notify list [page] - Lists your current map notifications.
+`/ping` - Makes Maunz respond with pong
 
-*notify wipe - Wipes ALL of your map notifications.
+`*players` - Lists the current players online on a server
 
-*notify \<mapname> - Adds or removes a map to/from your map notifications, wildcard characters are also supported here.
+`*reddit <subreddit>` - Links you to the subreddit name that you provide
 
-*ping - Makes Maunz respond to you with pong, useful for testing your connection.
+`*steam <steamid>` - Gives full information on a Steam account for the given input
 
-*players - Lists the current players online on a server.
+## Server Admin
 
-*reddit \<subreddit> - Links you to the subreddit name that you provide.
+`*blacklist [all/channel] <all/command>` - Allows you to blacklist the usage of different command/channel combinations (or all)
 
-_*restart_ - Restarts Maunz.
+`*blacklist list [page]` - Lists the currently blacklisted commands/channels
 
-_*say [channel] \<message>_ - Makes Maunz say whatever you want her to!
+`*say [channel] <message>` - Makes Maunz say whatever you want her to
 
-_*services_ - Opens an interface for enabling specific services on a guild.
+`/services add <ip> [channel]` - Add a new service
 
-*source - Links you to the GitHub page of Maunz, you can submit issues/pull requests here.
+`/services list [page]` - List current services
 
-*steam \<steamid> - Gives full information on a Steam account for the given input.
+`/services info <id>` - View full info about a specific service
 
-_*stop_ - Stops Maunz.
+`/services delete <id>` - Delete a service
+
+`/services edit <id> [ip] [channel]` - Edit a service value (only pick what you're changing)
+
+`/services toggle <id> <option> <value>` - Toggle a service value
+
+## Bot Admin
+
+`*stop` - Shuts down the bot

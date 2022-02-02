@@ -60,7 +60,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 
 		try
 		{
-			doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+			doc = Jsoup.connect(link).userAgent(Main.cfg.getUserAgent()).get();
 		}
 		catch (HttpStatusException e)
 		{
@@ -103,7 +103,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 
 			try
 			{
-				doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+				doc = Jsoup.connect(link).userAgent(Main.cfg.getUserAgent()).get();
 			}
 			catch (HttpStatusException e)
 			{
@@ -140,7 +140,7 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 
 			try
 			{
-				doc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
+				doc = Jsoup.connect(link).userAgent(Main.cfg.getUserAgent()).get();
 			}
 			catch (HttpStatusException e)
 			{
@@ -181,6 +181,6 @@ public class Changelog extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("[version]", "Shows you the changelog of the Maunz version you specify.") };
+		return new CommandHelp[] { new CommandHelp("[version]", "Shows you the changelog of the Maunz version you specify") };
 	}
 }

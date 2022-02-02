@@ -24,7 +24,7 @@ public class About extends AbstractLegacyCommand<MessageCreateEvent>
 			.thumbnail("https://i.imgur.com/Fzw48O4.jpg")
 			.title("Maunz")
 			.url("https://github.com/Vauff/Maunz-Discord")
-			.description("Maunz is a Discord bot created by Vauff written in Java using the Discord4J library")
+			.description("Maunz is a multi-purpose bot with a focus on Source server tracking, it is developed by Vauff using the Discord4J library.")
 			.addField("Version", Main.version, true)
 			.addField("Java Version", System.getProperty("java.version"), true)
 			.addField("Uptime", getUptime(), true)
@@ -127,6 +127,6 @@ public class About extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("", "Gives information about Maunz such as version and uptime.") };
+		return new CommandHelp[] { new CommandHelp("", "Gives information about Maunz such as version and uptime") };
 	}
 }

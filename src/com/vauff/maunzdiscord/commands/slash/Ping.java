@@ -20,7 +20,7 @@ public class Ping extends AbstractSlashCommand<ChatInputInteractionEvent>
 	{
 		return ApplicationCommandRequest.builder()
 			.name(getName())
-			.description("Make Maunz respond with pong")
+			.description("Makes Maunz respond with pong")
 			.build();
 	}
 

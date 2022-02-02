@@ -72,8 +72,8 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("add").get();
 		String ip = subCmd.getOption("ip").get().getValue().get().asString();
 		int port;
-		Channel channel = null;
-		long channelID = 0L;
+		Channel channel = subCmd.getOption("channel").get().getValue().get().asChannel().block();
+		long channelID = channel.getId().asLong();
 
 		try
 		{
@@ -97,22 +97,13 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 			return;
 		}
 
-		if (subCmd.getOption("channel").isPresent())
-		{
-			channel = subCmd.getOption("channel").get().getValue().get().asChannel().block();
-			channelID = channel.getId().asLong();
-		}
-
 		ObjectId serverId = getOrCreateServer(ip, port);
 		Document service = new Document("enabled", true).append("online", true).append("mapCharacterLimit", false).append("lastMap", "N/A").append("serverID", serverId).append("guildID", guild.getId().asLong())
 			.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
 
 		Main.mongoDatabase.getCollection("services").insertOne(service);
 
-		if (channelID == 0L)
-			event.editReply("Successfully added a service tracking " + ip + ":" + port + "!").block();
-		else
-			event.editReply("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
+		event.editReply("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
 	}
 
 	private void exeList(ChatInputInteractionEvent event, Guild guild, User author)
@@ -297,6 +288,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.name("channel")
 					.description("The channel to send server tracking messages to")
 					.type(ApplicationCommandOption.Type.CHANNEL.getValue())
+					.required(true)
 					.build())
 				.build())
 			.addOption(ApplicationCommandOptionData.builder()

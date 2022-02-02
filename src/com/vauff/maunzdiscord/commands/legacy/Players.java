@@ -195,6 +195,6 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("", "Lists the current players online on a server.") };
+		return new CommandHelp[] { new CommandHelp("", "Lists the current players online on a server") };
 	}
 }

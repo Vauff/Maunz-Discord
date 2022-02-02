@@ -1,7 +1,5 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.vauff.maunzdiscord.commands.legacy.Disable;
-import com.vauff.maunzdiscord.commands.legacy.Enable;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.core.Logger;
@@ -51,28 +49,14 @@ public class MessageCreateThread implements Runnable
 			User author = event.getMessage().getAuthor().get();
 			MessageChannel channel = event.getMessage().getChannel().block();
 
-			if (cmdName.startsWith(Main.prefix))
+			if (cmdName.startsWith(Main.cfg.getPrefix()))
 			{
 				for (AbstractLegacyCommand<MessageCreateEvent> cmd : Main.legacyCommands)
 				{
 					for (String s : cmd.getAliases())
 					{
-						if (!cmdName.equalsIgnoreCase(Main.prefix + s))
+						if (!cmdName.equalsIgnoreCase(Main.cfg.getPrefix() + s))
 							continue;
-
-						boolean enabled;
-
-						if (channel instanceof PrivateChannel)
-						{
-							enabled = Util.isEnabled();
-						}
-						else
-						{
-							enabled = Util.isEnabled(event.getGuild().block());
-						}
-
-						if (!enabled && !(cmd instanceof Enable) && !(cmd instanceof Disable))
-							return;
 
 						if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
 						{
@@ -94,7 +78,7 @@ public class MessageCreateThread implements Runnable
 
 							for (String entry : blacklist)
 							{
-								if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.prefix, "")) || entry.split(":")[1].equalsIgnoreCase("all")))
+								if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.cfg.getPrefix(), "")) || entry.split(":")[1].equalsIgnoreCase("all")))
 								{
 									blacklisted = true;
 									break;

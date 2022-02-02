@@ -33,6 +33,6 @@ public class Discord extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("", "Sends an invite link to add the bot to your own server and an invite link to the Maunz Hub server.") };
+		return new CommandHelp[] { new CommandHelp("", "Sends an invite link to add the bot to your own server, and an invite link to the Maunz Hub server") };
 	}
 }

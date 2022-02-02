@@ -91,13 +91,13 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 					}
 					else
 					{
-						Util.msg(channel, "This guild doesn't have any commands/channels blacklisted, use **" + Main.prefix + "blacklist [all/channel] \\<all/command>** to add one");
+						Util.msg(channel, "This guild doesn't have any commands/channels blacklisted, use **" + Main.cfg.getPrefix() + "blacklist [all/channel] \\<all/command>** to add one");
 					}
 				}
 
 				else if (args.length == 2)
 				{
-					String input = args[1].replace(Main.prefix, "");
+					String input = args[1].replace(Main.cfg.getPrefix(), "");
 					boolean commandExists = false;
 
 					if (input.equalsIgnoreCase("all"))
@@ -189,7 +189,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 
 					if (!location.equalsIgnoreCase(""))
 					{
-						String input = args[2].replace(Main.prefix, "");
+						String input = args[2].replace(Main.cfg.getPrefix(), "");
 						boolean commandExists = false;
 
 						if (input.equalsIgnoreCase("all"))
@@ -290,7 +290,7 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 			}
 			else
 			{
-				Util.msg(channel, "You need to specify arguments! See **" + Main.prefix + "help blacklist**");
+				Util.msg(channel, "You need to specify arguments! See **" + Main.cfg.getPrefix() + "help blacklist**");
 			}
 		}
 		else
@@ -386,8 +386,8 @@ public class Blacklist extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		CommandHelp[] commandHelps = new CommandHelp[2];
 
-		commandHelps[0] = new CommandHelp("[all/channel] <all/command>", "Allows you to blacklist the usage of different command/channel combinations (or all).");
-		commandHelps[1] = new CommandHelp("list [page]", "Lists the currently blacklisted commands/channels.");
+		commandHelps[0] = new CommandHelp("[all/channel] <all/command>", "Allows you to blacklist the usage of different command/channel combinations (or all)");
+		commandHelps[1] = new CommandHelp("list [page]", "Lists the currently blacklisted commands/channels");
 
 		return commandHelps;
 	}

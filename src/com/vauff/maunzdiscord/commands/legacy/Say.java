@@ -27,7 +27,7 @@ public class Say extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, "I need a message to send! **Usage: " + Main.prefix + "say [channel] <message>**");
+			Util.msg(channel, "I need a message to send! **Usage: " + Main.cfg.getPrefix() + "say [channel] <message>**");
 			return;
 		}
 
@@ -35,7 +35,7 @@ public class Say extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			if (args.length == 2)
 			{
-				Util.msg(channel, "I need a message to send! **Usage: " + Main.prefix + "say [channel] <message>**");
+				Util.msg(channel, "I need a message to send! **Usage: " + Main.cfg.getPrefix() + "say [channel] <message>**");
 				return;
 			}
 
@@ -88,6 +88,6 @@ public class Say extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("[channel] <message>", "Makes Maunz say whatever you want her to.") };
+		return new CommandHelp[] { new CommandHelp("[channel] <message>", "Makes Maunz say whatever you want her to") };
 	}
 }

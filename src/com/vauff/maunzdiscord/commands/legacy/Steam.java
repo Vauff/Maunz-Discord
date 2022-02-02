@@ -23,7 +23,7 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, "You need to provide a Steam ID! **Usage: " + Main.prefix + "steam <steamid>**");
+			Util.msg(channel, "You need to provide a Steam ID! **Usage: " + Main.cfg.getPrefix() + "steam <steamid>**");
 		}
 		else
 		{
@@ -147,6 +147,6 @@ public class Steam extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("<steamid>", "Gives full information on a Steam account for the given input.") };
+		return new CommandHelp[] { new CommandHelp("<steamid>", "Gives full information on a Steam account for the given input") };
 	}
 }

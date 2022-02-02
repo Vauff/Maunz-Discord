@@ -33,6 +33,6 @@ public class Stop extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("", "Stops Maunz.") };
+		return new CommandHelp[] { new CommandHelp("", "Shuts down the bot") };
 	}
 }

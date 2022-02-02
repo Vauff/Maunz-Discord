@@ -237,7 +237,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (args.length == 1)
 		{
-			Util.msg(channel, "You need to specify an argument! See **" + Main.prefix + "help notify**");
+			Util.msg(channel, "You need to specify an argument! See **" + Main.cfg.getPrefix() + "help notify**");
 			return;
 		}
 
@@ -268,7 +268,7 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 		{
 			if (!hasNotifications)
 			{
-				Util.msg(channel, "You do not have any map notifications set! Use **" + Main.prefix + "notify <mapname>** to add one");
+				Util.msg(channel, "You do not have any map notifications set! Use **" + Main.cfg.getPrefix() + "notify <mapname>** to add one");
 				return;
 			}
 
@@ -541,9 +541,9 @@ public class Notify extends AbstractLegacyCommand<MessageCreateEvent>
 	{
 		CommandHelp[] commandHelps = new CommandHelp[3];
 
-		commandHelps[0] = new CommandHelp("list [page]", "Lists your current map notifications.");
-		commandHelps[1] = new CommandHelp("wipe", "Wipes ALL of your map notifications.");
-		commandHelps[2] = new CommandHelp("<mapname>", "Adds or removes a map to/from your map notifications, wildcard characters are also supported here.");
+		commandHelps[0] = new CommandHelp("list [page]", "Lists your current map notifications");
+		commandHelps[1] = new CommandHelp("wipe", "Wipes ALL of your map notifications");
+		commandHelps[2] = new CommandHelp("<mapname>", "Adds or removes a map to/from your map notifications, wildcard characters are also supported here");
 
 		return commandHelps;
 	}

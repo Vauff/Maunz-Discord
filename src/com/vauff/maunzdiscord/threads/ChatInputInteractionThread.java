@@ -56,26 +56,6 @@ public class ChatInputInteractionThread implements Runnable
 			{
 				if (!cmdName.equalsIgnoreCase(cmd.getName()))
 					continue;
-
-				boolean enabled;
-
-				if (channel instanceof PrivateChannel)
-				{
-					enabled = Util.isEnabled();
-				}
-				else
-				{
-					enabled = Util.isEnabled(guild);
-				}
-
-				// Fix this when enable/disable ported to slash commands
-				//if (!enabled && !(cmd instanceof Enable) && !(cmd instanceof Disable))
-				if (!enabled)
-				{
-					event.editReply("The bot is currently disabled").block();
-					return;
-				}
-
 				if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
 				{
 					if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
@@ -96,7 +76,7 @@ public class ChatInputInteractionThread implements Runnable
 
 					for (String entry : blacklist)
 					{
-						if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.prefix, "")) || entry.split(":")[1].equalsIgnoreCase("all")))
+						if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.cfg.getPrefix(), "")) || entry.split(":")[1].equalsIgnoreCase("all")))
 						{
 							blacklisted = true;
 							break;

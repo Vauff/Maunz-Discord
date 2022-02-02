@@ -228,6 +228,6 @@ public class Benchmark extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public CommandHelp[] getHelp()
 	{
-		return new CommandHelp[] { new CommandHelp("<gpu/cpu>", "Provides complete benchmark information on a GPU or CPU powered by PassMark.") };
+		return new CommandHelp[] { new CommandHelp("<gpu/cpu>", "Provides complete benchmark information on a GPU or CPU powered by PassMark") };
 	}
 }

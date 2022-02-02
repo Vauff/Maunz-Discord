@@ -42,7 +42,7 @@ public class MainListener
 
 			if (col.countDocuments(eq("guildId", guildId)) == 0L)
 			{
-				Document doc = new Document("guildId", guildId).append("enabled", true).append("lastGuildName", guildName).append("blacklist", new ArrayList());
+				Document doc = new Document("guildId", guildId).append("lastGuildName", guildName).append("blacklist", new ArrayList());
 				col.insertOne(doc);
 			}
 			else if (!col.find(eq("guildId", guildId)).first().getString("lastGuildName").equals(guildName))
