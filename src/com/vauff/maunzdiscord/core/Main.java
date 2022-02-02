@@ -88,7 +88,32 @@ public class Main
 				System.exit(1);
 			}
 
-			buildBot(cfg.getToken());
+			gateway = DiscordClient.builder(cfg.getToken()).build().gateway().withEventDispatcher(eventDispatcher ->
+				{
+					var event1 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
+					var event2 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
+					return Mono.when(event1, event2);
+				})
+				.login().block();
+
+			uptime.start();
+			setupCommands();
+
+			gateway.on(ChatInputInteractionEvent.class).subscribe(Logger::onChatInputInteraction);
+			gateway.on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
+			gateway.on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
+			gateway.on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
+			gateway.on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
+			gateway.on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
+			gateway.on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
+			gateway.on(ChatInputInteractionEvent.class).subscribe(MainListener::onChatInputInteraction);
+			gateway.on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
+
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
+
+			// Keep app alive by waiting for disconnect
+			gateway.onDisconnect().block();
 		}
 		catch (Exception e)
 		{
@@ -97,20 +122,10 @@ public class Main
 	}
 
 	/**
-	 * Builds and sets up the primary Discord4J bot object
+	 * Fills command arrays and registers appropriate slash commands with Discord
 	 */
-	public static void buildBot(String token)
+	public static void setupCommands()
 	{
-		gateway = DiscordClient.builder(token).build().gateway().withEventDispatcher(eventDispatcher ->
-			{
-				var event1 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
-				var event2 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
-				return Mono.when(event1, event2);
-			})
-			.login().block();
-
-		uptime.start();
-
 		legacyCommands.add(new About());
 		legacyCommands.add(new Benchmark());
 		legacyCommands.add(new Blacklist());
@@ -151,21 +166,5 @@ public class Main
 		}
 
 		restClient.getApplicationService().bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).blockLast();
-
-		gateway.on(ChatInputInteractionEvent.class).subscribe(Logger::onChatInputInteraction);
-		gateway.on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
-		gateway.on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
-		gateway.on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
-		gateway.on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
-		gateway.on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
-		gateway.on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
-		gateway.on(ChatInputInteractionEvent.class).subscribe(MainListener::onChatInputInteraction);
-		gateway.on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
-
-		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
-		Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
-
-		// Keep app alive by waiting for disconnect
-		gateway.onDisconnect().block();
 	}
 }
