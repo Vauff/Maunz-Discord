@@ -17,6 +17,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
+import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.RestClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -26,6 +27,7 @@ import org.json.JSONObject;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.concurrent.Executors;
@@ -135,23 +137,6 @@ public class Main
 
 		uptime.start();
 
-		JSONArray devGuilds = new JSONObject(Util.getFileContents("config.json")).getJSONArray("devGuilds");
-		RestClient restClient = gateway.getRestClient();
-
-		if (devGuilds.length() > 0)
-		{
-			for (int i = 0; i < devGuilds.length(); i++)
-			{
-				for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : slashCommands)
-					restClient.getApplicationService().createGuildApplicationCommand(restClient.getApplicationId().block(), devGuilds.getLong(i), cmd.getCommand()).block();
-			}
-		}
-		else
-		{
-			for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : slashCommands)
-				restClient.getApplicationService().createGlobalApplicationCommand(restClient.getApplicationId().block(), cmd.getCommand()).block();
-		}
-
 		legacyCommands.add(new About());
 		legacyCommands.add(new Benchmark());
 		legacyCommands.add(new Blacklist());
@@ -174,6 +159,25 @@ public class Main
 		commands.addAll(legacyCommands);
 		commands.addAll(slashCommands);
 		commands.sort(Comparator.comparing(AbstractCommand::getFirstAlias));
+
+		JSONArray devGuilds = new JSONObject(Util.getFileContents("config.json")).getJSONArray("devGuilds");
+		RestClient restClient = gateway.getRestClient();
+		long appID = restClient.getApplicationId().block();
+		ArrayList<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
+
+		for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : slashCommands)
+			cmdRequests.add(cmd.getCommand());
+
+		if (devGuilds.length() > 0)
+		{
+			for (int i = 0; i < devGuilds.length(); i++)
+				restClient.getApplicationService().bulkOverwriteGuildApplicationCommand(appID, devGuilds.getLong(i), cmdRequests).blockLast();
+
+			// Remove all global commands while in dev mode
+			cmdRequests = new ArrayList<>();
+		}
+
+		restClient.getApplicationService().bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).blockLast();
 
 		gateway.on(ChatInputInteractionEvent.class).subscribe(Logger::onChatInputInteraction);
 		gateway.on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
