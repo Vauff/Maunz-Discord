@@ -68,4 +68,4 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 ## Bot Admin
 
-`*stop` - Shuts down the bot
+`/stop` - Shuts down the bot
