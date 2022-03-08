@@ -301,7 +301,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.type(ApplicationCommandOption.Type.INTEGER.getValue())
 					.build())
 				.build())
-			.addOption(ApplicationCommandOptionData.builder()
+			/*.addOption(ApplicationCommandOptionData.builder()
 				.name("info")
 				.description("View full info about a specific service")
 				.type(ApplicationCommandOption.Type.SUB_COMMAND.getValue())
@@ -311,7 +311,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.type(ApplicationCommandOption.Type.INTEGER.getValue())
 					.required(true)
 					.build())
-				.build())
+				.build())*/
 			.addOption(ApplicationCommandOptionData.builder()
 				.name("delete")
 				.description("Delete a service")
@@ -323,7 +323,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.required(true)
 					.build())
 				.build())
-			.addOption(ApplicationCommandOptionData.builder()
+			/*.addOption(ApplicationCommandOptionData.builder()
 				.name("edit")
 				.description("Edit a service value (only pick what you're changing)")
 				.type(ApplicationCommandOption.Type.SUB_COMMAND.getValue())
@@ -378,7 +378,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.type(ApplicationCommandOption.Type.BOOLEAN.getValue())
 					.required(true)
 					.build())
-				.build())
+				.build())*/
 			.build();
 	}
 
