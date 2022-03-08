@@ -135,7 +135,7 @@ public class Main
 		legacyCommands.add(new Help());
 		legacyCommands.add(new IsItDown());
 		legacyCommands.add(new Map());
-		legacyCommands.add(new Minecraft());
+		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Minecraft());
 		legacyCommands.add(new Notify());
 		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Ping());
 		legacyCommands.add(new Players());

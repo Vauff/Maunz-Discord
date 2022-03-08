@@ -30,7 +30,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*map <mapname>` - Gives you information on a specific map such as last time played
 
-`*minecraft <uuid/username>` - Gives you full information about any Minecraft account
+`/minecraft <account>` - Gives you full information about a Minecraft account
 
 `*notify list [page]` - Lists your current map notifications
 
