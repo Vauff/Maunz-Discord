@@ -7,7 +7,7 @@ import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandOption;
@@ -181,7 +181,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		event.editReply("This feature is not yet implemented").block();
 	}
 
-	private void runListSelection(InteractionCreateEvent event, User author, int page)
+	private void runListSelection(DeferrableInteractionEvent event, User author, int page)
 	{
 		ArrayList<String> servicesDisplay = new ArrayList<>();
 		int id = 0;

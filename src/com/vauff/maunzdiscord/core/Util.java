@@ -1,7 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
-import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.component.ActionComponent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
@@ -425,7 +424,7 @@ public class Util
 	 * @param prevBtn           Button to go to previous page
 	 * @param nextBtn           Button to go to next page
 	 */
-	public static void buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, InteractionCreateEvent event, Button prevBtn, Button nextBtn)
+	public static void buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, DeferrableInteractionEvent event, Button prevBtn, Button nextBtn)
 	{
 		buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, null, event, prevBtn, nextBtn);
 	}
@@ -449,7 +448,7 @@ public class Util
 		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, channel, null, null, null);
 	}
 
-	private static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, InteractionCreateEvent event, Button prevBtn, Button nextBtn)
+	private static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, DeferrableInteractionEvent event, Button prevBtn, Button nextBtn)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
