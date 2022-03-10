@@ -44,7 +44,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `/reddit <subreddit>` - Links you to the subreddit name that you provide
 
-`*steam <steamid>` - Gives full information on a Steam account for the given input
+`/steam <steamid>` - Gives you full information about a Steam account
 
 ## Server Admin
 
