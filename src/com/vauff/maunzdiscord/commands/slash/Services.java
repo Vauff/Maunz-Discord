@@ -15,7 +15,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.bson.Document;
@@ -39,6 +39,12 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
+
+		if (channel instanceof PrivateChannel)
+		{
+			event.editReply("This command can't be done in a PM, only in a guild that you have admin permissions in").block();
+			return;
+		}
 
 		if (interaction.getOption("add").isPresent())
 			exeAdd(event, guild);
