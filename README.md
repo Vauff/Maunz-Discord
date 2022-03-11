@@ -52,7 +52,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*blacklist list [page]` - Lists the currently blacklisted commands/channels
 
-`*say [channel] <message>` - Makes Maunz say whatever you want her to
+`/say <message> [channel]` - Sends a custom message from Maunz to any channel
 
 `/services add <ip> [channel]` - Add a new service
 

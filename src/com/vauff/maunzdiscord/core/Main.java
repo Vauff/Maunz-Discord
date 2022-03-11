@@ -140,7 +140,7 @@ public class Main
 		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Ping());
 		legacyCommands.add(new Players());
 		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Reddit());
-		legacyCommands.add(new Say());
+		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Say());
 		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Services());
 		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Steam());
 		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Stop());
