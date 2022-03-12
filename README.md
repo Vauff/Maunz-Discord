@@ -12,7 +12,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*about` - Gives information about Maunz such as version and uptime
 
-`*benchmark <gpu/cpu>` - Provides complete benchmark information on a GPU or CPU powered by PassMark
+`/benchmark <query>` - Provides complete benchmark information on a GPU or CPU powered by PassMark
 
 `*changelog [version]` - Shows you the changelog of the Maunz version you specify
 

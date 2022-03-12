@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.core;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.vauff.maunzdiscord.commands.legacy.*;
+import com.vauff.maunzdiscord.commands.slash.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
@@ -127,7 +128,7 @@ public class Main
 	public static void setupCommands()
 	{
 		legacyCommands.add(new About());
-		legacyCommands.add(new Benchmark());
+		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Benchmark());
 		legacyCommands.add(new Blacklist());
 		legacyCommands.add(new Changelog());
 		legacyCommands.add(new Colour());
@@ -135,15 +136,15 @@ public class Main
 		legacyCommands.add(new Help());
 		legacyCommands.add(new IsItDown());
 		legacyCommands.add(new Map());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Minecraft());
+		slashCommands.add(new Minecraft());
 		legacyCommands.add(new Notify());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Ping());
+		slashCommands.add(new Ping());
 		legacyCommands.add(new Players());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Reddit());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Say());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Services());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Steam());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Stop());
+		slashCommands.add(new Reddit());
+		slashCommands.add(new Say());
+		slashCommands.add(new Services());
+		slashCommands.add(new Steam());
+		slashCommands.add(new Stop());
 
 		commands.addAll(legacyCommands);
 		commands.addAll(slashCommands);
