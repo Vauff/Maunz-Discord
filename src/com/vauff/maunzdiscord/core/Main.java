@@ -128,13 +128,13 @@ public class Main
 	public static void setupCommands()
 	{
 		legacyCommands.add(new About());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Benchmark());
+		slashCommands.add(new Benchmark());
 		legacyCommands.add(new Blacklist());
 		legacyCommands.add(new Changelog());
 		legacyCommands.add(new Colour());
 		legacyCommands.add(new Discord());
 		legacyCommands.add(new Help());
-		legacyCommands.add(new IsItDown());
+		slashCommands.add(new IsItDown());
 		legacyCommands.add(new Map());
 		slashCommands.add(new Minecraft());
 		legacyCommands.add(new Notify());

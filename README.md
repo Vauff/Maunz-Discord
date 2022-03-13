@@ -24,7 +24,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*help <command>` - Gives you help on how to use a specific command
 
-`*isitdown <hostname>` - Tells you if the given hostname is down or not
+`/isitdown <hostname>` - Tells you if the given hostname is down or not
 
 `*map` - Tells you which map a server is playing outside of its standard map tracking channel
 
