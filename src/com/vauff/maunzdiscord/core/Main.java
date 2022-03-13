@@ -131,7 +131,7 @@ public class Main
 		slashCommands.add(new Benchmark());
 		legacyCommands.add(new Blacklist());
 		legacyCommands.add(new Changelog());
-		legacyCommands.add(new Colour());
+		slashCommands.add(new Colour());
 		legacyCommands.add(new Discord());
 		legacyCommands.add(new Help());
 		slashCommands.add(new IsItDown());

@@ -16,7 +16,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*changelog [version]` - Shows you the changelog of the Maunz version you specify
 
-`*colour [link]` - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify
+`/colour [image] [link]` - Returns the average RGB and HTML/Hex colour codes of an image attachment or link
 
 `*discord` - Sends an invite link to add the bot to your own server, and an invite link to the Maunz Hub server
 
