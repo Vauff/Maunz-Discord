@@ -12,11 +12,11 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*about` - Gives information about Maunz such as version and uptime
 
-`*benchmark <gpu/cpu>` - Provides complete benchmark information on a GPU or CPU powered by PassMark
+`/benchmark <query>` - Provides complete benchmark information on a GPU or CPU powered by PassMark
 
 `*changelog [version]` - Shows you the changelog of the Maunz version you specify
 
-`*colour [link]` - Returns the average RGB and HTML/Hex colour codes of an attachment or image link you specify
+`/colour [image] [link]` - Returns the average RGB and HTML/Hex colour codes of an image attachment or link
 
 `*discord` - Sends an invite link to add the bot to your own server, and an invite link to the Maunz Hub server
 
@@ -24,13 +24,13 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*help <command>` - Gives you help on how to use a specific command
 
-`*isitdown <hostname>` - Tells you if the given hostname is down or not
+`/isitdown <hostname>` - Tells you if the given hostname is down or not
 
 `*map` - Tells you which map a server is playing outside of its standard map tracking channel
 
 `*map <mapname>` - Gives you information on a specific map such as last time played
 
-`*minecraft <uuid/username>` - Gives you full information about any Minecraft account
+`/minecraft <account>` - Gives you full information about a Minecraft account
 
 `*notify list [page]` - Lists your current map notifications
 
@@ -42,9 +42,9 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*players` - Lists the current players online on a server
 
-`*reddit <subreddit>` - Links you to the subreddit name that you provide
+`/reddit <subreddit>` - Links you to the subreddit name that you provide
 
-`*steam <steamid>` - Gives full information on a Steam account for the given input
+`/steam <steamid>` - Gives you full information about a Steam account
 
 ## Server Admin
 
@@ -52,7 +52,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `*blacklist list [page]` - Lists the currently blacklisted commands/channels
 
-`*say [channel] <message>` - Makes Maunz say whatever you want her to
+`/say <message> [channel]` - Sends a custom message from Maunz to any channel
 
 `/services add <ip> [channel]` - Add a new service
 
@@ -68,4 +68,4 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 ## Bot Admin
 
-`*stop` - Shuts down the bot
+`/stop` - Shuts down the bot

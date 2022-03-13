@@ -49,7 +49,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 
 				for (CommandHelp commandHelp : command.getHelp())
 				{
-					helpEntries.add("**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
+					helpEntries.add("**" + getPrefix(command, true) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
 				}
 			}
 
@@ -64,12 +64,11 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 			String list = "";
 			boolean matchFound = false;
 
-			if (!arg.startsWith(Main.cfg.getPrefix()))
-				arg = Main.cfg.getPrefix() + arg;
-
 			rootIteration:
 			for (AbstractCommand command : Main.commands)
 			{
+				String cleanArg = getPrefix(command, false).equals(arg.substring(0, 1)) ? arg.substring(1) : arg;
+
 				if (Objects.isNull(command.getHelp()))
 					continue;
 
@@ -81,13 +80,13 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 
 				for (String alias : command.getAliases())
 				{
-					if (arg.equalsIgnoreCase(Main.cfg.getPrefix() + alias))
+					if (cleanArg.equalsIgnoreCase(alias))
 					{
 						matchFound = true;
 
 						for (CommandHelp commandHelp : command.getHelp())
 						{
-							list += "**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription() + System.lineSeparator();
+							list += "**" + getPrefix(command, true) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription() + System.lineSeparator();
 						}
 
 						list = StringUtils.removeEnd(list, System.lineSeparator());
@@ -127,7 +126,7 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 
 			for (CommandHelp commandHelp : command.getHelp())
 			{
-				helpEntries.add("**" + getPrefix(command) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
+				helpEntries.add("**" + getPrefix(command, true) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
 			}
 		}
 
@@ -145,13 +144,13 @@ public class Help extends AbstractLegacyCommand<MessageCreateEvent>
 		listPages.put(event.getUser().block().getId(), listPages.get(event.getUser().block().getId()) + pageChange);
 	}
 
-	private String getPrefix(AbstractCommand cmd)
+	private String getPrefix(AbstractCommand cmd, boolean escape)
 	{
 		String prefix = Main.cfg.getPrefix();
 
 		if (cmd instanceof AbstractSlashCommand)
 			return "/";
-		if (prefix.equals("*") || prefix.equals("_") || prefix.equals("`") || prefix.equals(">"))
+		if (escape && (prefix.equals("*") || prefix.equals("_") || prefix.equals("`") || prefix.equals(">")))
 			return "\\" + prefix;
 		else
 			return prefix;

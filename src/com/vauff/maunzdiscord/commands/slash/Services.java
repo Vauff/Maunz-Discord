@@ -18,6 +18,7 @@ import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.bson.Document;
@@ -41,6 +42,12 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
+
+		if (channel instanceof PrivateChannel)
+		{
+			event.editReply("This command can't be done in a PM, only in a guild that you have admin permissions in").block();
+			return;
+		}
 
 		if (interaction.getOption("add").isPresent())
 			exeAdd(event, guild);
@@ -301,7 +308,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.type(ApplicationCommandOption.Type.INTEGER.getValue())
 					.build())
 				.build())
-			.addOption(ApplicationCommandOptionData.builder()
+			/*.addOption(ApplicationCommandOptionData.builder()
 				.name("info")
 				.description("View full info about a specific service")
 				.type(ApplicationCommandOption.Type.SUB_COMMAND.getValue())
@@ -311,7 +318,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.type(ApplicationCommandOption.Type.INTEGER.getValue())
 					.required(true)
 					.build())
-				.build())
+				.build())*/
 			.addOption(ApplicationCommandOptionData.builder()
 				.name("delete")
 				.description("Delete a service")
@@ -323,7 +330,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.required(true)
 					.build())
 				.build())
-			.addOption(ApplicationCommandOptionData.builder()
+			/*.addOption(ApplicationCommandOptionData.builder()
 				.name("edit")
 				.description("Edit a service value (only pick what you're changing)")
 				.type(ApplicationCommandOption.Type.SUB_COMMAND.getValue())
@@ -378,7 +385,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.type(ApplicationCommandOption.Type.BOOLEAN.getValue())
 					.required(true)
 					.build())
-				.build())
+				.build())*/
 			.build();
 	}
 

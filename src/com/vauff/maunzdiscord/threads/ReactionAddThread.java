@@ -7,6 +7,7 @@ import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.Await;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
+import discord4j.rest.http.client.ClientException;
 
 import java.util.Random;
 
@@ -51,11 +52,26 @@ public class ReactionAddThread implements Runnable
 
 				try
 				{
-					Await await = AbstractLegacyCommand.AWAITED.get(message.getId());
-					AbstractCommand cmd = await.getCommand();
+					try
+					{
+						Await await = AbstractLegacyCommand.AWAITED.get(message.getId());
+						AbstractCommand cmd = await.getCommand();
 
-					if (cmd instanceof AbstractLegacyCommand)
-						((AbstractLegacyCommand) cmd).onReactionAdd(event, message);
+						if (cmd instanceof AbstractLegacyCommand)
+							((AbstractLegacyCommand) cmd).onReactionAdd(event, message);
+					}
+					catch (ClientException e)
+					{
+						if (e.getStatus().code() == 403)
+						{
+							Util.msg(event.getUser().block().getPrivateChannel().block(), true, ":exclamation:  |  **Missing permissions!**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + event.getChannel().block().getMention() + " because it's lacking permissions." + System.lineSeparator() + System.lineSeparator() + "Please have a guild administrator confirm role/channel permissions are correctly set and try again.");
+							return;
+						}
+						else
+						{
+							throw e;
+						}
+					}
 				}
 				catch (Exception e)
 				{

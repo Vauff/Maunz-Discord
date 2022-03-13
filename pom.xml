@@ -12,7 +12,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.9.0</version>
+                <version>3.10.1</version>
                 <configuration>
                     <release>1.17</release>
                 </configuration>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.discord4j</groupId>
             <artifactId>discord4j-core</artifactId>
-            <version>3.2.1</version>
+            <version>3.2.2</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.17.1</version>
+            <version>2.17.2</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -64,8 +64,8 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>4.4.1</version>
+            <version>4.5.0</version>
         </dependency>
     </dependencies>
-    <version>r42</version>
+    <version>r44</version>
 </project>

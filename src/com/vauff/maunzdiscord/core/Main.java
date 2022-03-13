@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.core;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.vauff.maunzdiscord.commands.legacy.*;
+import com.vauff.maunzdiscord.commands.slash.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
@@ -34,7 +35,7 @@ public class Main
 {
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
-	public static String version = "r42";
+	public static String version = "r44";
 	public static Config cfg;
 
 	/**
@@ -129,23 +130,23 @@ public class Main
 	public static void setupCommands()
 	{
 		legacyCommands.add(new About());
-		legacyCommands.add(new Benchmark());
+		slashCommands.add(new Benchmark());
 		legacyCommands.add(new Blacklist());
 		legacyCommands.add(new Changelog());
-		legacyCommands.add(new Colour());
+		slashCommands.add(new Colour());
 		legacyCommands.add(new Discord());
 		legacyCommands.add(new Help());
-		legacyCommands.add(new IsItDown());
+		slashCommands.add(new IsItDown());
 		legacyCommands.add(new Map());
-		legacyCommands.add(new Minecraft());
+		slashCommands.add(new Minecraft());
 		legacyCommands.add(new Notify());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Ping());
+		slashCommands.add(new Ping());
 		legacyCommands.add(new Players());
-		legacyCommands.add(new Reddit());
-		legacyCommands.add(new Say());
-		slashCommands.add(new com.vauff.maunzdiscord.commands.slash.Services());
-		legacyCommands.add(new Steam());
-		legacyCommands.add(new Stop());
+		slashCommands.add(new Reddit());
+		slashCommands.add(new Say());
+		slashCommands.add(new Services());
+		slashCommands.add(new Steam());
+		slashCommands.add(new Stop());
 
 		commands.addAll(legacyCommands);
 		commands.addAll(slashCommands);
