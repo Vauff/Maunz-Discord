@@ -1,6 +1,6 @@
 # Maunz-Discord
 
-![Version](https://img.shields.io/github/release/Vauff/Maunz-Discord.svg?color=4CC61E&label=version) [![Add Bot to Server](https://img.shields.io/badge/add%20bot%20on-Discord-7289da.svg)](https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=104193601&scope=bot%20applications.commands)
+![Version](https://img.shields.io/github/release/Vauff/Maunz-Discord.svg?color=4CC61E&label=version) [![Add Bot to Server](https://img.shields.io/badge/add%20bot%20on-Discord-7289da.svg)](https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=517647752257&scope=bot%20applications.commands)
 
 Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it is developed by Vauff using the Discord4J library. You can add Maunz to your Discord server by clicking on the add bot badge above. If you'd like to suggest features, report bugs, receive assistance on using the bot or just follow development you're free to join the official [Maunz Discord server](https://discord.gg/v55fW9b).
 

@@ -12,7 +12,7 @@ public class Discord extends AbstractLegacyCommand<MessageCreateEvent>
 	@Override
 	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
 	{
-		Util.msg(channel, "Bot invite link: <https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=104193601&scope=bot%20applications.commands>" + System.lineSeparator() + "Maunz Hub server invite link: https://discord.gg/v55fW9b");
+		Util.msg(channel, "Bot invite link: <https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=517647752257&scope=bot%20applications.commands>" + System.lineSeparator() + "Maunz Hub server invite link: https://discord.gg/v55fW9b");
 	}
 
 	@Override
