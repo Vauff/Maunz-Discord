@@ -19,10 +19,13 @@ import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import discord4j.gateway.GatewayReactorResources;
 import discord4j.rest.RestClient;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -89,7 +92,14 @@ public class Main
 				System.exit(1);
 			}
 
-			gateway = DiscordClient.builder(cfg.getToken()).build().gateway().withEventDispatcher(eventDispatcher ->
+			gateway = DiscordClient.create(cfg.getToken()).gateway()
+				.setGatewayReactorResources(resources -> GatewayReactorResources.builder(resources)
+					.httpClient(HttpClient.create(ConnectionProvider.newConnection())
+						.compress(true)
+						.followRedirect(true)
+						.secure())
+					.build())
+				.withEventDispatcher(eventDispatcher ->
 				{
 					var event1 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
 					var event2 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
