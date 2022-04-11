@@ -10,7 +10,7 @@ import discord4j.core.object.presence.ClientPresence;
  */
 public class StatsTimer
 {
-	private static boolean showingGuilds = false;
+	private static boolean showingGuilds = true;
 	/**
 	 * Updates the bot's playing text to show the amount of guilds the bot is on and the invite link to the official Maunz Discord server
 	 */
