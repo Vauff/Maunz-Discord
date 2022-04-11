@@ -58,22 +58,20 @@ public class Logger
 	{
 		try
 		{
-			if (event.getMessage().block().getAuthor().isPresent() && event.getOld().isPresent() && event.getOld().get().getFlags().contains(Message.Flag.LOADING))
+			Message msg;
+
+			try
 			{
-				Message msg;
-
-				try
-				{
-					msg = event.getMessage().block();
-				}
-				catch (Exception e)
-				{
-					// Message is not available to us, unsure why this is so frequent on this event
-					return;
-				}
-
-				logMessage(msg);
+				msg = event.getMessage().block();
 			}
+			catch (Exception e)
+			{
+				// Message is not available to us, unsure why this is so frequent on this event
+				return;
+			}
+
+			if (msg.getAuthor().isPresent() && event.getOld().isPresent() && event.getOld().get().getFlags().contains(Message.Flag.LOADING))
+				logMessage(msg);
 		}
 		catch (Exception e)
 		{
