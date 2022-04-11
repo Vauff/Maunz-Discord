@@ -51,49 +51,34 @@ public class Steam extends AbstractSlashCommand<ChatInputInteractionEvent>
 				String link = siteHtml.split("Profile URL \n    <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
 
 				if (!siteHtml.split("<i>Real Name:</i> ")[1].split("\n    ")[0].equalsIgnoreCase(""))
-				{
 					realName = siteHtml.split("<i>Real Name:</i> ")[1].split("\n    ")[0];
-				}
 
 				if (!siteHtml.split("<i>Country:</i> ")[1].split("\n    ")[0].equalsIgnoreCase(""))
-				{
 					country = ":flag_" + siteHtml.split("<i>Country:</i> ")[1].split("\n    ")[0].toLowerCase() + ":";
-				}
 
 				if (!siteHtml.split("<i>Account Created:</i> ")[1].split("\n    ")[0].equalsIgnoreCase("01 Jan 1970"))
-				{
 					creationDate = siteHtml.split("<i>Account Created:</i> ")[1].split("\n    ")[0];
-				}
 
 				if (visibility.equalsIgnoreCase("private"))
-				{
 					status = "N/A";
-				}
 
 				if (siteHtml.contains("\">X VAC</em>"))
-				{
 					bans += "VAC, ";
-				}
 
 				if (siteHtml.contains("\">X Trade</em>"))
-				{
 					bans += "Trade, ";
-				}
 
 				if (siteHtml.contains("\">X Community</em>"))
-				{
 					bans += "Community";
-				}
 
 				if (bans.equalsIgnoreCase(""))
-				{
 					bans = "None";
-				}
 
 				if (bans.substring(bans.length() - 2).equalsIgnoreCase(", "))
-				{
 					bans = bans.substring(0, bans.length() - 2);
-				}
+
+				if (lastLogoff.equalsIgnoreCase(""))
+					lastLogoff = "N/A";
 
 				URL constructedURL = new URL(avatarURL);
 
