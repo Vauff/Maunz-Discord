@@ -13,6 +13,8 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
+import java.util.Arrays;
+
 public class Say extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	@Override
@@ -29,15 +31,7 @@ public class Say extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 		if (interaction.getOption("channel").isPresent())
 		{
-			Channel channelArg = interaction.getOption("channel").get().getValue().get().asChannel().block();
-
-			if (!(channelArg instanceof MessageChannel))
-			{
-				event.editReply("Failed to send message, that channel is not a text channel!").block();
-				return;
-			}
-
-			MessageChannel sendChannel = (MessageChannel) channelArg;
+			MessageChannel sendChannel = (MessageChannel) interaction.getOption("channel").get().getValue().get().asChannel().block();
 
 			if (sendChannel.equals(channel))
 			{
@@ -73,6 +67,7 @@ public class Say extends AbstractSlashCommand<ChatInputInteractionEvent>
 				.name("channel")
 				.description("The channel to send the message to")
 				.type(ApplicationCommandOption.Type.CHANNEL.getValue())
+				.channelTypes(Arrays.asList(Channel.Type.GUILD_TEXT.getValue(), Channel.Type.GUILD_NEWS.getValue()))
 				.required(false)
 				.build())
 			.build();

@@ -23,6 +23,7 @@ import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -294,6 +295,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 					.name("channel")
 					.description("The channel to send server tracking messages to")
 					.type(ApplicationCommandOption.Type.CHANNEL.getValue())
+					.channelTypes(Arrays.asList(Channel.Type.GUILD_TEXT.getValue(), Channel.Type.GUILD_NEWS.getValue()))
 					.required(true)
 					.build())
 				.build())
