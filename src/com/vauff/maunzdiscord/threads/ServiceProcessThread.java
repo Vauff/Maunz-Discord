@@ -9,6 +9,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.retriever.EntityRetrievalStrategy;
+import discord4j.core.retriever.RestEntityRetriever;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ import org.jsoup.UnsupportedMimeTypeException;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,6 +37,7 @@ public class ServiceProcessThread implements Runnable
 	private Thread thread;
 	public ObjectId id;
 	private Guild guild;
+	Boolean channelExists = null;
 
 	public ServiceProcessThread(ObjectId id, Guild guild)
 	{
@@ -57,24 +60,14 @@ public class ServiceProcessThread implements Runnable
 		{
 			Document doc = Main.mongoDatabase.getCollection("services").find(eq("_id", id)).first();
 			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
-			boolean channelExists = true;
 			String msgServerName = "The server";
-
-			try
-			{
-				Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block();
-			}
-			catch (Exception e)
-			{
-				channelExists = false;
-			}
 
 			if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
 				msgServerName = "**" + serverDoc.getString("name") + "**";
 
 			if (serverDoc.getInteger("downtimeTimer") >= serverDoc.getInteger("failedConnectionsThreshold") && doc.getBoolean("online"))
 			{
-				if (channelExists)
+				if (channelExists(doc.getLong("channelID")))
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, msgServerName + " has gone offline");
 
 				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("online", false)));
@@ -82,7 +75,7 @@ public class ServiceProcessThread implements Runnable
 
 			if (serverDoc.getInteger("downtimeTimer") >= 10080)
 			{
-				if (channelExists)
+				if (channelExists(doc.getLong("channelID")))
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, msgServerName + " has now been offline for a week and its server tracking service was automatically disabled, it can be re-enabled by a guild administrator using **/services toggle <id> enabled**");
 
 				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
@@ -93,7 +86,7 @@ public class ServiceProcessThread implements Runnable
 
 			if (!doc.getBoolean("online"))
 			{
-				if (channelExists)
+				if (channelExists(doc.getLong("channelID")))
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, msgServerName + " has come back online");
 
 				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("online", true)));
@@ -132,7 +125,7 @@ public class ServiceProcessThread implements Runnable
 
 				EmbedCreateSpec titledEmbed = embed.withTitle(name);
 
-				if (channelExists)
+				if (channelExists(doc.getLong("channelID")))
 				{
 					if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
 						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, titledEmbed);
@@ -177,6 +170,24 @@ public class ServiceProcessThread implements Runnable
 		{
 			ServerTimer.threadRunning.put(id.toString(), false);
 		}
+	}
+
+	private boolean channelExists(long channelID)
+	{
+		if (!Objects.isNull(channelExists))
+			return channelExists;
+
+		try
+		{
+			new RestEntityRetriever(Main.gateway).getChannelById(Snowflake.of(channelID)).block();
+			channelExists = true;
+		}
+		catch (Exception e)
+		{
+			channelExists = false;
+		}
+
+		return channelExists;
 	}
 
 	/**
