@@ -56,7 +56,7 @@ public class Steam extends AbstractSlashCommand<ChatInputInteractionEvent>
 				if (!siteHtml.split("<i>Country:</i> ")[1].split("\n    ")[0].equalsIgnoreCase(""))
 					country = ":flag_" + siteHtml.split("<i>Country:</i> ")[1].split("\n    ")[0].toLowerCase() + ":";
 
-				if (!siteHtml.split("<i>Account Created:</i> ")[1].split("\n    ")[0].equalsIgnoreCase("01 Jan 1970"))
+				if (!siteHtml.split("<i>Account Created:</i> ")[1].split("\n    ")[0].equalsIgnoreCase(""))
 					creationDate = siteHtml.split("<i>Account Created:</i> ")[1].split("\n    ")[0];
 
 				if (visibility.equalsIgnoreCase("private"))
