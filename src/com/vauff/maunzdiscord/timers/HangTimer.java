@@ -31,7 +31,7 @@ public class HangTimer
 
 				if ((disconnectedAt + 900L) < now)
 				{
-					Logger.log.fatal("Detected bot in hung state, attempting to force a restart");
+					Logger.log.fatal("Detected bot in hung state, attempting to force an external restart");
 					System.exit(1);
 				}
 			}
