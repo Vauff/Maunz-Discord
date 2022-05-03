@@ -22,6 +22,7 @@ public class Config extends JSONObject
 			put("botOwners", new JSONArray());
 			put("devGuilds", new JSONArray());
 			put("discordToken", "");
+			put("restartWhenHung", false);
 			put("mongoDatabase", new JSONObject());
 			getJSONObject("mongoDatabase").put("connectionString", "");
 			getJSONObject("mongoDatabase").put("database", "");
@@ -49,6 +50,11 @@ public class Config extends JSONObject
 	public String getToken()
 	{
 		return getString("discordToken");
+	}
+
+	public boolean isHangRestartEnabled()
+	{
+		return getBoolean("restartWhenHung");
 	}
 
 	public String getConnectionString()
