@@ -8,7 +8,7 @@ import java.time.Instant;
 /**
  * Shitty workaround for Discord4J hanging when reconnecting to Discord, force restarts the bot if no progress is being made after 15 minutes
  *
- * Note: This requires some sort of external restarter (e.g. being registered as a systemd service) to take care of starting the bot back up again, so this is disabled by default (see "" in config.json)
+ * Note: This requires some sort of external restarter (e.g. being registered as a systemd service) to take care of starting the bot back up again, so this is disabled by default (see "restartWhenHung" in config.json)
  */
 public class HangTimer
 {
