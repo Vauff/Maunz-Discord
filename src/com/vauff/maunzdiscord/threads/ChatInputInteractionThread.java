@@ -69,27 +69,6 @@ public class ChatInputInteractionThread implements Runnable
 				}
 
 				MainListener.cooldownTimestamps.put(author.getId(), System.currentTimeMillis());
-				boolean blacklisted = false;
-
-				if (!(channel instanceof PrivateChannel) && !Util.hasPermission(author, guild))
-				{
-					List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", guild.getId().asLong())).first().getList("blacklist", String.class);
-
-					for (String entry : blacklist)
-					{
-						if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.cfg.getPrefix(), "")) || entry.split(":")[1].equalsIgnoreCase("all")))
-						{
-							blacklisted = true;
-							break;
-						}
-					}
-				}
-
-				if (blacklisted)
-				{
-					event.getInteractionResponse().createFollowupMessage("A server administrator has blacklisted this command or the channel that you ran it in").block();
-					return;
-				}
 
 				try
 				{

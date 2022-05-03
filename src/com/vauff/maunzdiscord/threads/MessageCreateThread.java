@@ -70,27 +70,6 @@ public class MessageCreateThread implements Runnable
 						}
 
 						MainListener.cooldownTimestamps.put(author.getId(), System.currentTimeMillis());
-						boolean blacklisted = false;
-
-						if (!(channel instanceof PrivateChannel) && !Util.hasPermission(author, event.getGuild().block()))
-						{
-							List<String> blacklist = Main.mongoDatabase.getCollection("guilds").find(eq("guildId", event.getGuild().block().getId().asLong())).first().getList("blacklist", String.class);
-
-							for (String entry : blacklist)
-							{
-								if ((entry.split(":")[0].equalsIgnoreCase(channel.getId().asString()) || entry.split(":")[0].equalsIgnoreCase("all")) && (entry.split(":")[1].equalsIgnoreCase(cmdName.replace(Main.cfg.getPrefix(), "")) || entry.split(":")[1].equalsIgnoreCase("all")))
-								{
-									blacklisted = true;
-									break;
-								}
-							}
-						}
-
-						if (blacklisted)
-						{
-							Util.msg(author.getPrivateChannel().block(), true, ":exclamation:  |  **Command/channel blacklisted**" + System.lineSeparator() + System.lineSeparator() + "The bot wasn't able to reply to your command in " + channel.getMention() + " because a guild administrator has blacklisted either the command or the channel that you ran it in");
-							return;
-						}
 
 						try
 						{

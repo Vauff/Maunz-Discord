@@ -139,7 +139,6 @@ public class Main
 	{
 		legacyCommands.add(new About());
 		slashCommands.add(new Benchmark());
-		legacyCommands.add(new Blacklist());
 		legacyCommands.add(new Changelog());
 		slashCommands.add(new Colour());
 		legacyCommands.add(new Discord());
