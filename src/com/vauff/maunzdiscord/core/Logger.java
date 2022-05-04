@@ -12,6 +12,7 @@ import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.GuildChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.rest.http.client.ClientException;
 
@@ -25,15 +26,24 @@ public class Logger
 	{
 		try
 		{
+			MessageChannel channel = event.getInteraction().getChannel().block();
 			String userName = event.getInteraction().getUser().getUsername();
 			String userId = event.getInteraction().getUser().getId().asString();
-			String channelId = event.getInteraction().getChannel().block().getId().asString();
-			String channelName = ((GuildChannel) event.getInteraction().getChannel().block()).getName();
-			String guildName = event.getInteraction().getGuild().block().getName();
-			String guildId = event.getInteraction().getGuild().block().getId().asString();
+			String channelId = channel.getId().asString();
 			String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
 
-			Logger.log.debug(userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
+			if (channel instanceof GuildChannel)
+			{
+				String channelName = ((GuildChannel) channel).getName();
+				String guildName = event.getInteraction().getGuild().block().getName();
+				String guildId = event.getInteraction().getGuild().block().getId().asString();
+
+				Logger.log.debug(userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
+			}
+			else
+			{
+				Logger.log.debug(userName + " (" + userId + ") | PM (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
+			}
 		}
 		catch (Exception e)
 		{
