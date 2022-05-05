@@ -111,15 +111,15 @@ public class Main
 			uptime.start();
 			setupCommands();
 
-			gateway.on(ChatInputInteractionEvent.class).subscribe(Logger::onChatInputInteraction);
-			gateway.on(MessageCreateEvent.class).subscribe(Logger::onMessageCreate);
-			gateway.on(MessageUpdateEvent.class).subscribe(Logger::onMessageUpdate);
-			gateway.on(ReactionAddEvent.class).subscribe(Logger::onReactionAdd);
-			gateway.on(ReactionRemoveEvent.class).subscribe(Logger::onReactionRemove);
-			gateway.on(GuildDeleteEvent.class).subscribe(Logger::onGuildDelete);
-			gateway.on(MessageCreateEvent.class).subscribe(MainListener::onMessageCreate);
-			gateway.on(ChatInputInteractionEvent.class).subscribe(MainListener::onChatInputInteraction);
-			gateway.on(ReactionAddEvent.class).subscribe(MainListener::onReactionAdd);
+			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onChatInputInteraction(event))).subscribe();
+			gateway.on(MessageCreateEvent.class, event -> Mono.fromRunnable(() -> Logger.onMessageCreate(event))).subscribe();
+			gateway.on(MessageUpdateEvent.class, event -> Mono.fromRunnable(() -> Logger.onMessageUpdate(event))).subscribe();
+			gateway.on(ReactionAddEvent.class, event -> Mono.fromRunnable(() -> Logger.onReactionAdd(event))).subscribe();
+			gateway.on(ReactionRemoveEvent.class, event -> Mono.fromRunnable(() -> Logger.onReactionRemove(event))).subscribe();
+			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> Logger.onGuildDelete(event))).subscribe();
+			gateway.on(MessageCreateEvent.class, event -> Mono.fromRunnable(() -> MainListener.onMessageCreate(event))).subscribe();
+			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onChatInputInteraction(event))).subscribe();
+			gateway.on(ReactionAddEvent.class, event -> Mono.fromRunnable(() -> MainListener.onReactionAdd(event))).subscribe();
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);

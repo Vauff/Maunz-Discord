@@ -13,7 +13,6 @@ import discord4j.core.object.entity.Message;
 import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.mongodb.client.model.Filters.eq;

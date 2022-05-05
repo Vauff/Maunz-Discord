@@ -9,13 +9,9 @@ import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.rest.http.client.ClientException;
 
-import java.util.List;
 import java.util.Random;
-
-import static com.mongodb.client.model.Filters.eq;
 
 public class MessageCreateThread implements Runnable
 {

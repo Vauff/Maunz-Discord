@@ -10,12 +10,8 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.entity.channel.PrivateChannel;
 
-import java.util.List;
 import java.util.Random;
-
-import static com.mongodb.client.model.Filters.eq;
 
 public class ChatInputInteractionThread implements Runnable
 {
