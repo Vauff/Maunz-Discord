@@ -191,7 +191,20 @@ public class ServerRequestThread implements Runnable
 		if (success)
 		{
 			for (ServiceProcessThread processThread : processThreads)
+			{
 				processThread.start();
+
+				// TODO: replace this awful workaround with a new scheduler
+				// only start ~10 threads per second
+				try
+				{
+					Thread.sleep(100);
+				}
+				catch (InterruptedException e)
+				{
+					Logger.log.error("", e);
+				}
+			}
 		}
 		else
 		{

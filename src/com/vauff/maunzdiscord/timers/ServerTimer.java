@@ -101,6 +101,10 @@ public class ServerTimer
 							threadRunning.put(idString, true);
 							thread.start();
 							startedThreads.add(idString);
+
+							// TODO: replace this awful workaround with a new scheduler
+							// only start ~20 threads per second
+							Thread.sleep(50);
 						}
 					}
 				}
