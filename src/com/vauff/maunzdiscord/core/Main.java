@@ -7,7 +7,6 @@ import com.vauff.maunzdiscord.commands.slash.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import com.vauff.maunzdiscord.timers.HangTimer;
 import com.vauff.maunzdiscord.timers.ServerTimer;
 import com.vauff.maunzdiscord.timers.StatsTimer;
 import discord4j.core.DiscordClient;
@@ -123,9 +122,6 @@ public class Main
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
-
-			if (cfg.isHangRestartEnabled())
-				Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(HangTimer.timer, 60, 60, TimeUnit.SECONDS);
 
 			// Keep app alive by waiting for disconnect
 			gateway.onDisconnect().block();
