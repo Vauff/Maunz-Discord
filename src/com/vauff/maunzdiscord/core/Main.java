@@ -13,6 +13,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
@@ -118,6 +119,7 @@ public class Main
 			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> Logger.onGuildDelete(event))).subscribe();
 			gateway.on(MessageCreateEvent.class, event -> Mono.fromRunnable(() -> MainListener.onMessageCreate(event))).subscribe();
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onChatInputInteraction(event))).subscribe();
+			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onButtonInteraction(event))).subscribe();
 			gateway.on(ReactionAddEvent.class, event -> Mono.fromRunnable(() -> MainListener.onReactionAdd(event))).subscribe();
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);

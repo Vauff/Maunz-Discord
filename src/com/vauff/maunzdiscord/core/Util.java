@@ -1,7 +1,9 @@
 package com.vauff.maunzdiscord.core;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
+import discord4j.core.object.component.ActionComponent;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -419,11 +421,12 @@ public class Util
 	 * @param numberedReactions Whether to add numbered reactions for each entry
 	 * @param cancellable       Whether to add an X emoji to close the page
 	 * @param event             The ChatInputInteractionEvent that is being responded to
-	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
+	 * @param prevBtn           Button to go to previous page
+	 * @param nextBtn           Button to go to next page
 	 */
-	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, ChatInputInteractionEvent event)
+	public static void buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, DeferrableInteractionEvent event, Button prevBtn, Button nextBtn)
 	{
-		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, null, null, event);
+		buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, null, event, prevBtn, nextBtn);
 	}
 
 	/**
@@ -438,22 +441,26 @@ public class Util
 	 * @param numberedReactions Whether to add numbered reactions for each entry
 	 * @param cancellable       Whether to add an X emoji to close the page
 	 * @param channel           The MessageChannel that the page message should be sent to (if legacy command)
-	 * @param user              The User that triggered the command's execution in the first place (if legacy command)
 	 * @return The Message object for the sent page message if an exception isn't thrown, null otherwise
 	 */
-	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user)
+	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel)
 	{
-		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, channel, user, null);
+		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, channel, null, null, null);
 	}
 
-	private static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, User user, ChatInputInteractionEvent event)
+	private static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, DeferrableInteractionEvent event, Button prevBtn, Button nextBtn)
 	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
 			if (Objects.isNull(event))
+			{
 				return msg(channel, "That page doesn't exist!");
+			}
 			else
-				return Main.gateway.getMessageById(event.getInteraction().getChannelId(), Snowflake.of(event.getInteractionResponse().createFollowupMessage("That page doesn't exist!").block().id())).block();
+			{
+				event.editReply("That page doesn't exist!").block();
+				return null;
+			}
 		}
 		else
 		{
@@ -496,7 +503,6 @@ public class Util
 				list.append("```");
 			}
 
-			Message m;
 			String msg;
 
 			if (pageNumber == 1 && (int) Math.ceil((float) entries.size() / (float) pageSize) == 1)
@@ -505,36 +511,53 @@ public class Util
 				msg = "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString();
 
 			if (Objects.isNull(event))
-				m = msg(channel, msg);
-			else
-				m = Main.gateway.getMessageById(event.getInteraction().getChannelId(), Snowflake.of(event.getInteractionResponse().createFollowupMessage(msg).block().id())).block();
-
-			final int finalUsedEntries = usedEntries;
-			ScheduledExecutorService reactionAddPool = Executors.newScheduledThreadPool(1);
-
-			reactionAddPool.schedule(() ->
 			{
-				reactionAddPool.shutdown();
+				Message m = msg(channel, msg);
+				final int finalUsedEntries = usedEntries;
+				ScheduledExecutorService reactionAddPool = Executors.newScheduledThreadPool(1);
 
-				if (pageNumber != 1)
+				reactionAddPool.schedule(() ->
 				{
-					addReaction(m, "◀");
-				}
-				if (numberedReactions)
-				{
-					addNumberedReactions(m, false, finalUsedEntries);
-				}
-				if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-				{
-					addReaction(m, "▶");
-				}
-				if (cancellable)
-				{
-					addReaction(m, "\u274C");
-				}
-			}, 250, TimeUnit.MILLISECONDS);
+					reactionAddPool.shutdown();
 
-			return m;
+					if (pageNumber != 1)
+					{
+						addReaction(m, "◀");
+					}
+					if (numberedReactions)
+					{
+						addNumberedReactions(m, false, finalUsedEntries);
+					}
+					if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+					{
+						addReaction(m, "▶");
+					}
+					if (cancellable)
+					{
+						addReaction(m, "\u274C");
+					}
+				}, 250, TimeUnit.MILLISECONDS);
+
+				return m;
+			}
+
+			List<ActionComponent> components = new ArrayList<>();
+
+			if (pageNumber != 1)
+			{
+				components.add(prevBtn);
+			}
+			if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+			{
+				components.add(nextBtn);
+			}
+
+			if (components.size() > 0)
+				event.editReply(msg).withComponents(ActionRow.of(components)).block();
+			else
+				event.editReply(msg).block();
+
+			return null;
 		}
 	}
 

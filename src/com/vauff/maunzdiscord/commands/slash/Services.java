@@ -5,16 +5,18 @@ import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandOption;
+import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -62,16 +64,14 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent reactionEvent, ChatInputInteractionEvent interactionEvent, Message message)
+	public void buttonExe(ButtonInteractionEvent event, String buttonId)
 	{
-		String emoji = reactionEvent.getEmoji().asUnicodeEmoji().get().getRaw();
-		User user = reactionEvent.getUser().block();
+		User user = event.getInteraction().getUser();
 
-		if (emoji.equals("▶"))
-			runListSelection(interactionEvent, user, listPages.get(user.getId()) + 1);
-
-		else if (emoji.equals("◀"))
-			runListSelection(interactionEvent, user, listPages.get(user.getId()) - 1);
+		if (buttonId.equals("services-nextpage"))
+			runListSelection(event, user, listPages.get(user.getId()) + 1);
+		else if (buttonId.equals("services-prevpage"))
+			runListSelection(event, user, listPages.get(user.getId()) - 1);
 	}
 
 	private void exeAdd(ChatInputInteractionEvent event, Guild guild) throws Exception
@@ -94,13 +94,13 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		}
 		catch (Exception e)
 		{
-			event.getInteractionResponse().createFollowupMessage("IP argument does not follow IP:Port format!").block();
+			event.editReply("IP argument does not follow IP:Port format!").block();
 			return;
 		}
 
 		if (!isServerOnline(ip, port))
 		{
-			event.getInteractionResponse().createFollowupMessage("Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly").block();
+			event.editReply("Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly").block();
 			return;
 		}
 
@@ -109,7 +109,8 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 			.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
 
 		Main.mongoDatabase.getCollection("services").insertOne(service);
-		event.getInteractionResponse().createFollowupMessage("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
+
+		event.editReply("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
 	}
 
 	private void exeList(ChatInputInteractionEvent event, Guild guild, User author)
@@ -119,7 +120,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 		if (services.size() == 0)
 		{
-			event.getInteractionResponse().createFollowupMessage("No services have been added yet! Use **/services add** to add one").block();
+			event.editReply("No services have been added yet! Use **/services add** to add one").block();
 			return;
 		}
 
@@ -133,7 +134,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 	private void exeInfo(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
+		event.editReply("This feature is not yet implemented").block();
 	}
 
 	private void exeDelete(ChatInputInteractionEvent event, User author)
@@ -144,7 +145,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 		if (!listServices.containsKey(author.getId()) || services.size() < id)
 		{
-			event.getInteractionResponse().createFollowupMessage("That service ID doesn't exist! Have you ran **/services list** yet to generate IDs?").block();
+			event.editReply("That service ID doesn't exist! Have you ran **/services list** yet to generate IDs?").block();
 			return;
 		}
 
@@ -152,7 +153,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 		if (Objects.isNull(service))
 		{
-			event.getInteractionResponse().createFollowupMessage("That service was already deleted!").block();
+			event.editReply("That service was already deleted!").block();
 			return;
 		}
 
@@ -174,20 +175,20 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		if (!Objects.isNull(serviceChannel))
 			msg += " in " + serviceChannel.getMention();
 
-		event.getInteractionResponse().createFollowupMessage(msg).block();
+		event.editReply(msg).block();
 	}
 
 	private void exeEdit(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
+		event.editReply("This feature is not yet implemented").block();
 	}
 
 	private void exeToggle(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
 	{
-		event.getInteractionResponse().createFollowupMessage("This feature is not yet implemented").block();
+		event.editReply("This feature is not yet implemented").block();
 	}
 
-	private void runListSelection(ChatInputInteractionEvent event, User author, int page)
+	private void runListSelection(DeferrableInteractionEvent event, User author, int page)
 	{
 		ArrayList<String> servicesDisplay = new ArrayList<>();
 		int id = 0;
@@ -218,10 +219,9 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 			servicesDisplay.add(msg);
 		}
 
-		Message m = Util.buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event);
+		Util.buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event, getButtons()[0], getButtons()[1]);
 
 		listPages.put(author.getId(), page);
-		waitForReaction(m.getId(), author.getId(), event);
 	}
 
 	private boolean isServerOnline(String ip, int port) throws Exception
@@ -394,6 +394,15 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	public String getName()
 	{
 		return "services";
+	}
+
+	@Override
+	public Button[] getButtons()
+	{
+		return new Button[] {
+			Button.primary("services-prevpage", ReactionEmoji.unicode("◀"), "Previous Page"),
+			Button.primary("services-nextpage", ReactionEmoji.unicode("▶"), "Next Page")
+		};
 	}
 
 	@Override

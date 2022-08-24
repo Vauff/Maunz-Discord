@@ -8,8 +8,16 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 
+import java.util.HashMap;
+
 public abstract class AbstractLegacyCommand<M extends MessageCreateEvent> extends AbstractCommand
 {
+	/**
+	 * Holds all messages as keys which await a reaction by a specific user.
+	 * The values hold an instance of {@link Await}
+	 */
+	public static final HashMap<Snowflake, Await> AWAITED = new HashMap<>();
+
 	/**
 	 * Executes this command
 	 *

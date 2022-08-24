@@ -1,9 +1,7 @@
 package com.vauff.maunzdiscord.objects;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 
 /**
  * Holds information about a message that needs a reaction/reply to continue further execution
@@ -11,28 +9,16 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 public class Await
 {
 	private Snowflake id;
-	private AbstractCommand command;
-	private ChatInputInteractionEvent event;
+	private AbstractLegacyCommand command;
 
 	/**
 	 * @param id      An ID of a user who triggered the message or a message to be removed later on
 	 * @param command The command with which to continue execution upon adding a reaction
-	 * @param event   The ChatInputInteractionEvent that triggered the execution of {@link Await#command}
 	 */
-	public Await(Snowflake id, AbstractCommand command, ChatInputInteractionEvent event)
+	public Await(Snowflake id, AbstractLegacyCommand command)
 	{
 		this.id = id;
 		this.command = command;
-		this.event = event;
-	}
-
-	/**
-	 * @param id      An ID of a user who triggered the message or a message to be removed later on
-	 * @param command The command with which to continue execution upon adding a reaction
-	 */
-	public Await(Snowflake id, AbstractCommand command)
-	{
-		this(id, command, null);
 	}
 
 	/**
@@ -46,16 +32,8 @@ public class Await
 	/**
 	 * @return The command with which to continue execution upon adding a reaction
 	 */
-	public AbstractCommand getCommand()
+	public AbstractLegacyCommand getCommand()
 	{
 		return command;
-	}
-
-	/**
-	 * @return The ChatInputInteractionEvent that triggered the execution of {@link Await#command}, only present if instance of {@link AbstractSlashCommand}
-	 */
-	public ChatInputInteractionEvent getInteractionEvent()
-	{
-		return event;
 	}
 }

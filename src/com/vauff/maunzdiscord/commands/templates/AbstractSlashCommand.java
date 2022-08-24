@@ -1,24 +1,31 @@
 package com.vauff.maunzdiscord.commands.templates;
 
-import com.vauff.maunzdiscord.objects.Await;
+import com.vauff.maunzdiscord.objects.AwaitButton;
 import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
+import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> extends AbstractCommand
 {
+	/**
+	 * Holds all messages as keys which await a reaction by a specific user.
+	 * The values hold an instance of {@link AwaitButton}
+	 */
+	public static final HashMap<Snowflake, AwaitButton> AWAITED = new HashMap<>();
+
 	/**
 	 * Executes this command
 	 *
@@ -28,13 +35,12 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	public abstract void exe(M interaction, Guild guild, MessageChannel channel, User author) throws Exception;
 
 	/**
-	 * Gets called when a reaction is added to a message defined prior in {@link AbstractSlashCommand#waitForReaction(Snowflake, Snowflake, ChatInputInteractionEvent)}
+	 * Executes a button attached to this command
 	 *
-	 * @param reactionEvent    The event holding information about the added reaction
-	 * @param interactionEvent The interaction event that triggered this
-	 * @param message          The Message that was reacted to
+	 * @param event    The ButtonInteractionEvent triggered from pressing a button
+	 * @param buttonId The button ID that was pressed
 	 */
-	public void onReactionAdd(ReactionAddEvent reactionEvent, ChatInputInteractionEvent interactionEvent, Message message) throws Exception
+	public void buttonExe(ButtonInteractionEvent event, String buttonId)
 	{
 	}
 
@@ -51,14 +57,13 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	public abstract String getName();
 
 	/**
-	 * Sets up this command to await a reaction by the user who triggered this command
+	 * Defines the Button objects for this command
 	 *
-	 * @param messageID The message which should get reacted on
-	 * @param userID    The user who triggered this command
+	 * @return An array of Buttons used by this command
 	 */
-	public final void waitForReaction(Snowflake messageID, Snowflake userID, ChatInputInteractionEvent event)
+	public Button[] getButtons()
 	{
-		AWAITED.put(messageID, new Await(userID, this, event));
+		return new Button[] {};
 	}
 
 	@Override
