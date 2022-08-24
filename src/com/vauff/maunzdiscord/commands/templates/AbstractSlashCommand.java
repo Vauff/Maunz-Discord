@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.commands.templates;
 
+import com.vauff.maunzdiscord.objects.AwaitButton;
 import com.vauff.maunzdiscord.objects.CommandHelp;
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
@@ -12,11 +14,18 @@ import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> extends AbstractCommand
 {
+	/**
+	 * Holds all messages as keys which await a reaction by a specific user.
+	 * The values hold an instance of {@link AwaitButton}
+	 */
+	public static final HashMap<Snowflake, AwaitButton> AWAITED = new HashMap<>();
+
 	/**
 	 * Executes this command
 	 *
