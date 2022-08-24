@@ -7,6 +7,8 @@ import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.component.Button;
 
+import java.util.Random;
+
 public class ButtonInteractionThread implements Runnable
 {
 	private ButtonInteractionEvent event;
@@ -46,7 +48,19 @@ public class ButtonInteractionThread implements Runnable
 					if (event.getMessage().isPresent())
 						event.getMessage().get().delete().block();
 
-					cmd.buttonExe(event, buttonId);
+					try
+					{
+						cmd.buttonExe(event, buttonId);
+					}
+					catch (Exception e)
+					{
+						Random rnd = new Random();
+						int code = 100000000 + rnd.nextInt(900000000);
+
+						event.editReply(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).block();
+						Logger.log.error(code, e);
+					}
+
 					return;
 				}
 			}
