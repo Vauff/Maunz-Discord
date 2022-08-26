@@ -220,7 +220,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 		listPages.put(author.getId(), page);
 		Util.buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event, prevBtn, nextBtn);
-		waitForButtonPress(event.getReply().block().getId(), author.getId(), event);
+		waitForButtonPress(event.getReply().block().getId(), author.getId());
 	}
 
 	private boolean isServerOnline(String ip, int port) throws Exception

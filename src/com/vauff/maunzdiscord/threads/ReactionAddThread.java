@@ -54,7 +54,7 @@ public class ReactionAddThread implements Runnable
 				{
 					try
 					{
-						Await await = AbstractLegacyCommand.AWAITED.get(message.getId());
+						Await<AbstractLegacyCommand> await = AbstractLegacyCommand.AWAITED.get(message.getId());
 						AbstractCommand cmd = await.getCommand();
 
 						if (cmd instanceof AbstractLegacyCommand)

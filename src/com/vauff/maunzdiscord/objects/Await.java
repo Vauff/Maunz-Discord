@@ -1,28 +1,27 @@
 package com.vauff.maunzdiscord.objects;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
 import discord4j.common.util.Snowflake;
 
 /**
- * Holds information about a message that needs a reaction/reply to continue further execution
+ * Holds information about a message awaiting a reaction/button activation to continue further execution
  */
-public class Await
+public class Await<M>
 {
 	private Snowflake id;
-	private AbstractLegacyCommand command;
+	private M command;
 
 	/**
-	 * @param id      An ID of a user who triggered the message or a message to be removed later on
-	 * @param command The command with which to continue execution upon adding a reaction
+	 * @param id      The ID of a user who triggered the command
+	 * @param command The command with which to continue execution upon activation
 	 */
-	public Await(Snowflake id, AbstractLegacyCommand command)
+	public Await(Snowflake id, M command)
 	{
 		this.id = id;
 		this.command = command;
 	}
 
 	/**
-	 * @return The ID of the user who triggered the message or of the message to be removed later on
+	 * @return The ID of the user who triggered the command
 	 */
 	public Snowflake getID()
 	{
@@ -30,9 +29,9 @@ public class Await
 	}
 
 	/**
-	 * @return The command with which to continue execution upon adding a reaction
+	 * @return The command with which to continue execution upon activation
 	 */
-	public AbstractLegacyCommand getCommand()
+	public M getCommand()
 	{
 		return command;
 	}

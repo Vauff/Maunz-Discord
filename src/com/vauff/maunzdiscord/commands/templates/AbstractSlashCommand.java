@@ -1,11 +1,10 @@
 package com.vauff.maunzdiscord.commands.templates;
 
-import com.vauff.maunzdiscord.objects.AwaitButton;
+import com.vauff.maunzdiscord.objects.Await;
 import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
@@ -26,13 +25,13 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	 * Common buttons used for buildPage
 	 */
 	public static final Button prevBtn = Button.primary("services-prevpage", ReactionEmoji.unicode("◀"), "Previous Page");
-	public static final Button nextBtn =Button.primary("services-nextpage", ReactionEmoji.unicode("▶"), "Next Page");
+	public static final Button nextBtn = Button.primary("services-nextpage", ReactionEmoji.unicode("▶"), "Next Page");
 
 	/**
 	 * Holds messages as keys which await a button press by a specific user.
-	 * The values hold an instance of {@link AwaitButton}
+	 * The values hold an instance of {@link Await}
 	 */
-	public static final HashMap<Snowflake, AwaitButton> AWAITED = new HashMap<>();
+	public static final HashMap<Snowflake, Await<AbstractSlashCommand>> AWAITED = new HashMap<>();
 
 	/**
 	 * Executes this command
@@ -75,11 +74,10 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	 *
 	 * @param messageID The message which has buttons attached
 	 * @param userID    The user who triggered this command
-	 * @param event		The InteractionEvent that triggered the execution of this command
 	 */
-	public final void waitForButtonPress(Snowflake messageID, Snowflake userID, DeferrableInteractionEvent event)
+	public final void waitForButtonPress(Snowflake messageID, Snowflake userID)
 	{
-		AWAITED.put(messageID, new AwaitButton(userID, this, event));
+		AWAITED.put(messageID, new Await(userID, this));
 	}
 
 	@Override

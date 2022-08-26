@@ -2,7 +2,7 @@ package com.vauff.maunzdiscord.threads;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Logger;
-import com.vauff.maunzdiscord.objects.AwaitButton;
+import com.vauff.maunzdiscord.objects.Await;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 
 import java.util.Random;
@@ -35,7 +35,7 @@ public class ButtonInteractionThread implements Runnable
 			if (!AbstractSlashCommand.AWAITED.containsKey(event.getMessageId()))
 				return;
 
-			AwaitButton await = AbstractSlashCommand.AWAITED.get(event.getMessageId());
+			Await<AbstractSlashCommand> await = AbstractSlashCommand.AWAITED.get(event.getMessageId());
 
 			if (!event.getInteraction().getUser().getId().equals(await.getID()))
 				return;
