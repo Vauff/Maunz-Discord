@@ -47,7 +47,7 @@ public class ButtonInteractionThread implements Runnable
 
 			try
 			{
-				await.getCommand().buttonExe(event, event.getCustomId());
+				await.getCommand().buttonPressed(event, event.getCustomId(), event.getInteraction().getGuild().block(), event.getInteraction().getChannel().block(), event.getInteraction().getUser());
 			}
 			catch (Exception e)
 			{

@@ -39,15 +39,18 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	 * @param interaction The interaction that executing this command creates
 	 * @throws Exception If an exception gets thrown by any implementing methods
 	 */
-	public abstract void exe(M interaction, Guild guild, MessageChannel channel, User author) throws Exception;
+	public abstract void exe(M interaction, Guild guild, MessageChannel channel, User user) throws Exception;
 
 	/**
 	 * Executes a button attached to this command
 	 *
 	 * @param event		The ButtonInteractionEvent triggered from pressing a button
 	 * @param buttonId	The button ID that was pressed
+	 * @param guild		Guild the button was pressed in
+	 * @param channel	Channel the button was pressed in
+	 * @param user		User who pressed the button
 	 */
-	public void buttonExe(ButtonInteractionEvent event, String buttonId)
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user)
 	{
 	}
 

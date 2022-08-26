@@ -23,7 +23,7 @@ import java.net.URI;
 public class IsItDown extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		String hostname = event.getInteraction().getCommandInteraction().get().getOption("hostname").get().getValue().get().asString();
 		boolean isUp;

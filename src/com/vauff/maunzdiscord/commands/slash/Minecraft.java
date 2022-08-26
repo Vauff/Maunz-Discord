@@ -19,7 +19,7 @@ import java.net.URL;
 public class Minecraft extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		String argument = event.getInteraction().getCommandInteraction().get().getOption("account").get().getValue().get().asString();
 		BufferedReader uuidReader = new BufferedReader(new InputStreamReader(new URL("http://axis.iaero.me/uuidapi?uuid=" + argument + "&format=plain").openStream()));

@@ -10,7 +10,7 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 public class Ping extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		event.editReply("Pong!").block();
 	}

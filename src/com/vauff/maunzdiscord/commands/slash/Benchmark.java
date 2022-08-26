@@ -18,7 +18,7 @@ import java.net.SocketException;
 public class Benchmark extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		String origQuery = event.getInteraction().getCommandInteraction().get().getOption("query").get().getValue().get().asString();
 		String query = origQuery;

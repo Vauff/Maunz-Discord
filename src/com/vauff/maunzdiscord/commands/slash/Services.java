@@ -62,9 +62,8 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public void buttonExe(ButtonInteractionEvent event, String buttonId)
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user)
 	{
-		User user = event.getInteraction().getUser();
 		int page = listPages.get(user.getId());
 
 		if (buttonId.equals("services-nextpage"))
