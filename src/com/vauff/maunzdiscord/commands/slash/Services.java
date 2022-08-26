@@ -11,12 +11,10 @@ import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandOption;
-import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -67,11 +65,12 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	public void buttonExe(ButtonInteractionEvent event, String buttonId)
 	{
 		User user = event.getInteraction().getUser();
+		int page = listPages.get(user.getId());
 
 		if (buttonId.equals("services-nextpage"))
-			runListSelection(event, user, listPages.get(user.getId()) + 1);
+			runListSelection(event, user, page + 1);
 		else if (buttonId.equals("services-prevpage"))
-			runListSelection(event, user, listPages.get(user.getId()) - 1);
+			runListSelection(event, user, page - 1);
 	}
 
 	private void exeAdd(ChatInputInteractionEvent event, Guild guild) throws Exception
@@ -219,9 +218,9 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 			servicesDisplay.add(msg);
 		}
 
-		Util.buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event, getButtons()[0], getButtons()[1]);
-
 		listPages.put(author.getId(), page);
+		Util.buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event, prevBtn, nextBtn);
+		waitForButtonPress(event.getReply().block().getId(), author.getId(), event);
 	}
 
 	private boolean isServerOnline(String ip, int port) throws Exception
@@ -394,15 +393,6 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	public String getName()
 	{
 		return "services";
-	}
-
-	@Override
-	public Button[] getButtons()
-	{
-		return new Button[] {
-			Button.primary("services-prevpage", ReactionEmoji.unicode("◀"), "Previous Page"),
-			Button.primary("services-nextpage", ReactionEmoji.unicode("▶"), "Next Page")
-		};
 	}
 
 	@Override

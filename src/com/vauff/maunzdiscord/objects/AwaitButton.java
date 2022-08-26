@@ -2,50 +2,39 @@ package com.vauff.maunzdiscord.objects;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-
-import java.util.ArrayList;
-import java.util.List;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 
 /**
- * Holds information for a button that is waiting for input
+ * Holds information for buttons awaiting input
  */
 public class AwaitButton
 {
-	private Snowflake buttonID;
+	private Snowflake id;
 	private AbstractSlashCommand command;
-	private ChatInputInteractionEvent event;
+	private DeferrableInteractionEvent event;
 
 	/**
-	 * Various command data to persist across button presses, this is UNTYPED
-	 * Use enums in {@link AwaitButton#command} to access different values
+	 * @param id		The user ID who owns the buttons
+	 * @param command   The command using the buttons
+	 * @param event     The InteractionEvent that triggered the execution of {@link AwaitButton#command}
 	 */
-	public List data;
-
-	/**
-	 * @param buttonID  The ID of the button
-	 * @param command   The command that used this button
-	 * @param event     The ChatInputInteractionEvent that triggered the execution of {@link AwaitButton#command}
-	 * @param keyValues Amount of keyvalues
-	 */
-	public AwaitButton(Snowflake buttonID, AbstractSlashCommand command, ChatInputInteractionEvent event, int keyValues)
+	public AwaitButton(Snowflake id, AbstractSlashCommand command, DeferrableInteractionEvent event)
 	{
-		this.buttonID = buttonID;
+		this.id = id;
 		this.command = command;
 		this.event = event;
-		data = new ArrayList<>();
 	}
 
 	/**
-	 * @return The ID of the button
+	 * @return The user ID who owns the buttons
 	 */
-	public Snowflake getButtonID()
+	public Snowflake getID()
 	{
-		return buttonID;
+		return id;
 	}
 
 	/**
-	 * @return The command that used this button
+	 * @return The command using the buttons
 	 */
 	public AbstractSlashCommand getCommand()
 	{
@@ -53,9 +42,9 @@ public class AwaitButton
 	}
 
 	/**
-	 * @return The ChatInputInteractionEvent that triggered the execution of {@link AwaitButton#command}
+	 * @return The InteractionEvent that triggered the execution of {@link AwaitButton#command}
 	 */
-	public ChatInputInteractionEvent getEvent()
+	public DeferrableInteractionEvent getEvent()
 	{
 		return event;
 	}

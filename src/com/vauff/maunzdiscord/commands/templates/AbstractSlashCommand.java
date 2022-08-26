@@ -5,11 +5,13 @@ import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
@@ -21,7 +23,13 @@ import java.util.Objects;
 public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> extends AbstractCommand
 {
 	/**
-	 * Holds all messages as keys which await a reaction by a specific user.
+	 * Common buttons used for buildPage
+	 */
+	public static final Button prevBtn = Button.primary("services-prevpage", ReactionEmoji.unicode("◀"), "Previous Page");
+	public static final Button nextBtn =Button.primary("services-nextpage", ReactionEmoji.unicode("▶"), "Next Page");
+
+	/**
+	 * Holds messages as keys which await a button press by a specific user.
 	 * The values hold an instance of {@link AwaitButton}
 	 */
 	public static final HashMap<Snowflake, AwaitButton> AWAITED = new HashMap<>();
@@ -37,8 +45,8 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	/**
 	 * Executes a button attached to this command
 	 *
-	 * @param event    The ButtonInteractionEvent triggered from pressing a button
-	 * @param buttonId The button ID that was pressed
+	 * @param event		The ButtonInteractionEvent triggered from pressing a button
+	 * @param buttonId	The button ID that was pressed
 	 */
 	public void buttonExe(ButtonInteractionEvent event, String buttonId)
 	{
@@ -56,20 +64,22 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	 */
 	public abstract String getName();
 
-	/**
-	 * Defines the Button objects for this command
-	 *
-	 * @return An array of Buttons used by this command
-	 */
-	public Button[] getButtons()
-	{
-		return new Button[] {};
-	}
-
 	@Override
 	public final String[] getAliases()
 	{
 		return new String[] { getName() };
+	}
+
+	/**
+	 * Sets up this command to await a button press by the user who triggered this command
+	 *
+	 * @param messageID The message which has buttons attached
+	 * @param userID    The user who triggered this command
+	 * @param event		The InteractionEvent that triggered the execution of this command
+	 */
+	public final void waitForButtonPress(Snowflake messageID, Snowflake userID, DeferrableInteractionEvent event)
+	{
+		AWAITED.put(messageID, new AwaitButton(userID, this, event));
 	}
 
 	@Override
