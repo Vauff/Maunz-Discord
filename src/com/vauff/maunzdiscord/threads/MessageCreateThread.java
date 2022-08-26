@@ -6,11 +6,14 @@ import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.http.client.ClientException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MessageCreateThread implements Runnable
@@ -18,6 +21,10 @@ public class MessageCreateThread implements Runnable
 	private MessageCreateEvent event;
 	private Thread thread;
 	private String name;
+
+	// These users have already been notified of the upcoming slash command migration
+	// There's a week left so I'm not bothering to store this in the database, sue me
+	private static List<Snowflake> slashCmdNotifiedUsers = new ArrayList();
 
 	public MessageCreateThread(MessageCreateEvent passedEvent, String passedName)
 	{
@@ -92,6 +99,12 @@ public class MessageCreateThread implements Runnable
 								}
 
 								cmd.exe(event, channel, author);
+
+								if (!slashCmdNotifiedUsers.contains(author.getId()))
+								{
+									Util.msg(channel, false, true, "Hey " + author.getMention() + "!" + System.lineSeparator() + System.lineSeparator() + "In case you were unaware, Discord will be enforcing slash command usage starting from **September 1st**. This means from that date onwards prefixing Maunz commands with ***** will stop working, and you will have to use the **/** prefix for all commands instead." + System.lineSeparator() + System.lineSeparator() + "While not every command is ready just yet (including the one you just ran), you can type **/** into your chat window right now, and see all the commands that have already been moved into this system.", null);
+									slashCmdNotifiedUsers.add(author.getId());
+								}
 							}
 							catch (ClientException e)
 							{
