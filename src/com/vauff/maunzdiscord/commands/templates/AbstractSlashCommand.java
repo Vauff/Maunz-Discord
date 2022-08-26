@@ -5,7 +5,10 @@ import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
+import discord4j.core.object.component.ActionComponent;
+import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
@@ -24,8 +27,9 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	/**
 	 * Common buttons used for buildPage
 	 */
-	public static final Button prevBtn = Button.primary("services-prevpage", ReactionEmoji.unicode("◀"), "Previous Page");
-	public static final Button nextBtn = Button.primary("services-nextpage", ReactionEmoji.unicode("▶"), "Next Page");
+	public final Button prevBtn = Button.primary("prevpage", ReactionEmoji.unicode("◀"), "Previous Page");
+	public final Button nextBtn = Button.primary("nextpage", ReactionEmoji.unicode("▶"), "Next Page");
+	public final Button cancelBtn = Button.danger("cancel", ReactionEmoji.unicode("❌"), "Cancel");
 
 	/**
 	 * Holds messages as keys which await a button press by a specific user.
@@ -81,6 +85,96 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	public final void waitForButtonPress(Snowflake messageID, Snowflake userID)
 	{
 		AWAITED.put(messageID, new Await(userID, this));
+	}
+
+	/**
+	 * Builds a modular page message in response to an interaction for the given parameters
+	 *
+	 * @param entries           An ArrayList<String> that contains all the entries that should be in the page builder
+	 * @param title             The title to give all the pages
+	 * @param pageSize          How many entries should be in a specific page
+	 * @param pageNumber        Which page the method should build and send to the provided channel
+	 * @param numberStyle       Which style to use for numbered entries. 0 = none 1 = standard 2 = code block surrounded & unique per page
+	 * @param codeBlock         Whether to surround all the entries in a code block or not
+	 * @param numberedReactions Whether to add numbered buttons for each entry
+	 * @param cancellable       Whether to add a cancel button to close the page
+	 * @param event             The DeferrableInteractionEvent that is being responded to
+	 */
+	public final void buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, DeferrableInteractionEvent event)
+	{
+		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
+		{
+			event.editReply("That page doesn't exist!").block();
+			return;
+		}
+		else
+		{
+			StringBuilder list = new StringBuilder();
+
+			if (codeBlock)
+			{
+				list.append("```" + System.lineSeparator());
+			}
+
+			int usedEntries = 0;
+
+			for (int i = (int) (entries.size() - ((((float) entries.size() / (float) pageSize) - (pageNumber - 1)) * pageSize)); entries.size() - ((((float) entries.size() / (float) pageSize) - pageNumber) * pageSize) > i; i++)
+			{
+				if (i > entries.size() - 1)
+				{
+					break;
+				}
+				else
+				{
+					usedEntries++;
+
+					if (numberStyle == 0)
+					{
+						list.append(entries.get(i) + System.lineSeparator());
+					}
+					else if (numberStyle == 1)
+					{
+						list.append((i + 1) + " - " + entries.get(i) + System.lineSeparator());
+					}
+					else if (numberStyle == 2)
+					{
+						list.append("**`[" + ((i + 1) - (pageSize * (pageNumber - 1))) + "]`** | " + entries.get(i) + System.lineSeparator());
+					}
+				}
+			}
+
+			if (codeBlock)
+			{
+				list.append("```");
+			}
+
+			String msg;
+
+			if (pageNumber == 1 && (int) Math.ceil((float) entries.size() / (float) pageSize) == 1)
+				msg = "--- **" + title + "** ---" + System.lineSeparator() + list.toString();
+			else
+				msg = "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString();
+
+			List<ActionComponent> components = new ArrayList<>();
+
+			if (pageNumber != 1)
+			{
+				components.add(prevBtn);
+			}
+			if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+			{
+				components.add(nextBtn);
+			}
+			if (cancellable)
+			{
+				components.add(cancelBtn);
+			}
+
+			if (components.size() > 0)
+				event.editReply(msg).withComponents(ActionRow.of(components)).block();
+			else
+				event.editReply(msg).block();
+		}
 	}
 
 	@Override

@@ -410,33 +410,13 @@ public class Util
 	}
 
 	/**
-	 * Builds a modular page message in response to an interaction for the given parameters
+	 * Builds a modular page message in response to a legacy command for the given parameters
 	 *
 	 * @param entries           An ArrayList<String> that contains all the entries that should be in the page builder
 	 * @param title             The title to give all the pages
 	 * @param pageSize          How many entries should be in a specific page
 	 * @param pageNumber        Which page the method should build and send to the provided channel
-	 * @param numberStyle       Which style to use for numbered entries, 0 = none, 1 = standard, 2 = code block surrounded & unique per page
-	 * @param codeBlock         Whether to surround all the entries in a code block or not
-	 * @param numberedReactions Whether to add numbered reactions for each entry
-	 * @param cancellable       Whether to add an X emoji to close the page
-	 * @param event             The ChatInputInteractionEvent that is being responded to
-	 * @param prevBtn           Button to go to previous page
-	 * @param nextBtn           Button to go to next page
-	 */
-	public static void buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, DeferrableInteractionEvent event, Button prevBtn, Button nextBtn)
-	{
-		buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, null, event, prevBtn, nextBtn);
-	}
-
-	/**
-	 * Builds a modular page message for the given parameters
-	 *
-	 * @param entries           An ArrayList<String> that contains all the entries that should be in the page builder
-	 * @param title             The title to give all the pages
-	 * @param pageSize          How many entries should be in a specific page
-	 * @param pageNumber        Which page the method should build and send to the provided channel
-	 * @param numberStyle       Which style to use for numbered entries, 0 = none, 1 = standard, 2 = code block surrounded & unique per page
+	 * @param numberStyle       Which style to use for numbered entries. 0 = none 1 = standard 2 = code block surrounded & unique per page
 	 * @param codeBlock         Whether to surround all the entries in a code block or not
 	 * @param numberedReactions Whether to add numbered reactions for each entry
 	 * @param cancellable       Whether to add an X emoji to close the page
@@ -445,22 +425,9 @@ public class Util
 	 */
 	public static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel)
 	{
-		return buildPage(entries, title, pageSize, pageNumber, numberStyle, codeBlock, numberedReactions, cancellable, channel, null, null, null);
-	}
-
-	private static Message buildPage(List<String> entries, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock, boolean numberedReactions, boolean cancellable, MessageChannel channel, DeferrableInteractionEvent event, Button prevBtn, Button nextBtn)
-	{
 		if (pageNumber > (int) Math.ceil((float) entries.size() / (float) pageSize))
 		{
-			if (Objects.isNull(event))
-			{
-				return msg(channel, "That page doesn't exist!");
-			}
-			else
-			{
-				event.editReply("That page doesn't exist!").block();
-				return null;
-			}
+			return msg(channel, "That page doesn't exist!");
 		}
 		else
 		{
@@ -510,54 +477,33 @@ public class Util
 			else
 				msg = "--- **" + title + "** --- **Page " + pageNumber + "/" + (int) Math.ceil((float) entries.size() / (float) pageSize) + "** ---" + System.lineSeparator() + list.toString();
 
-			if (Objects.isNull(event))
-			{
-				Message m = msg(channel, msg);
-				final int finalUsedEntries = usedEntries;
-				ScheduledExecutorService reactionAddPool = Executors.newScheduledThreadPool(1);
+			Message m = msg(channel, msg);
+			final int finalUsedEntries = usedEntries;
+			ScheduledExecutorService reactionAddPool = Executors.newScheduledThreadPool(1);
 
-				reactionAddPool.schedule(() ->
+			reactionAddPool.schedule(() ->
+			{
+				reactionAddPool.shutdown();
+
+				if (pageNumber != 1)
 				{
-					reactionAddPool.shutdown();
+					addReaction(m, "◀");
+				}
+				if (numberedReactions)
+				{
+					addNumberedReactions(m, false, finalUsedEntries);
+				}
+				if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
+				{
+					addReaction(m, "▶");
+				}
+				if (cancellable)
+				{
+					addReaction(m, "\u274C");
+				}
+			}, 250, TimeUnit.MILLISECONDS);
 
-					if (pageNumber != 1)
-					{
-						addReaction(m, "◀");
-					}
-					if (numberedReactions)
-					{
-						addNumberedReactions(m, false, finalUsedEntries);
-					}
-					if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-					{
-						addReaction(m, "▶");
-					}
-					if (cancellable)
-					{
-						addReaction(m, "\u274C");
-					}
-				}, 250, TimeUnit.MILLISECONDS);
-
-				return m;
-			}
-
-			List<ActionComponent> components = new ArrayList<>();
-
-			if (pageNumber != 1)
-			{
-				components.add(prevBtn);
-			}
-			if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
-			{
-				components.add(nextBtn);
-			}
-
-			if (components.size() > 0)
-				event.editReply(msg).withComponents(ActionRow.of(components)).block();
-			else
-				event.editReply(msg).block();
-
-			return null;
+			return m;
 		}
 	}
 

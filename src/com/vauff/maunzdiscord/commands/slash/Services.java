@@ -3,7 +3,6 @@ package com.vauff.maunzdiscord.commands.slash;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -66,9 +65,9 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	{
 		int page = listPages.get(user.getId());
 
-		if (buttonId.equals("services-nextpage"))
+		if (buttonId.equals("nextpage"))
 			runListSelection(event, user, page + 1);
-		else if (buttonId.equals("services-prevpage"))
+		else if (buttonId.equals("prevpage"))
 			runListSelection(event, user, page - 1);
 	}
 
@@ -218,7 +217,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		}
 
 		listPages.put(author.getId(), page);
-		Util.buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event, prevBtn, nextBtn);
+		buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event);
 		waitForButtonPress(event.getReply().block().getId(), author.getId());
 	}
 
