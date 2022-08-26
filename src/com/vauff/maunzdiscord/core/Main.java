@@ -139,12 +139,12 @@ public class Main
 	 */
 	public static void setupCommands()
 	{
-		legacyCommands.add(new About());
+		slashCommands.add(new About());
 		slashCommands.add(new Benchmark());
 		legacyCommands.add(new Changelog());
 		slashCommands.add(new Colour());
-		legacyCommands.add(new Discord());
 		legacyCommands.add(new Help());
+		slashCommands.add(new Invite());
 		slashCommands.add(new IsItDown());
 		legacyCommands.add(new Map());
 		slashCommands.add(new Minecraft());

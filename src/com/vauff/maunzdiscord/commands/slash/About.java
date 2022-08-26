@@ -1,37 +1,44 @@
-package com.vauff.maunzdiscord.commands.legacy;
+package com.vauff.maunzdiscord.commands.slash;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.objects.CommandHelp;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.object.component.ActionComponent;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.Button;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.util.Color;
 
 import java.net.JarURLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
-public class About extends AbstractLegacyCommand<MessageCreateEvent>
+public class About extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
-		String buildDate = getBuildDate();
+		List<ActionComponent> components = new ArrayList<>();
+		components.add(Button.link("https://github.com/Vauff/Maunz-Discord", "GitHub"));
+		components.add(Button.link("https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=517647752257&scope=bot%20applications.commands", "Bot invite"));
+		components.add(Button.link("https://discord.gg/v55fW9b", "Maunz Hub server invite"));
 
 		EmbedCreateSpec embed = EmbedCreateSpec.builder()
 			.color(Color.of(141, 99, 68))
 			.thumbnail("https://i.imgur.com/Fzw48O4.jpg")
 			.title("Maunz")
-			.url("https://github.com/Vauff/Maunz-Discord")
 			.description("Maunz is a multi-purpose bot with a focus on Source server tracking, it is developed by Vauff using the Discord4J library.")
 			.addField("Version", Main.version, true)
 			.addField("Java Version", System.getProperty("java.version"), true)
 			.addField("Uptime", getUptime(), true)
-			.addField("Build Date", buildDate, true)
+			.addField("Build Date", getBuildDate(), true)
 			.build();
 
-		Util.msg(channel, embed);
+		event.editReply("").withEmbeds(embed).withComponents(ActionRow.of(components)).block();
 	}
 
 	/**
@@ -113,20 +120,23 @@ public class About extends AbstractLegacyCommand<MessageCreateEvent>
 	}
 
 	@Override
-	public String[] getAliases()
+	public ApplicationCommandRequest getCommand()
 	{
-		return new String[] { "about" };
+		return ApplicationCommandRequest.builder()
+			.name(getName())
+			.description("Gives information about Maunz such as version and uptime")
+			.build();
+	}
+
+	@Override
+	public String getName()
+	{
+		return "about";
 	}
 
 	@Override
 	public BotPermission getPermissionLevel()
 	{
 		return BotPermission.EVERYONE;
-	}
-
-	@Override
-	public CommandHelp[] getHelp()
-	{
-		return new CommandHelp[] { new CommandHelp("", "Gives information about Maunz such as version and uptime") };
 	}
 }
