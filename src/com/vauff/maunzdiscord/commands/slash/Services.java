@@ -65,9 +65,9 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	{
 		int page = listPages.get(user.getId());
 
-		if (buttonId.equals("nextpage"))
+		if (buttonId.equals(NEXT_BTN))
 			runListSelection(event, user, page + 1);
-		else if (buttonId.equals("prevpage"))
+		else if (buttonId.equals(PREV_BTN))
 			runListSelection(event, user, page - 1);
 	}
 

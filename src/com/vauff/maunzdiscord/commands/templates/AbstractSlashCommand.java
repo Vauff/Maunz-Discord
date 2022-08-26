@@ -25,11 +25,11 @@ import java.util.Objects;
 public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> extends AbstractCommand
 {
 	/**
-	 * Common buttons used for buildPage
+	 * Button names used for buildPage
 	 */
-	public final Button prevBtn = Button.primary("prevpage", ReactionEmoji.unicode("◀"), "Previous Page");
-	public final Button nextBtn = Button.primary("nextpage", ReactionEmoji.unicode("▶"), "Next Page");
-	public final Button cancelBtn = Button.danger("cancel", ReactionEmoji.unicode("❌"), "Cancel");
+	public final String PREV_BTN = "prevpage";
+	public final String NEXT_BTN = "nextpage";
+	public final String CANCEL_BTN = "cancel";
 
 	/**
 	 * Holds messages as keys which await a button press by a specific user.
@@ -159,15 +159,15 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 
 			if (pageNumber != 1)
 			{
-				components.add(prevBtn);
+				components.add(Button.primary(PREV_BTN, ReactionEmoji.unicode("◀"), "Previous Page"));
 			}
 			if (pageNumber != (int) Math.ceil((float) entries.size() / (float) pageSize))
 			{
-				components.add(nextBtn);
+				components.add(Button.primary(NEXT_BTN, ReactionEmoji.unicode("▶"), "Next Page"));
 			}
 			if (cancellable)
 			{
-				components.add(cancelBtn);
+				components.add(Button.danger(CANCEL_BTN, ReactionEmoji.unicode("❌"), "Cancel"));
 			}
 
 			if (components.size() > 0)
