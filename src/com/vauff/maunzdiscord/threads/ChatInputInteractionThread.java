@@ -44,7 +44,7 @@ public class ChatInputInteractionThread implements Runnable
 			event.deferReply().block();
 
 			String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
-			User author = event.getInteraction().getUser();
+			User user = event.getInteraction().getUser();
 			MessageChannel channel = event.getInteraction().getChannel().block();
 			Guild guild = event.getInteraction().getGuild().block();
 
@@ -52,28 +52,28 @@ public class ChatInputInteractionThread implements Runnable
 			{
 				if (!cmdName.equalsIgnoreCase(cmd.getName()))
 					continue;
-				if (MainListener.cooldownTimestamps.containsKey(author.getId()) && (MainListener.cooldownTimestamps.get(author.getId()) + 2000L) > System.currentTimeMillis())
+				if (MainListener.cooldownTimestamps.containsKey(user.getId()) && (MainListener.cooldownTimestamps.get(user.getId()) + 2000L) > System.currentTimeMillis())
 				{
-					if ((!MainListener.cooldownMessageTimestamps.containsKey(author.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(author.getId()) && (MainListener.cooldownMessageTimestamps.get(author.getId()) + 10000L) < System.currentTimeMillis()))
+					if ((!MainListener.cooldownMessageTimestamps.containsKey(user.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(user.getId()) && (MainListener.cooldownMessageTimestamps.get(user.getId()) + 10000L) < System.currentTimeMillis()))
 					{
 						event.editReply("Slow down!").block();
-						MainListener.cooldownMessageTimestamps.put(author.getId(), System.currentTimeMillis());
+						MainListener.cooldownMessageTimestamps.put(user.getId(), System.currentTimeMillis());
 					}
 
 					return;
 				}
 
-				MainListener.cooldownTimestamps.put(author.getId(), System.currentTimeMillis());
+				MainListener.cooldownTimestamps.put(user.getId(), System.currentTimeMillis());
 
 				try
 				{
-					if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(author, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(author)))
+					if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(user)))
 					{
 						event.editReply("You do not have permission to use that command").block();
 						return;
 					}
 
-					cmd.exe(event, guild, channel, author);
+					cmd.exe(event, guild, channel, user);
 				}
 				catch (Exception e)
 				{

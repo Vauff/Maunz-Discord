@@ -1,17 +1,18 @@
-package com.vauff.maunzdiscord.commands.legacy;
+package com.vauff.maunzdiscord.commands.slash;
 
 import com.mongodb.client.FindIterable;
-import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.entity.Message;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
+import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 
@@ -25,17 +26,17 @@ import java.util.concurrent.TimeUnit;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
-public class Players extends AbstractLegacyCommand<MessageCreateEvent>
+public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	private static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
 	private static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
 
 	@Override
-	public void exe(MessageCreateEvent event, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		if (!(channel instanceof PrivateChannel))
 		{
-			long guildID = event.getGuild().block().getId().asLong();
+			long guildID = guild.getId().asLong();
 			FindIterable<Document> servicesIterable = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("guildID", guildID)));
 			List<Document> services = new ArrayList<>();
 
@@ -46,11 +47,11 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 
 			if (services.size() == 0)
 			{
-				Util.msg(channel, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
+				event.editReply("A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up").block();
 			}
 			else if (services.size() == 1)
 			{
-				runCmd(author, channel, services.get(0));
+				runCmd(event, user, services.get(0));
 			}
 			else
 			{
@@ -58,57 +59,56 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 				{
 					if (doc.getLong("channelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(guildID, channel.getId().asLong()))
 					{
-						runCmd(author, channel, doc);
+						runCmd(event, user, doc);
 						return;
 					}
 				}
 
-				runSelection(author, channel, services, 1);
+				runSelection(event, user, services, 1);
 			}
 		}
 		else
 		{
-			Util.msg(channel, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
+			event.editReply("This command can't be done in a PM, only in a guild with the server tracking service enabled").block();
 		}
 	}
 
 	@Override
-	public void onReactionAdd(ReactionAddEvent event, Message message)
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user)
 	{
-		String emoji = event.getEmoji().asUnicodeEmoji().get().getRaw();
-		User user = event.getUser().block();
+		int page = selectionPages.get(user.getId());
 
-		if (emoji.equals("▶"))
+		if (buttonId.equals(NEXT_BTN))
 		{
-			runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) + 1);
+			runSelection(event, user, selectionServices.get(user.getId()), page + 1);
+			return;
+		}
+		else if (buttonId.equals(PREV_BTN))
+		{
+			runSelection(event, user, selectionServices.get(user.getId()), page - 1);
 			return;
 		}
 
-		else if (emoji.equals("◀"))
-		{
-			runSelection(user, event.getChannel().block(), selectionServices.get(user.getId()), selectionPages.get(user.getId()) - 1);
-			return;
-		}
-
-		int i = Util.emojiToInt(emoji) + ((selectionPages.get(user.getId()) - 1) * 5) - 1;
+		// TODO: Numbered button support in buildPage
+		/*int i = Util.emojiToInt(emoji) + ((page - 1) * 5) - 1;
 
 		if (i != -2)
 		{
 			if (selectionServices.get(user.getId()).size() >= i)
 			{
-				runCmd(user, event.getChannel().block(), selectionServices.get(user.getId()).get(i));
+				runCmd(event, user, selectionServices.get(user.getId()).get(i));
 			}
-		}
+		}*/
 	}
 
-	private void runCmd(User user, MessageChannel channel, Document doc)
+	private void runCmd(DeferrableInteractionEvent event, User user, Document doc)
 	{
 		StringBuilder playersList = new StringBuilder();
 		Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
 
 		if (!doc.getBoolean("online"))
 		{
-			Util.msg(channel, "The server currently appears to be offline");
+			event.editReply("The server currently appears to be offline").block();
 			return;
 		}
 
@@ -116,7 +116,7 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 
 		if (numberOfPlayers == 0)
 		{
-			Util.msg(channel, "There are currently no players online!");
+			event.editReply("There are currently no players online!").block();
 			return;
 		}
 
@@ -136,26 +136,29 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 
 		try
 		{
-			Util.msg((!sizeIsSmall ? user.getPrivateChannel().block() : channel), playersList.toString());
+			if (sizeIsSmall)
+				event.editReply(playersList.toString()).block();
+			else
+				Util.msg(user.getPrivateChannel().block(), playersList.toString());
 		}
 		catch (ClientException e)
 		{
-			if (!sizeIsSmall)
+			if (sizeIsSmall)
 			{
-				Util.msg(channel, "An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked");
-				return;
+				throw e;
 			}
 			else
 			{
-				throw e;
+				event.editReply("An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked").block();
+				return;
 			}
 		}
 
 		if (!sizeIsSmall)
-			Util.msg(channel, "Sending the online player list to you in a PM!");
+			event.editReply("Sending the online player list to you in a PM!").block();
 	}
 
-	private void runSelection(User user, MessageChannel channel, List<Document> services, int page)
+	private void runSelection(DeferrableInteractionEvent event, User user, List<Document> services, int page)
 	{
 		ArrayList<String> servers = new ArrayList<>();
 
@@ -165,36 +168,40 @@ public class Players extends AbstractLegacyCommand<MessageCreateEvent>
 			servers.add(serverDoc.getString("name"));
 		}
 
-		Message m = Util.buildPage(servers, "Select Server", 5, page, 2, false, true, true, channel);
+		buildPage(servers, "Select Server", 5, page, 2, false, true, true, event);
 
 		selectionServices.put(user.getId(), services);
 		selectionPages.put(user.getId(), page);
-		waitForReaction(m.getId(), user.getId());
+		waitForButtonPress(event.getReply().block().getId(), user.getId());
 
 		ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
 
+		// TODO: Decide whether we keep this
 		msgDeleterPool.schedule(() ->
 		{
 			msgDeleterPool.shutdown();
-			m.delete().block();
+			event.getReply().block().delete().block();
 		}, 120, TimeUnit.SECONDS);
 	}
 
 	@Override
-	public String[] getAliases()
+	public ApplicationCommandRequest getCommand()
 	{
-		return new String[] { "players" };
+		return ApplicationCommandRequest.builder()
+			.name(getName())
+			.description("Lists the current players online on a server")
+			.build();
+	}
+
+	@Override
+	public String getName()
+	{
+		return "players";
 	}
 
 	@Override
 	public BotPermission getPermissionLevel()
 	{
 		return BotPermission.EVERYONE;
-	}
-
-	@Override
-	public CommandHelp[] getHelp()
-	{
-		return new CommandHelp[] { new CommandHelp("", "Lists the current players online on a server") };
 	}
 }

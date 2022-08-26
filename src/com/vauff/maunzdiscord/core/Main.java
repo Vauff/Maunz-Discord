@@ -150,7 +150,7 @@ public class Main
 		slashCommands.add(new Minecraft());
 		legacyCommands.add(new Notify());
 		slashCommands.add(new Ping());
-		legacyCommands.add(new Players());
+		slashCommands.add(new Players());
 		slashCommands.add(new Reddit());
 		slashCommands.add(new Say());
 		slashCommands.add(new Services());

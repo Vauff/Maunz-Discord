@@ -36,7 +36,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author) throws Exception
+	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
 
@@ -49,15 +49,15 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		if (interaction.getOption("add").isPresent())
 			exeAdd(event, guild);
 		else if (interaction.getOption("list").isPresent())
-			exeList(event, guild, author);
+			exeList(event, guild, user);
 		else if (interaction.getOption("info").isPresent())
-			exeInfo(event, guild, channel, author);
+			exeInfo(event, guild, channel, user);
 		else if (interaction.getOption("delete").isPresent())
-			exeDelete(event, author);
+			exeDelete(event, user);
 		else if (interaction.getOption("edit").isPresent())
-			exeEdit(event, guild, channel, author);
+			exeEdit(event, guild, channel, user);
 		else if (interaction.getOption("toggle").isPresent())
-			exeToggle(event, guild, channel, author);
+			exeToggle(event, guild, channel, user);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		event.editReply("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
 	}
 
-	private void exeList(ChatInputInteractionEvent event, Guild guild, User author)
+	private void exeList(ChatInputInteractionEvent event, Guild guild, User user)
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("list").get();
 		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
@@ -121,26 +121,26 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 			return;
 		}
 
-		listServices.put(author.getId(), services);
+		listServices.put(user.getId(), services);
 
 		if (subCmd.getOption("page").isPresent())
-			runListSelection(event, author, (int) subCmd.getOption("page").get().getValue().get().asLong());
+			runListSelection(event, user, (int) subCmd.getOption("page").get().getValue().get().asLong());
 		else
-			runListSelection(event, author, 1);
+			runListSelection(event, user, 1);
 	}
 
-	private void exeInfo(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
+	private void exeInfo(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user)
 	{
 		event.editReply("This feature is not yet implemented").block();
 	}
 
-	private void exeDelete(ChatInputInteractionEvent event, User author)
+	private void exeDelete(ChatInputInteractionEvent event, User user)
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("delete").get();
-		List<Document> services = listServices.get(author.getId());
+		List<Document> services = listServices.get(user.getId());
 		int id = (int) subCmd.getOption("id").get().getValue().get().asLong();
 
-		if (!listServices.containsKey(author.getId()) || services.size() < id)
+		if (!listServices.containsKey(user.getId()) || services.size() < id)
 		{
 			event.editReply("That service ID doesn't exist! Have you ran **/services list** yet to generate IDs?").block();
 			return;
@@ -175,22 +175,22 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		event.editReply(msg).block();
 	}
 
-	private void exeEdit(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
+	private void exeEdit(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user)
 	{
 		event.editReply("This feature is not yet implemented").block();
 	}
 
-	private void exeToggle(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User author)
+	private void exeToggle(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user)
 	{
 		event.editReply("This feature is not yet implemented").block();
 	}
 
-	private void runListSelection(DeferrableInteractionEvent event, User author, int page)
+	private void runListSelection(DeferrableInteractionEvent event, User user, int page)
 	{
 		ArrayList<String> servicesDisplay = new ArrayList<>();
 		int id = 0;
 
-		for (Document service : listServices.get(author.getId()))
+		for (Document service : listServices.get(user.getId()))
 		{
 			id++;
 
@@ -216,9 +216,9 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 			servicesDisplay.add(msg);
 		}
 
-		listPages.put(author.getId(), page);
+		listPages.put(user.getId(), page);
 		buildPage(servicesDisplay, "Services", 10, page, 0, false, false, false, event);
-		waitForButtonPress(event.getReply().block().getId(), author.getId());
+		waitForButtonPress(event.getReply().block().getId(), user.getId());
 	}
 
 	private boolean isServerOnline(String ip, int port) throws Exception
