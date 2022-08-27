@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.core;
 
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
@@ -11,6 +12,7 @@ import discord4j.core.object.Embed;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
@@ -136,6 +138,20 @@ public class Logger
 		}
 
 		Logger.log.debug(logMsg);
+	}
+
+	public static void onButtonInteraction(ButtonInteractionEvent event)
+	{
+		try
+		{
+			User user = event.getInteraction().getUser();
+
+			Logger.log.debug(user.getUsername() + " (" + user.getId().asString() + ") pressed the button " + event.getCustomId() + " on message ID " + event.getMessageId().asString());
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
 	}
 
 	public static void onReactionAdd(ReactionAddEvent event)

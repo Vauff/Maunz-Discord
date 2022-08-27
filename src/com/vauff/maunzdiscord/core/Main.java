@@ -114,6 +114,7 @@ public class Main
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onChatInputInteraction(event))).subscribe();
 			gateway.on(MessageCreateEvent.class, event -> Mono.fromRunnable(() -> Logger.onMessageCreate(event))).subscribe();
 			gateway.on(MessageUpdateEvent.class, event -> Mono.fromRunnable(() -> Logger.onMessageUpdate(event))).subscribe();
+			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onButtonInteraction(event))).subscribe();
 			gateway.on(ReactionAddEvent.class, event -> Mono.fromRunnable(() -> Logger.onReactionAdd(event))).subscribe();
 			gateway.on(ReactionRemoveEvent.class, event -> Mono.fromRunnable(() -> Logger.onReactionRemove(event))).subscribe();
 			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> Logger.onGuildDelete(event))).subscribe();
