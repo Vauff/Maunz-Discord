@@ -39,25 +39,25 @@ public class Steam extends AbstractSlashCommand<ChatInputInteractionEvent>
 				String country = "N/A";
 				String creationDate = "N/A";
 				String avatarURL = siteHtml.split("<img class=\"avatar\" src=\"")[1].split("\"")[0];
-				String nickname = siteHtml.split("Nick Name \n    <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
-				String lastLogoff = siteHtml.split("<i>Last Logoff:</i> ")[1].split("\n    ")[0];
-				String status = siteHtml.split("<i>Status:</i> ")[1].split("\n    ")[0];
-				String visibility = siteHtml.split("<i>Visibility:</i> ")[1].split("\n    ")[0];
+				String nickname = siteHtml.split("Nick Name <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
+				String lastLogoff = siteHtml.split("<i>Last Logoff:</i> ")[1].split("<br>")[0];
+				String status = siteHtml.split("<i>Status:</i> ")[1].split("<br>")[0];
+				String visibility = siteHtml.split("<i>Visibility:</i> ")[1].split("<br>")[0];
 				String bans = "";
-				String steamID = siteHtml.split("Steam ID \n    <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
-				String steamID3 = siteHtml.split("Steam ID3 \n    <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
-				String steam32ID = siteHtml.split("Steam32 ID \n    <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
-				String steam64ID = siteHtml.split("Steam64 ID \n    <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
-				String link = siteHtml.split("Profile URL \n    <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
+				String steamID = siteHtml.split("Steam ID <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
+				String steamID3 = siteHtml.split("Steam ID3 <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
+				String steam32ID = siteHtml.split("Steam32 ID <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
+				String steam64ID = siteHtml.split("Steam64 ID <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
+				String link = siteHtml.split("Profile URL <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
 
-				if (!siteHtml.split("<i>Real Name:</i> ")[1].split("\n    ")[0].equalsIgnoreCase(""))
-					realName = siteHtml.split("<i>Real Name:</i> ")[1].split("\n    ")[0];
+				if (!siteHtml.split("<i>Real Name:</i> ")[1].split("<br>")[0].equalsIgnoreCase(""))
+					realName = siteHtml.split("<i>Real Name:</i> ")[1].split("<br>")[0];
 
-				if (!siteHtml.split("<i>Country:</i> ")[1].split("\n    ")[0].equalsIgnoreCase(""))
-					country = ":flag_" + siteHtml.split("<i>Country:</i> ")[1].split("\n    ")[0].toLowerCase() + ":";
+				if (!siteHtml.split("<i>Country:</i> ")[1].split("<br>")[0].equalsIgnoreCase(""))
+					country = ":flag_" + siteHtml.split("<i>Country:</i> ")[1].split("<br>")[0].toLowerCase() + ":";
 
-				if (!siteHtml.split("<i>Account Created:</i> ")[1].split("\n    ")[0].equalsIgnoreCase(""))
-					creationDate = siteHtml.split("<i>Account Created:</i> ")[1].split("\n    ")[0];
+				if (!siteHtml.split("<i>Account Created:</i> ")[1].split("<br>")[0].equalsIgnoreCase(""))
+					creationDate = siteHtml.split("<i>Account Created:</i> ")[1].split("<br>")[0];
 
 				if (visibility.equalsIgnoreCase("private"))
 					status = "N/A";
