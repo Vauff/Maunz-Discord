@@ -19,9 +19,6 @@ import org.bson.Document;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -168,20 +165,11 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 			servers.add(serverDoc.getString("name"));
 		}
 
-		buildPage(servers, "Select Server", 5, page, 2, false, true, true, event);
+		buildPage(event, servers, "Select Server", 5, page, 1, false);
 
 		selectionServices.put(user.getId(), services);
 		selectionPages.put(user.getId(), page);
 		waitForButtonPress(event.getReply().block().getId(), user.getId());
-
-		ScheduledExecutorService msgDeleterPool = Executors.newScheduledThreadPool(1);
-
-		// TODO: Decide whether we keep this
-		msgDeleterPool.schedule(() ->
-		{
-			msgDeleterPool.shutdown();
-			event.getReply().block().delete().block();
-		}, 120, TimeUnit.SECONDS);
 	}
 
 	@Override
