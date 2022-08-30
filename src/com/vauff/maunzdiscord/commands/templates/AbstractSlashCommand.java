@@ -139,9 +139,10 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 
 		if (pages > 1)
 		{
-			pageComponents.add(Button.primary(PREV_BTN, ReactionEmoji.unicode("◀"), "Previous Page").disabled(pageNumber == 1));
-			pageComponents.add(Button.secondary("pagenumber", pageNumber + "/" + pages).disabled());
-			pageComponents.add(Button.primary(NEXT_BTN, ReactionEmoji.unicode("▶"), "Next Page").disabled(pageNumber == pages));
+			// Using U+2800 BRAILLE PATTERN BLANK to get spacing in button text
+			pageComponents.add(Button.primary(PREV_BTN, "◀⠀Previous").disabled(pageNumber == 1));
+			pageComponents.add(Button.secondary("pagenumber", "Page " + pageNumber + "/" + pages).disabled());
+			pageComponents.add(Button.primary(NEXT_BTN, "Next⠀▶").disabled(pageNumber == pages));
 		}
 
 		if (pageComponents.size() > 0)
