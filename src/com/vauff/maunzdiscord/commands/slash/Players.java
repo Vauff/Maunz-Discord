@@ -71,7 +71,7 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user)
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		int page = selectionPages.get(user.getId());
 
@@ -155,7 +155,7 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 			event.editReply("Sending the online player list to you in a PM!").block();
 	}
 
-	private void runSelection(DeferrableInteractionEvent event, User user, List<Document> services, int page)
+	private void runSelection(DeferrableInteractionEvent event, User user, List<Document> services, int page) throws Exception
 	{
 		ArrayList<String> servers = new ArrayList<>();
 
@@ -165,7 +165,7 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 			servers.add(serverDoc.getString("name"));
 		}
 
-		buildPage(event, servers, "Select Server", 5, page, 1, false);
+		buildPage(event, servers, "Select Server", 5, page, 0, false);
 
 		selectionServices.put(user.getId(), services);
 		selectionPages.put(user.getId(), page);

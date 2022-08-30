@@ -61,7 +61,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user)
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		int page = listPages.get(user.getId());
 
@@ -110,7 +110,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		event.editReply("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
 	}
 
-	private void exeList(ChatInputInteractionEvent event, Guild guild, User user)
+	private void exeList(ChatInputInteractionEvent event, Guild guild, User user) throws Exception
 	{
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("list").get();
 		List<Document> services = Main.mongoDatabase.getCollection("services").find(eq("guildID", guild.getId().asLong())).projection(new Document("enabled", 1).append("serverID", 1).append("channelID", 1)).into(new ArrayList<>());
@@ -185,7 +185,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		event.editReply("This feature is not yet implemented").block();
 	}
 
-	private void runListSelection(DeferrableInteractionEvent event, User user, int page)
+	private void runListSelection(DeferrableInteractionEvent event, User user, int page) throws Exception
 	{
 		ArrayList<String> servicesDisplay = new ArrayList<>();
 		int id = 0;
@@ -196,7 +196,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 			Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).projection(new Document("ip", 1).append("port", 1)).first();
 			Channel serviceChannel;
-			String msg = id + " - " + server.getString("ip") + ":" + server.getInteger("port");
+			String msg = server.getString("ip") + ":" + server.getInteger("port");
 
 			try
 			{
@@ -217,7 +217,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		}
 
 		listPages.put(user.getId(), page);
-		buildPage(event, servicesDisplay, "Services", 10, page, 0, false);
+		buildPage(event, servicesDisplay, "Services", 10, page, 1, false);
 		waitForButtonPress(event.getReply().block().getId(), user.getId());
 	}
 

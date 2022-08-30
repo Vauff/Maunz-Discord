@@ -13,7 +13,6 @@ import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
@@ -53,7 +52,7 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	 * @param channel  Channel the button was pressed in
 	 * @param user     User who pressed the button
 	 */
-	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user)
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 	}
 
@@ -94,10 +93,10 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	 * @param title       The title to give all the pages
 	 * @param pageSize    How many entries should be in a specific page
 	 * @param pageNumber  Which page the method should build and send to the provided channel
-	 * @param numberStyle Which style to use for entries, ignored for button elements. 0 = none 1 = numbered in code blocks
+	 * @param numberStyle Which style to use for entries, ignored for button elements. 0 = none 1 = numbered list in code ticks
 	 * @param codeBlock   Whether to surround all the entries in a code block or not, ignored for button elements
 	 */
-	public final void buildPage(DeferrableInteractionEvent event, List<?> elements, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock)
+	public final void buildPage(DeferrableInteractionEvent event, List<?> elements, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock) throws Exception
 	{
 		float rawPages = (float) elements.size() / pageSize;
 		int pages = (int) Math.ceil(rawPages);
@@ -120,13 +119,16 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 			if (i > elements.size() - 1)
 				break;
 
-			if (numberStyle == 0)
+			switch (numberStyle)
 			{
-				list.append(elements.get(i) + System.lineSeparator());
-			}
-			else if (numberStyle == 1)
-			{
-				list.append("`[" + (i + 1) + "]` | " + elements.get(i) + System.lineSeparator());
+				case 0:
+					list.append(elements.get(i) + System.lineSeparator());
+					break;
+				case 1:
+					list.append("`[" + (i + 1) + "]` | " + elements.get(i) + System.lineSeparator());
+					break;
+				default:
+					throw new Exception("Bad numberStyle " + numberStyle + " passed into buildPage");
 			}
 		}
 
