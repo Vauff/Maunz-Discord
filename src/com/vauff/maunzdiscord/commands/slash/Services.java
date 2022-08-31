@@ -188,12 +188,9 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 	private void runListSelection(DeferrableInteractionEvent event, User user, int page) throws Exception
 	{
 		ArrayList<String> servicesDisplay = new ArrayList<>();
-		int id = 0;
 
 		for (Document service : listServices.get(user.getId()))
 		{
-			id++;
-
 			Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).projection(new Document("ip", 1).append("port", 1)).first();
 			Channel serviceChannel;
 			String msg = server.getString("ip") + ":" + server.getInteger("port");
@@ -217,7 +214,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		}
 
 		listPages.put(user.getId(), page);
-		buildPage(event, servicesDisplay, "Services", 10, page, 1, false);
+		buildPage(event, servicesDisplay, "Services", 10, 0, page, 1, false);
 		waitForButtonPress(event.getReply().block().getId(), user.getId());
 	}
 

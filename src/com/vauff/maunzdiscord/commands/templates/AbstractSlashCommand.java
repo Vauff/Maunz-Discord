@@ -10,6 +10,7 @@ import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.component.ActionComponent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
+import discord4j.core.object.component.LayoutComponent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -88,15 +89,16 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	/**
 	 * Builds a modular page message in response to an interaction for the given parameters
 	 *
-	 * @param event       The DeferrableInteractionEvent that is being responded to
-	 * @param elements    An ArrayList that contains the elements making up all the pages
-	 * @param title       The title to give all the pages
-	 * @param pageSize    How many entries should be in a specific page
-	 * @param pageNumber  Which page the method should build and send to the provided channel
-	 * @param numberStyle Which style to use for entries, ignored for button elements. 0 = none 1 = numbered list in code ticks
-	 * @param codeBlock   Whether to surround all the entries in a code block or not, ignored for button elements
+	 * @param event         The DeferrableInteractionEvent that is being responded to
+	 * @param elements      A List that contains the elements making up all the pages
+	 * @param title         The title to give all the pages
+	 * @param pageSize      How many elements (strings) or rows (buttons) should be in a specific page
+	 * @param buttonsPerRow How many buttons to display on each row, ignored for string elements
+	 * @param pageNumber    Which page the method should build and send
+	 * @param numberStyle   Which style to use for entries, ignored for button elements. 0 = none 1 = numbered list in code ticks
+	 * @param codeBlock     Whether to surround all the entries in a code block or not, ignored for button elements
 	 */
-	public final void buildPage(DeferrableInteractionEvent event, List<?> elements, String title, int pageSize, int pageNumber, int numberStyle, boolean codeBlock) throws Exception
+	public final void buildPage(DeferrableInteractionEvent event, List<?> elements, String title, int pageSize, int buttonsPerRow, int pageNumber, int numberStyle, boolean codeBlock) throws Exception
 	{
 		float rawPages = (float) elements.size() / pageSize;
 		int pages = (int) Math.ceil(rawPages);
@@ -107,50 +109,69 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 			return;
 		}
 
-		StringBuilder list = new StringBuilder();
-
-		if (codeBlock)
-			list.append("```" + System.lineSeparator());
-
+		boolean buttonElements = elements.get(0) instanceof Button;
 		int firstElementIndex = (int) (elements.size() - ((rawPages - (pageNumber - 1)) * pageSize));
+		int lastElementIndex = firstElementIndex + pageSize;
+		String elementsString = "";
+		List<LayoutComponent> buttonRows = new ArrayList<>();
+		List<Button> buttons = new ArrayList<>();
 
-		for (int i = firstElementIndex; i < firstElementIndex + pageSize; i++)
+		if (codeBlock && !buttonElements)
+			elementsString += "```" + System.lineSeparator();
+
+		for (int i = firstElementIndex; i < lastElementIndex; i++)
 		{
 			if (i > elements.size() - 1)
 				break;
 
-			switch (numberStyle)
+			if (buttonElements)
 			{
-				case 0:
-					list.append(elements.get(i) + System.lineSeparator());
-					break;
-				case 1:
-					list.append("`[" + (i + 1) + "]` | " + elements.get(i) + System.lineSeparator());
-					break;
-				default:
-					throw new Exception("Bad numberStyle " + numberStyle + " passed into buildPage");
+				buttons.add((Button) elements.get(i));
+
+				if (buttons.size() == buttonsPerRow || i == lastElementIndex - 1 || i == elements.size() - 1)
+				{
+					buttonRows.add(ActionRow.of(buttons));
+					buttons.clear();
+				}
+			}
+			else
+			{
+				switch (numberStyle)
+				{
+					case 0 -> elementsString += elements.get(i) + System.lineSeparator();
+					case 1 -> elementsString += "`[" + (i + 1) + "]` | " + elements.get(i) + System.lineSeparator();
+					default -> throw new Exception("Bad numberStyle " + numberStyle + " passed into buildPage");
+				}
 			}
 		}
 
-		if (codeBlock)
-			list.append("```");
+		if (codeBlock && !buttonElements)
+			elementsString += "```";
 
-		String msg = "--- **" + title + "** ---" + System.lineSeparator() + list;
-
+		String formattedTitle = "--- **" + title + "** ---" + System.lineSeparator();
 		List<ActionComponent> pageComponents = new ArrayList<>();
 
 		if (pages > 1)
 		{
 			// Using U+2800 BRAILLE PATTERN BLANK to get spacing in button text
-			pageComponents.add(Button.primary(PREV_BTN, "◀⠀Previous").disabled(pageNumber == 1));
+			pageComponents.add(Button.secondary(PREV_BTN, "◀⠀Previous").disabled(pageNumber == 1));
 			pageComponents.add(Button.secondary("pagenumber", "Page " + pageNumber + "/" + pages).disabled());
-			pageComponents.add(Button.primary(NEXT_BTN, "Next⠀▶").disabled(pageNumber == pages));
+			pageComponents.add(Button.secondary(NEXT_BTN, "Next⠀▶").disabled(pageNumber == pages));
 		}
 
-		if (pageComponents.size() > 0)
-			event.editReply(msg).withComponents(ActionRow.of(pageComponents)).block();
+		if (buttonElements)
+		{
+			buttonRows.add(ActionRow.of(pageComponents));
+			event.editReply(formattedTitle).withComponentsOrNull(buttonRows).block();
+		}
+		else if (pageComponents.size() > 0)
+		{
+			event.editReply(formattedTitle + elementsString).withComponents(ActionRow.of(pageComponents)).block();
+		}
 		else
-			event.editReply(msg).block();
+		{
+			event.editReply(formattedTitle + elementsString).block();
+		}
 	}
 
 	@Override

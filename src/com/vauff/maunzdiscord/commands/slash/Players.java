@@ -8,6 +8,7 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
+import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -86,16 +87,14 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 			return;
 		}
 
-		// TODO: Numbered button support in buildPage
-		/*int i = Util.emojiToInt(emoji) + ((page - 1) * 5) - 1;
-
-		if (i != -2)
+		for (Document doc : selectionServices.get(user.getId()))
 		{
-			if (selectionServices.get(user.getId()).size() >= i)
+			if (doc.getObjectId("_id").toString().equals(buttonId))
 			{
-				runCmd(event, user, selectionServices.get(user.getId()).get(i));
+				runCmd(event, user, doc);
+				break;
 			}
-		}*/
+		}
 	}
 
 	private void runCmd(DeferrableInteractionEvent event, User user, Document doc)
@@ -157,15 +156,15 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 	private void runSelection(DeferrableInteractionEvent event, User user, List<Document> services, int page) throws Exception
 	{
-		ArrayList<String> servers = new ArrayList<>();
+		ArrayList<Button> servers = new ArrayList<>();
 
 		for (Document doc : services)
 		{
 			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
-			servers.add(serverDoc.getString("name"));
+			servers.add(Button.primary(doc.getObjectId("_id").toString(), serverDoc.getString("name")));
 		}
 
-		buildPage(event, servers, "Select Server", 5, page, 0, false);
+		buildPage(event, servers, "Select Server", 8, 2, page, 0, false);
 
 		selectionServices.put(user.getId(), services);
 		selectionPages.put(user.getId(), page);
