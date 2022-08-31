@@ -15,7 +15,6 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.util.Color;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 public class Colour extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
@@ -51,7 +50,7 @@ public class Colour extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 			try
 			{
-				color = Util.averageColorFromURL(new URL(url), false);
+				color = Util.averageColorFromURL(url, false);
 
 				if (color == null)
 				{

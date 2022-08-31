@@ -26,9 +26,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `/isitdown <hostname>` - Tells you if the given hostname is down or not
 
-`*map` - Tells you which map a server is playing outside of its standard map tracking channel
-
-`*map <mapname>` - Gives you information on a specific map such as last time played
+`/map [mapname]` - Tells you info about the current map on a server, or one played in the past
 
 `/minecraft <account>` - Gives you full information about a Minecraft account
 
@@ -40,7 +38,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `/ping` - Makes Maunz respond with pong
 
-`*players` - Lists the current players online on a server
+`/players` - Lists the current players online on a server
 
 `/reddit <subreddit>` - Links you to the subreddit name that you provide
 

@@ -70,10 +70,9 @@ public class Minecraft extends AbstractSlashCommand<ChatInputInteractionEvent>
 				uuid = new StringBuilder(uuid).insert(uuid.length() - 12, "-").toString();
 
 				String headURL = "https://cravatar.eu/helmavatar/" + status[1] + "/120";
-				URL constructedURL = new URL(headURL);
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
-					.color(Util.averageColorFromURL(constructedURL, true))
+					.color(Util.averageColorFromURL(headURL, true))
 					.thumbnail(headURL)
 					.footer("Powered by axis.iaero.me", "https://i.imgur.com/4o6K42Z.png")
 					.addField("Name", status[1], true)

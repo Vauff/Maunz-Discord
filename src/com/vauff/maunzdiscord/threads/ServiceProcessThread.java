@@ -12,13 +12,9 @@ import discord4j.core.retriever.EntityRetrievalStrategy;
 import discord4j.core.retriever.RestEntityRetriever;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.rest.http.client.ClientException;
-import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.jsoup.Jsoup;
-import org.jsoup.UnsupportedMimeTypeException;
 
-import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
@@ -96,28 +92,13 @@ public class ServiceProcessThread implements Runnable
 			String map = serverDoc.getString("map");
 			String name = serverDoc.getString("name");
 			String playerCount = serverDoc.getString("playerCount");
-			String mapUrlSafe = StringUtils.substring(map, 0, 31).replace(" ", "%20");
-			String url = "https://vauff.com/mapimgs/" + mapUrlSafe + ".jpg";
 
 			if (!map.equals("") && !doc.getString("lastMap").equalsIgnoreCase(map))
 			{
-				try
-				{
-					Jsoup.connect(url).get();
-				}
-				catch (UnsupportedMimeTypeException e)
-				{
-					// This is to be expected normally because JSoup can't parse a URL serving only a static image
-				}
-				catch (Exception e)
-				{
-					url = "https://image.gametracker.com/images/maps/160x120/csgo/" + mapUrlSafe + ".jpg";
-				}
-
-				URL constructedUrl = new URL(url);
+				String url = Util.getMapImageURL(map);
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
-					.color(Util.averageColorFromURL(constructedUrl, true))
+					.color(Util.averageColorFromURL(url, true))
 					.timestamp(Instant.ofEpochMilli(timestamp))
 					.thumbnail(url)
 					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")

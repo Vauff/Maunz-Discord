@@ -147,7 +147,7 @@ public class Main
 		legacyCommands.add(new Help());
 		slashCommands.add(new Invite());
 		slashCommands.add(new IsItDown());
-		legacyCommands.add(new Map());
+		slashCommands.add(new Map());
 		slashCommands.add(new Minecraft());
 		legacyCommands.add(new Notify());
 		slashCommands.add(new Ping());

@@ -14,8 +14,6 @@ import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.net.URL;
-
 public class Steam extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
 	@Override
@@ -80,10 +78,8 @@ public class Steam extends AbstractSlashCommand<ChatInputInteractionEvent>
 				if (lastLogoff.equalsIgnoreCase(""))
 					lastLogoff = "N/A";
 
-				URL constructedURL = new URL(avatarURL);
-
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
-					.color(Util.averageColorFromURL(constructedURL, true))
+					.color(Util.averageColorFromURL(avatarURL, true))
 					.thumbnail(avatarURL)
 					.footer("Powered by steamid.xyz", "https://i.imgur.com/GuXJIeX.png")
 					.title(nickname)

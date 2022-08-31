@@ -1,9 +1,5 @@
 package com.vauff.maunzdiscord.core;
 
-import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
-import discord4j.core.object.component.ActionComponent;
-import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -18,7 +14,10 @@ import discord4j.rest.util.AllowedMentions;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.Permission;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
+import org.jsoup.Jsoup;
+import org.jsoup.UnsupportedMimeTypeException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -280,13 +279,13 @@ public class Util
 	 * @param handleExceptions Whether to return (0, 154, 255) when an exception happens
 	 * @return The average color of the picture, null or (0, 154, 255) on error
 	 */
-	public static Color averageColorFromURL(URL url, boolean handleExceptions)
+	public static Color averageColorFromURL(String url, boolean handleExceptions) throws Exception
 	{
 		BufferedImage image;
 
 		try
 		{
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 			connection.setRequestProperty("User-Agent", Main.cfg.getUserAgent());
 			connection.setConnectTimeout(5000);
 			connection.setReadTimeout(5000);
@@ -319,7 +318,7 @@ public class Util
 			}
 			else
 			{
-				return null;
+				throw e;
 			}
 		}
 	}
@@ -578,5 +577,32 @@ public class Util
 		}
 
 		return matches >= 2;
+	}
+
+	/**
+	 * Gets the appropriate map image URL for a map
+	 *
+	 * @param map The map name
+	 * @return Image URL for the map
+	 */
+	public static String getMapImageURL(String map)
+	{
+		String mapUrlSafe = StringUtils.substring(map, 0, 31).replace(" ", "%20");
+		String url = "https://vauff.com/mapimgs/" + mapUrlSafe + ".jpg";
+
+		try
+		{
+			Jsoup.connect(url).get();
+		}
+		catch (UnsupportedMimeTypeException e)
+		{
+			// This is to be expected normally because JSoup can't parse a URL serving only a static image
+		}
+		catch (Exception e)
+		{
+			url = "https://image.gametracker.com/images/maps/160x120/csgo/" + mapUrlSafe + ".jpg";
+		}
+
+		return url;
 	}
 }

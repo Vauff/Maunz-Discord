@@ -75,19 +75,20 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		int page = selectionPages.get(user.getId());
+		List<Document> services = selectionServices.get(user.getId());
 
 		if (buttonId.equals(NEXT_BTN))
 		{
-			runSelection(event, user, selectionServices.get(user.getId()), page + 1);
+			runSelection(event, user, services, page + 1);
 			return;
 		}
 		else if (buttonId.equals(PREV_BTN))
 		{
-			runSelection(event, user, selectionServices.get(user.getId()), page - 1);
+			runSelection(event, user, services, page - 1);
 			return;
 		}
 
-		for (Document doc : selectionServices.get(user.getId()))
+		for (Document doc : services)
 		{
 			if (doc.getObjectId("_id").toString().equals(buttonId))
 			{
