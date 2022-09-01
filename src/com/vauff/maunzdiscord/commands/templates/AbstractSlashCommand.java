@@ -97,8 +97,9 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	 * @param pageNumber    Which page the method should build and send
 	 * @param numberStyle   Which style to use for entries, ignored for button elements. 0 = none 1 = numbered list in code ticks
 	 * @param codeBlock     Whether to surround all the entries in a code block or not, ignored for button elements
+	 * @param button        A button that should be displayed on every page
 	 */
-	public final void buildPage(DeferrableInteractionEvent event, List<?> elements, String title, int pageSize, int buttonsPerRow, int pageNumber, int numberStyle, boolean codeBlock) throws Exception
+	public final void buildPage(DeferrableInteractionEvent event, List<?> elements, String title, int pageSize, int buttonsPerRow, int pageNumber, int numberStyle, boolean codeBlock, Button button) throws Exception
 	{
 		float rawPages = (float) elements.size() / pageSize;
 		int pages = (int) Math.ceil(rawPages);
@@ -148,7 +149,7 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 		if (codeBlock && !buttonElements)
 			elementsString += "```";
 
-		String formattedTitle = "--- **" + title + "** ---" + System.lineSeparator();
+		String formattedTitle = "**--- " + title + " ---**" + System.lineSeparator();
 		List<ActionComponent> pageComponents = new ArrayList<>();
 
 		if (pages > 1)
@@ -159,19 +160,13 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 			pageComponents.add(Button.secondary(NEXT_BTN, "Next⠀▶").disabled(pageNumber == pages));
 		}
 
-		if (buttonElements)
-		{
+		if (!Objects.isNull(button))
+			buttonRows.add(ActionRow.of(button));
+
+		if (pageComponents.size() > 0)
 			buttonRows.add(ActionRow.of(pageComponents));
-			event.editReply(formattedTitle).withComponentsOrNull(buttonRows).block();
-		}
-		else if (pageComponents.size() > 0)
-		{
-			event.editReply(formattedTitle + elementsString).withComponents(ActionRow.of(pageComponents)).block();
-		}
-		else
-		{
-			event.editReply(formattedTitle + elementsString).block();
-		}
+
+		event.editReply(formattedTitle + elementsString).withComponentsOrNull(buttonRows).block();
 	}
 
 	@Override

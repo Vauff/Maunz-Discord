@@ -142,7 +142,7 @@ public class Main
 	{
 		slashCommands.add(new About());
 		slashCommands.add(new Benchmark());
-		legacyCommands.add(new Changelog());
+		slashCommands.add(new Changelog());
 		slashCommands.add(new Colour());
 		legacyCommands.add(new Help());
 		slashCommands.add(new Invite());

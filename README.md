@@ -14,7 +14,7 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `/benchmark <query>` - Provides complete benchmark information on a GPU or CPU powered by PassMark
 
-`*changelog [version]` - Shows you the changelog of the Maunz version you specify
+`/changelog [version]` - Shows the changelog of a Maunz version
 
 `/colour [image] [link]` - Returns the average RGB and HTML/Hex colour codes of an image attachment or link
 

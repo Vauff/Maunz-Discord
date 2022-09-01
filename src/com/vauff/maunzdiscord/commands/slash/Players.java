@@ -62,7 +62,8 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 					}
 				}
 
-				runSelection(event, user, services, 1);
+				selectionServices.put(user.getId(), services);
+				runSelection(event, user, 1);
 			}
 		}
 		else
@@ -75,20 +76,19 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
 	{
 		int page = selectionPages.get(user.getId());
-		List<Document> services = selectionServices.get(user.getId());
 
 		if (buttonId.equals(NEXT_BTN))
 		{
-			runSelection(event, user, services, page + 1);
+			runSelection(event, user, page + 1);
 			return;
 		}
 		else if (buttonId.equals(PREV_BTN))
 		{
-			runSelection(event, user, services, page - 1);
+			runSelection(event, user, page - 1);
 			return;
 		}
 
-		for (Document doc : services)
+		for (Document doc : selectionServices.get(user.getId()))
 		{
 			if (doc.getObjectId("_id").toString().equals(buttonId))
 			{
@@ -155,8 +155,9 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 			event.editReply("Sending the online player list to you in a PM!").block();
 	}
 
-	private void runSelection(DeferrableInteractionEvent event, User user, List<Document> services, int page) throws Exception
+	private void runSelection(DeferrableInteractionEvent event, User user, int page) throws Exception
 	{
+		List<Document> services = selectionServices.get(user.getId());
 		ArrayList<Button> servers = new ArrayList<>();
 
 		for (Document doc : services)
@@ -165,9 +166,8 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 			servers.add(Button.primary(doc.getObjectId("_id").toString(), serverDoc.getString("name")));
 		}
 
-		buildPage(event, servers, "Select Server", 8, 2, page, 0, false);
+		buildPage(event, servers, "Select Server", 8, 2, page, 0, false, null);
 
-		selectionServices.put(user.getId(), services);
 		selectionPages.put(user.getId(), page);
 		waitForButtonPress(event.getReply().block().getId(), user.getId());
 	}
