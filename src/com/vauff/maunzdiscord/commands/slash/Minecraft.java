@@ -69,7 +69,7 @@ public class Minecraft extends AbstractSlashCommand<ChatInputInteractionEvent>
 				uuid = new StringBuilder(uuid).insert(uuid.length() - 16, "-").toString();
 				uuid = new StringBuilder(uuid).insert(uuid.length() - 12, "-").toString();
 
-				String headURL = "https://cravatar.eu/helmavatar/" + status[1] + "/120";
+				String headURL = "https://minotar.net/helm/" + status[1] + "/100.png";
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(Util.averageColorFromURL(headURL, true))
