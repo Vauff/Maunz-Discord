@@ -214,7 +214,7 @@ public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
 		}
 
 		listPages.put(user.getId(), page);
-		buildPage(event, servicesDisplay, "Services", 10, 0, page, 1, false, null);
+		buildPage(event, servicesDisplay, "Services", 10, 0, page, 1, false, null, "");
 		waitForButtonPress(event.getReply().block().getId(), user.getId());
 	}
 

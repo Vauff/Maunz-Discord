@@ -30,11 +30,11 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `/minecraft <account>` - Gives you full information about a Minecraft account
 
-`*notify list [page]` - Lists your current map notifications
+`/notify toggle <mapname>` - Add or removes a map to/from your map notifications
 
-`*notify wipe` - Wipes ALL of your map notifications
+`/notify list [page]` - Lists your current map notifications
 
-`*notify <mapname>` - Adds or removes a map to/from your map notifications, wildcard characters are also supported here
+`/notify wipe` - Wipes ALL of your map notifications
 
 `/ping` - Makes Maunz respond with pong
 
@@ -48,17 +48,11 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `/say <message> [channel]` - Sends a custom message from Maunz to any channel
 
-`/services add <ip> [channel]` - Add a new service
+`/services add <ip> <channel>` - Add a new service
 
 `/services list [page]` - List current services
 
-`/services info <id>` - View full info about a specific service
-
 `/services delete <id>` - Delete a service
-
-`/services edit <id> [ip] [channel]` - Edit a service value (only pick what you're changing)
-
-`/services toggle <id> <option> <value>` - Toggle a service value
 
 ## Bot Admin
 

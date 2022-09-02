@@ -149,7 +149,7 @@ public class Main
 		slashCommands.add(new IsItDown());
 		slashCommands.add(new Map());
 		slashCommands.add(new Minecraft());
-		legacyCommands.add(new Notify());
+		slashCommands.add(new Notify());
 		slashCommands.add(new Ping());
 		slashCommands.add(new Players());
 		slashCommands.add(new Reddit());

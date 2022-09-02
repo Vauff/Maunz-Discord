@@ -90,13 +90,11 @@ public class Colour extends AbstractSlashCommand<ChatInputInteractionEvent>
 				.name("image")
 				.description("Image attachment")
 				.type(ApplicationCommandOption.Type.ATTACHMENT.getValue())
-				.required(false)
 				.build())
 			.addOption(ApplicationCommandOptionData.builder()
 				.name("link")
 				.description("Image link")
 				.type(ApplicationCommandOption.Type.STRING.getValue())
-				.required(false)
 				.build())
 			.build();
 	}

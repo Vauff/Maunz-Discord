@@ -68,7 +68,6 @@ public class Say extends AbstractSlashCommand<ChatInputInteractionEvent>
 				.description("The channel to send the message to")
 				.type(ApplicationCommandOption.Type.CHANNEL.getValue())
 				.channelTypes(Arrays.asList(Channel.Type.GUILD_TEXT.getValue(), Channel.Type.GUILD_NEWS.getValue()))
-				.required(false)
 				.build())
 			.build();
 	}

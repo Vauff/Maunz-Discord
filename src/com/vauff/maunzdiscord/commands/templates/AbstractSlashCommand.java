@@ -98,8 +98,9 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 	 * @param numberStyle   Which style to use for entries, ignored for button elements. 0 = none 1 = numbered list in code ticks
 	 * @param codeBlock     Whether to surround all the entries in a code block or not, ignored for button elements
 	 * @param button        A button that should be displayed on every page
+	 * @param pageBtnSuffix Suffix that should be appended to clickable page button names, if a command needs to differentiate between different page types
 	 */
-	public final void buildPage(DeferrableInteractionEvent event, List<?> elements, String title, int pageSize, int buttonsPerRow, int pageNumber, int numberStyle, boolean codeBlock, Button button) throws Exception
+	public final void buildPage(DeferrableInteractionEvent event, List<?> elements, String title, int pageSize, int buttonsPerRow, int pageNumber, int numberStyle, boolean codeBlock, Button button, String pageBtnSuffix) throws Exception
 	{
 		float rawPages = (float) elements.size() / pageSize;
 		int pages = (int) Math.ceil(rawPages);
@@ -150,21 +151,21 @@ public abstract class AbstractSlashCommand<M extends ChatInputInteractionEvent> 
 			elementsString += "```";
 
 		String formattedTitle = "**--- " + title + " ---**" + System.lineSeparator();
-		List<ActionComponent> pageComponents = new ArrayList<>();
+		List<Button> pageButtons = new ArrayList<>();
 
 		if (pages > 1)
 		{
 			// Using U+2800 BRAILLE PATTERN BLANK to get spacing in button text
-			pageComponents.add(Button.secondary(PREV_BTN, "◀⠀Previous").disabled(pageNumber == 1));
-			pageComponents.add(Button.secondary("pagenumber", "Page " + pageNumber + "/" + pages).disabled());
-			pageComponents.add(Button.secondary(NEXT_BTN, "Next⠀▶").disabled(pageNumber == pages));
+			pageButtons.add(Button.secondary(PREV_BTN + pageBtnSuffix, "◀⠀Previous").disabled(pageNumber == 1));
+			pageButtons.add(Button.secondary("pagenumber", "Page " + pageNumber + "/" + pages).disabled());
+			pageButtons.add(Button.secondary(NEXT_BTN + pageBtnSuffix, "Next⠀▶").disabled(pageNumber == pages));
 		}
 
 		if (!Objects.isNull(button))
 			buttonRows.add(ActionRow.of(button));
 
-		if (pageComponents.size() > 0)
-			buttonRows.add(ActionRow.of(pageComponents));
+		if (pageButtons.size() > 0)
+			buttonRows.add(ActionRow.of(pageButtons));
 
 		event.editReply(formattedTitle + elementsString).withComponentsOrNull(buttonRows).block();
 	}

@@ -26,55 +26,61 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 {
-	private static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
-	private static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
+	private final static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
+	private final static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
-		if (!(channel instanceof PrivateChannel))
+		if (channel instanceof PrivateChannel)
 		{
-			long guildID = guild.getId().asLong();
-			FindIterable<Document> servicesIterable = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("guildID", guildID)));
-			List<Document> services = new ArrayList<>();
+			event.editReply("This command can't be done in a PM, only in a guild with the server tracking service enabled").block();
+			return;
+		}
 
-			for (Document doc : servicesIterable)
-			{
-				services.add(doc);
-			}
+		long guildID = guild.getId().asLong();
+		FindIterable<Document> servicesIterable = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("guildID", guildID)));
+		List<Document> services = new ArrayList<>();
 
-			if (services.size() == 0)
-			{
-				event.editReply("A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up").block();
-			}
-			else if (services.size() == 1)
-			{
-				runCmd(event, user, services.get(0));
-			}
-			else
-			{
-				for (Document doc : services)
-				{
-					if (doc.getLong("channelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(guildID, channel.getId().asLong()))
-					{
-						runCmd(event, user, doc);
-						return;
-					}
-				}
+		for (Document doc : servicesIterable)
+			services.add(doc);
 
-				selectionServices.put(user.getId(), services);
-				runSelection(event, user, 1);
-			}
+		if (services.size() == 0)
+		{
+			event.editReply("A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up").block();
+		}
+		else if (services.size() == 1)
+		{
+			runCmd(event, user, services.get(0));
 		}
 		else
 		{
-			event.editReply("This command can't be done in a PM, only in a guild with the server tracking service enabled").block();
+			for (Document doc : services)
+			{
+				if (doc.getLong("channelID") == channel.getId().asLong() && !Util.isMultiTrackingChannel(guildID, channel.getId().asLong()))
+				{
+					runCmd(event, user, doc);
+					return;
+				}
+			}
+
+			selectionServices.put(user.getId(), services);
+			runSelection(event, user, 1);
 		}
 	}
 
 	@Override
 	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
 	{
+		for (Document doc : selectionServices.get(user.getId()))
+		{
+			if (doc.getObjectId("_id").toString().equals(buttonId))
+			{
+				runCmd(event, user, doc);
+				return;
+			}
+		}
+
 		int page = selectionPages.get(user.getId());
 
 		if (buttonId.equals(NEXT_BTN))
@@ -86,15 +92,6 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 		{
 			runSelection(event, user, page - 1);
 			return;
-		}
-
-		for (Document doc : selectionServices.get(user.getId()))
-		{
-			if (doc.getObjectId("_id").toString().equals(buttonId))
-			{
-				runCmd(event, user, doc);
-				break;
-			}
 		}
 	}
 
@@ -124,9 +121,7 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 		for (String player : serverDoc.getList("players", String.class))
 		{
 			if (!player.equals(""))
-			{
 				playersList.append("- " + player + System.lineSeparator());
-			}
 		}
 
 		playersList.append("```");
@@ -166,7 +161,7 @@ public class Players extends AbstractSlashCommand<ChatInputInteractionEvent>
 			servers.add(Button.primary(doc.getObjectId("_id").toString(), serverDoc.getString("name")));
 		}
 
-		buildPage(event, servers, "Select Server", 8, 2, page, 0, false, null);
+		buildPage(event, servers, "Select Server", 8, 2, page, 0, false, null, "");
 
 		selectionPages.put(user.getId(), page);
 		waitForButtonPress(event.getReply().block().getId(), user.getId());

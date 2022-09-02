@@ -3,7 +3,6 @@ package com.vauff.maunzdiscord.commands.slash;
 import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Main;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.object.component.ActionComponent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
@@ -22,10 +21,10 @@ public class About extends AbstractSlashCommand<ChatInputInteractionEvent>
 	@Override
 	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
-		List<ActionComponent> components = new ArrayList<>();
-		components.add(Button.link("https://github.com/Vauff/Maunz-Discord", "GitHub"));
-		components.add(Button.link("https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=517647752257&scope=bot%20applications.commands", "Bot invite"));
-		components.add(Button.link("https://discord.gg/v55fW9b", "Maunz Hub server invite"));
+		List<Button> buttons = new ArrayList<>();
+		buttons.add(Button.link("https://github.com/Vauff/Maunz-Discord", "GitHub"));
+		buttons.add(Button.link("https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=517647752257&scope=bot%20applications.commands", "Bot invite"));
+		buttons.add(Button.link("https://discord.gg/v55fW9b", "Maunz Hub server invite"));
 
 		EmbedCreateSpec embed = EmbedCreateSpec.builder()
 			.color(Color.of(141, 99, 68))
@@ -38,7 +37,7 @@ public class About extends AbstractSlashCommand<ChatInputInteractionEvent>
 			.addField("Build Date", getBuildDate(), true)
 			.build();
 
-		event.editReply("").withEmbeds(embed).withComponents(ActionRow.of(components)).block();
+		event.editReply("").withEmbeds(embed).withComponents(ActionRow.of(buttons)).block();
 	}
 
 	/**

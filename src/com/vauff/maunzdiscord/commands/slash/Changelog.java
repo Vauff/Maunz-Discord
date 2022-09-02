@@ -91,7 +91,7 @@ public class Changelog extends AbstractSlashCommand<ChatInputInteractionEvent>
 		ArrayList<String> changelog = new ArrayList<>(Arrays.asList(changelogRaw.split("\r\n")));
 		String title = "Maunz " + version + " changelog";
 
-		buildPage(event, changelog, title, 10, 0, page, 0, true, Button.link("https://github.com/Vauff/Maunz-Discord/releases/tag/" + version, "GitHub link"));
+		buildPage(event, changelog, title, 10, 0, page, 0, true, Button.link("https://github.com/Vauff/Maunz-Discord/releases/tag/" + version, "GitHub link"), "");
 
 		listPages.put(user.getId(), page);
 		waitForButtonPress(event.getReply().block().getId(), user.getId());
@@ -137,7 +137,6 @@ public class Changelog extends AbstractSlashCommand<ChatInputInteractionEvent>
 				.name("version")
 				.description("A specific Maunz version to view the changelog for")
 				.type(ApplicationCommandOption.Type.STRING.getValue())
-				.required(false)
 				.build())
 			.build();
 	}
