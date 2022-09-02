@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands.slash;
+package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Guild;
@@ -11,7 +11,7 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-public class Reddit extends AbstractSlashCommand<ChatInputInteractionEvent>
+public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
 	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception

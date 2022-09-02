@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands.slash;
+package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
@@ -15,7 +15,7 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import java.util.Arrays;
 
-public class Say extends AbstractSlashCommand<ChatInputInteractionEvent>
+public class Say extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
 	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception

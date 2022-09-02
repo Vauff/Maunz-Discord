@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.threads;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.objects.Await;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
@@ -32,10 +32,10 @@ public class ButtonInteractionThread implements Runnable
 	{
 		try
 		{
-			if (!AbstractSlashCommand.AWAITED.containsKey(event.getMessageId()))
+			if (!AbstractCommand.AWAITED.containsKey(event.getMessageId()))
 				return;
 
-			Await<AbstractSlashCommand> await = AbstractSlashCommand.AWAITED.get(event.getMessageId());
+			Await<AbstractCommand> await = AbstractCommand.AWAITED.get(event.getMessageId());
 
 			if (!event.getInteraction().getUser().getId().equals(await.getID()))
 				return;

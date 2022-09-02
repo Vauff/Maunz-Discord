@@ -1,7 +1,6 @@
 package com.vauff.maunzdiscord.threads;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.MainListener;
@@ -48,7 +47,7 @@ public class ChatInputInteractionThread implements Runnable
 			MessageChannel channel = event.getInteraction().getChannel().block();
 			Guild guild = event.getInteraction().getGuild().block();
 
-			for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : Main.slashCommands)
+			for (AbstractCommand<ChatInputInteractionEvent> cmd : Main.commands)
 			{
 				if (!cmdName.equalsIgnoreCase(cmd.getName()))
 					continue;

@@ -1,21 +1,18 @@
-package com.vauff.maunzdiscord.commands.slash;
+package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
-import com.vauff.maunzdiscord.core.Logger;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
-public class Stop extends AbstractSlashCommand<ChatInputInteractionEvent>
+public class Ping extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
 	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
-		event.editReply("Maunz is stopping...").block();
-		Logger.log.info("Maunz is stopping...");
-		System.exit(0);
+		event.editReply("Pong!").block();
 	}
 
 	@Override
@@ -23,19 +20,19 @@ public class Stop extends AbstractSlashCommand<ChatInputInteractionEvent>
 	{
 		return ApplicationCommandRequest.builder()
 			.name(getName())
-			.description("Shuts down the bot")
+			.description("Makes Maunz respond with pong")
 			.build();
 	}
 
 	@Override
 	public String getName()
 	{
-		return "stop";
+		return "ping";
 	}
 
 	@Override
 	public BotPermission getPermissionLevel()
 	{
-		return BotPermission.BOT_ADMIN;
+		return BotPermission.EVERYONE;
 	}
 }

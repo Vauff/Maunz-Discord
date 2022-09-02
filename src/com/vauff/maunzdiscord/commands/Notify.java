@@ -1,7 +1,7 @@
-package com.vauff.maunzdiscord.commands.slash;
+package com.vauff.maunzdiscord.commands;
 
 import com.mongodb.client.FindIterable;
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
@@ -30,7 +30,7 @@ import java.util.List;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
-public class Notify extends AbstractSlashCommand<ChatInputInteractionEvent>
+public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 {
 	/**
 	 * Button names used for buildPage

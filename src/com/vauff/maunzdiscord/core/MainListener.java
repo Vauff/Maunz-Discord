@@ -3,16 +3,10 @@ package com.vauff.maunzdiscord.core;
 import com.mongodb.client.MongoCollection;
 import com.vauff.maunzdiscord.threads.ButtonInteractionThread;
 import com.vauff.maunzdiscord.threads.ChatInputInteractionThread;
-import com.vauff.maunzdiscord.threads.MessageCreateThread;
-import com.vauff.maunzdiscord.threads.ReactionAddThread;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 
 import java.util.HashMap;
@@ -55,18 +49,6 @@ public class MainListener
 		}
 	}
 
-	public static void onMessageCreate(MessageCreateEvent event)
-	{
-		try
-		{
-			new MessageCreateThread(event, "messagereceived-" + event.getMessage().getId().asString()).start();
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
-
 	public static void onChatInputInteraction(ChatInputInteractionEvent event)
 	{
 		try
@@ -84,30 +66,6 @@ public class MainListener
 		try
 		{
 			new ButtonInteractionThread(event, "buttoninteraction-" + event.getInteraction().getId().asString()).start();
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
-
-	public static void onReactionAdd(ReactionAddEvent event)
-	{
-		try
-		{
-			Message message;
-
-			try
-			{
-				message = event.getMessage().block();
-			}
-			catch (ClientException e)
-			{
-				//message was deleted too quick for us to get anything about it, never ours when this happens anyways
-				return;
-			}
-
-			new ReactionAddThread(event, message, "reactionadd-" + message.getId().asString()).start();
 		}
 		catch (Exception e)
 		{

@@ -6,8 +6,6 @@ import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
-import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.core.object.Embed;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.entity.Attachment;
@@ -16,7 +14,6 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
-import discord4j.rest.http.client.ClientException;
 
 import java.util.List;
 
@@ -93,13 +90,19 @@ public class Logger
 
 	private static void logMessage(Message msg)
 	{
+		boolean privateChannel = msg.getChannel().block() instanceof PrivateChannel;
+
+		// Don't log messages we don't have message content access to
+		if (!msg.getAuthor().get().getId().equals(Main.gateway.getSelfId()) && !privateChannel)
+			return;
+
 		String userName = msg.getAuthor().get().getUsername();
 		String userId = msg.getAuthor().get().getId().asString();
 		String channelId = msg.getChannelId().asString();
 		String messageID = msg.getId().asString();
 		String logMsg;
 
-		if (!(msg.getChannel().block() instanceof PrivateChannel))
+		if (!privateChannel)
 		{
 			String channelName = ((GuildChannel) msg.getChannel().block()).getName();
 			String guildName = msg.getGuild().block().getName();
@@ -124,18 +127,12 @@ public class Logger
 		}
 
 		if (!msg.getContent().isEmpty())
-		{
 			logMsg += " " + msg.getContent();
-		}
 
 		for (Attachment attachment : msg.getAttachments())
-		{
 			logMsg += " [Attachment " + attachment.getUrl() + "]";
-		}
 		for (Embed embed : msg.getEmbeds())
-		{
 			logMsg += " [Embed]";
-		}
 
 		Logger.log.debug(logMsg);
 	}
@@ -147,82 +144,6 @@ public class Logger
 			User user = event.getInteraction().getUser();
 
 			Logger.log.debug(user.getUsername() + " (" + user.getId().asString() + ") pressed the button " + event.getCustomId() + " on message ID " + event.getMessageId().asString());
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
-
-	public static void onReactionAdd(ReactionAddEvent event)
-	{
-		try
-		{
-			Message message;
-
-			try
-			{
-				message = event.getMessage().block();
-			}
-			catch (ClientException e)
-			{
-				//this means we can't see the message reacted to because of missing READ_MESSAGE_HISTORY permission
-				return;
-			}
-
-			String userName = event.getUser().block().getUsername();
-			String userId = event.getUser().block().getId().asString();
-			String messageID = message.getId().asString();
-			String reaction = "null";
-
-			if (event.getEmoji().asUnicodeEmoji().isPresent())
-			{
-				reaction = event.getEmoji().asUnicodeEmoji().get().getRaw();
-			}
-			else if (event.getEmoji().asCustomEmoji().isPresent())
-			{
-				reaction = ":" + event.getEmoji().asCustomEmoji().get().getName() + ":";
-			}
-
-			Logger.log.debug(userName + " (" + userId + ") added the reaction " + reaction + " to the message ID " + messageID);
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
-
-	public static void onReactionRemove(ReactionRemoveEvent event)
-	{
-		try
-		{
-			Message message;
-
-			try
-			{
-				message = event.getMessage().block();
-			}
-			catch (ClientException e)
-			{
-				//this means we can't see the message reacted to because of missing READ_MESSAGE_HISTORY permission
-				return;
-			}
-
-			String userName = event.getUser().block().getUsername();
-			String userId = event.getUser().block().getId().asString();
-			String messageID = message.getId().asString();
-			String reaction = "null";
-
-			if (event.getEmoji().asUnicodeEmoji().isPresent())
-			{
-				reaction = event.getEmoji().asUnicodeEmoji().get().getRaw();
-			}
-			else if (event.getEmoji().asCustomEmoji().isPresent())
-			{
-				reaction = ":" + event.getEmoji().asCustomEmoji().get().getName() + ":";
-			}
-
-			Logger.log.debug(userName + " (" + userId + ") removed the reaction " + reaction + " from the message ID " + messageID);
 		}
 		catch (Exception e)
 		{

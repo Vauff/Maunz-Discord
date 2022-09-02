@@ -1,6 +1,6 @@
-package com.vauff.maunzdiscord.commands.slash;
+package com.vauff.maunzdiscord.commands;
 
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class Changelog extends AbstractSlashCommand<ChatInputInteractionEvent>
+public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 {
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 	private static HashMap<Snowflake, String> listVersions = new HashMap<>();

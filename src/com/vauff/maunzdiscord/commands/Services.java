@@ -1,7 +1,7 @@
-package com.vauff.maunzdiscord.commands.slash;
+package com.vauff.maunzdiscord.commands;
 
 import com.github.koraktor.steamcondenser.servers.SourceServer;
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
+import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
@@ -30,7 +30,7 @@ import java.util.Objects;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
-public class Services extends AbstractSlashCommand<ChatInputInteractionEvent>
+public class Services extends AbstractCommand<ChatInputInteractionEvent>
 {
 	private static HashMap<Snowflake, List<Document>> listServices = new HashMap<>();
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();

@@ -2,11 +2,8 @@ package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import com.vauff.maunzdiscord.commands.legacy.*;
-import com.vauff.maunzdiscord.commands.slash.*;
+import com.vauff.maunzdiscord.commands.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
-import com.vauff.maunzdiscord.commands.templates.AbstractLegacyCommand;
-import com.vauff.maunzdiscord.commands.templates.AbstractSlashCommand;
 import com.vauff.maunzdiscord.timers.ServerTimer;
 import com.vauff.maunzdiscord.timers.StatsTimer;
 import discord4j.core.DiscordClient;
@@ -17,8 +14,6 @@ import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
-import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.event.domain.message.ReactionRemoveEvent;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.gateway.GatewayReactorResources;
 import discord4j.rest.RestClient;
@@ -38,7 +33,7 @@ public class Main
 {
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
-	public static String version = "r49";
+	public static String version = "r50";
 	public static Config cfg;
 
 	/**
@@ -47,10 +42,8 @@ public class Main
 	public static StopWatch uptime = new StopWatch();
 
 	/**
-	 * Lists that hold all legacy/slash commands
+	 * List that holds all commands
 	 */
-	public static LinkedList<AbstractLegacyCommand<MessageCreateEvent>> legacyCommands = new LinkedList<>();
-	public static LinkedList<AbstractSlashCommand<ChatInputInteractionEvent>> slashCommands = new LinkedList<>();
 	public static LinkedList<AbstractCommand> commands = new LinkedList<>();
 
 	public static void main(String[] args)
@@ -115,13 +108,9 @@ public class Main
 			gateway.on(MessageCreateEvent.class, event -> Mono.fromRunnable(() -> Logger.onMessageCreate(event))).subscribe();
 			gateway.on(MessageUpdateEvent.class, event -> Mono.fromRunnable(() -> Logger.onMessageUpdate(event))).subscribe();
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onButtonInteraction(event))).subscribe();
-			gateway.on(ReactionAddEvent.class, event -> Mono.fromRunnable(() -> Logger.onReactionAdd(event))).subscribe();
-			gateway.on(ReactionRemoveEvent.class, event -> Mono.fromRunnable(() -> Logger.onReactionRemove(event))).subscribe();
 			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> Logger.onGuildDelete(event))).subscribe();
-			gateway.on(MessageCreateEvent.class, event -> Mono.fromRunnable(() -> MainListener.onMessageCreate(event))).subscribe();
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onChatInputInteraction(event))).subscribe();
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onButtonInteraction(event))).subscribe();
-			gateway.on(ReactionAddEvent.class, event -> Mono.fromRunnable(() -> MainListener.onReactionAdd(event))).subscribe();
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
@@ -140,33 +129,30 @@ public class Main
 	 */
 	public static void setupCommands()
 	{
-		slashCommands.add(new About());
-		slashCommands.add(new Benchmark());
-		slashCommands.add(new Changelog());
-		slashCommands.add(new Colour());
-		legacyCommands.add(new Help());
-		slashCommands.add(new Invite());
-		slashCommands.add(new IsItDown());
-		slashCommands.add(new Map());
-		slashCommands.add(new Minecraft());
-		slashCommands.add(new Notify());
-		slashCommands.add(new Ping());
-		slashCommands.add(new Players());
-		slashCommands.add(new Reddit());
-		slashCommands.add(new Say());
-		slashCommands.add(new Services());
-		slashCommands.add(new Steam());
-		slashCommands.add(new Stop());
-
-		commands.addAll(legacyCommands);
-		commands.addAll(slashCommands);
-		commands.sort(Comparator.comparing(AbstractCommand::getFirstAlias));
+		commands.add(new About());
+		commands.add(new Benchmark());
+		commands.add(new Changelog());
+		commands.add(new Colour());
+		//commands.add(new Help());
+		commands.add(new Invite());
+		commands.add(new IsItDown());
+		commands.add(new Map());
+		commands.add(new Minecraft());
+		commands.add(new Notify());
+		commands.add(new Ping());
+		commands.add(new Players());
+		commands.add(new Reddit());
+		commands.add(new Say());
+		commands.add(new Services());
+		commands.add(new Steam());
+		commands.add(new Stop());
+		commands.sort(Comparator.comparing(AbstractCommand::getName));
 
 		RestClient restClient = gateway.getRestClient();
 		long appID = restClient.getApplicationId().block();
 		ArrayList<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
 
-		for (AbstractSlashCommand<ChatInputInteractionEvent> cmd : slashCommands)
+		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands)
 			cmdRequests.add(cmd.getCommand());
 
 		if (cfg.getDevGuilds().length > 0)

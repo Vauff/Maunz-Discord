@@ -20,9 +20,9 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `/invite` - Provides invite links to the Maunz Hub server, and to add Maunz to your own server
 
-`*help [page]` - Lists all the available bot commands and the syntax for using each
+`/help list [page]` - Lists all the available bot commands and the syntax for using each
 
-`*help <command>` - Gives you help on how to use a specific command
+`/help view <command>` - View a specific commands syntax
 
 `/isitdown <hostname>` - Tells you if the given hostname is down or not
 
