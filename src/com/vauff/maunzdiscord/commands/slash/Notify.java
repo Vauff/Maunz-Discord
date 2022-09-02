@@ -183,6 +183,14 @@ public class Notify extends AbstractSlashCommand<ChatInputInteractionEvent>
 					removeNotification(event, user, doc, map, index);
 			}
 		}
+		else if (buttonId.equals("cancel-wipe"))
+		{
+			event.editReply("Notification wipe was cancelled").block();
+		}
+		else if (buttonId.equals("cancel-notify"))
+		{
+			event.editReply("Notification toggle was cancelled").block();
+		}
 	}
 
 	private void runCmd(DeferrableInteractionEvent event, User user, Document doc) throws Exception
@@ -225,7 +233,7 @@ public class Notify extends AbstractSlashCommand<ChatInputInteractionEvent>
 
 			List<Button> buttons = new ArrayList<>();
 			buttons.add(Button.danger("confirm-wipe", "Wipe ALL Notifications"));
-			buttons.add(Button.primary("cancel", "Cancel"));
+			buttons.add(Button.primary("cancel-wipe", "Cancel"));
 
 			event.editReply("Are you sure you want to wipe **ALL** of your map notifications?").withComponents(ActionRow.of(buttons)).block();
 			waitForButtonPress(event.getReply().block().getId(), user.getId());
@@ -322,7 +330,7 @@ public class Notify extends AbstractSlashCommand<ChatInputInteractionEvent>
 					if (mapSuggestion.equals(""))
 					{
 						buttons.add(Button.success("confirm-" + mapArg, "Add " + mapArg));
-						buttons.add(Button.danger("cancel", "Cancel"));
+						buttons.add(Button.danger("cancel-notify", "Cancel"));
 
 						event.editReply("The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it?").withComponents(ActionRow.of(buttons)).block();
 						waitForButtonPress(event.getReply().block().getId(), user.getId());
