@@ -3,7 +3,6 @@ package com.vauff.maunzdiscord.threads;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.MainListener;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
@@ -51,18 +50,6 @@ public class ChatInputInteractionThread implements Runnable
 			{
 				if (!cmdName.equalsIgnoreCase(cmd.getName()))
 					continue;
-				if (MainListener.cooldownTimestamps.containsKey(user.getId()) && (MainListener.cooldownTimestamps.get(user.getId()) + 2000L) > System.currentTimeMillis())
-				{
-					if ((!MainListener.cooldownMessageTimestamps.containsKey(user.getId())) || (MainListener.cooldownMessageTimestamps.containsKey(user.getId()) && (MainListener.cooldownMessageTimestamps.get(user.getId()) + 10000L) < System.currentTimeMillis()))
-					{
-						event.editReply("Slow down!").block();
-						MainListener.cooldownMessageTimestamps.put(user.getId(), System.currentTimeMillis());
-					}
-
-					return;
-				}
-
-				MainListener.cooldownTimestamps.put(user.getId(), System.currentTimeMillis());
 
 				try
 				{

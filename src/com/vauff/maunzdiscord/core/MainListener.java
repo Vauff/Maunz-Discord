@@ -3,28 +3,15 @@ package com.vauff.maunzdiscord.core;
 import com.mongodb.client.MongoCollection;
 import com.vauff.maunzdiscord.threads.ButtonInteractionThread;
 import com.vauff.maunzdiscord.threads.ChatInputInteractionThread;
-import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import org.bson.Document;
 
-import java.util.HashMap;
-
 import static com.mongodb.client.model.Filters.eq;
 
 public class MainListener
 {
-	/**
-	 * Holds the timestamp of the last time a user used a command
-	 */
-	public static HashMap<Snowflake, Long> cooldownTimestamps = new HashMap<>();
-
-	/**
-	 * Holds the timestamp of the last time a user was given the command cooldown message
-	 */
-	public static HashMap<Snowflake, Long> cooldownMessageTimestamps = new HashMap<>();
-
 	public static void onGuildCreate(GuildCreateEvent event)
 	{
 		try
