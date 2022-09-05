@@ -16,8 +16,10 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
+import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -77,7 +79,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 		ApplicationCommandInteractionOption subCmd = event.getInteraction().getCommandInteraction().get().getOption("add").get();
 		String ip = subCmd.getOption("ip").get().getValue().get().asString();
 		int port;
-		Channel channel = subCmd.getOption("channel").get().getValue().get().asChannel().block();
+		MessageChannel channel = (MessageChannel) subCmd.getOption("channel").get().getValue().get().asChannel().block();
 		long channelID = channel.getId().asLong();
 
 		try
@@ -99,6 +101,21 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 		if (!isServerOnline(ip, port))
 		{
 			Util.editReply(event, "Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly");
+			return;
+		}
+
+		EmbedCreateSpec embed = EmbedCreateSpec.builder()
+			.title("Test Message")
+			.description("This is a simple message testing bot permissions access, if you've seen this then all is well!")
+			.build();
+
+		try
+		{
+			Util.msg(channel, false, embed).delete().block();
+		}
+		catch (ClientException e)
+		{
+			Util.editReply(event, "Failed sending a test message to " + channel.getMention() + ", ensure the bot has **Send Messages** and **Embed Links** permission access in there");
 			return;
 		}
 
