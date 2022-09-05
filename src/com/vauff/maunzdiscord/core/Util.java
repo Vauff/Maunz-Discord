@@ -1,7 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
-import discord4j.core.object.Embed;
 import discord4j.core.object.component.LayoutComponent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
@@ -26,7 +25,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
@@ -128,9 +126,9 @@ public class Util
 	/**
 	 * Edits a reply to an interaction
 	 *
-	 * @param event    The event that should have its reply edited
-	 * @param message  String content of the reply
-	 * @param embeds     Embeds the reply should contain
+	 * @param event   The event that should have its reply edited
+	 * @param message String content of the reply
+	 * @param embeds  Embeds the reply should contain
 	 * @return The message object
 	 */
 	public static void editReply(DeferrableInteractionEvent event, String message, EmbedCreateSpec... embeds)
@@ -141,8 +139,8 @@ public class Util
 	/**
 	 * Edits a reply to an interaction
 	 *
-	 * @param event    The event that should have its reply edited
-	 * @param message  String content of the reply
+	 * @param event      The event that should have its reply edited
+	 * @param message    String content of the reply
 	 * @param components LayoutComponents the reply should contain
 	 * @return The message object
 	 */

@@ -15,6 +15,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.http.client.ClientException;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -158,7 +159,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 		for (Document doc : services)
 		{
 			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
-			servers.add(Button.primary(doc.getObjectId("_id").toString(), serverDoc.getString("name")));
+			servers.add(Button.primary(doc.getObjectId("_id").toString(), StringUtils.substring(serverDoc.getString("name"), 0, 80)));
 		}
 
 		buildPage(event, servers, "Select Server", 8, 2, page, 0, false, null, "");

@@ -329,7 +329,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 
 					if (mapSuggestion.equals(""))
 					{
-						buttons.add(Button.success("confirm-" + mapArg, "Add " + mapArg));
+						buttons.add(Button.success("confirm-" + mapArg, StringUtils.substring("Add " + mapArg, 0, 80)));
 						buttons.add(Button.danger("cancel-notify", "Cancel"));
 
 						Util.editReply(event, "The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it?", ActionRow.of(buttons));
@@ -337,8 +337,8 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 					}
 					else
 					{
-						buttons.add(Button.primary("confirm-" + mapSuggestion, mapSuggestion));
-						buttons.add(Button.primary("confirm-" + mapArg, mapArg));
+						buttons.add(Button.primary("confirm-" + mapSuggestion, StringUtils.substring(mapSuggestion, 0, 80)));
+						buttons.add(Button.primary("confirm-" + mapArg, StringUtils.substring(mapArg, 0, 80)));
 
 						Util.editReply(event, "The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose", ActionRow.of(buttons));
 						waitForButtonPress(event.getReply().block().getId(), user.getId());
@@ -356,7 +356,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 		for (Document doc : services)
 		{
 			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
-			servers.add(Button.primary(doc.getObjectId("_id").toString(), serverDoc.getString("name")));
+			servers.add(Button.primary(doc.getObjectId("_id").toString(), StringUtils.substring(serverDoc.getString("name"), 0, 80)));
 		}
 
 		buildPage(event, servers, "Select Server", 8, 2, page, 0, false, null, SELECTION_BTN_SUFFIX);
