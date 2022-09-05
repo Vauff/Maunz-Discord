@@ -41,7 +41,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		if (channel instanceof PrivateChannel)
 		{
-			event.editReply("This command can't be done in a PM, only in a guild with the server tracking service enabled").block();
+			Util.editReply(event, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 			return;
 		}
 
@@ -56,7 +56,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (services.size() == 0)
 		{
-			event.editReply("A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up").block();
+			Util.editReply(event, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
 			return;
 		}
 		else if (services.size() == 1)
@@ -114,13 +114,13 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 		{
 			if (!doc.getBoolean("online"))
 			{
-				event.editReply("The server currently appears to be offline").block();
+				Util.editReply(event, "The server currently appears to be offline");
 				return;
 			}
 
 			if (doc.getString("lastMap").equals("N/A"))
 			{
-				event.editReply("There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again").block();
+				Util.editReply(event, "There doesn't appear to be any server info cached yet (was the service just added?), please wait a moment before trying again");
 				return;
 			}
 
@@ -134,9 +134,9 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				.build();
 
 			if (includeName)
-				event.editReply("").withEmbeds(embed.withTitle(serverDoc.getString("name"))).block();
+				Util.editReply(event, "", embed.withTitle(serverDoc.getString("name")));
 			else
-				event.editReply("").withEmbeds(embed).block();
+				Util.editReply(event, "", embed);
 		}
 		else
 		{
@@ -227,11 +227,11 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 					.addField("First Played", firstPlayed, false)
 					.build();
 
-				event.editReply("").withEmbeds(embed).block();
+				Util.editReply(event, "", embed);
 			}
 			else
 			{
-				event.editReply("The map **" + mapArg + "** doesn't exist!").block();
+				Util.editReply(event, "The map **" + mapArg + "** doesn't exist!");
 			}
 		}
 	}

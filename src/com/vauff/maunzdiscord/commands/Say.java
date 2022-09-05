@@ -25,7 +25,7 @@ public class Say extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (channel instanceof PrivateChannel)
 		{
-			event.editReply("This command can't be done in a PM, only in a guild that you have admin permissions in").block();
+			Util.editReply(event, "This command can't be done in a PM, only in a guild that you have admin permissions in");
 			return;
 		}
 
@@ -35,19 +35,19 @@ public class Say extends AbstractCommand<ChatInputInteractionEvent>
 
 			if (sendChannel.equals(channel))
 			{
-				event.editReply(message).block();
+				Util.editReply(event, message);
 			}
 			else
 			{
 				if (Util.msg(sendChannel, true, message) != null)
-					event.editReply("Successfully sent message!").block();
+					Util.editReply(event, "Successfully sent message!");
 				else
-					event.editReply("Failed to send message, the bot doesn't have permissions for that channel!").block();
+					Util.editReply(event, "Failed to send message, the bot doesn't have permissions for that channel!");
 			}
 		}
 		else
 		{
-			event.editReply(message).block();
+			Util.editReply(event, message);
 		}
 	}
 

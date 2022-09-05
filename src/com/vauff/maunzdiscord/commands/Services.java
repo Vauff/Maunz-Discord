@@ -3,6 +3,7 @@ package com.vauff.maunzdiscord.commands;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -42,7 +43,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (channel instanceof PrivateChannel)
 		{
-			event.editReply("This command can't be done in a PM, only in a guild that you have admin permissions in").block();
+			Util.editReply(event, "This command can't be done in a PM, only in a guild that you have admin permissions in");
 			return;
 		}
 
@@ -91,13 +92,13 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 		}
 		catch (Exception e)
 		{
-			event.editReply("IP argument does not follow IP:Port format!").block();
+			Util.editReply(event, "IP argument does not follow IP:Port format!");
 			return;
 		}
 
 		if (!isServerOnline(ip, port))
 		{
-			event.editReply("Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly").block();
+			Util.editReply(event, "Failed to connect to the server " + ip + ":" + port + ", ensure you typed it correctly");
 			return;
 		}
 
@@ -107,7 +108,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 
 		Main.mongoDatabase.getCollection("services").insertOne(service);
 
-		event.editReply("Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!").block();
+		Util.editReply(event, "Successfully added a service tracking " + ip + ":" + port + " in " + channel.getMention() + "!");
 	}
 
 	private void exeList(ChatInputInteractionEvent event, Guild guild, User user) throws Exception
@@ -117,7 +118,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (services.size() == 0)
 		{
-			event.editReply("No services have been added yet! Use **/services add** to add one").block();
+			Util.editReply(event, "No services have been added yet! Use **/services add** to add one");
 			return;
 		}
 
@@ -131,7 +132,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 
 	private void exeInfo(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user)
 	{
-		event.editReply("This feature is not yet implemented").block();
+		Util.editReply(event, "This feature is not yet implemented");
 	}
 
 	private void exeDelete(ChatInputInteractionEvent event, User user)
@@ -142,7 +143,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (!listServices.containsKey(user.getId()) || services.size() < id)
 		{
-			event.editReply("That service ID doesn't exist! Have you ran **/services list** yet to generate IDs?").block();
+			Util.editReply(event, "That service ID doesn't exist! Have you ran **/services list** yet to generate IDs?");
 			return;
 		}
 
@@ -150,7 +151,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (Objects.isNull(service))
 		{
-			event.editReply("That service was already deleted!").block();
+			Util.editReply(event, "That service was already deleted!");
 			return;
 		}
 
@@ -172,17 +173,17 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 		if (!Objects.isNull(serviceChannel))
 			msg += " in " + serviceChannel.getMention();
 
-		event.editReply(msg).block();
+		Util.editReply(event, msg);
 	}
 
 	private void exeEdit(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user)
 	{
-		event.editReply("This feature is not yet implemented").block();
+		Util.editReply(event, "This feature is not yet implemented");
 	}
 
 	private void exeToggle(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user)
 	{
-		event.editReply("This feature is not yet implemented").block();
+		Util.editReply(event, "This feature is not yet implemented");
 	}
 
 	private void runListSelection(DeferrableInteractionEvent event, User user, int page) throws Exception

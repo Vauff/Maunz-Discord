@@ -1,6 +1,8 @@
 package com.vauff.maunzdiscord.core;
 
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
+import discord4j.core.object.Embed;
+import discord4j.core.object.component.LayoutComponent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -24,6 +26,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 
@@ -104,7 +108,59 @@ public class Util
 		if (Objects.isNull(guild))
 			return false;
 
-		return (user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.ADMINISTRATOR) || user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.MANAGE_GUILD) ? true : false);
+		return (user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.ADMINISTRATOR) || user.asMember(guild.getId()).block().getBasePermissions().block().contains(Permission.MANAGE_GUILD));
+	}
+
+	/**
+	 * Edits a reply to an interaction
+	 *
+	 * @param event      The event that should have its reply edited
+	 * @param message    String content of the reply
+	 * @param embeds     Embeds the reply should contain
+	 * @param components LayoutComponents the reply should contain
+	 * @return The message object
+	 */
+	public static void editReply(DeferrableInteractionEvent event, String message, Iterable<EmbedCreateSpec> embeds, Iterable<LayoutComponent> components)
+	{
+		event.editReply(message).withEmbedsOrNull(embeds).withComponentsOrNull(components).block();
+	}
+
+	/**
+	 * Edits a reply to an interaction
+	 *
+	 * @param event    The event that should have its reply edited
+	 * @param message  String content of the reply
+	 * @param embeds     Embeds the reply should contain
+	 * @return The message object
+	 */
+	public static void editReply(DeferrableInteractionEvent event, String message, EmbedCreateSpec... embeds)
+	{
+		editReply(event, message, Arrays.asList(embeds), null);
+	}
+
+	/**
+	 * Edits a reply to an interaction
+	 *
+	 * @param event    The event that should have its reply edited
+	 * @param message  String content of the reply
+	 * @param components LayoutComponents the reply should contain
+	 * @return The message object
+	 */
+	public static void editReply(DeferrableInteractionEvent event, String message, LayoutComponent... components)
+	{
+		editReply(event, message, null, Arrays.asList(components));
+	}
+
+	/**
+	 * Edits a reply to an interaction
+	 *
+	 * @param event   The event that should have its reply edited
+	 * @param message String content of the reply
+	 * @return The message object
+	 */
+	public static void editReply(DeferrableInteractionEvent event, String message)
+	{
+		editReply(event, message, null, null);
 	}
 
 	/**
@@ -112,17 +168,15 @@ public class Util
 	 *
 	 * @param channel              The channel
 	 * @param permissionExHandling Whether to handle missing permissions exceptions (403)
-	 * @param allowUserMentions    Whether to allow users to be mentioned in this message
 	 * @param message              The string message (null for none)
 	 * @param embed                The embed (null for none)
 	 * @return The message object
 	 */
-	public static Message msg(MessageChannel channel, boolean permissionExHandling, boolean allowUserMentions, String message, EmbedCreateSpec embed)
+	public static Message msg(MessageChannel channel, boolean permissionExHandling, String message, EmbedCreateSpec embed)
 	{
 		try
 		{
 			MessageCreateMono msg;
-			AllowedMentions mentions;
 
 			if (!Objects.isNull(message))
 				msg = channel.createMessage(message);
@@ -132,12 +186,7 @@ public class Util
 			if (!Objects.isNull(embed))
 				msg = msg.withEmbeds(embed);
 
-			if (allowUserMentions)
-				mentions = AllowedMentions.builder().parseType(AllowedMentions.Type.USER).build();
-			else
-				mentions = AllowedMentions.suppressAll();
-
-			return msg.withAllowedMentions(mentions).block();
+			return msg.withAllowedMentions(AllowedMentions.suppressAll()).block();
 		}
 		catch (ClientException e)
 		{
@@ -158,7 +207,7 @@ public class Util
 	}
 
 	/**
-	 * Sends a message to a channel with mentions disabled
+	 * Sends a message to a channel
 	 *
 	 * @param channel              The channel
 	 * @param permissionExHandling Whether to handle missing permissions exceptions (403)
@@ -167,11 +216,11 @@ public class Util
 	 */
 	public static Message msg(MessageChannel channel, boolean permissionExHandling, String message)
 	{
-		return msg(channel, permissionExHandling, false, message, null);
+		return msg(channel, permissionExHandling, message, null);
 	}
 
 	/**
-	 * Sends a message to a channel with mentions disabled
+	 * Sends an embed to a channel
 	 *
 	 * @param channel              The channel
 	 * @param permissionExHandling Whether to handle missing permissions exceptions (403)
@@ -180,31 +229,7 @@ public class Util
 	 */
 	public static Message msg(MessageChannel channel, boolean permissionExHandling, EmbedCreateSpec embed)
 	{
-		return msg(channel, permissionExHandling, false, null, embed);
-	}
-
-	/**
-	 * Sends a message to a channel with permission exception handling and mentions disabled
-	 *
-	 * @param channel The channel
-	 * @param message The string message
-	 * @return The message object
-	 */
-	public static Message msg(MessageChannel channel, String message)
-	{
-		return msg(channel, false, false, message, null);
-	}
-
-	/**
-	 * Sends a message to a channel with permission exception handling and mentions disabled
-	 *
-	 * @param channel The channel
-	 * @param embed   The embed
-	 * @return The message object
-	 */
-	public static Message msg(MessageChannel channel, EmbedCreateSpec embed)
-	{
-		return msg(channel, false, false, null, embed);
+		return msg(channel, permissionExHandling, null, embed);
 	}
 
 	/**
@@ -319,7 +344,7 @@ public class Util
 		Random rnd = new Random();
 		int code = 100000000 + rnd.nextInt(900000000);
 
-		event.editReply(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).withComponents().block();
+		editReply(event, ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
 		Logger.log.error(code, e);
 	}
 }

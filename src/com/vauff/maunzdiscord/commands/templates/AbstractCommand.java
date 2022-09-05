@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.commands.templates;
 
+import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.Await;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
@@ -118,7 +119,7 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 
 		if (pageNumber > pages)
 		{
-			event.editReply("That page doesn't exist!").block();
+			Util.editReply(event, "That page doesn't exist!");
 			return;
 		}
 
@@ -178,6 +179,6 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 		if (pageButtons.size() > 0)
 			buttonRows.add(ActionRow.of(pageButtons));
 
-		event.editReply(formattedTitle + elementsString).withComponentsOrNull(buttonRows).block();
+		Util.editReply(event, formattedTitle + elementsString, null, buttonRows);
 	}
 }

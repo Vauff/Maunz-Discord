@@ -48,7 +48,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		if (channel instanceof PrivateChannel)
 		{
-			event.editReply("This command can't be done in a PM, only in a guild with the server tracking service enabled").block();
+			Util.editReply(event, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 			return;
 		}
 
@@ -64,7 +64,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (services.size() == 0)
 		{
-			event.editReply("A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up").block();
+			Util.editReply(event, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
 		}
 		else if (services.size() == 1)
 		{
@@ -147,7 +147,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 
 					Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$unset", new Document("notifications." + i, 1)));
 					Main.mongoDatabase.getCollection("services").updateOne(eq("_id", doc.getObjectId("_id")), new Document("$pull", new Document("notifications", null)));
-					event.editReply("Successfully wiped all of your map notifications!").block();
+					Util.editReply(event, "Successfully wiped all of your map notifications!");
 					break;
 				}
 
@@ -185,11 +185,11 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 		}
 		else if (buttonId.equals("cancel-wipe"))
 		{
-			event.editReply("Notification wipe was cancelled").block();
+			Util.editReply(event, "Notification wipe was cancelled");
 		}
 		else if (buttonId.equals("cancel-notify"))
 		{
-			event.editReply("Notification toggle was cancelled").block();
+			Util.editReply(event, "Notification toggle was cancelled");
 		}
 	}
 
@@ -214,7 +214,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 		{
 			if (!hasNotifications)
 			{
-				event.editReply("You do not have any map notifications set! Use **/notify toggle <mapname>** to add one").block();
+				Util.editReply(event, "You do not have any map notifications set! Use **/notify toggle <mapname>** to add one");
 				return;
 			}
 
@@ -227,7 +227,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 		{
 			if (!hasNotifications)
 			{
-				event.editReply("You don't have any map notifications to wipe!").block();
+				Util.editReply(event, "You don't have any map notifications to wipe!");
 				return;
 			}
 
@@ -235,7 +235,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 			buttons.add(Button.danger("confirm-wipe", "Wipe ALL Notifications"));
 			buttons.add(Button.primary("cancel-wipe", "Cancel"));
 
-			event.editReply("Are you sure you want to wipe **ALL** of your map notifications?").withComponents(ActionRow.of(buttons)).block();
+			Util.editReply(event, "Are you sure you want to wipe **ALL** of your map notifications?", ActionRow.of(buttons));
 			waitForButtonPress(event.getReply().block().getId(), user.getId());
 		}
 		else if (interaction.getOption("toggle").isPresent())
@@ -332,7 +332,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 						buttons.add(Button.success("confirm-" + mapArg, "Add " + mapArg));
 						buttons.add(Button.danger("cancel-notify", "Cancel"));
 
-						event.editReply("The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it?").withComponents(ActionRow.of(buttons)).block();
+						Util.editReply(event, "The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it?", ActionRow.of(buttons));
 						waitForButtonPress(event.getReply().block().getId(), user.getId());
 					}
 					else
@@ -340,7 +340,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 						buttons.add(Button.primary("confirm-" + mapSuggestion, mapSuggestion));
 						buttons.add(Button.primary("confirm-" + mapArg, mapArg));
 
-						event.editReply("The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose").withComponents(ActionRow.of(buttons)).block();
+						Util.editReply(event, "The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose", ActionRow.of(buttons));
 						waitForButtonPress(event.getReply().block().getId(), user.getId());
 					}
 				}
@@ -386,7 +386,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		List<Document> notificationDocs = doc.getList("notifications", Document.class);
 
-		event.editReply("Adding **" + notification.replace("_", "\\_") + "** to your map notifications!").block();
+		Util.editReply(event, "Adding **" + notification.replace("_", "\\_") + "** to your map notifications!");
 
 		for (int i = 0; i < notificationDocs.size(); i++)
 		{
@@ -411,7 +411,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		List<Document> notificationDocs = doc.getList("notifications", Document.class);
 
-		event.editReply("Removing **" + notification.replace("_", "\\_") + "** from your map notifications!").block();
+		Util.editReply(event, "Removing **" + notification.replace("_", "\\_") + "** from your map notifications!");
 
 		for (int i = 0; i < notificationDocs.size(); i++)
 		{

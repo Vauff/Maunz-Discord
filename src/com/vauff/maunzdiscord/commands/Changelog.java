@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -34,7 +35,7 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		if (Main.cfg.getGitHubToken().equals(""))
 		{
-			event.editReply("This command is disabled because the bot does not have a GitHub token configured!").block();
+			Util.editReply(event, "This command is disabled because the bot does not have a GitHub token configured!");
 			return;
 		}
 
@@ -84,7 +85,7 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (changelogRaw.equals(""))
 		{
-			event.editReply("That version either doesn't exist, or the connection to GitHub failed").block();
+			Util.editReply(event, "That version either doesn't exist, or the connection to GitHub failed");
 			return;
 		}
 

@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Guild;
@@ -21,32 +22,20 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 		String url;
 
 		if (subreddit.startsWith("/r/"))
-		{
 			url = splitSub[2] + "/";
-		}
 		else if (subreddit.startsWith("r/"))
-		{
 			url = splitSub[1] + "/";
-		}
 		else
-		{
 			url = subreddit + "/";
-		}
 
 		Document reddit = Jsoup.connect("https://old.reddit.com/r/" + url).ignoreHttpErrors(true).get();
 
 		if (reddit.title().contains(": page not found") || reddit.title().equals("search results"))
-		{
-			event.editReply("That subreddit doesn't exist!").block();
-		}
+			Util.editReply(event, "That subreddit doesn't exist!");
 		else if (reddit.title().contains(": banned"))
-		{
-			event.editReply("That subreddit is banned!").block();
-		}
+			Util.editReply(event, "That subreddit is banned!");
 		else
-		{
-			event.editReply("https://reddit.com/r/" + url).block();
-		}
+			Util.editReply(event, "https://reddit.com/r/" + url);
 	}
 
 	@Override

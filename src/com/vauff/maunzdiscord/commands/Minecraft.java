@@ -41,23 +41,23 @@ public class Minecraft extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (username.contains("#") || username.contains("&"))
 		{
-			event.editReply("The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.").block();
+			Util.editReply(event, "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
 		}
 		else
 		{
 			if (statusRaw.equalsIgnoreCase("unknown username"))
 			{
-				event.editReply("The Minecraft account name **" + username + "** is free and does not belong to any account!").block();
+				Util.editReply(event, "The Minecraft account name **" + username + "** is free and does not belong to any account!");
 			}
 
 			else if (statusRaw.equalsIgnoreCase("Username must be 16 characters or less."))
 			{
-				event.editReply("The Minecraft account name **" + username + "** must be 16 characters or less.").block();
+				Util.editReply(event, "The Minecraft account name **" + username + "** must be 16 characters or less.");
 			}
 
 			else if (statusRaw.equalsIgnoreCase("Username must be alphanumerical (or contain '_')."))
 			{
-				event.editReply("The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.").block();
+				Util.editReply(event, "The Minecraft account name **" + username + "** must be alphanumerical or contain an underscore.");
 			}
 
 			else if (statusRaw.contains(","))
@@ -83,7 +83,7 @@ public class Minecraft extends AbstractCommand<ChatInputInteractionEvent>
 					.addField("Raw Skin", "https://minotar.net/skin/" + status[1], true)
 					.build();
 
-				event.editReply().withEmbeds(embed).block();
+				Util.editReply(event, "", embed);
 			}
 		}
 	}

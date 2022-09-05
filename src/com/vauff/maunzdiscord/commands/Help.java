@@ -94,11 +94,11 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 
 			if (matchFound)
 			{
-				event.editReply(list).block();
+				Util.editReply(event, list);
 			}
 			else
 			{
-				event.editReply("The command **" + arg + "** either doesn't exist, or you don't have access to it.").block();
+				Util.editReply(event, "The command **" + arg + "** either doesn't exist, or you don't have access to it.");
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Guild;
@@ -46,7 +47,7 @@ public class IsItDown extends AbstractCommand<ChatInputInteractionEvent>
 
 			if (host == null)
 			{
-				event.editReply("Please specify a valid hostname or URI.").block();
+				Util.editReply(event, "Please specify a valid hostname or URI.");
 				return;
 			}
 
@@ -54,11 +55,11 @@ public class IsItDown extends AbstractCommand<ChatInputInteractionEvent>
 		}
 		catch (Exception e)
 		{
-			event.editReply("Please specify a valid hostname or URI.").block();
+			Util.editReply(event, "Please specify a valid hostname or URI.");
 			return;
 		}
 
-		event.editReply((isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**")).block();
+		Util.editReply(event, (isUp ? ":white_check_mark:" : ":x:") + "**  |  " + cleanedUri + "** is currently **" + (isUp ? "UP**" : "DOWN**"));
 	}
 
 	/**

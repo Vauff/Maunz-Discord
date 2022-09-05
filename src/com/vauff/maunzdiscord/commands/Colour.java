@@ -40,7 +40,7 @@ public class Colour extends AbstractCommand<ChatInputInteractionEvent>
 		}
 		else
 		{
-			event.editReply("You need to provide an image attachment or link!").block();
+			Util.editReply(event, "You need to provide an image attachment or link!");
 			return;
 		}
 
@@ -54,13 +54,13 @@ public class Colour extends AbstractCommand<ChatInputInteractionEvent>
 
 				if (color == null)
 				{
-					event.editReply("Could not get an image from the provided attachment or link!").block();
+					Util.editReply(event, "Could not get an image from the provided attachment or link!");
 					return;
 				}
 			}
 			catch (MalformedURLException e)
 			{
-				event.editReply("Could not get an image from the provided attachment or link!").block();
+				Util.editReply(event, "Could not get an image from the provided attachment or link!");
 				return;
 			}
 
@@ -72,11 +72,11 @@ public class Colour extends AbstractCommand<ChatInputInteractionEvent>
 				.addField("HTML/Hex", String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()), true)
 				.build();
 
-			event.editReply().withEmbeds(embed).block();
+			Util.editReply(event, "", embed);
 		}
 		else
 		{
-			event.editReply("Could not get an image from the provided attachment or link!").block();
+			Util.editReply(event, "Could not get an image from the provided attachment or link!");
 		}
 	}
 

@@ -34,7 +34,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		if (channel instanceof PrivateChannel)
 		{
-			event.editReply("This command can't be done in a PM, only in a guild with the server tracking service enabled").block();
+			Util.editReply(event, "This command can't be done in a PM, only in a guild with the server tracking service enabled");
 			return;
 		}
 
@@ -47,7 +47,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (services.size() == 0)
 		{
-			event.editReply("A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up").block();
+			Util.editReply(event, "A server tracking service is not enabled in this guild yet! Please have a guild administrator use **/services add** to set one up");
 		}
 		else if (services.size() == 1)
 		{
@@ -102,7 +102,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (!doc.getBoolean("online"))
 		{
-			event.editReply("The server currently appears to be offline").block();
+			Util.editReply(event, "The server currently appears to be offline");
 			return;
 		}
 
@@ -110,7 +110,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (numberOfPlayers == 0)
 		{
-			event.editReply("There are currently no players online!").block();
+			Util.editReply(event, "There are currently no players online!");
 			return;
 		}
 
@@ -129,9 +129,9 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 		try
 		{
 			if (sizeIsSmall)
-				event.editReply(playersList.toString()).block();
+				Util.editReply(event, playersList.toString());
 			else
-				Util.msg(user.getPrivateChannel().block(), playersList.toString());
+				Util.msg(user.getPrivateChannel().block(), false, playersList.toString());
 		}
 		catch (ClientException e)
 		{
@@ -141,13 +141,13 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 			}
 			else
 			{
-				event.editReply("An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked").block();
+				Util.editReply(event, "An error occured when trying to PM you the players list, make sure you don't have private messages disabled in any capacity or the bot blocked");
 				return;
 			}
 		}
 
 		if (!sizeIsSmall)
-			event.editReply("Sending the online player list to you in a PM!").block();
+			Util.editReply(event, "Sending the online player list to you in a PM!");
 	}
 
 	private void runSelection(DeferrableInteractionEvent event, User user, int page) throws Exception

@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.component.ActionComponent;
 import discord4j.core.object.component.ActionRow;
@@ -22,7 +23,7 @@ public class Invite extends AbstractCommand<ChatInputInteractionEvent>
 		components.add(Button.link("https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=517647752257&scope=bot%20applications.commands", "Bot invite"));
 		components.add(Button.link("https://discord.gg/v55fW9b", "Maunz Hub server invite"));
 
-		event.editReply("").withComponents(ActionRow.of(components)).block();
+		Util.editReply(event, "", ActionRow.of(components));
 	}
 
 	@Override

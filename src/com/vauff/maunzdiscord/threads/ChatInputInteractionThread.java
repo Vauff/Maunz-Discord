@@ -46,7 +46,7 @@ public class ChatInputInteractionThread implements Runnable
 
 				if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(user)))
 				{
-					event.editReply("You do not have permission to use that command").block();
+					Util.editReply(event, "You do not have permission to use that command");
 					return;
 				}
 

@@ -29,7 +29,7 @@ public class Steam extends AbstractCommand<ChatInputInteractionEvent>
 
 			if (siteText.contains("Player Not Found :( or hasn't set public profile Supported inputs") || siteText.contains("Steam Id Finder - is the simplest way to find steam id online by anything you know:"))
 			{
-				event.editReply("Couldn't find a Steam profile with that given ID!").block();
+				Util.editReply(event, "Couldn't find a Steam profile with that given ID!");
 			}
 			else
 			{
@@ -98,12 +98,12 @@ public class Steam extends AbstractCommand<ChatInputInteractionEvent>
 					.addField("Steam64 ID", steam64ID, true)
 					.build();
 
-				event.editReply().withEmbeds(embed).block();
+				Util.editReply(event, "", embed);
 			}
 		}
 		catch (HttpStatusException e)
 		{
-			event.editReply("Couldn't find a Steam profile with that given ID!").block();
+			Util.editReply(event, "Couldn't find a Steam profile with that given ID!");
 		}
 	}
 

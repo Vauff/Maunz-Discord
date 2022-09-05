@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
+import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
@@ -37,7 +38,7 @@ public class About extends AbstractCommand<ChatInputInteractionEvent>
 			.addField("Build Date", getBuildDate(), true)
 			.build();
 
-		event.editReply("").withEmbeds(embed).withComponents(ActionRow.of(buttons)).block();
+		Util.editReply(event, "", List.of(embed), List.of(ActionRow.of(buttons)));
 	}
 
 	/**

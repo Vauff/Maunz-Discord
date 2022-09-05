@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Guild;
@@ -33,7 +34,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 		}
 		catch (SocketException e)
 		{
-			event.editReply("A connection error occured with PassMark, please try again later.").block();
+			Util.editReply(event, "A connection error occured with PassMark, please try again later.");
 			return;
 		}
 
@@ -61,7 +62,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 			}
 			catch (SocketException e)
 			{
-				event.editReply("A connection error occured with PassMark, please try again later.").block();
+				Util.editReply(event, "A connection error occured with PassMark, please try again later.");
 				return;
 			}
 
@@ -120,7 +121,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 					.addField("Performance Per Dollar", ratio, true)
 					.build();
 
-				event.editReply().withEmbeds(embed).block();
+				Util.editReply(event, "", embed);
 			}
 			else if (link.contains("cpu.php"))
 			{
@@ -191,12 +192,12 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 					.addField("Typical TDP", tdp, true)
 					.build();
 
-				event.editReply().withEmbeds(embed).block();
+				Util.editReply(event, "", embed);
 			}
 		}
 		else
 		{
-			event.editReply("I couldn't find any results for \"" + origQuery + "\"!").block();
+			Util.editReply(event, "I couldn't find any results for \"" + origQuery + "\"!");
 		}
 	}
 
