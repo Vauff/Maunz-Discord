@@ -38,39 +38,32 @@ public class ChatInputInteractionThread implements Runnable
 		{
 			event.deferReply().block();
 
-			String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
 			User user = event.getInteraction().getUser();
 			MessageChannel channel = event.getInteraction().getChannel().block();
 			Guild guild = event.getInteraction().getGuild().block();
 
 			for (AbstractCommand<ChatInputInteractionEvent> cmd : Main.commands)
 			{
-				if (!cmdName.equalsIgnoreCase(cmd.getName()))
+				if (!event.getInteraction().getCommandInteraction().get().getName().get().equalsIgnoreCase(cmd.getName()))
 					continue;
 
-				try
+				if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(user)))
 				{
-					if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild)) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(user)))
-					{
-						event.editReply("You do not have permission to use that command").block();
-						return;
-					}
-
-					cmd.exe(event, guild, channel, user);
+					event.editReply("You do not have permission to use that command").block();
+					return;
 				}
-				catch (Exception e)
-				{
-					Random rnd = new Random();
-					int code = 100000000 + rnd.nextInt(900000000);
 
-					event.editReply(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).block();
-					Logger.log.error(code, e);
-				}
+				cmd.exe(event, guild, channel, user);
+				break;
 			}
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("", e);
+			Random rnd = new Random();
+			int code = 100000000 + rnd.nextInt(900000000);
+
+			event.editReply(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).block();
+			Logger.log.error(code, e);
 		}
 	}
 }
