@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Objects;
+import java.util.Random;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -304,5 +306,20 @@ public class Util
 		}
 
 		return url;
+	}
+
+	/**
+	 * Handles user feedback & logging for exceptions thrown from command/button processing
+	 *
+	 * @param e     The exception to handle
+	 * @param event The event the exception was thrown from
+	 */
+	public static void handleException(Exception e, DeferrableInteractionEvent event)
+	{
+		Random rnd = new Random();
+		int code = 100000000 + rnd.nextInt(900000000);
+
+		event.editReply(":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code).withComponents().block();
+		Logger.log.error(code, e);
 	}
 }
