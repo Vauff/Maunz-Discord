@@ -40,10 +40,8 @@ public class ButtonInteractionThread implements Runnable
 			if (!event.getInteraction().getUser().getId().equals(await.getID()))
 				return;
 
-			event.deferReply().block();
-
-			if (event.getMessage().isPresent())
-				event.getMessage().get().delete().block();
+			AbstractCommand.AWAITED.remove(event.getMessageId());
+			event.deferEdit().block();
 
 			try
 			{
