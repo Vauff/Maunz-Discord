@@ -11,7 +11,6 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.retriever.EntityRetrievalStrategy;
 import discord4j.core.retriever.RestEntityRetriever;
 import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.rest.http.client.ClientException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -128,7 +127,7 @@ public class ServiceProcessThread implements Runnable
 								// Setting a 10 second timeout on the block() since it has previously hung tracking threads
 								member = guild.getMemberById(Snowflake.of(notificationDoc.getLong("userID")), EntityRetrievalStrategy.REST).block(Duration.ofSeconds(10));
 							}
-							catch (ClientException | IllegalStateException e)
+							catch (Exception e)
 							{
 								//invalid member, or member is no longer in guild
 								continue parentLoop;
