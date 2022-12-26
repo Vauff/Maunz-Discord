@@ -126,8 +126,9 @@ public class ServerRequestThread implements Runnable
 
 			String playerCount = currentPlayers + "/" + maxPlayers;
 
-			if (!map.equals("") && !doc.getString("map").equalsIgnoreCase(map))
+			if (!map.equals("") && !map.equalsIgnoreCase(doc.getString("map")))
 			{
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("map", map)));
 				timestamp = System.currentTimeMillis();
 
 				boolean mapFound = false;
@@ -151,23 +152,21 @@ public class ServerRequestThread implements Runnable
 					mapDoc.put("firstPlayed", timestamp);
 					mapDoc.put("lastPlayed", timestamp);
 					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$push", new Document("mapDatabase", mapDoc)));
-
 				}
 			}
 
-			if (!map.equals(""))
-				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("map", map)));
-
-			if (!playerCount.equals(""))
+			if (!playerCount.equals("") && !playerCount.equals(doc.getString("playerCount")))
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("playerCount", playerCount)));
 
 			if (timestamp != 0)
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("timestamp", timestamp)));
 
-			if (!name.equals(""))
+			if (!name.equals("") && !name.equals(doc.getString("name")))
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("name", name)));
 
-			Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", 0)));
+			if (doc.getInteger("downtimeTimer") != 0)
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", 0)));
+
 			cleanup(true);
 		}
 		catch (Exception e)
