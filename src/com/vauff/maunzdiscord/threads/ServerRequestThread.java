@@ -86,6 +86,7 @@ public class ServerRequestThread implements Runnable
 
 			HashMap<String, Object> serverInfo = server.getServerInfo();
 			long timestamp = 0;
+			int appId = 0;
 			String map = "";
 			String name = "N/A";
 			int currentPlayers = 0;
@@ -101,6 +102,14 @@ public class ServerRequestThread implements Runnable
 				cleanup(false);
 				return;
 			}
+
+			// 24-bit app id within 64-bit game id, may not be available
+			if (serverInfo.containsKey("gameId")  && !Objects.isNull(serverInfo.get("gameId")))
+				appId = (int) (((long) serverInfo.get("gameId")) & (1L << 24) - 1L);
+
+			// 16-bit app id, possibly truncated but (theoretically) always available
+			else if (serverInfo.containsKey("appId")  && !Objects.isNull(serverInfo.get("appId")))
+				appId = (short) serverInfo.get("appId");
 
 			if (serverInfo.containsKey("serverName") && !Objects.isNull(serverInfo.get("serverName")))
 				name = serverInfo.get("serverName").toString();
@@ -144,6 +153,9 @@ public class ServerRequestThread implements Runnable
 					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$push", new Document("mapDatabase", mapDoc)));
 				}
 			}
+
+			if (appId != 0 && appId != doc.getInteger("appId"))
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("appId", appId)));
 
 			if (!playerCount.equals("") && !playerCount.equals(doc.getString("playerCount")))
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("playerCount", playerCount)));

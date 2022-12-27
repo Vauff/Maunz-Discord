@@ -281,7 +281,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 			return id;
 		}
 
-		Document server = new Document("enabled", true).append("ip", ip).append("port", port).append("name", "N/A").append("map", "N/A").append("timestamp", 0L).append("playerCount", "0/0").append("players", new ArrayList())
+		Document server = new Document("enabled", true).append("ip", ip).append("port", port).append("appId", 0).append("name", "N/A").append("map", "N/A").append("timestamp", 0L).append("playerCount", "0/0").append("players", new ArrayList())
 			.append("downtimeTimer", 0).append("failedConnectionsThreshold", 3).append("mapDatabase", new ArrayList());
 
 		return Main.mongoDatabase.getCollection("servers").insertOne(server).getInsertedId().asObjectId().getValue();
