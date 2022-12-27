@@ -54,16 +54,8 @@ public class ServerRequestThread implements Runnable
 				{
 					server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
 					server.initialize();
-
-					Set<String> keySet = new HashSet<>();
-
-					for (SteamPlayer player : new ArrayList<>(server.getPlayers().values()))
-					{
-						if (!Objects.isNull(player.getName()))
-							keySet.add(player.getName());
-					}
-
-					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", keySet)));
+					server.updatePlayers();
+					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", server.getPlayers().keySet())));
 
 					break;
 				}
@@ -120,9 +112,7 @@ public class ServerRequestThread implements Runnable
 				maxPlayers = Integer.parseInt(serverInfo.get("maxPlayers").toString());
 
 			if (currentPlayers > maxPlayers && maxPlayers >= 0)
-			{
 				currentPlayers = maxPlayers;
-			}
 
 			String playerCount = currentPlayers + "/" + maxPlayers;
 
