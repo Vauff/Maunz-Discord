@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.timers;
 
 import com.vauff.maunzdiscord.core.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -24,39 +25,57 @@ public class MapImageTimer
 	{
 		try
 		{
-			try
+			int attempts = 0;
+			JSONObject response;
+
+			while (true)
 			{
-				URL url = new URL("https://vauff.com/mapimgs/list.php");
-				HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-
-				connection.setRequestMethod("GET");
-				connection.connect();
-
-				if (connection.getResponseCode() != 200)
-					Logger.log.error("Failed to connect to the map images API, automatically retrying in 1 hour");
-
-				String jsonString = "";
-				Scanner scanner = new Scanner(url.openStream());
-
-				while (scanner.hasNext())
-					jsonString += scanner.nextLine();
-
-				scanner.close();
-				JSONObject response = new JSONObject(jsonString);
-
-				for (String key : response.keySet())
+				try
 				{
-					ArrayList<String> maps = new ArrayList<>();
+					URL url = new URL("https://vauff.com/mapimgs/list.php");
+					HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
-					for (int i = 0; i < response.getJSONArray(key).length(); i++)
-						maps.add(response.getJSONArray(key).getString(i));
+					connection.setRequestMethod("GET");
+					connection.connect();
 
-					mapImages.put(key, maps);
+					if (connection.getResponseCode() != 200)
+						throw new IOException();
+
+					String jsonString = "";
+					Scanner scanner = new Scanner(url.openStream());
+
+					while (scanner.hasNext())
+						jsonString += scanner.nextLine();
+
+					scanner.close();
+					response = new JSONObject(jsonString);
+
+					break;
+				}
+				catch (IOException | JSONException e)
+				{
+					attempts++;
+
+					if (attempts >= 5)
+					{
+						Logger.log.error("Failed to connect to the map images API, automatically retrying in 1 hour");
+						return;
+					}
+					else
+					{
+						Thread.sleep(1000);
+					}
 				}
 			}
-			catch (IOException e)
+
+			for (String key : response.keySet())
 			{
-				Logger.log.error("Failed to connect to the map images API, automatically retrying in 1 hour");
+				ArrayList<String> maps = new ArrayList<>();
+
+				for (int i = 0; i < response.getJSONArray(key).length(); i++)
+					maps.add(response.getJSONArray(key).getString(i));
+
+				mapImages.put(key, maps);
 			}
 		}
 		catch (Exception e)

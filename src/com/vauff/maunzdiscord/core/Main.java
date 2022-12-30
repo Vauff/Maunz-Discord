@@ -113,9 +113,9 @@ public class Main
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onChatInputInteraction(event))).subscribe();
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onButtonInteraction(event))).subscribe();
 
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 5, TimeUnit.MINUTES);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapImageTimer.timer, 0, 1, TimeUnit.HOURS);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 5, TimeUnit.MINUTES);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 10, 60, TimeUnit.SECONDS);
 
 			// Keep app alive by waiting for disconnect
 			gateway.onDisconnect().block();
