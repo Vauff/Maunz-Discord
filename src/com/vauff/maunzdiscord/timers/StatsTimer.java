@@ -11,40 +11,38 @@ import discord4j.core.object.presence.ClientPresence;
 public class StatsTimer
 {
 	private static boolean showingGuilds = true;
+
 	/**
-	 * Updates the bot's playing text to show the amount of guilds the bot is on and the invite link to the official Maunz Discord server
+	 * Updates the bot's playing text to switch between showing the amount of guilds the bot is on and the alt text configured in config.json
 	 */
-	public static Runnable timer = new Runnable()
+	public static Runnable timer = () ->
 	{
-		public void run()
+		try
 		{
-			try
+			if (Main.gateway.getGatewayClient(0).get().isConnected().block())
 			{
-				if (Main.gateway.getGatewayClient(0).get().isConnected().block())
+				if (!showingGuilds)
 				{
-					if (!showingGuilds)
+					if (Main.gateway.getGuilds().count().block() == 1L)
 					{
-						if (Main.gateway.getGuilds().count().block() == 1L)
-						{
-							Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.gateway.getGuilds().count().block() + " guild"))).block();
-						}
-						else
-						{
-							Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.gateway.getGuilds().count().block() + " guilds"))).block();
-						}
-						showingGuilds = true;
+						Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.gateway.getGuilds().count().block() + " guild"))).block();
 					}
 					else
 					{
-						Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.cfg.getPlayingText()))).block();
-						showingGuilds = false;
+						Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.gateway.getGuilds().count().block() + " guilds"))).block();
 					}
+					showingGuilds = true;
+				}
+				else
+				{
+					Main.gateway.updatePresence(ClientPresence.online(ClientActivity.playing(Main.cfg.getPlayingText()))).block();
+					showingGuilds = false;
 				}
 			}
-			catch (Exception e)
-			{
-				Logger.log.error("", e);
-			}
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
 		}
 	};
 }

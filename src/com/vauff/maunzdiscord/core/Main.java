@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.vauff.maunzdiscord.commands.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.timers.MapImageTimer;
 import com.vauff.maunzdiscord.timers.ServerTimer;
 import com.vauff.maunzdiscord.timers.StatsTimer;
 import discord4j.core.DiscordClient;
@@ -113,7 +114,8 @@ public class Main
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onButtonInteraction(event))).subscribe();
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 0, 60, TimeUnit.SECONDS);
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 300, TimeUnit.SECONDS);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 5, TimeUnit.MINUTES);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapImageTimer.timer, 0, 1, TimeUnit.HOURS);
 
 			// Keep app alive by waiting for disconnect
 			gateway.onDisconnect().block();
