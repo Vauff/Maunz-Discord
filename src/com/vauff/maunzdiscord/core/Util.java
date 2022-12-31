@@ -17,6 +17,7 @@ import discord4j.rest.util.Color;
 import discord4j.rest.util.Permission;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.bson.Document;
 
 import javax.imageio.ImageIO;
@@ -24,7 +25,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
@@ -314,12 +314,14 @@ public class Util
 	 */
 	public static String getMapImageURL(String map, int appId)
 	{
-		String url = getVauffMapImageURL(map, appId);
+		// Force lower case since GameTracker does, and for an accurate levenshtein distance
+		String mapLower = map.toLowerCase();
+		String url = getVauffMapImageURL(mapLower, appId);
 		String gtName = appIdToGameTrackerName(appId);
 
-		// If we don't have a map image, fallback to GameTracker
+		// If we didn't find a high quality map image at vauff.com, try to fall back to GameTracker
 		if (url.equals("") && !gtName.equals(""))
-			url = "https://image.gametracker.com/images/maps/160x120/" + gtName + "/" + map.replace(" ", "%20") + ".jpg";
+			url = "https://image.gametracker.com/images/maps/160x120/" + gtName + "/" + mapLower.replace(" ", "%20") + ".jpg";
 
 		return url;
 	}
@@ -333,12 +335,31 @@ public class Util
 	 */
 	private static String getVauffMapImageURL(String map, int appId)
 	{
-		// Due to mapCharacterLimit, all image map names at vauff.com should never exceed 31 characters
+		// As we accomodate for mapCharacterLimit, all image map names at vauff.com should never exceed 31 characters
 		String trimmedMap = StringUtils.substring(map, 0, 31);
-		ArrayList<String> mapImages = MapImageTimer.mapImages.get(Integer.toString(appId));
+		String bestMatch = "";
+		int bmLevenshteinDist = 999;
 
-		// TODO: create lookup logic!
-		return "";
+		if (!MapImageTimer.mapImages.containsKey(Integer.toString(appId)))
+			return "";
+
+		for (String arrayMap : MapImageTimer.mapImages.get(Integer.toString(appId)))
+		{
+			// Keep both parameters lower case for an accurate levenshtein distance
+			String arrayMapLower = arrayMap.toLowerCase();
+			int distance = new LevenshteinDistance().apply(trimmedMap, arrayMapLower);
+
+			if (distance < bmLevenshteinDist && trimmedMap.startsWith(arrayMapLower))
+			{
+				bestMatch = arrayMap;
+				bmLevenshteinDist = distance;
+			}
+		}
+
+		if (bestMatch.equals(""))
+			return "";
+		else
+			return "https://vauff.com/mapimgs/" + appId + "/" + bestMatch.replace(" ", "%20") + ".jpg";
 	}
 
 	/**

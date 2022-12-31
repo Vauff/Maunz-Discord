@@ -2,7 +2,6 @@ package com.vauff.maunzdiscord.threads;
 
 import com.github.koraktor.steamcondenser.servers.GameServer;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
-import com.github.koraktor.steamcondenser.servers.SteamPlayer;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.timers.ServerTimer;
@@ -12,10 +11,8 @@ import org.bson.types.ObjectId;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -104,11 +101,11 @@ public class ServerRequestThread implements Runnable
 			}
 
 			// 24-bit app id within 64-bit game id, may not be available
-			if (serverInfo.containsKey("gameId")  && !Objects.isNull(serverInfo.get("gameId")))
+			if (serverInfo.containsKey("gameId") && !Objects.isNull(serverInfo.get("gameId")))
 				appId = (int) (((long) serverInfo.get("gameId")) & (1L << 24) - 1L);
 
 			// 16-bit app id, possibly truncated but (theoretically) always available
-			else if (serverInfo.containsKey("appId")  && !Objects.isNull(serverInfo.get("appId")))
+			else if (serverInfo.containsKey("appId") && !Objects.isNull(serverInfo.get("appId")))
 				appId = (short) serverInfo.get("appId");
 
 			if (serverInfo.containsKey("serverName") && !Objects.isNull(serverInfo.get("serverName")))
