@@ -26,6 +26,7 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 
@@ -316,12 +317,24 @@ public class Util
 	{
 		// Force lower case since GameTracker does, and for an accurate levenshtein distance
 		String mapLower = map.toLowerCase();
+
+		if (MapImageTimer.mapImageLookupCache.containsKey(appId))
+		{
+			HashMap<String, String> gameCache = MapImageTimer.mapImageLookupCache.get(appId);
+
+			if (gameCache.containsKey(mapLower))
+				return gameCache.get(mapLower);
+		}
+
 		String url = getVauffMapImageURL(mapLower, appId);
 		String gtName = appIdToGameTrackerName(appId);
 
 		// If we didn't find a high quality map image at vauff.com, try to fall back to GameTracker
 		if (url.equals("") && !gtName.equals(""))
 			url = "https://image.gametracker.com/images/maps/160x120/" + gtName + "/" + mapLower.replace(" ", "%20") + ".jpg";
+
+		if (MapImageTimer.mapImageLookupCache.containsKey(appId))
+			MapImageTimer.mapImageLookupCache.get(appId).put(mapLower, url);
 
 		return url;
 	}
@@ -340,10 +353,10 @@ public class Util
 		String bestMatch = "";
 		int bmLevenshteinDist = 999;
 
-		if (!MapImageTimer.mapImages.containsKey(Integer.toString(appId)))
+		if (!MapImageTimer.mapImages.containsKey(appId))
 			return "";
 
-		for (String arrayMap : MapImageTimer.mapImages.get(Integer.toString(appId)))
+		for (String arrayMap : MapImageTimer.mapImages.get(appId))
 		{
 			// Keep both parameters lower case for an accurate levenshtein distance
 			String arrayMapLower = arrayMap.toLowerCase();

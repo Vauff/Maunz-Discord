@@ -16,7 +16,15 @@ import java.util.Scanner;
  */
 public class MapImageTimer
 {
-	public static HashMap<String, ArrayList<String>> mapImages = new HashMap<>();
+	/**
+	 * Holds the latest image lists pulled from vauff.com/mapimgs
+	 */
+	public static HashMap<Integer, ArrayList<String>> mapImages = new HashMap<>();
+
+	/**
+	 * Cached lookup results from Util#getMapImageURL
+	 */
+	public static HashMap<Integer, HashMap<String, String>> mapImageLookupCache = new HashMap<>();
 
 	/**
 	 * Updates the mapImages hashmap with the latest available map images from vauff.com/mapimgs
@@ -71,11 +79,13 @@ public class MapImageTimer
 			for (String key : response.keySet())
 			{
 				ArrayList<String> maps = new ArrayList<>();
+				int appId = Integer.parseInt(key);
 
 				for (int i = 0; i < response.getJSONArray(key).length(); i++)
 					maps.add(response.getJSONArray(key).getString(i));
 
-				mapImages.put(key, maps);
+				mapImages.put(appId, maps);
+				mapImageLookupCache.put(appId, new HashMap<>());
 			}
 		}
 		catch (Exception e)
