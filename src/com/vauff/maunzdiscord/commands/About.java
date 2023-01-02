@@ -35,6 +35,7 @@ public class About extends AbstractCommand<ChatInputInteractionEvent>
 			.addField("Version", Main.version, true)
 			.addField("Java Version", System.getProperty("java.version"), true)
 			.addField("Uptime", getUptime(), true)
+			.addField("Memory Usage", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024) + " MB", true)
 			.addField("Build Date", getBuildDate(), true)
 			.build();
 
