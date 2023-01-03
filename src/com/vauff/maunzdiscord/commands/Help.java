@@ -7,6 +7,7 @@ import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Guild;
@@ -30,32 +31,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
 
-		if (interaction.getOption("list").isPresent())
-		{
-			int page = 1;
-
-			if (interaction.getOption("list").get().getOption("page").isPresent())
-				page = (int) interaction.getOption("list").get().getOption("page").get().getValue().get().asLong();
-
-			ArrayList<String> helpEntries = new ArrayList<>();
-
-			for (AbstractCommand command : Main.commands)
-			{
-				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild))
-					continue;
-
-				if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(user))
-					continue;
-
-				for (CommandHelp commandHelp : getHelp(command))
-					helpEntries.add("**/" + command.getName() + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
-			}
-
-			buildPage(event, helpEntries, "Command List", 10, 0, page, 0, false, null, "");
-			listPages.put(user.getId(), page);
-			waitForButtonPress(event.getReply().block().getId(), user.getId());
-		}
-		else if (interaction.getOption("view").isPresent())
+		if (interaction.getOption("view").isPresent())
 		{
 			String arg = interaction.getOption("view").get().getOption("command").get().getValue().get().asString();
 			String list = "";
@@ -84,20 +60,34 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 			}
 
 			if (matchFound)
-			{
 				Util.editReply(event, list);
-			}
 			else
-			{
 				Util.editReply(event, "The command **" + arg + "** either doesn't exist, or you don't have access to it.");
-			}
+		}
+		else if (interaction.getOption("list").isPresent())
+		{
+			int page = 1;
+
+			if (interaction.getOption("list").get().getOption("page").isPresent())
+				page = (int) interaction.getOption("list").get().getOption("page").get().getValue().get().asLong();
+
+			exeList(event, guild, user, page);
 		}
 	}
 
 	@Override
 	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
 	{
-		int pageChange = 0;
+		int page = listPages.get(user.getId());
+
+		if (buttonId.equals(NEXT_BTN))
+			exeList(event, guild, user, page + 1);
+		else if (buttonId.equals(PREV_BTN))
+			exeList(event, guild, user, page - 1);
+	}
+
+	private void exeList(DeferrableInteractionEvent event, Guild guild, User user, int page) throws Exception
+	{
 		ArrayList<String> helpEntries = new ArrayList<>();
 
 		for (AbstractCommand command : Main.commands)
@@ -112,16 +102,8 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 				helpEntries.add("**/" + command.getName() + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
 		}
 
-		if (buttonId.equals(NEXT_BTN))
-			pageChange = 1;
-		else if (buttonId.equals(PREV_BTN))
-			pageChange = -1;
-
-		if (pageChange == 0)
-			return;
-
-		buildPage(event, helpEntries, "Command List", 10, 0, listPages.get(user.getId()) + pageChange, 0, false, null, "");
-		listPages.put(user.getId(), listPages.get(user.getId()) + pageChange);
+		buildPage(event, helpEntries, "Command List", 10, 0, page, 0, false, null, "");
+		listPages.put(user.getId(), page);
 		waitForButtonPress(event.getReply().block().getId(), user.getId());
 	}
 
