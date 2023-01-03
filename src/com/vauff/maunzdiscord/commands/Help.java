@@ -1,4 +1,4 @@
-/*package com.vauff.maunzdiscord.commands;
+package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
@@ -48,9 +48,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 					continue;
 
 				for (CommandHelp commandHelp : getHelp(command))
-				{
-					helpEntries.add("</" + command.getName() + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
-				}
+					helpEntries.add("**/" + command.getName() + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
 			}
 
 			buildPage(event, helpEntries, "Command List", 10, 0, page, 0, false, null, "");
@@ -63,10 +61,9 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 			String list = "";
 			boolean matchFound = false;
 
-			rootIteration:
 			for (AbstractCommand command : Main.commands)
 			{
-				String cleanArg = getPrefix(command, false).equals(arg.substring(0, 1)) ? arg.substring(1) : arg;
+				String cleanArg = "/".equals(arg.substring(0, 1)) ? arg.substring(1) : arg;
 
 				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild))
 					continue;
@@ -74,21 +71,15 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 				if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(user))
 					continue;
 
-				for (String alias : command.getAliases())
+				if (cleanArg.equalsIgnoreCase(command.getName()))
 				{
-					if (cleanArg.equalsIgnoreCase(alias))
-					{
-						matchFound = true;
+					matchFound = true;
 
-						for (CommandHelp commandHelp : getHelp(command))
-						{
-							list += "**" + getPrefix(command, true) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription() + System.lineSeparator();
-						}
+					for (CommandHelp commandHelp : getHelp(command))
+						list += "**/" + command.getName() + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription() + System.lineSeparator();
 
-						list = StringUtils.removeEnd(list, System.lineSeparator());
-
-						break rootIteration;
-					}
+					list = StringUtils.removeEnd(list, System.lineSeparator());
+					break;
 				}
 			}
 
@@ -118,14 +109,12 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 				continue;
 
 			for (CommandHelp commandHelp : getHelp(command))
-			{
-				helpEntries.add("**" + getPrefix(command, true) + command.getAliases()[0] + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
-			}
+				helpEntries.add("**/" + command.getName() + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
 		}
 
-		if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("▶"))
+		if (buttonId.equals(NEXT_BTN))
 			pageChange = 1;
-		else if (event.getEmoji().asUnicodeEmoji().get().getRaw().equals("◀"))
+		else if (buttonId.equals(PREV_BTN))
 			pageChange = -1;
 
 		if (pageChange == 0)
@@ -248,4 +237,3 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 		return BotPermission.EVERYONE;
 	}
 }
-*/

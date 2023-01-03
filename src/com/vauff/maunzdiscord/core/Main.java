@@ -135,7 +135,7 @@ public class Main
 		commands.add(new Benchmark());
 		commands.add(new Changelog());
 		commands.add(new Colour());
-		//commands.add(new Help());
+		commands.add(new Help());
 		commands.add(new Invite());
 		commands.add(new IsItDown());
 		commands.add(new Map());
