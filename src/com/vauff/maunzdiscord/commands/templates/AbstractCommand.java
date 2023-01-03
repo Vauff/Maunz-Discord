@@ -1,5 +1,6 @@
 package com.vauff.maunzdiscord.commands.templates;
 
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.Await;
 import discord4j.common.util.Snowflake;
@@ -12,6 +13,7 @@ import discord4j.core.object.component.LayoutComponent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import java.util.ArrayList;
@@ -48,6 +50,13 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 	public static final HashMap<Snowflake, Await<AbstractCommand>> AWAITED = new HashMap<>();
 
 	/**
+	 * Holds this commands ApplicationCommandData:
+	 * - For each guild (in dev mode)
+	 * - At index 0 (live operation)
+	 */
+	public final HashMap<Long, ApplicationCommandData> cmdDatas = new HashMap<>();
+
+	/**
 	 * Executes this command
 	 *
 	 * @param interaction The interaction that executing this command creates
@@ -71,7 +80,20 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 	/**
 	 * Returns the ApplicationCommandRequest object for this command
 	 */
-	public abstract ApplicationCommandRequest getCommand();
+	public abstract ApplicationCommandRequest getCommandRequest();
+
+	/**
+	 * Returns the ApplicationCommandData object for this command
+	 *
+	 * @param guildId ID of the associated guild, necessary for dev mode
+	 */
+	public final ApplicationCommandData getCommandData(long guildId)
+	{
+		if (Main.cfg.getDevGuilds().length == 0)
+			return cmdDatas.get(0L);
+		else
+			return cmdDatas.get(guildId);
+	}
 
 	/**
 	 * Defines the name used to trigger the command.

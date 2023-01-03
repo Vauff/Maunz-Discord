@@ -52,7 +52,7 @@ public class Say extends AbstractCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public ApplicationCommandRequest getCommand()
+	public ApplicationCommandRequest getCommandRequest()
 	{
 		return ApplicationCommandRequest.builder()
 			.name(getName())

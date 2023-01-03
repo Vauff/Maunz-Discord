@@ -15,6 +15,7 @@ import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
+import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.gateway.GatewayReactorResources;
 import discord4j.rest.RestClient;
@@ -27,6 +28,7 @@ import reactor.netty.resources.ConnectionProvider;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +47,7 @@ public class Main
 	/**
 	 * List that holds all commands
 	 */
-	public static LinkedList<AbstractCommand> commands = new LinkedList<>();
+	public static LinkedList<AbstractCommand<ChatInputInteractionEvent>> commands = new LinkedList<>();
 
 	public static void main(String[] args)
 	{
@@ -129,7 +131,7 @@ public class Main
 	/**
 	 * Fills command arrays and registers appropriate slash commands with Discord
 	 */
-	public static void setupCommands()
+	private static void setupCommands()
 	{
 		commands.add(new About());
 		commands.add(new Benchmark());
@@ -154,18 +156,44 @@ public class Main
 		long appID = restClient.getApplicationId().block();
 		ArrayList<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
 
+
 		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands)
-			cmdRequests.add(cmd.getCommand());
+			cmdRequests.add(cmd.getCommandRequest());
 
 		if (cfg.getDevGuilds().length > 0)
 		{
 			for (int i = 0; i < cfg.getDevGuilds().length; i++)
-				restClient.getApplicationService().bulkOverwriteGuildApplicationCommand(appID, cfg.getDevGuilds()[i], cmdRequests).blockLast();
+			{
+				long guildId = cfg.getDevGuilds()[i];
+				List<ApplicationCommandData> cmdDatas = restClient.getApplicationService().bulkOverwriteGuildApplicationCommand(appID, guildId, cmdRequests).collectList().block();
+
+				mapCommandDataToCommands(cmdDatas, guildId);
+			}
 
 			// Remove all global commands while in dev mode
 			cmdRequests = new ArrayList<>();
 		}
 
-		restClient.getApplicationService().bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).blockLast();
+
+		List<ApplicationCommandData> cmdDatas = restClient.getApplicationService().bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).collectList().block();
+
+		if (cmdRequests.size() > 0)
+			mapCommandDataToCommands(cmdDatas, 0L);
+	}
+
+	private static void mapCommandDataToCommands(List<ApplicationCommandData> cmdDatas, long guildId)
+	{
+		parentLoop:
+		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands)
+		{
+			for (ApplicationCommandData cmdData : cmdDatas)
+			{
+				if (cmd.getName().equals(cmdData.name()))
+				{
+					cmd.cmdDatas.put(guildId, cmdData);
+					continue parentLoop;
+				}
+			}
+		}
 	}
 }

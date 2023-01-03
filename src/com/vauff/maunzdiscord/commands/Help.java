@@ -3,7 +3,6 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.objects.CommandHelp;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -20,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class Help extends AbstractCommand<ChatInputInteractionEvent>
 {
@@ -34,8 +32,6 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 		if (interaction.getOption("view").isPresent())
 		{
 			String arg = interaction.getOption("view").get().getOption("command").get().getValue().get().asString();
-			String list = "";
-			boolean matchFound = false;
 
 			for (AbstractCommand command : Main.commands)
 			{
@@ -49,20 +45,19 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 
 				if (cleanArg.equalsIgnoreCase(command.getName()))
 				{
-					matchFound = true;
+					List<String> helpEntries = getHelp(command, guild);
+					String response = "";
 
-					for (CommandHelp commandHelp : getHelp(command))
-						list += "**/" + command.getName() + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription() + System.lineSeparator();
+					for (String entry : helpEntries)
+						response += entry + System.lineSeparator();
 
-					list = StringUtils.removeEnd(list, System.lineSeparator());
-					break;
+					response = StringUtils.removeEnd(response, System.lineSeparator());
+					Util.editReply(event, response);
+					return;
 				}
 			}
 
-			if (matchFound)
-				Util.editReply(event, list);
-			else
-				Util.editReply(event, "The command **" + arg + "** either doesn't exist, or you don't have access to it.");
+			Util.editReply(event, "The command **" + arg + "** either doesn't exist, or you don't have access to it.");
 		}
 		else if (interaction.getOption("list").isPresent())
 		{
@@ -88,9 +83,9 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 
 	private void exeList(DeferrableInteractionEvent event, Guild guild, User user, int page) throws Exception
 	{
-		ArrayList<String> helpEntries = new ArrayList<>();
+		List<String> helpEntries = new ArrayList<>();
 
-		for (AbstractCommand command : Main.commands)
+		for (AbstractCommand<ChatInputInteractionEvent> command : Main.commands)
 		{
 			if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild))
 				continue;
@@ -98,8 +93,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 			if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(user))
 				continue;
 
-			for (CommandHelp commandHelp : getHelp(command))
-				helpEntries.add("**/" + command.getName() + (commandHelp.getArguments().equals("") ? "" : " " + commandHelp.getArguments()) + "** - " + commandHelp.getDescription());
+			helpEntries.addAll(getHelp(command, guild));
 		}
 
 		buildPage(event, helpEntries, "Command List", 10, 0, page, 0, false, null, "");
@@ -107,78 +101,39 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 		waitForButtonPress(event.getReply().block().getId(), user.getId());
 	}
 
-	private CommandHelp[] getHelp(AbstractCommand command)
+
+	private List<String> getHelp(AbstractCommand<ChatInputInteractionEvent> command, Guild guild)
 	{
-		if (command.getCommand().options().isAbsent())
-			return new CommandHelp[] { new CommandHelp("", command.getCommand().description().get()) };
+		List<String> helpEntries = new ArrayList<>();
+		String cmdId = command.getCommandData(guild.getId().asLong()).id().asString();
 
-		List<CommandHelp> commandHelps = new ArrayList<>();
-		CommandHelp commandHelp = new CommandHelp("", command.getCommand().description().get());
-		boolean noSubCmds = true;
-
-		for (ApplicationCommandOptionData option : command.getCommand().options().get())
+		if (!command.getCommandRequest().options().isAbsent())
 		{
-			if (option.type() == ApplicationCommandOption.Type.SUB_COMMAND.getValue())
+			for (ApplicationCommandOptionData option : command.getCommandRequest().options().get())
 			{
-				noSubCmds = false;
+				if (option.type() == ApplicationCommandOption.Type.SUB_COMMAND.getValue())
+				{
+					helpEntries.add("</" + command.getCommandRequest().name() + " " + option.name() + ":" + cmdId + "> - " + option.description());
+				}
+				else if (option.type() == ApplicationCommandOption.Type.SUB_COMMAND_GROUP.getValue())
+				{
+					if (option.options().isAbsent())
+						continue;
 
-				commandHelps.add(parseHelpSubCommand(option, null));
-			}
-			else if (option.type() == ApplicationCommandOption.Type.SUB_COMMAND_GROUP.getValue())
-			{
-				noSubCmds = false;
-
-				if (option.options().isAbsent())
-					continue;
-
-				for (ApplicationCommandOptionData subCmd : option.options().get())
-					commandHelps.add(parseHelpSubCommand(subCmd, option.name()));
-			}
-			else
-			{
-				if (option.required().isAbsent() || !option.required().get())
-					commandHelp.setArguments(commandHelp.getArguments() + "[" + option.name() + "] ");
-				else
-					commandHelp.setArguments(commandHelp.getArguments() + "<" + option.name() + "> ");
+					for (ApplicationCommandOptionData subCmd : option.options().get())
+						helpEntries.add("</" + command.getCommandRequest().name() + " " + option.name() + " " + subCmd.name() + ":" + cmdId + "> - " + subCmd.description());
+				}
 			}
 		}
 
-		if (noSubCmds)
-		{
-			commandHelp.setArguments(commandHelp.getArguments().trim());
-			commandHelps.add(commandHelp);
-		}
+		if (helpEntries.size() == 0)
+			helpEntries.add("</" + command.getCommandRequest().name() + ":" + cmdId + "> - " + command.getCommandRequest().description().get());
 
-		return commandHelps.toArray(new CommandHelp[commandHelps.size()]);
-	}
-
-	private CommandHelp parseHelpSubCommand(ApplicationCommandOptionData subCommand, String rootName)
-	{
-		CommandHelp commandHelp = new CommandHelp("", subCommand.description());
-
-		if (!Objects.isNull(rootName))
-			commandHelp.setArguments(rootName + " ");
-
-		commandHelp.setArguments(commandHelp.getArguments() + subCommand.name() + " ");
-
-		if (!subCommand.options().isAbsent())
-		{
-			for (ApplicationCommandOptionData option : subCommand.options().get())
-			{
-				if (option.required().isAbsent() || !option.required().get())
-					commandHelp.setArguments(commandHelp.getArguments() + "[" + option.name() + "] ");
-				else
-					commandHelp.setArguments(commandHelp.getArguments() + "<" + option.name() + "> ");
-			}
-		}
-
-		commandHelp.setArguments(commandHelp.getArguments().trim());
-
-		return commandHelp;
+		return helpEntries;
 	}
 
 	@Override
-	public ApplicationCommandRequest getCommand()
+	public ApplicationCommandRequest getCommandRequest()
 	{
 		return ApplicationCommandRequest.builder()
 			.name(getName())
