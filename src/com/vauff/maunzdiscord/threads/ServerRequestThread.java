@@ -44,35 +44,48 @@ public class ServerRequestThread implements Runnable
 		{
 			Document doc = Main.mongoDatabase.getCollection("servers").find(eq("_id", id)).first();
 			int attempts = 0;
+			boolean serverInfoSuccess = false;
 
 			while (true)
 			{
 				try
 				{
-					server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
-					server.initialize();
+					if (!serverInfoSuccess)
+					{
+						server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
+						server.updateServerInfo();
+						serverInfoSuccess = true;
+					}
+
 					server.updatePlayers();
 					Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", server.getPlayers().keySet())));
-
 					break;
 				}
 				catch (Exception e)
 				{
 					attempts++;
 
-					if (attempts >= 5 || doc.getInteger("downtimeTimer") >= doc.getInteger("failedConnectionsThreshold"))
+					if (attempts >= 5 || (!serverInfoSuccess && doc.getInteger("downtimeTimer") >= doc.getInteger("failedConnectionsThreshold")))
 					{
-						Logger.log.warn("Failed to connect to the server " + ipPort + ", automatically retrying in 1 minute");
-						int downtimeTimer = doc.getInteger("downtimeTimer") + 1;
-						Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", downtimeTimer)));
-
-						if (downtimeTimer >= 10080)
+						if (!serverInfoSuccess)
 						{
-							Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
-						}
+							int downtimeTimer = doc.getInteger("downtimeTimer") + 1;
 
-						cleanup(true);
-						return;
+							Logger.log.warn("Failed to connect to the server " + ipPort + ", automatically retrying in 1 minute");
+							Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", downtimeTimer)));
+
+							if (downtimeTimer >= 10080)
+								Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
+
+							cleanup(true);
+							return;
+						}
+						else
+						{
+							Logger.log.warn("Failed to retrieve player information from " + ipPort + ", automatically retrying in 1 minute");
+							Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("players", List.of("SERVER_UPDATEPLAYERS_FAILED"))));
+							break;
+						}
 					}
 					else
 					{

@@ -246,7 +246,7 @@ public class Services extends AbstractCommand<ChatInputInteractionEvent>
 			try
 			{
 				server = new SourceServer(InetAddress.getByName(ip), port);
-				server.initialize();
+				server.updateServerInfo();
 
 				return true;
 			}

@@ -115,6 +115,12 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 			return;
 		}
 
+		if (numberOfPlayers == 1 && serverDoc.getList("players", String.class).get(0).equals("SERVER_UPDATEPLAYERS_FAILED"))
+		{
+			Util.editReply(event, "The server failed to return player information, please try again later");
+			return;
+		}
+
 		boolean sizeIsSmall = numberOfPlayers <= 8;
 
 		playersList.append("```-- Players Online: " + serverDoc.getString("playerCount") + " --" + System.lineSeparator() + System.lineSeparator());
