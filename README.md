@@ -48,11 +48,11 @@ Maunz is a multi-purpose Discord bot with a focus on Source server tracking, it 
 
 `/say <message> [channel]` - Sends a custom message from Maunz to any channel
 
-`/services add <ip> <channel>` - Add a new service
+`/servers add <ip> <channel>` - Add a new server to track
 
-`/services list [page]` - List current services
+`/servers list [page]` - List current servers
 
-`/services delete <id>` - Delete a service
+`/servers delete <id>` - Delete a server
 
 ## Bot Admin
 

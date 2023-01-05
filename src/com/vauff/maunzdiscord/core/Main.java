@@ -147,6 +147,7 @@ public class Main
 		commands.add(new Players());
 		commands.add(new Reddit());
 		commands.add(new Say());
+		commands.add(new Servers());
 		commands.add(new Services());
 		commands.add(new Steam());
 		commands.add(new Stop());
