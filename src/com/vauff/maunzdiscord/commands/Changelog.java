@@ -114,7 +114,7 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 				return "";
 
 			String jsonString = "";
-			Scanner scanner = new Scanner(url.openStream());
+			Scanner scanner = new Scanner(connection.getInputStream());
 
 			while (scanner.hasNext())
 				jsonString += scanner.nextLine();
