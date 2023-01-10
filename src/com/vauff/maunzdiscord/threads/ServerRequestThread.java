@@ -45,6 +45,7 @@ public class ServerRequestThread implements Runnable
 			Document doc = Main.mongoDatabase.getCollection("servers").find(eq("_id", id)).first();
 			int attempts = 0;
 			boolean serverInfoSuccess = false;
+			boolean retriedForCsgoPlayerCount = false;
 
 			while (true)
 			{
@@ -55,6 +56,16 @@ public class ServerRequestThread implements Runnable
 						server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
 						server.updateServerInfo();
 						serverInfoSuccess = true;
+					}
+
+					// CS:GO servers by default use host_info_show 1 which uses a game-specific A2S_INFO implementation, only host_info_show 2 uses SteamWorks
+					// Unfortunately this implementation is incapable of providing a correct player count during a map change (returns 0), so we work around this by double-checking "empty" CS:GO servers are actually empty a little while after
+					// See https://github.com/perilouswithadollarsign/cstrike15_src/blob/master/engine/baseserver.cpp#L1261, GetNumPlayers() uses m_pUserInfoTable which is emptied during a map change
+					if (doc.getInteger("appId") == 730 && server.getServerInfo().containsKey("numberOfPlayers") && !Objects.isNull(server.getServerInfo().get("numberOfPlayers")) && ((Byte) server.getServerInfo().get("numberOfPlayers")).intValue() == 0 && !retriedForCsgoPlayerCount)
+					{
+						Thread.sleep(5000);
+						retriedForCsgoPlayerCount = true;
+						continue;
 					}
 
 					server.updatePlayers();
