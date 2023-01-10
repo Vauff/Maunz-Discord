@@ -23,10 +23,13 @@ public class Config extends JSONObject
 			put("devGuilds", new JSONArray());
 			put("discordToken", "");
 			put("gitHubToken", "");
+			put("userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
 			put("mongoDatabase", new JSONObject());
 			getJSONObject("mongoDatabase").put("connectionString", "");
 			getJSONObject("mongoDatabase").put("database", "");
-			put("userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36");
+			put("reddit", new JSONObject());
+			getJSONObject("reddit").put("id", "");
+			getJSONObject("reddit").put("secret", "");
 			save();
 		}
 	}
@@ -56,19 +59,29 @@ public class Config extends JSONObject
 		return getString("gitHubToken");
 	}
 
-	public String getConnectionString()
+	public String getUserAgent()
+	{
+		return getString("userAgent");
+	}
+
+	public String getMongoConnectionString()
 	{
 		return getJSONObject("mongoDatabase").getString("connectionString");
 	}
 
-	public String getDatabase()
+	public String getMongoDatabase()
 	{
 		return getJSONObject("mongoDatabase").getString("database");
 	}
 
-	public String getUserAgent()
+	public String getRedditId()
 	{
-		return getString("userAgent");
+		return getJSONObject("reddit").getString("id");
+	}
+
+	public String getRedditSecret()
+	{
+		return getJSONObject("reddit").getString("secret");
 	}
 
 	private long[] getLongArray(String name)

@@ -64,7 +64,7 @@ public class Main
 				exit = true;
 			}
 
-			if (cfg.getConnectionString().equals("") || cfg.getDatabase().equals(""))
+			if (cfg.getMongoConnectionString().equals("") || cfg.getMongoDatabase().equals(""))
 			{
 				Logger.log.fatal("You need to fill in all values of the mongoDatabase section of config.json to run Maunz");
 				exit = true;
@@ -76,11 +76,11 @@ public class Main
 			}
 
 			Logger.log.info("Starting Maunz-Discord " + version + "...");
-			Logger.log.info("Connecting to MongoDB (" + cfg.getConnectionString() + ")");
+			Logger.log.info("Connecting to MongoDB (" + cfg.getMongoConnectionString() + ")");
 
 			try
 			{
-				mongoDatabase = MongoClients.create(cfg.getConnectionString()).getDatabase(cfg.getDatabase());
+				mongoDatabase = MongoClients.create(cfg.getMongoConnectionString()).getDatabase(cfg.getMongoDatabase());
 			}
 			catch (Exception e)
 			{
