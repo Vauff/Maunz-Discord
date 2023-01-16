@@ -1,15 +1,20 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -17,6 +22,7 @@ import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -34,9 +40,6 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 	@Override
 	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
 	{
-		if (accessToken.equals("") || Instant.now().isAfter(accessTokenExpires))
-			refreshAccessToken();
-
 		String subreddit = event.getInteraction().getCommandInteraction().get().getOption("subreddit").get().getValue().get().asString();
 
 		if (subreddit.startsWith("/r/"))
@@ -44,28 +47,68 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 		else if (subreddit.startsWith("r/"))
 			subreddit = subreddit.substring(2);
 
-		JSONObject subredditAbout = getSubredditAbout(subreddit);
+		JSONObject about = getSubredditAbout(subreddit);
 
-		if (accessToken.equals("") || subredditAbout.isEmpty())
+		if (about.has("error"))
+		{
+			switch (about.getString("reason"))
+			{
+				case "banned" -> Util.editReply(event, "**r/" + subreddit + "** is banned!");
+				case "private" -> Util.editReply(event, "**r/" + subreddit + "** is private!");
+				case "gold_only" -> Util.editReply(event, "**r/" + subreddit + "** is private to Reddit Premium members only!");
+				default -> Util.editReply(event, "There was an error connecting to the Reddit API, please try again later");
+			}
+
+			return;
+		}
+
+		if (about.isEmpty() || !about.getString("kind").equals("t5"))
 		{
 			Util.editReply(event, "There was an error connecting to the Reddit API, please try again later");
 			return;
 		}
 
-		Util.editReply(event, subredditAbout.getString("display_name_prefixed") + " - " + subredditAbout.getString("title"));
+		if (about.getString("kind").equals("Listing"))
+		{
+			Util.editReply(event, "**r/" + subreddit + "** does not exist!");
+			return;
+		}
 
-		/*Document reddit = Jsoup.connect("https://old.reddit.com/r/" + url).ignoreHttpErrors(true).get();
+		JSONObject data = about.getJSONObject("data");
 
-		if (reddit.title().contains(": page not found") || reddit.title().equals("search results"))
-			Util.editReply(event, "That subreddit doesn't exist!");
-		else if (reddit.title().contains(": banned"))
-			Util.editReply(event, "That subreddit is banned!");
-		else
-			Util.editReply(event, "https://reddit.com/r/" + url);*/
+		if (data.getBoolean("over18") && channel.getType().equals(Channel.Type.GUILD_TEXT) && !((TextChannel) channel).isNsfw())
+		{
+			Util.editReply(event, "You cannot view NSFW subreddits in a non-NSFW channel");
+			return;
+		}
+
+		String headerImg = "";
+
+		// Dumb workaround for Reddit RANDOMLY returning null header_img, even though it will return an empty string other times (for the same subreddits even!)
+		if (!data.isNull("header_img"))
+			headerImg = data.getString("header_img");
+
+		String imgUrl = data.getString("icon_img").equals("") ? headerImg : data.getString("icon_img");
+
+		EmbedCreateSpec embed = EmbedCreateSpec.builder()
+			.color(Util.averageColorFromURL(imgUrl, true))
+			.thumbnail(imgUrl)
+			.title(data.getString("display_name_prefixed") + " - " + data.getString("title"))
+			.url("https://reddit.com" + data.getString("url"))
+			.description(data.getString("public_description"))
+			.footer("Reddit", "https://i.imgur.com/tHtZmQA.png")
+			.addField("Subscribers", String.valueOf(data.getInt("subscribers")), true)
+			.addField("Users Online", String.valueOf(data.getInt("accounts_active")), true)
+			.build();
+
+		Util.editReply(event, "", embed);
 	}
 
 	private JSONObject getSubredditAbout(String subreddit)
 	{
+		if (accessToken.equals("") || Instant.now().isAfter(accessTokenExpires))
+			refreshAccessToken();
+
 		if (accessToken.equals(""))
 			return new JSONObject();
 
@@ -79,47 +122,63 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 			connection.setRequestProperty("Authorization", "Bearer " + accessToken);
 			connection.connect();
 
-			if (connection.getResponseCode() != 200)
-				return new JSONObject();
-
 			String jsonString = "";
-			Scanner scanner = new Scanner(connection.getInputStream());
+			Scanner scanner;
+
+			if (connection.getResponseCode() == 200)
+				scanner = new Scanner(connection.getInputStream());
+			else
+				scanner = new Scanner(connection.getErrorStream());
 
 			while (scanner.hasNext())
 				jsonString += scanner.nextLine();
 
 			scanner.close();
-			return new JSONObject(jsonString).getJSONObject("data");
+
+			return new JSONObject(jsonString);
+		}
+		catch (JSONException e)
+		{
+			return new JSONObject();
 		}
 		catch (IOException e)
 		{
+			Logger.log.error("", e);
 			return new JSONObject();
 		}
 	}
 
-	private static void refreshAccessToken() throws Exception
+	private static void refreshAccessToken()
 	{
-		HttpClient client = HttpClient.newBuilder().authenticator(new Authenticator()
+		try
 		{
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication()
+			HttpClient client = HttpClient.newBuilder().authenticator(new Authenticator()
 			{
-				return new PasswordAuthentication(Main.cfg.getRedditId(), Main.cfg.getRedditSecret().toCharArray());
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication()
+				{
+					return new PasswordAuthentication(Main.cfg.getRedditId(), Main.cfg.getRedditSecret().toCharArray());
+				}
+			}).build();
+
+			HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials")).uri(new URI("https://www.reddit.com/api/v1/access_token")).build();
+			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+
+			if (response.statusCode() == 200)
+			{
+				JSONObject jsonResponse = new JSONObject(response.body());
+
+				accessTokenExpires = Instant.now().plus(jsonResponse.getLong("expires_in"), ChronoUnit.SECONDS);
+				accessToken = jsonResponse.getString("access_token");
 			}
-		}).build();
-
-		HttpRequest request = HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString("grant_type=client_credentials")).uri(new URI("https://www.reddit.com/api/v1/access_token")).build();
-		HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-
-		if (response.statusCode() == 200)
-		{
-			JSONObject jsonResponse = new JSONObject(response.body());
-
-			accessTokenExpires = Instant.now().plus(jsonResponse.getLong("expires_in"), ChronoUnit.SECONDS);
-			accessToken = jsonResponse.getString("access_token");
+			else
+			{
+				accessToken = "";
+			}
 		}
-		else
+		catch (IOException | InterruptedException | URISyntaxException e)
 		{
+			Logger.log.error("", e);
 			accessToken = "";
 		}
 	}
@@ -129,7 +188,7 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		return ApplicationCommandRequest.builder()
 			.name(getName())
-			.description("Links you to the subreddit name that you provide")
+			.description("Provides information about a subreddit")
 			.addOption(ApplicationCommandOptionData.builder()
 				.name("subreddit")
 				.description("The subreddit name")
