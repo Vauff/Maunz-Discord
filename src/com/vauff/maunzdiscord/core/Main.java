@@ -36,7 +36,7 @@ public class Main
 {
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
-	public static String version = "r52";
+	public static String version = "r53";
 	public static Config cfg;
 
 	/**

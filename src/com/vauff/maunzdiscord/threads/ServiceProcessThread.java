@@ -99,9 +99,11 @@ public class ServiceProcessThread implements Runnable
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(Util.averageColorFromURL(url, true))
 					.timestamp(Instant.ofEpochMilli(timestamp))
-					.thumbnail(url)
 					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
 					.build();
+
+				if (!url.equals(""))
+					embed = embed.withThumbnail(url);
 
 				EmbedCreateSpec titledEmbed = embed.withTitle(name);
 
