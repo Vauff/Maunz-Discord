@@ -24,12 +24,12 @@ public class ServerTimer
 	/**
 	 * Holds the boolean status of whether each server/service currently has a thread running or not
 	 */
-	public static HashMap<String, Boolean> threadRunning = new HashMap<>();
+	public static HashMap<ObjectId, Boolean> threadRunning = new HashMap<>();
 
 	/**
 	 * Holds lists of which ServerProcessThreads are waiting for which server requests to finish
 	 */
-	public static HashMap<String, List<ServiceProcessThread>> waitingProcessThreads = new HashMap<>();
+	public static HashMap<ObjectId, List<ServiceProcessThread>> waitingProcessThreads = new HashMap<>();
 
 	/**
 	 * Iterate the server tracking storage and start threads for each server and service
@@ -48,8 +48,7 @@ public class ServerTimer
 				for (Document doc : serviceDocs)
 				{
 					ObjectId id = doc.getObjectId("_id");
-					String idString = id.toString();
-					String serverID = doc.getObjectId("serverID").toString();
+					ObjectId serverID = doc.getObjectId("serverID");
 					Guild guild;
 
 					try
@@ -62,13 +61,13 @@ public class ServerTimer
 						continue;
 					}
 
-					threadRunning.putIfAbsent(idString, false);
+					threadRunning.putIfAbsent(id, false);
 
-					if (!threadRunning.get(idString))
+					if (!threadRunning.get(id))
 					{
 						ServiceProcessThread thread = new ServiceProcessThread(id, guild);
 
-						threadRunning.put(idString, true);
+						threadRunning.put(id, true);
 
 						waitingProcessThreads.putIfAbsent(serverID, new ArrayList<>());
 						waitingProcessThreads.get(serverID).add(thread);
@@ -79,26 +78,25 @@ public class ServerTimer
 				 * Holds a list of which servers already have a thread started in the current timer run
 				 * This is different from {@link threadRunning}, because that can be asynchronously set to false before the timer stops running
 				 */
-				List<String> startedThreads = new ArrayList<>();
+				List<ObjectId> startedThreads = new ArrayList<>();
 
 				for (Document doc : serverDocs)
 				{
 					ObjectId id = doc.getObjectId("_id");
-					String idString = id.toString();
 					String ipPort = doc.getString("ip") + ":" + doc.getInteger("port");
 
-					if (!waitingProcessThreads.containsKey(idString) || waitingProcessThreads.get(idString).size() == 0)
+					if (!waitingProcessThreads.containsKey(id) || waitingProcessThreads.get(id).size() == 0)
 						continue;
 
-					threadRunning.putIfAbsent(idString, false);
+					threadRunning.putIfAbsent(id, false);
 
-					if (!threadRunning.get(idString) && !startedThreads.contains(idString))
+					if (!threadRunning.get(id) && !startedThreads.contains(id))
 					{
 						ServerRequestThread thread = new ServerRequestThread(id, ipPort);
 
-						threadRunning.put(idString, true);
+						threadRunning.put(id, true);
 						thread.start();
-						startedThreads.add(idString);
+						startedThreads.add(id);
 
 						// TODO: replace this awful workaround with a new scheduler
 						// only start ~20 threads per second

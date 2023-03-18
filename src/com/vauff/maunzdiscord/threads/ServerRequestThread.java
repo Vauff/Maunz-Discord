@@ -18,10 +18,14 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class ServerRequestThread implements Runnable
 {
-	private GameServer server;
+	/**
+	 * Cached GameServer objects to avoid constant construction, because it's *very* expensive due to an unavoidable bottleneck in InetAddress.getByName
+	 */
+	private static HashMap<String, GameServer> servers = new HashMap<>();
 	private Thread thread;
 	private ObjectId id;
 	private String ipPort;
+	private GameServer server;
 
 	public ServerRequestThread(ObjectId id, String ipPort)
 	{
@@ -44,6 +48,7 @@ public class ServerRequestThread implements Runnable
 		{
 			Document doc = Main.mongoDatabase.getCollection("servers").find(eq("_id", id)).first();
 			int attempts = 0;
+			boolean validServer = false;
 			boolean serverInfoSuccess = false;
 			boolean retriedForCsgoPlayerCount = false;
 
@@ -51,9 +56,20 @@ public class ServerRequestThread implements Runnable
 			{
 				try
 				{
-					if (!serverInfoSuccess)
+					if (servers.containsKey(ipPort))
+					{
+						this.server = servers.get(ipPort);
+					}
+					else
 					{
 						server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
+						servers.put(ipPort, server);
+					}
+
+					validServer = true;
+
+					if (!serverInfoSuccess)
+					{
 						server.updateServerInfo();
 						serverInfoSuccess = true;
 					}
@@ -76,7 +92,7 @@ public class ServerRequestThread implements Runnable
 				{
 					attempts++;
 
-					if (attempts >= 5 || (!serverInfoSuccess && doc.getInteger("downtimeTimer") >= doc.getInteger("failedConnectionsThreshold")))
+					if (!validServer || attempts >= 5 || (!serverInfoSuccess && doc.getInteger("downtimeTimer") >= doc.getInteger("failedConnectionsThreshold")))
 					{
 						if (!serverInfoSuccess)
 						{
@@ -199,16 +215,13 @@ public class ServerRequestThread implements Runnable
 		}
 		finally
 		{
-			ServerTimer.threadRunning.put(id.toString(), false);
+			ServerTimer.threadRunning.put(id, false);
 		}
 	}
 
 	private void cleanup(boolean success)
 	{
-		if (!Objects.isNull(server))
-			server.disconnect();
-
-		List<ServiceProcessThread> processThreads = new ArrayList<>(ServerTimer.waitingProcessThreads.get(id.toString()));
+		List<ServiceProcessThread> processThreads = new ArrayList<>(ServerTimer.waitingProcessThreads.get(id));
 
 		if (success)
 		{
@@ -231,9 +244,9 @@ public class ServerRequestThread implements Runnable
 		else
 		{
 			for (ServiceProcessThread processThread : processThreads)
-				ServerTimer.threadRunning.put(processThread.id.toString(), false);
+				ServerTimer.threadRunning.put(processThread.id, false);
 		}
 
-		ServerTimer.waitingProcessThreads.get(id.toString()).clear();
+		ServerTimer.waitingProcessThreads.get(id).clear();
 	}
 }

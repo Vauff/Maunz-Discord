@@ -150,7 +150,7 @@ public class ServiceProcessThread implements Runnable
 		}
 		finally
 		{
-			ServerTimer.threadRunning.put(id.toString(), false);
+			ServerTimer.threadRunning.put(id, false);
 		}
 	}
 
