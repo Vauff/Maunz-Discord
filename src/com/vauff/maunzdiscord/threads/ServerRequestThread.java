@@ -58,7 +58,7 @@ public class ServerRequestThread implements Runnable
 				{
 					if (servers.containsKey(ipPort))
 					{
-						this.server = servers.get(ipPort);
+						server = servers.get(ipPort);
 					}
 					else
 					{
