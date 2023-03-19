@@ -4,6 +4,7 @@ import com.mongodb.client.MongoCollection;
 import com.vauff.maunzdiscord.threads.ButtonInteractionThread;
 import com.vauff.maunzdiscord.threads.ChatInputInteractionThread;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import org.bson.Document;
@@ -29,6 +30,20 @@ public class MainListener
 			{
 				col.updateOne(eq("guildId", guildId), new Document("$set", new Document("lastGuildName", guildName)));
 			}
+
+			Main.guildCache.put(event.getGuild().getId(), event.getGuild());
+		}
+		catch (Exception e)
+		{
+			Logger.log.error("", e);
+		}
+	}
+
+	public static void onGuildDelete(GuildDeleteEvent event)
+	{
+		try
+		{
+			Main.guildCache.remove(event.getGuildId());
 		}
 		catch (Exception e)
 		{

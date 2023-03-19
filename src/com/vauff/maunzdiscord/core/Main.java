@@ -7,6 +7,7 @@ import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.timers.MapImageTimer;
 import com.vauff.maunzdiscord.timers.ServerTimer;
 import com.vauff.maunzdiscord.timers.StatsTimer;
+import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
@@ -15,6 +16,7 @@ import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageUpdateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.gateway.GatewayReactorResources;
@@ -27,6 +29,7 @@ import reactor.netty.resources.ConnectionProvider;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -48,6 +51,11 @@ public class Main
 	 * List that holds all commands
 	 */
 	public static LinkedList<AbstractCommand<ChatInputInteractionEvent>> commands = new LinkedList<>();
+
+	/**
+	 * Cached Guild objects, to avoid constant getGuildById calls to Discord API
+	 */
+	public static HashMap<Snowflake, Guild> guildCache = new HashMap<>();
 
 	public static void main(String[] args)
 	{
@@ -114,6 +122,7 @@ public class Main
 			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> Logger.onGuildDelete(event))).subscribe();
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onChatInputInteraction(event))).subscribe();
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onButtonInteraction(event))).subscribe();
+			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> MainListener.onGuildDelete(event))).subscribe();
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapImageTimer.timer, 0, 1, TimeUnit.HOURS);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 5, TimeUnit.MINUTES);

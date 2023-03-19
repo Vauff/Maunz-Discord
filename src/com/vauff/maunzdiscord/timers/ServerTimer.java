@@ -9,7 +9,6 @@ import discord4j.core.object.entity.Guild;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,17 +48,13 @@ public class ServerTimer
 				{
 					ObjectId id = doc.getObjectId("_id");
 					ObjectId serverID = doc.getObjectId("serverID");
+					Snowflake guildId = Snowflake.of(doc.getLong("guildID"));
 					Guild guild;
 
-					try
-					{
-						guild = Main.gateway.getGuildById(Snowflake.of(doc.getLong("guildID"))).block(Duration.ofSeconds(10));
-					}
-					catch (Exception e)
-					{
-						// likely bot is no longer in the guild, this will sometimes also error due to general API/network issues, but we can just safely skip over a service in that instance
+					if (Main.guildCache.containsKey(guildId))
+						guild = Main.guildCache.get(guildId);
+					else
 						continue;
-					}
 
 					threadRunning.putIfAbsent(id, false);
 
