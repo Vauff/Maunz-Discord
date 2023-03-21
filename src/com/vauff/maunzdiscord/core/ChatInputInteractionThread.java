@@ -1,8 +1,6 @@
-package com.vauff.maunzdiscord.threads;
+package com.vauff.maunzdiscord.core;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
-import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;

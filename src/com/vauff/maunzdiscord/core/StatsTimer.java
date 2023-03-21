@@ -1,7 +1,5 @@
-package com.vauff.maunzdiscord.timers;
+package com.vauff.maunzdiscord.core;
 
-import com.vauff.maunzdiscord.core.Logger;
-import com.vauff.maunzdiscord.core.Main;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
 

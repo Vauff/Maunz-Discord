@@ -1,7 +1,6 @@
-package com.vauff.maunzdiscord.threads;
+package com.vauff.maunzdiscord.core;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
-import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.Await;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;

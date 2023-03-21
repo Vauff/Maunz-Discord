@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
-import com.vauff.maunzdiscord.timers.MapImageTimer;
+import com.vauff.maunzdiscord.servertracking.MapImageTimer;
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.component.LayoutComponent;
 import discord4j.core.object.entity.Guild;

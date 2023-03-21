@@ -1,4 +1,4 @@
-package com.vauff.maunzdiscord.timers;
+package com.vauff.maunzdiscord.servertracking;
 
 import com.vauff.maunzdiscord.core.Logger;
 import org.json.JSONException;

@@ -1,10 +1,9 @@
-package com.vauff.maunzdiscord.threads;
+package com.vauff.maunzdiscord.servertracking;
 
 import com.github.koraktor.steamcondenser.servers.GameServer;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.timers.ServerTimer;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 

@@ -1,8 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
 import com.mongodb.client.MongoCollection;
-import com.vauff.maunzdiscord.threads.ButtonInteractionThread;
-import com.vauff.maunzdiscord.threads.ChatInputInteractionThread;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;

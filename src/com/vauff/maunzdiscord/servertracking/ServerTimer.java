@@ -1,9 +1,7 @@
-package com.vauff.maunzdiscord.timers;
+package com.vauff.maunzdiscord.servertracking;
 
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
-import com.vauff.maunzdiscord.threads.ServerRequestThread;
-import com.vauff.maunzdiscord.threads.ServiceProcessThread;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
 import org.bson.Document;
