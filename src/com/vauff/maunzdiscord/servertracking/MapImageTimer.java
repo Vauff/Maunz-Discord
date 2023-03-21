@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.servertracking;
 
 import com.vauff.maunzdiscord.core.Logger;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,23 +18,12 @@ import java.util.Scanner;
 public class MapImageTimer
 {
 	/**
-	 * Holds the latest image lists pulled from vauff.com/mapimgs
-	 */
-	public static HashMap<Integer, ArrayList<String>> mapImages = new HashMap<>();
-
-	/**
-	 * Cached lookup results from Util#getMapImageURL
-	 */
-	public static HashMap<Integer, HashMap<String, String>> mapImageLookupCache = new HashMap<>();
-
-	/**
 	 * Updates the mapImages hashmap with the latest available map images from vauff.com/mapimgs
 	 */
 	public static Runnable timer = () ->
 	{
 		try
 		{
-			int attempts = 0;
 			JSONObject response;
 
 			while (true)
@@ -62,31 +52,30 @@ public class MapImageTimer
 				}
 				catch (IOException | JSONException e)
 				{
-					attempts++;
-
-					if (attempts >= 5)
-					{
-						Logger.log.error("Failed to connect to the map images API, automatically retrying in 1 hour");
-						return;
-					}
-					else
-					{
-						Thread.sleep(1000);
-					}
+					Logger.log.error("Failed to connect to the map images API, automatically retrying in 1 minute");
+					Thread.sleep(60000);
 				}
 			}
 
+			if (response.getLong("lastUpdated") <= MapImages.lastUpdated)
+				return;
+
 			for (String key : response.keySet())
 			{
+				if (!NumberUtils.isCreatable(key))
+					continue;
+
 				ArrayList<String> maps = new ArrayList<>();
 				int appId = Integer.parseInt(key);
 
 				for (int i = 0; i < response.getJSONArray(key).length(); i++)
 					maps.add(response.getJSONArray(key).getString(i));
 
-				mapImages.put(appId, maps);
-				mapImageLookupCache.put(appId, new HashMap<>());
+				MapImages.mapImages.put(appId, maps);
+				MapImages.mapImageLookupCache.put(appId, new HashMap<>());
 			}
+
+			MapImages.lastUpdated = response.getLong("lastUpdated");
 		}
 		catch (Exception e)
 		{

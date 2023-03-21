@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.servertracking.MapImages;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -124,7 +125,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				return;
 			}
 
-			String url = Util.getMapImageURL(doc.getString("lastMap"), serverDoc.getInteger("appId"));
+			String url = MapImages.getMapImageURL(doc.getString("lastMap"), serverDoc.getInteger("appId"));
 
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
 				.color(Util.averageColorFromURL(url, true))
@@ -197,7 +198,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 
 			if (!formattedMap.equals(""))
 			{
-				String url = Util.getMapImageURL(formattedMap, serverDoc.getInteger("appId"));
+				String url = MapImages.getMapImageURL(formattedMap, serverDoc.getInteger("appId"));
 				String lastPlayed = "";
 				String firstPlayed = "";
 
