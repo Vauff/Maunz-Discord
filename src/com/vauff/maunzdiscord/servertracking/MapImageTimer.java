@@ -18,7 +18,7 @@ import java.util.Scanner;
 public class MapImageTimer
 {
 	/**
-	 * Updates the mapImages hashmap with the latest available map images from vauff.com/mapimgs
+	 * Updates the mapImages hashmap with the latest available map images from vauff.com and clears related caches
 	 */
 	public static Runnable timer = () ->
 	{

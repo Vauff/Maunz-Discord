@@ -43,13 +43,13 @@ public class MapImages
 		// Force lower case since GameTracker does, and for an accurate levenshtein distance
 		String mapLower = map.toLowerCase();
 
-		if (mapImageLookupCache.containsKey(appId))
-		{
-			HashMap<String, String> gameCache = mapImageLookupCache.get(appId);
+		if (!mapImageLookupCache.containsKey(appId))
+			mapImageLookupCache.put(appId, new HashMap<>());
 
-			if (gameCache.containsKey(mapLower))
-				return gameCache.get(mapLower);
-		}
+		HashMap<String, String> gameCache = mapImageLookupCache.get(appId);
+
+		if (gameCache.containsKey(mapLower))
+			return gameCache.get(mapLower);
 
 		String url = getVauffMapImageURL(mapLower, appId);
 		String gtName = appIdToGameTrackerName(appId);
@@ -58,8 +58,7 @@ public class MapImages
 		if (url.equals("") && !gtName.equals(""))
 			url = "https://image.gametracker.com/images/maps/160x120/" + gtName + "/" + mapLower.replace(" ", "%20") + ".jpg";
 
-		if (mapImageLookupCache.containsKey(appId))
-			mapImageLookupCache.get(appId).put(mapLower, url);
+		mapImageLookupCache.get(appId).put(mapLower, url);
 
 		return url;
 	}
