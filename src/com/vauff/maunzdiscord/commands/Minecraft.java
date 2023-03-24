@@ -72,7 +72,7 @@ public class Minecraft extends AbstractCommand<ChatInputInteractionEvent>
 				String headURL = "https://minotar.net/helm/" + status[1] + "/100.png";
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
-					.color(Util.averageColorFromURL(headURL, true))
+					.color(Util.averageColourFromURL(headURL, true))
 					.thumbnail(headURL)
 					.footer("Powered by axis.iaero.me", "https://i.imgur.com/4o6K42Z.png")
 					.addField("Name", status[1], true)

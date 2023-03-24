@@ -166,6 +166,9 @@ public class ServerRequestThread implements Runnable
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("map", map)));
 				timestamp = System.currentTimeMillis();
 
+				// Precache the map image colour for service process threads, because multiple threads can run getMapImageColour at the same time, wasting resources if not cached yet
+				MapImages.getMapImageColour(MapImages.getMapImageURL(map, appId));
+
 				boolean mapFound = false;
 
 				for (int i = 0; i < doc.getList("mapDatabase", Document.class).size(); i++)

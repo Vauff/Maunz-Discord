@@ -128,7 +128,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 			String url = MapImages.getMapImageURL(doc.getString("lastMap"), serverDoc.getInteger("appId"));
 
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
-				.color(Util.averageColorFromURL(url, true))
+				.color(MapImages.getMapImageColour(url))
 				.timestamp(Instant.ofEpochMilli(serverDoc.getLong("timestamp")))
 				.description("Currently Playing: **" + doc.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + serverDoc.getString("playerCount") + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
 				.build();
@@ -223,7 +223,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				}
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
-					.color(Util.averageColorFromURL(url, true))
+					.color(MapImages.getMapImageColour(url))
 					.description("**" + formattedMap + "**")
 					.addField("Last Played", lastPlayed, false)
 					.addField("First Played", firstPlayed, false)

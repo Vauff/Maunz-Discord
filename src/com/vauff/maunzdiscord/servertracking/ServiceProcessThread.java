@@ -96,7 +96,7 @@ public class ServiceProcessThread implements Runnable
 				String url = MapImages.getMapImageURL(map, serverDoc.getInteger("appId"));
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
-					.color(Util.averageColorFromURL(url, true))
+					.color(MapImages.getMapImageColour(url))
 					.timestamp(Instant.ofEpochMilli(timestamp))
 					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
 					.build();

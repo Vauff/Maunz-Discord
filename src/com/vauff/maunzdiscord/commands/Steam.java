@@ -79,7 +79,7 @@ public class Steam extends AbstractCommand<ChatInputInteractionEvent>
 					lastLogoff = "N/A";
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
-					.color(Util.averageColorFromURL(avatarURL, true))
+					.color(Util.averageColourFromURL(avatarURL, true))
 					.thumbnail(avatarURL)
 					.footer("Powered by steamid.xyz", "https://i.imgur.com/GuXJIeX.png")
 					.title(nickname)

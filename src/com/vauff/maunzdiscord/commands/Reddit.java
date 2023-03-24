@@ -91,7 +91,7 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 		String imgUrl = data.getString("icon_img").equals("") ? headerImg : data.getString("icon_img");
 
 		EmbedCreateSpec embed = EmbedCreateSpec.builder()
-			.color(Util.averageColorFromURL(imgUrl, true))
+			.color(Util.averageColourFromURL(imgUrl, true))
 			.thumbnail(imgUrl)
 			.title(data.getString("display_name_prefixed") + " - " + data.getString("title"))
 			.url("https://reddit.com" + data.getString("url"))

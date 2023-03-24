@@ -24,6 +24,8 @@ public class MapImageTimer
 	{
 		try
 		{
+			Logger.log.debug("Starting a map image timer run...");
+
 			JSONObject response;
 
 			while (true)
@@ -60,6 +62,8 @@ public class MapImageTimer
 			if (response.getLong("lastUpdated") <= MapImages.lastUpdated)
 				return;
 
+			Logger.log.debug("Map image API updated, rebuilding image list and clearing caches");
+
 			for (String key : response.keySet())
 			{
 				if (!NumberUtils.isCreatable(key))
@@ -73,6 +77,7 @@ public class MapImageTimer
 
 				MapImages.mapImages.put(appId, maps);
 				MapImages.mapImageLookupCache.put(appId, new HashMap<>());
+				MapImages.mapImageColourCache.clear();
 			}
 
 			MapImages.lastUpdated = response.getLong("lastUpdated");

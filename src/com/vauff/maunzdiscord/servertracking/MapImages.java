@@ -1,5 +1,7 @@
 package com.vauff.maunzdiscord.servertracking;
 
+import com.vauff.maunzdiscord.core.Util;
+import discord4j.rest.util.Color;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
@@ -9,7 +11,7 @@ import java.util.HashMap;
 public class MapImages
 {
 	/**
-	 * Holds the latest image lists pulled from vauff.com/mapimgs
+	 * Holds the latest image lists pulled from vauff.com
 	 */
 	public static HashMap<Integer, ArrayList<String>> mapImages = new HashMap<>();
 
@@ -19,13 +21,18 @@ public class MapImages
 	public static HashMap<Integer, HashMap<String, String>> mapImageLookupCache = new HashMap<>();
 
 	/**
+	 * Cached colour results from Util#averageColourFromURL
+	 */
+	public static HashMap<String, Color> mapImageColourCache = new HashMap<>();
+
+	/**
 	 * Unix timestamp of when the currently stored map images API data was last updated
 	 */
 	public static long lastUpdated = 0L;
 
 	/**
 	 * Finds the best map image URL for a map, if possible
-	 * Can be a vauff.com/mapimgs or images.gametracker.com image
+	 * Can be a vauff.com or gametracker.com image
 	 *
 	 * @param map   The map name
 	 * @param appId App ID of the game
@@ -58,9 +65,27 @@ public class MapImages
 	}
 
 	/**
-	 * Finds an image URL for a map from vauff.com/mapimgs, if possible
+	 * Gets the average colour of a map image URL, making appropriate use of the cache
 	 *
-	 * @param map   The map name
+	 * @param url The URL of the map image
+	 * @return The average colour of the map image
+	 * @throws Exception
+	 */
+	public static Color getMapImageColour(String url) throws Exception
+	{
+		if (mapImageColourCache.containsKey(url))
+			return mapImageColourCache.get(url);
+
+		Color colour = Util.averageColourFromURL(url, true);
+
+		mapImageColourCache.put(url, colour);
+		return colour;
+	}
+
+	/**
+	 * Finds an image URL for a mapname from vauff.com, if possible
+	 *
+	 * @param map   The lower case map name
 	 * @param appId App ID of the game
 	 * @return Image URL for the map, or "" on failure
 	 */

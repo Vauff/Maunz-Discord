@@ -228,13 +228,13 @@ public class Util
 	}
 
 	/**
-	 * Gets the average color from the picture found at a URL
+	 * Gets the average colour from the picture found at a URL
 	 *
 	 * @param url              The URL leading to the picture
 	 * @param handleExceptions Whether to return (0, 154, 255) when an exception happens
-	 * @return The average color of the picture, null or (0, 154, 255) on error
+	 * @return The average colour of the picture, null or (0, 154, 255) on error
 	 */
-	public static Color averageColorFromURL(String url, boolean handleExceptions) throws Exception
+	public static Color averageColourFromURL(String url, boolean handleExceptions) throws Exception
 	{
 		BufferedImage image;
 

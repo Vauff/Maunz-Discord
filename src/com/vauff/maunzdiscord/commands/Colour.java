@@ -46,13 +46,13 @@ public class Colour extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (!url.equals(""))
 		{
-			Color color;
+			Color colour;
 
 			try
 			{
-				color = Util.averageColorFromURL(url, false);
+				colour = Util.averageColourFromURL(url, false);
 
-				if (color == null)
+				if (colour == null)
 				{
 					Util.editReply(event, "Could not get an image from the provided attachment or link!");
 					return;
@@ -65,11 +65,11 @@ public class Colour extends AbstractCommand<ChatInputInteractionEvent>
 			}
 
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
-				.color(color)
+				.color(colour)
 				.thumbnail(url)
 				.title("Average Image Colour")
-				.addField("RGB", color.getRed() + ", " + color.getGreen() + ", " + color.getBlue(), true)
-				.addField("HTML/Hex", String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue()), true)
+				.addField("RGB", colour.getRed() + ", " + colour.getGreen() + ", " + colour.getBlue(), true)
+				.addField("HTML/Hex", String.format("#%02X%02X%02X", colour.getRed(), colour.getGreen(), colour.getBlue()), true)
 				.build();
 
 			Util.editReply(event, "", embed);
