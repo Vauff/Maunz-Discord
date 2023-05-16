@@ -55,17 +55,20 @@ public class ServerRequestThread implements Runnable
 			{
 				try
 				{
-					if (servers.containsKey(ipPort))
+					if (!validServer)
 					{
-						server = servers.get(ipPort);
-					}
-					else
-					{
-						server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
-						servers.put(ipPort, server);
-					}
+						if (servers.containsKey(ipPort))
+						{
+							server = servers.get(ipPort);
+						}
+						else
+						{
+							server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
+							servers.put(ipPort, server);
+						}
 
-					validServer = true;
+						validServer = true;
+					}
 
 					if (!serverInfoSuccess)
 					{
