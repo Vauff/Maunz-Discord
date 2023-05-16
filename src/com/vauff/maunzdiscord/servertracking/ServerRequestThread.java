@@ -79,6 +79,7 @@ public class ServerRequestThread implements Runnable
 					if (doc.getInteger("appId") == 730 && server.getServerInfo().containsKey("numberOfPlayers") && !Objects.isNull(server.getServerInfo().get("numberOfPlayers")) && ((Byte) server.getServerInfo().get("numberOfPlayers")).intValue() == 0 && !retriedForCsgoPlayerCount)
 					{
 						Thread.sleep(5000);
+						serverInfoSuccess = false;
 						retriedForCsgoPlayerCount = true;
 						continue;
 					}
