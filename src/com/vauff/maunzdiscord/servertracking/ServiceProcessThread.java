@@ -98,7 +98,7 @@ public class ServiceProcessThread implements Runnable
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(MapImages.getMapImageColour(url))
 					.timestamp(Instant.ofEpochMilli(timestamp))
-					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **steam://connect/" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
+					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **http://vauff.com/?ip=" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
 					.build();
 
 				if (!url.equals(""))
