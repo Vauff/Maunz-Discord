@@ -38,9 +38,9 @@ public class Steam extends AbstractCommand<ChatInputInteractionEvent>
 				String creationDate = "N/A";
 				String avatarURL = siteHtml.split("<img class=\"avatar\" src=\"")[1].split("\"")[0];
 				String nickname = siteHtml.split("Nick Name <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
-				String lastLogoff = siteHtml.split("<i>Last Logoff:</i> ")[1].split("<br>")[0];
-				String status = siteHtml.split("<i>Status:</i> ")[1].split("<br>")[0];
-				String visibility = siteHtml.split("<i>Visibility:</i> ")[1].split("<br>")[0];
+				String lastLogoff = siteHtml.split("<i>Last Logoff:</i>")[1].split("<br>")[0].substring(1).trim();
+				String status = siteHtml.split("<i>Status:</i>")[1].split("<br>")[0].substring(1).trim();
+				String visibility = siteHtml.split("<i>Visibility:</i>")[1].split("<br>")[0].substring(1).trim();
 				String bans = "";
 				String steamID = siteHtml.split("Steam ID <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
 				String steamID3 = siteHtml.split("Steam ID3 <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
@@ -48,16 +48,16 @@ public class Steam extends AbstractCommand<ChatInputInteractionEvent>
 				String steam64ID = siteHtml.split("Steam64 ID <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
 				String link = siteHtml.split("Profile URL <input type=\"text\" onclick=\"this.select\\(\\);\" value=\"")[1].split("\"")[0];
 
-				if (!siteHtml.split("<i>Real Name:</i> ")[1].split("<br>")[0].equalsIgnoreCase(""))
-					realName = siteHtml.split("<i>Real Name:</i> ")[1].split("<br>")[0];
+				if (!siteHtml.split("<i>Real Name:</i>")[1].split("<br>")[0].substring(1).trim().equalsIgnoreCase(""))
+					realName = siteHtml.split("<i>Real Name:</i>")[1].split("<br>")[0].substring(1).trim();
 
-				if (!siteHtml.split("<i>Country:</i> ")[1].split("<br>")[0].equalsIgnoreCase(""))
-					country = ":flag_" + siteHtml.split("<i>Country:</i> ")[1].split("<br>")[0].toLowerCase() + ":";
+				if (!siteHtml.split("<i>Country:</i>")[1].split("<br>")[0].substring(1).trim().equalsIgnoreCase(""))
+					country = ":flag_" + siteHtml.split("<i>Country:</i>")[1].split("<br>")[0].substring(1).trim().toLowerCase() + ":";
 
-				if (!siteHtml.split("<i>Account Created:</i> ")[1].split("<br>")[0].equalsIgnoreCase(""))
-					creationDate = siteHtml.split("<i>Account Created:</i> ")[1].split("<br>")[0];
+				if (!siteHtml.split("<i>Account Created:</i>")[1].split("<br>")[0].substring(1).trim().equalsIgnoreCase(""))
+					creationDate = siteHtml.split("<i>Account Created:</i>")[1].split("<br>")[0].substring(1).trim();
 
-				if (visibility.equalsIgnoreCase("private"))
+				if (visibility.equalsIgnoreCase("private") || visibility.equalsIgnoreCase("friends only"))
 					status = "N/A";
 
 				if (siteHtml.contains("\">X VAC</em>"))
