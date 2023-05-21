@@ -18,9 +18,9 @@ import static com.mongodb.client.model.Filters.eq;
 public class ServerRequestThread implements Runnable
 {
 	/**
-	 * Cached GameServer objects to avoid constant construction, because it's *very* expensive due to an unavoidable bottleneck in InetAddress.getByName
+	 * Cached InetAddress objects, because it's *very* expensive to constantly run InetAddress.getByName
 	 */
-	private static HashMap<String, GameServer> servers = new HashMap<>();
+	private static HashMap<String, InetAddress> serverAddresses = new HashMap<>();
 	private Thread thread;
 	private ObjectId id;
 	private String ipPort;
@@ -47,7 +47,6 @@ public class ServerRequestThread implements Runnable
 		{
 			Document doc = Main.mongoDatabase.getCollection("servers").find(eq("_id", id)).first();
 			int attempts = 0;
-			boolean validServer = false;
 			boolean serverInfoSuccess = false;
 			boolean retriedForCsgoPlayerCount = false;
 
@@ -55,23 +54,21 @@ public class ServerRequestThread implements Runnable
 			{
 				try
 				{
-					if (!validServer)
+					if (!serverInfoSuccess)
 					{
-						if (servers.containsKey(ipPort))
+						InetAddress address;
+
+						if (serverAddresses.containsKey(ipPort))
 						{
-							server = servers.get(ipPort);
+							address = serverAddresses.get(ipPort);
 						}
 						else
 						{
-							server = new SourceServer(InetAddress.getByName(doc.getString("ip")), doc.getInteger("port"));
-							servers.put(ipPort, server);
+							address = InetAddress.getByName(doc.getString("ip"));
+							serverAddresses.put(ipPort, address);
 						}
 
-						validServer = true;
-					}
-
-					if (!serverInfoSuccess)
-					{
+						server = new SourceServer(address, doc.getInteger("port"));
 						server.updateServerInfo();
 						serverInfoSuccess = true;
 					}
@@ -95,7 +92,7 @@ public class ServerRequestThread implements Runnable
 				{
 					attempts++;
 
-					if (!validServer || attempts >= 5 || (!serverInfoSuccess && doc.getInteger("downtimeTimer") >= doc.getInteger("failedConnectionsThreshold")))
+					if (attempts >= 5 || (!serverInfoSuccess && doc.getInteger("downtimeTimer") >= doc.getInteger("failedConnectionsThreshold")))
 					{
 						if (!serverInfoSuccess)
 						{
