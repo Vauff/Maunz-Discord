@@ -13,8 +13,6 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.MessageUpdateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -118,8 +116,6 @@ public class Main
 			setupCommands();
 
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onChatInputInteraction(event))).subscribe();
-			gateway.on(MessageCreateEvent.class, event -> Mono.fromRunnable(() -> Logger.onMessageCreate(event))).subscribe();
-			gateway.on(MessageUpdateEvent.class, event -> Mono.fromRunnable(() -> Logger.onMessageUpdate(event))).subscribe();
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onButtonInteraction(event))).subscribe();
 			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> Logger.onGuildDelete(event))).subscribe();
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> MainListener.onChatInputInteraction(event))).subscribe();

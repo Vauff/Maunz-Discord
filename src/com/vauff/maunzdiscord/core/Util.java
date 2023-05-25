@@ -118,6 +118,7 @@ public class Util
 	public static void editReply(DeferrableInteractionEvent event, String message, Iterable<EmbedCreateSpec> embeds, Iterable<LayoutComponent> components)
 	{
 		event.editReply(message).withEmbedsOrNull(embeds).withComponentsOrNull(components).block();
+		Logger.logMessage(event.getInteraction().getChannel().block(), event.getReply().block().getId().asString(), message, embeds, components);
 	}
 
 	/**
@@ -181,7 +182,10 @@ public class Util
 			if (!Objects.isNull(embed))
 				msg = msg.withEmbeds(embed);
 
-			return msg.withAllowedMentions(AllowedMentions.suppressAll()).block();
+			Message sentMsg = msg.withAllowedMentions(AllowedMentions.suppressAll()).block();
+			Logger.logMessage(channel, sentMsg.getId().asString(), message, Arrays.asList(embed), null);
+
+			return sentMsg;
 		}
 		catch (ClientException e)
 		{

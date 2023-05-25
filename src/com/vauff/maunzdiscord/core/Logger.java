@@ -4,16 +4,14 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.event.domain.message.MessageUpdateEvent;
-import discord4j.core.object.Embed;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
-import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Message;
+import discord4j.core.object.component.LayoutComponent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
+import discord4j.core.spec.EmbedCreateSpec;
 
 import java.util.List;
 
@@ -48,93 +46,6 @@ public class Logger
 		{
 			Logger.log.error("", e);
 		}
-	}
-
-	public static void onMessageCreate(MessageCreateEvent event)
-	{
-		try
-		{
-			if (event.getMessage().getAuthor().isPresent() && !event.getMessage().getFlags().contains(Message.Flag.LOADING))
-				logMessage(event.getMessage());
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
-
-	public static void onMessageUpdate(MessageUpdateEvent event)
-	{
-		try
-		{
-			Message msg;
-
-			try
-			{
-				msg = event.getMessage().block();
-			}
-			catch (Exception e)
-			{
-				// Message is not available to us, unsure why this is so frequent on this event
-				return;
-			}
-
-			if (msg.getAuthor().isPresent() && event.getOld().isPresent() && event.getOld().get().getFlags().contains(Message.Flag.LOADING))
-				logMessage(msg);
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	}
-
-	private static void logMessage(Message msg)
-	{
-		boolean privateChannel = msg.getChannel().block() instanceof PrivateChannel;
-
-		// Don't log messages we don't have message content access to
-		if (!msg.getAuthor().get().getId().equals(Main.gateway.getSelfId()) && !privateChannel)
-			return;
-
-		String userName = msg.getAuthor().get().getUsername();
-		String userId = msg.getAuthor().get().getId().asString();
-		String channelId = msg.getChannelId().asString();
-		String messageID = msg.getId().asString();
-		String logMsg;
-
-		if (!privateChannel)
-		{
-			String channelName = ((GuildChannel) msg.getChannel().block()).getName();
-			String guildName = msg.getGuild().block().getName();
-			String guildId = msg.getGuild().block().getId().asString();
-
-			logMsg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") |";
-		}
-		else
-		{
-			PrivateChannel channel = (PrivateChannel) msg.getChannel().block();
-			String recipientName = channel.getRecipients().iterator().next().getUsername();
-			String recipientId = channel.getRecipients().iterator().next().getId().asString();
-
-			if (recipientId.equals(userId))
-			{
-				logMsg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") |";
-			}
-			else
-			{
-				logMsg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") |";
-			}
-		}
-
-		if (!msg.getContent().isEmpty())
-			logMsg += " " + msg.getContent();
-
-		for (Attachment attachment : msg.getAttachments())
-			logMsg += " [Attachment " + attachment.getUrl() + "]";
-		for (Embed embed : msg.getEmbeds())
-			logMsg += " [Embed]";
-
-		Logger.log.debug(logMsg);
 	}
 
 	public static void onButtonInteraction(ButtonInteractionEvent event)
@@ -176,6 +87,56 @@ public class Logger
 		{
 			Logger.log.error("", e);
 		}
+	}
+
+	public static void logMessage(MessageChannel channel, String messageID, String message, Iterable<EmbedCreateSpec> embeds, Iterable<LayoutComponent> components)
+	{
+		String userName = Main.gateway.getRestClient().getSelf().block().username();
+		String userId = Main.gateway.getRestClient().getSelf().block().id().asString();
+		String channelId = channel.getId().asString();
+		String logMsg;
+
+		if (!(channel instanceof PrivateChannel))
+		{
+			Guild guild = ((GuildChannel) channel).getGuild().block();
+			String channelName = ((GuildChannel) channel).getName();
+			String guildName = guild.getName();
+			String guildId = guild.getId().asString();
+
+			logMsg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") |";
+		}
+		else
+		{
+			PrivateChannel privChannel = (PrivateChannel) channel;
+			String recipientName = privChannel.getRecipients().iterator().next().getUsername();
+			String recipientId = privChannel.getRecipients().iterator().next().getId().asString();
+
+			if (recipientId.equals(userId))
+			{
+				logMsg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") |";
+			}
+			else
+			{
+				logMsg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") |";
+			}
+		}
+
+		if (message != null && !message.isEmpty())
+			logMsg += " " + message;
+
+		if (embeds != null)
+		{
+			for (EmbedCreateSpec embed : embeds)
+				logMsg += " [Embed]";
+		}
+
+		if (components != null)
+		{
+			for (LayoutComponent component : components)
+				logMsg += " [" + component.getType().name() + " Component]";
+		}
+
+		Logger.log.debug(logMsg);
 	}
 
 	/**
