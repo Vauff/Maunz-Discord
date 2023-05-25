@@ -44,13 +44,15 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	private final static HashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new HashMap<>();
 
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
 		if (channel instanceof PrivateChannel)
 		{
 			Util.editReply(event, "This command can't be done in a PM, only in a guild with server tracking enabled");
 			return;
 		}
+
+		Guild guild = event.getInteraction().getGuild().block();
 
 		long guildID = guild.getId().asLong();
 		FindIterable<Document> servicesIterable = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("guildID", guildID)));
@@ -88,7 +90,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, MessageChannel channel, User user) throws Exception
 	{
 		for (Document doc : selectionServices.get(user.getId()))
 		{

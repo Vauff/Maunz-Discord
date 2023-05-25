@@ -10,7 +10,6 @@ import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.component.Button;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
@@ -31,7 +30,7 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 	private static HashMap<Snowflake, String> listVersions = new HashMap<>();
 
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
 		if (Main.cfg.getGitHubToken().equals(""))
 		{
@@ -68,7 +67,7 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, MessageChannel channel, User user) throws Exception
 	{
 		int page = listPages.get(user.getId());
 

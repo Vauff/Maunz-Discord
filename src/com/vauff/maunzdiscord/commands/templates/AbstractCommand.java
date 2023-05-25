@@ -10,7 +10,6 @@ import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.component.LayoutComponent;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandData;
@@ -60,20 +59,21 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 	 * Executes this command
 	 *
 	 * @param interaction The interaction that executing this command creates
+	 * @param channel     Channel the command was executed in
+	 * @param user        User who executed the command
 	 * @throws Exception If an exception gets thrown by any implementing methods
 	 */
-	public abstract void exe(M interaction, Guild guild, MessageChannel channel, User user) throws Exception;
+	public abstract void exe(M interaction, MessageChannel channel, User user) throws Exception;
 
 	/**
 	 * Executes a button attached to this command
 	 *
 	 * @param event    The ButtonInteractionEvent triggered from pressing a button
 	 * @param buttonId The button ID that was pressed
-	 * @param guild    Guild the button was pressed in
 	 * @param channel  Channel the button was pressed in
 	 * @param user     User who pressed the button
 	 */
-	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, MessageChannel channel, User user) throws Exception
 	{
 	}
 

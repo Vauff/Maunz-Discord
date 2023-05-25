@@ -44,7 +44,7 @@ public class ButtonInteractionThread implements Runnable
 
 			AbstractCommand.AWAITED.remove(messageId);
 			event.deferEdit().block();
-			await.getCommand().buttonPressed(event, event.getCustomId(), event.getInteraction().getGuild().block(), event.getInteraction().getChannel().block(), user);
+			await.getCommand().buttonPressed(event, event.getCustomId(), event.getInteraction().getChannel().block(), user);
 		}
 		catch (Exception e)
 		{

@@ -6,7 +6,6 @@ import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -20,7 +19,7 @@ import java.util.List;
 public class About extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
 		List<Button> buttons = new ArrayList<>();
 		buttons.add(Button.link("https://github.com/Vauff/Maunz-Discord", "GitHub"));

@@ -9,9 +9,9 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandOption;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +25,10 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
+		long guildId = channel instanceof PrivateChannel ? 0L : event.getInteraction().getGuildId().get().asLong();
 
 		if (interaction.getOption("view").isPresent())
 		{
@@ -37,7 +38,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 			{
 				String cleanArg = "/".equals(arg.substring(0, 1)) ? arg.substring(1) : arg;
 
-				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild))
+				if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(user, event.getInteraction().getGuild().block()))
 					continue;
 
 				if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(user))
@@ -45,7 +46,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 
 				if (cleanArg.equalsIgnoreCase(command.getName()))
 				{
-					List<String> helpEntries = getHelp(command, guild);
+					List<String> helpEntries = getHelp(command, guildId);
 					String response = "";
 
 					for (String entry : helpEntries)
@@ -66,34 +67,35 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 			if (interaction.getOption("list").get().getOption("page").isPresent())
 				page = (int) interaction.getOption("list").get().getOption("page").get().getValue().get().asLong();
 
-			exeList(event, guild, user, page);
+			exeList(event, user, guildId, page);
 		}
 	}
 
 	@Override
-	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, MessageChannel channel, User user) throws Exception
 	{
 		int page = listPages.get(user.getId());
+		long guildId = channel instanceof PrivateChannel ? 0L : event.getInteraction().getGuildId().get().asLong();
 
 		if (buttonId.equals(NEXT_BTN))
-			exeList(event, guild, user, page + 1);
+			exeList(event, user, guildId, page + 1);
 		else if (buttonId.equals(PREV_BTN))
-			exeList(event, guild, user, page - 1);
+			exeList(event, user, guildId, page - 1);
 	}
 
-	private void exeList(DeferrableInteractionEvent event, Guild guild, User user, int page) throws Exception
+	private void exeList(DeferrableInteractionEvent event, User user, long guildId, int page) throws Exception
 	{
 		List<String> helpEntries = new ArrayList<>();
 
 		for (AbstractCommand<ChatInputInteractionEvent> command : Main.commands)
 		{
-			if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(user, guild))
+			if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(user, event.getInteraction().getGuild().block()))
 				continue;
 
 			if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(user))
 				continue;
 
-			helpEntries.addAll(getHelp(command, guild));
+			helpEntries.addAll(getHelp(command, guildId));
 		}
 
 		buildPage(event, helpEntries, "Command List", 10, 0, page, 0, false, null, "");
@@ -102,10 +104,10 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 	}
 
 
-	private List<String> getHelp(AbstractCommand<ChatInputInteractionEvent> command, Guild guild)
+	private List<String> getHelp(AbstractCommand<ChatInputInteractionEvent> command, long guildId)
 	{
 		List<String> helpEntries = new ArrayList<>();
-		String cmdId = command.getCommandData(guild.getId().asLong()).id().asString();
+		String cmdId = command.getCommandData(guildId).id().asString();
 
 		if (!command.getCommandRequest().options().isAbsent())
 		{

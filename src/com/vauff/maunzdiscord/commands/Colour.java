@@ -6,7 +6,6 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -19,7 +18,7 @@ import java.net.MalformedURLException;
 public class Colour extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
 		String url = "";

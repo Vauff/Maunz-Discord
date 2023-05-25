@@ -5,7 +5,6 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
@@ -24,7 +23,7 @@ import java.net.URI;
 public class IsItDown extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
 		String hostname = event.getInteraction().getCommandInteraction().get().getOption("hostname").get().getValue().get().asString();
 		boolean isUp;

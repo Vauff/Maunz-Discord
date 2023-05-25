@@ -39,7 +39,7 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 
 	@Override
-	public void exe(ChatInputInteractionEvent event, Guild guild, MessageChannel channel, User user) throws Exception
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
 
@@ -48,6 +48,8 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 			Util.editReply(event, "This command can't be done in a PM, only in a guild that you have admin permissions in");
 			return;
 		}
+
+		Guild guild = event.getInteraction().getGuild().block();
 
 		if (interaction.getOption("add").isPresent())
 			exeAdd(event, guild);
@@ -64,7 +66,7 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public void buttonPressed(ButtonInteractionEvent event, String buttonId, Guild guild, MessageChannel channel, User user) throws Exception
+	public void buttonPressed(ButtonInteractionEvent event, String buttonId, MessageChannel channel, User user) throws Exception
 	{
 		int page = listPages.get(user.getId());
 
