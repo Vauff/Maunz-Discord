@@ -94,11 +94,12 @@ public class ServiceProcessThread implements Runnable
 			if (!map.equals("") && !doc.getString("lastMap").equalsIgnoreCase(map))
 			{
 				String url = MapImages.getMapImageURL(map, serverDoc.getInteger("appId"));
+				String ipPort = serverDoc.getString("ip") + ":" + serverDoc.getInteger("port");
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(MapImages.getMapImageColour(url))
 					.timestamp(Instant.ofEpochMilli(timestamp))
-					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **http://vauff.com/?ip=" + serverDoc.getString("ip") + ":" + serverDoc.getInteger("port") + "**")
+					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **[" + ipPort + "](http://vauff.com/?ip=" + ipPort + ")**")
 					.build();
 
 				if (!url.equals(""))
