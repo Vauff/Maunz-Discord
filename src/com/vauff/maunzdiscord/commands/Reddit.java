@@ -41,6 +41,12 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		String subreddit = event.getInteraction().getCommandInteraction().get().getOption("subreddit").get().getValue().get().asString();
 
+		if (subreddit.length() < 3 || subreddit.length() > 21)
+		{
+			Util.editReply(event, "Subreddit names must be between 3 and 21 characters");
+			return;
+		}
+
 		if (subreddit.startsWith("/r/"))
 			subreddit = subreddit.substring(3);
 		else if (subreddit.startsWith("r/"))
@@ -61,15 +67,15 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 			return;
 		}
 
-		if (about.isEmpty() || !about.getString("kind").equals("t5"))
+		if (about.has("kind") && about.getString("kind").equals("Listing"))
 		{
-			Util.editReply(event, "There was an error connecting to the Reddit API, please try again later");
+			Util.editReply(event, "**r/" + subreddit + "** does not exist!");
 			return;
 		}
 
-		if (about.getString("kind").equals("Listing"))
+		if (about.isEmpty() || !about.getString("kind").equals("t5"))
 		{
-			Util.editReply(event, "**r/" + subreddit + "** does not exist!");
+			Util.editReply(event, "There was an error connecting to the Reddit API, please try again later");
 			return;
 		}
 
