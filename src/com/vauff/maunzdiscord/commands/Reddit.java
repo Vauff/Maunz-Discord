@@ -39,13 +39,13 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
-		String subreddit = event.getInteraction().getCommandInteraction().get().getOption("subreddit").get().getValue().get().asString();
-
-		if (subreddit.length() < 3 || subreddit.length() > 21)
+		if (Main.cfg.getRedditId().equals("") || Main.cfg.getRedditSecret().equals(""))
 		{
-			Util.editReply(event, "Subreddit names must be between 3 and 21 characters");
+			Util.editReply(event, "This command is disabled because the bot does not have Reddit API credentials configured!");
 			return;
 		}
+
+		String subreddit = event.getInteraction().getCommandInteraction().get().getOption("subreddit").get().getValue().get().asString();
 
 		if (subreddit.startsWith("/r/"))
 			subreddit = subreddit.substring(3);
@@ -199,6 +199,8 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 				.description("The subreddit name")
 				.type(ApplicationCommandOption.Type.STRING.getValue())
 				.required(true)
+				.minLength(3)
+				.maxLength(21)
 				.build())
 			.build();
 	}
