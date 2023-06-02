@@ -11,7 +11,6 @@ import discord4j.core.object.command.ApplicationCommandInteraction;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.apache.commons.lang3.StringUtils;
@@ -28,13 +27,12 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
-		long guildId = channel instanceof PrivateChannel ? 0L : event.getInteraction().getGuildId().get().asLong();
 
 		if (interaction.getOption("view").isPresent())
 		{
 			String arg = interaction.getOption("view").get().getOption("command").get().getValue().get().asString();
 
-			for (AbstractCommand command : Main.commands)
+			for (AbstractCommand command : Main.commands.values())
 			{
 				String cleanArg = "/".equals(arg.substring(0, 1)) ? arg.substring(1) : arg;
 
@@ -46,7 +44,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 
 				if (cleanArg.equalsIgnoreCase(command.getName()))
 				{
-					List<String> helpEntries = getHelp(command, guildId);
+					List<String> helpEntries = getHelp(command, event);
 					String response = "";
 
 					for (String entry : helpEntries)
@@ -67,7 +65,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 			if (interaction.getOption("list").get().getOption("page").isPresent())
 				page = (int) interaction.getOption("list").get().getOption("page").get().getValue().get().asLong();
 
-			exeList(event, user, guildId, page);
+			exeList(event, user, page);
 		}
 	}
 
@@ -75,19 +73,18 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 	public void buttonPressed(ButtonInteractionEvent event, String buttonId, MessageChannel channel, User user) throws Exception
 	{
 		int page = listPages.get(user.getId());
-		long guildId = channel instanceof PrivateChannel ? 0L : event.getInteraction().getGuildId().get().asLong();
 
 		if (buttonId.equals(NEXT_BTN))
-			exeList(event, user, guildId, page + 1);
+			exeList(event, user, page + 1);
 		else if (buttonId.equals(PREV_BTN))
-			exeList(event, user, guildId, page - 1);
+			exeList(event, user, page - 1);
 	}
 
-	private void exeList(DeferrableInteractionEvent event, User user, long guildId, int page) throws Exception
+	private void exeList(DeferrableInteractionEvent event, User user, int page) throws Exception
 	{
 		List<String> helpEntries = new ArrayList<>();
 
-		for (AbstractCommand<ChatInputInteractionEvent> command : Main.commands)
+		for (AbstractCommand<ChatInputInteractionEvent> command : Main.commands.values())
 		{
 			if (command.getPermissionLevel() == BotPermission.GUILD_ADMIN && !Util.hasPermission(user, event.getInteraction().getGuild().block()))
 				continue;
@@ -95,7 +92,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 			if (command.getPermissionLevel() == BotPermission.BOT_ADMIN && !Util.hasPermission(user))
 				continue;
 
-			helpEntries.addAll(getHelp(command, guildId));
+			helpEntries.addAll(getHelp(command, event));
 		}
 
 		buildPage(event, helpEntries, "Command List", 10, 0, page, 0, false, null, "");
@@ -104,10 +101,9 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 	}
 
 
-	private List<String> getHelp(AbstractCommand<ChatInputInteractionEvent> command, long guildId)
+	private List<String> getHelp(AbstractCommand<ChatInputInteractionEvent> command, DeferrableInteractionEvent event)
 	{
 		List<String> helpEntries = new ArrayList<>();
-		String cmdId = command.getCommandData(guildId).id().asString();
 
 		if (!command.getCommandRequest().options().isAbsent())
 		{
@@ -115,7 +111,7 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 			{
 				if (option.type() == ApplicationCommandOption.Type.SUB_COMMAND.getValue())
 				{
-					helpEntries.add("</" + command.getCommandRequest().name() + " " + option.name() + ":" + cmdId + "> - " + option.description());
+					helpEntries.add(command.getCommandMention(event, option.name()) + " - " + option.description());
 				}
 				else if (option.type() == ApplicationCommandOption.Type.SUB_COMMAND_GROUP.getValue())
 				{
@@ -123,13 +119,13 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 						continue;
 
 					for (ApplicationCommandOptionData subCmd : option.options().get())
-						helpEntries.add("</" + command.getCommandRequest().name() + " " + option.name() + " " + subCmd.name() + ":" + cmdId + "> - " + subCmd.description());
+						helpEntries.add(command.getCommandMention(event, option.name() + " " + subCmd.name()) + " - " + subCmd.description());
 				}
 			}
 		}
 
 		if (helpEntries.size() == 0)
-			helpEntries.add("</" + command.getCommandRequest().name() + ":" + cmdId + "> - " + command.getCommandRequest().description().get());
+			helpEntries.add(command.getCommandMention(event, "") + " - " + command.getCommandRequest().description().get());
 
 		return helpEntries;
 	}

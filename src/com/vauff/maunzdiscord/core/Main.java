@@ -49,7 +49,7 @@ public class Main
 	/**
 	 * List that holds all commands
 	 */
-	public static LinkedList<AbstractCommand<ChatInputInteractionEvent>> commands = new LinkedList<>();
+	public static HashMap<String, AbstractCommand<ChatInputInteractionEvent>> commands = new HashMap<>();
 
 	/**
 	 * Cached Guild objects, to avoid constant getGuildById calls to Discord API
@@ -140,31 +140,35 @@ public class Main
 	 */
 	private static void setupCommands()
 	{
-		commands.add(new About());
-		commands.add(new Benchmark());
-		commands.add(new Changelog());
-		commands.add(new Colour());
-		commands.add(new Help());
-		commands.add(new Invite());
-		commands.add(new IsItDown());
-		commands.add(new Map());
-		commands.add(new Minecraft());
-		commands.add(new Notify());
-		commands.add(new Ping());
-		commands.add(new Players());
-		commands.add(new Reddit());
-		commands.add(new Say());
-		commands.add(new Servers());
-		commands.add(new Steam());
-		commands.add(new Stop());
-		commands.sort(Comparator.comparing(AbstractCommand::getName));
+		LinkedList<AbstractCommand<ChatInputInteractionEvent>> commandsArray = new LinkedList<>();
+
+		commandsArray.add(new About());
+		commandsArray.add(new Benchmark());
+		commandsArray.add(new Changelog());
+		commandsArray.add(new Colour());
+		commandsArray.add(new Help());
+		commandsArray.add(new Invite());
+		commandsArray.add(new IsItDown());
+		commandsArray.add(new Map());
+		commandsArray.add(new Minecraft());
+		commandsArray.add(new Notify());
+		commandsArray.add(new Ping());
+		commandsArray.add(new Players());
+		commandsArray.add(new Reddit());
+		commandsArray.add(new Say());
+		commandsArray.add(new Servers());
+		commandsArray.add(new Steam());
+		commandsArray.add(new Stop());
+		commandsArray.sort(Comparator.comparing(AbstractCommand::getName));
+
+		for (AbstractCommand<ChatInputInteractionEvent> cmd : commandsArray)
+			commands.put(cmd.getName(), cmd);
 
 		RestClient restClient = gateway.getRestClient();
 		long appID = restClient.getApplicationId().block();
 		ArrayList<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
 
-
-		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands)
+		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands.values())
 			cmdRequests.add(cmd.getCommandRequest());
 
 		if (cfg.getDevGuilds().length > 0)
@@ -191,7 +195,7 @@ public class Main
 	private static void mapCommandDataToCommands(List<ApplicationCommandData> cmdDatas, long guildId)
 	{
 		parentLoop:
-		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands)
+		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands.values())
 		{
 			for (ApplicationCommandData cmdData : cmdDatas)
 			{

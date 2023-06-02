@@ -34,21 +34,20 @@ public class ChatInputInteractionThread implements Runnable
 
 			User user = event.getInteraction().getUser();
 			MessageChannel channel = event.getInteraction().getChannel().block();
+			String cmdName = event.getInteraction().getCommandInteraction().get().getName().get();
 
-			for (AbstractCommand<ChatInputInteractionEvent> cmd : Main.commands)
+			if (!Main.commands.containsKey(cmdName))
+				return;
+
+			AbstractCommand<ChatInputInteractionEvent> cmd = Main.commands.get(cmdName);
+
+			if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(user, event.getInteraction().getGuild().block())) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(user)))
 			{
-				if (!event.getInteraction().getCommandInteraction().get().getName().get().equalsIgnoreCase(cmd.getName()))
-					continue;
-
-				if ((cmd.getPermissionLevel() == AbstractCommand.BotPermission.GUILD_ADMIN && !Util.hasPermission(user, event.getInteraction().getGuild().block())) || (cmd.getPermissionLevel() == AbstractCommand.BotPermission.BOT_ADMIN && !Util.hasPermission(user)))
-				{
-					Util.editReply(event, "You do not have permission to use that command");
-					return;
-				}
-
-				cmd.exe(event, channel, user);
-				break;
+				Util.editReply(event, "You do not have permission to use that command");
+				return;
 			}
+
+			cmd.exe(event, channel, user);
 		}
 		catch (Exception e)
 		{

@@ -83,16 +83,25 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 	public abstract ApplicationCommandRequest getCommandRequest();
 
 	/**
-	 * Returns the ApplicationCommandData object for this command
+	 * Gets and formats the mention for this command, as a guild or global command
 	 *
-	 * @param guildId ID of the associated guild, necessary for dev mode
+	 * @param event The triggering interaction event, to extract guild from when applicable
+	 * @param args  Additional subcmd & subcmd group arguments when applicable, "" otherwise
 	 */
-	public final ApplicationCommandData getCommandData(long guildId)
+	public final String getCommandMention(DeferrableInteractionEvent event, String args)
 	{
+		ApplicationCommandData cmdData;
+
 		if (Main.cfg.getDevGuilds().length == 0)
-			return cmdDatas.get(0L);
+			cmdData = cmdDatas.get(0L);
 		else
-			return cmdDatas.get(guildId);
+			cmdData = cmdDatas.get(event.getInteraction().getGuild().block().getId().asLong());
+
+		// Format fix when arguments are present
+		if (!args.equals(""))
+			args = " " + args;
+
+		return "</" + getName() + args + ":" + cmdData.id().asString() + ">";
 	}
 
 	/**
