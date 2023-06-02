@@ -59,7 +59,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (services.size() == 0)
 		{
-			Util.editReply(event, "Server tracking is not enabled in this guild yet! Please have a guild administrator use **/servers add** to set one up");
+			Util.editReply(event, "Server tracking is not enabled in this guild yet! Please have a guild administrator use " + Main.commands.get("servers").getCommandMention(event, "add") + " to set one up");
 			return;
 		}
 		else if (services.size() == 1)

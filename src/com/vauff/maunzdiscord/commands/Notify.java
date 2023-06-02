@@ -66,7 +66,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (services.size() == 0)
 		{
-			Util.editReply(event, "Server tracking is not enabled in this guild yet! Please have a guild administrator use **/servers add** to set one up");
+			Util.editReply(event, "Server tracking is not enabled in this guild yet! Please have a guild administrator use " + Main.commands.get("servers").getCommandMention(event, "add") + " to set one up");
 		}
 		else if (services.size() == 1)
 		{
@@ -216,7 +216,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 		{
 			if (!hasNotifications)
 			{
-				Util.editReply(event, "You do not have any map notifications set! Use **/notify toggle <mapname>** to add one");
+				Util.editReply(event, "You do not have any map notifications set! Use " + Main.commands.get("notify").getCommandMention(event, "toggle") + " to add one");
 				return;
 			}
 

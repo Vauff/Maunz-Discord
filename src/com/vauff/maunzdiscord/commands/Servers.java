@@ -137,7 +137,7 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (services.size() == 0)
 		{
-			Util.editReply(event, "No servers have been added yet! Use **/servers add** to add one");
+			Util.editReply(event, "No servers have been added yet! Use " + Main.commands.get("servers").getCommandMention(event, "add") + " to add one");
 			return;
 		}
 
@@ -162,7 +162,7 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (!listServices.containsKey(user.getId()) || services.size() < id)
 		{
-			Util.editReply(event, "That server ID doesn't exist! Have you ran **/servers list** yet to generate IDs?");
+			Util.editReply(event, "That server ID doesn't exist! Have you ran " + Main.commands.get("servers").getCommandMention(event, "list") + " yet to generate IDs?");
 			return;
 		}
 
