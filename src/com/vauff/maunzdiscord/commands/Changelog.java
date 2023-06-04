@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
@@ -119,10 +120,12 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 				jsonString += scanner.nextLine();
 
 			scanner.close();
+
 			return new JSONObject(jsonString).getString("body");
 		}
 		catch (IOException e)
 		{
+			Logger.log.error("", e);
 			return "";
 		}
 	}
