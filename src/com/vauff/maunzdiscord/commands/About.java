@@ -3,6 +3,8 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.servertracking.ServerTimer;
+import discord4j.common.GitProperties;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
@@ -33,9 +35,12 @@ public class About extends AbstractCommand<ChatInputInteractionEvent>
 			.description("Maunz is a multi-purpose bot with a focus on Source server tracking, it is developed by Vauff using the Discord4J library.")
 			.addField("Version", Main.version, true)
 			.addField("Java Version", System.getProperty("java.version"), true)
+			.addField("Discord4J Version", GitProperties.getProperties().getProperty(GitProperties.APPLICATION_VERSION, "3"), true)
 			.addField("Uptime", getUptime(), true)
 			.addField("Memory Usage", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024) + " MB", true)
 			.addField("Build Date", getBuildDate(), true)
+			.addField("Servers Tracked", String.valueOf(ServerTimer.serverCount), true)
+			.addField("Guild Count", String.valueOf(Main.gateway.getGuilds().count().block()), true)
 			.build();
 
 		Util.editReply(event, "", List.of(embed), List.of(ActionRow.of(buttons)));

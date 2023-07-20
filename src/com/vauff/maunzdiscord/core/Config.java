@@ -18,7 +18,7 @@ public class Config extends JSONObject
 		if (!file.exists())
 		{
 			file.createNewFile();
-			put("altPlayingText", "discord.gg/v55fW9b");
+			put("altPlayingText", "");
 			put("botOwners", new JSONArray());
 			put("devGuilds", new JSONArray());
 			put("discordToken", "");

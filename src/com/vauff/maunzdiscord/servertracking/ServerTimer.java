@@ -29,6 +29,11 @@ public class ServerTimer
 	public static HashMap<ObjectId, List<ServiceProcessThread>> waitingProcessThreads = new HashMap<>();
 
 	/**
+	 * How many services are actively running, referred to as servers for simplicitly
+	 */
+	public static int serverCount = 0;
+
+	/**
 	 * Iterate the server tracking storage and start threads for each server and service
 	 */
 	public static Runnable timer = () ->
@@ -41,6 +46,7 @@ public class ServerTimer
 
 				List<Document> serviceDocs = Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)).into(new ArrayList<>());
 				List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
+				int newServerCount = 0;
 
 				for (Document doc : serviceDocs)
 				{
@@ -54,6 +60,7 @@ public class ServerTimer
 					else
 						continue;
 
+					newServerCount++;
 					threadRunning.putIfAbsent(id, false);
 
 					if (!threadRunning.get(id))
@@ -66,6 +73,8 @@ public class ServerTimer
 						waitingProcessThreads.get(serverID).add(thread);
 					}
 				}
+
+				serverCount = newServerCount;
 
 				/**
 				 * Holds a list of which servers already have a thread started in the current timer run

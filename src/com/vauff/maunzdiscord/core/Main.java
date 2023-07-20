@@ -123,7 +123,7 @@ public class Main
 			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> MainListener.onGuildDelete(event))).subscribe();
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapImageTimer.timer, 0, 1, TimeUnit.HOURS);
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(StatsTimer.timer, 0, 5, TimeUnit.MINUTES);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(PresenceTimer.timer, 1, 5, TimeUnit.MINUTES);
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 10, 60, TimeUnit.SECONDS);
 
 			// Keep app alive by waiting for disconnect
