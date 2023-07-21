@@ -218,13 +218,13 @@ public class ServerRequestThread implements Runnable
 		}
 		finally
 		{
-			ServerTimer.threadRunning.put(id, false);
+			ServerTrackingLoop.threadRunning.put(id, false);
 		}
 	}
 
 	private void cleanup(boolean success)
 	{
-		List<ServiceProcessThread> processThreads = new ArrayList<>(ServerTimer.waitingProcessThreads.get(id));
+		List<ServiceProcessThread> processThreads = new ArrayList<>(ServerTrackingLoop.waitingProcessThreads.get(id));
 
 		if (success)
 		{
@@ -247,9 +247,9 @@ public class ServerRequestThread implements Runnable
 		else
 		{
 			for (ServiceProcessThread processThread : processThreads)
-				ServerTimer.threadRunning.put(processThread.id, false);
+				ServerTrackingLoop.threadRunning.put(processThread.id, false);
 		}
 
-		ServerTimer.waitingProcessThreads.get(id).clear();
+		ServerTrackingLoop.waitingProcessThreads.get(id).clear();
 	}
 }

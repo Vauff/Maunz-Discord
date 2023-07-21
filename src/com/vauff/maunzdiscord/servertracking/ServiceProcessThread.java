@@ -73,6 +73,7 @@ public class ServiceProcessThread implements Runnable
 					Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, msgServerName + " has now been offline for a week and its server tracking was automatically disabled, it can be re-enabled by a guild administrator using **/servers toggle <id> enabled**");
 
 				Main.mongoDatabase.getCollection("services").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
+				// TODO: invalidate cache here
 			}
 
 			if (serverDoc.getInteger("downtimeTimer") >= 1)
@@ -150,7 +151,7 @@ public class ServiceProcessThread implements Runnable
 		}
 		finally
 		{
-			ServerTimer.threadRunning.put(id, false);
+			ServerTrackingLoop.threadRunning.put(id, false);
 		}
 	}
 

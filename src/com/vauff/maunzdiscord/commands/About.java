@@ -3,7 +3,7 @@ package com.vauff.maunzdiscord.commands;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
-import com.vauff.maunzdiscord.servertracking.ServerTimer;
+import com.vauff.maunzdiscord.servertracking.ServerTrackingLoop;
 import discord4j.common.GitProperties;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.component.ActionRow;
@@ -39,7 +39,7 @@ public class About extends AbstractCommand<ChatInputInteractionEvent>
 			.addField("Uptime", getUptime(), true)
 			.addField("Memory Usage", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024) + " MB", true)
 			.addField("Build Date", getBuildDate(), true)
-			.addField("Servers Tracked", String.valueOf(ServerTimer.serverCount), true)
+			.addField("Servers Tracked", String.valueOf(ServerTrackingLoop.serverCount), true)
 			.addField("Guild Count", String.valueOf(Main.gateway.getGuilds().count().block()), true)
 			.build();
 

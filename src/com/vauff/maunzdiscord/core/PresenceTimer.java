@@ -1,6 +1,6 @@
 package com.vauff.maunzdiscord.core;
 
-import com.vauff.maunzdiscord.servertracking.ServerTimer;
+import com.vauff.maunzdiscord.servertracking.ServerTrackingLoop;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
 
@@ -22,7 +22,7 @@ public class PresenceTimer
 				return;
 
 			String altPlayingText = Main.cfg.getPlayingText();
-			int serverCount = ServerTimer.serverCount;
+			int serverCount = ServerTrackingLoop.serverCount;
 			long guildCount = Main.gateway.getGuilds().count().block();
 
 			if (showingAltText || altPlayingText.equals(""))

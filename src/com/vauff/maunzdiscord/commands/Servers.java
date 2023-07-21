@@ -126,6 +126,7 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 			.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
 
 		Main.mongoDatabase.getCollection("services").insertOne(service);
+		// TODO: invalidate cache here
 
 		Util.editReply(event, "Successfully added server tracking on " + ip + ":" + port + " in " + channel.getMention() + "!");
 	}
@@ -175,6 +176,7 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 		}
 
 		Main.mongoDatabase.getCollection("services").deleteOne(eq("_id", service.getObjectId("_id")));
+		// TODO: invalidate cache here
 
 		Channel serviceChannel;
 		Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).projection(new Document("ip", 1).append("port", 1)).first();
