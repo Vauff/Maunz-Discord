@@ -29,14 +29,19 @@ public class ServiceProcessThread implements Runnable
 	private static final Pattern WILDCARD_PATTERN = Pattern.compile("(?i)[^*]+|(\\*)");
 
 	private Thread thread;
-	public ObjectId id;
+	private ObjectId id;
+	private Document doc;
+	private Document serverDoc;
 	private Guild guild;
-	Boolean channelExists = null;
+	private Boolean channelExists = null;
 
-	public ServiceProcessThread(ObjectId id, Guild guild)
+	public ServiceProcessThread(Document doc, Document serverDoc, Guild guild)
 	{
-		this.id = id;
+		this.doc = doc;
+		this.serverDoc = serverDoc;
 		this.guild = guild;
+
+		this.id = doc.getObjectId("_id");
 	}
 
 	public void start()
@@ -52,8 +57,6 @@ public class ServiceProcessThread implements Runnable
 	{
 		try
 		{
-			Document doc = Main.mongoDatabase.getCollection("services").find(eq("_id", id)).first();
-			Document serverDoc = Main.mongoDatabase.getCollection("servers").find(eq("_id", doc.getObjectId("serverID"))).first();
 			String msgServerName = "The server";
 
 			if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
