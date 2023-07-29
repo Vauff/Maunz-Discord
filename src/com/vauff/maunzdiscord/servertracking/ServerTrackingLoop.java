@@ -10,6 +10,7 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -24,14 +25,9 @@ public class ServerTrackingLoop implements Runnable
 	public static HashMap<ObjectId, Boolean> threadRunning = new HashMap<>();
 
 	/**
-	 * Whether a server ID has any active services attached
+	 * How many active services a server ID has attached
 	 */
-	public static HashMap<ObjectId, Boolean> serverHasActiveServices = new HashMap<>();
-
-	/**
-	 * How many services are actively running, referred to as servers for simplicitly
-	 */
-	public static int serverCount = 0;
+	public static HashMap<ObjectId, Integer> serverActiveServices = new HashMap<>();
 
 	private Thread thread;
 
@@ -42,7 +38,7 @@ public class ServerTrackingLoop implements Runnable
 			// Initial 10 second delay to allow map images to fully initialize
 			Thread.sleep(10000);
 
-			thread = new Thread(this, "servertrackingmainloop");
+			thread = new Thread(this, "servertracking-mainloop");
 			thread.start();
 		}
 	}
@@ -63,20 +59,39 @@ public class ServerTrackingLoop implements Runnable
 					continue;
 				}
 
-				List<Document> serviceDocs = Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)).into(new ArrayList<>());
 				List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
+				List<Document> serviceDocs = null;
 
 				for (Document doc : serverDocs)
 				{
 					ObjectId id = doc.getObjectId("_id");
 					String ipPort = doc.getString("ip") + ":" + doc.getInteger("port");
 
-					if (!serverHasActiveServices.containsKey(id))
+					// Store how many services are actively tracking this server
+					if (!serverActiveServices.containsKey(id))
 					{
-						// TODO: precache here
+						int serviceCount = 0;
+
+						if (Objects.isNull(serviceDocs))
+							serviceDocs = Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)).into(new ArrayList<>());
+
+						serverActiveServices.put(id, 0);
+
+						for (Document serviceDoc : serviceDocs)
+						{
+							ObjectId serverID = serviceDoc.getObjectId("serverID");
+							Snowflake guildId = Snowflake.of(serviceDoc.getLong("guildID"));
+
+							if (id.equals(serverID) && Main.guildCache.containsKey(guildId))
+								serviceCount++;
+
+						}
+
+						serverActiveServices.put(id, serviceCount);
 					}
 
-					if (!serverHasActiveServices.get(id))
+					// Check if this server needs to be tracked
+					if (serverActiveServices.get(id) == 0)
 						continue;
 
 					threadRunning.putIfAbsent(id, false);

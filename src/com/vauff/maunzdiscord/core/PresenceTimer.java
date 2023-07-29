@@ -9,7 +9,15 @@ import discord4j.core.object.presence.ClientPresence;
  */
 public class PresenceTimer
 {
+	/**
+	 * Whether alt text from config.json is currently being shown as the activity text
+	 */
 	private static boolean showingAltText = false;
+
+	/**
+	 * How many services are actively running, referred to as servers for simplicitly
+	 */
+	public static int serverCount = 0;
 
 	/**
 	 * Updates the bot's activity text to switch between showing the amount of servers the bot is tracking and the alt text configured in config.json
@@ -22,8 +30,13 @@ public class PresenceTimer
 				return;
 
 			String altPlayingText = Main.cfg.getPlayingText();
-			int serverCount = ServerTrackingLoop.serverCount;
 			long guildCount = Main.gateway.getGuilds().count().block();
+			int newServerCount = 0;
+
+			for (int i : ServerTrackingLoop.serverActiveServices.values())
+				newServerCount += i;
+
+			serverCount = newServerCount;
 
 			if (showingAltText || altPlayingText.equals(""))
 			{

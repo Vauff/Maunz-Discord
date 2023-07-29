@@ -102,7 +102,10 @@ public class ServerRequestThread implements Runnable
 							Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", downtimeTimer)));
 
 							if (downtimeTimer >= 10080)
+							{
 								Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
+								ServerTrackingLoop.serverActiveServices.remove(id);
+							}
 
 							cleanup(true);
 							return;
