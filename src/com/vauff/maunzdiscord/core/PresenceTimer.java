@@ -4,6 +4,9 @@ import com.vauff.maunzdiscord.servertracking.ServerTrackingLoop;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 /**
  * Holds a timer to set the presence activity text in Discord
  */
@@ -31,12 +34,17 @@ public class PresenceTimer
 
 			String altPlayingText = Main.cfg.getPlayingText();
 			long guildCount = Main.gateway.getGuilds().count().block();
-			int newServerCount = 0;
 
-			for (int i : ServerTrackingLoop.serverActiveServices.values())
-				newServerCount += i;
+			// Update server count if cache has not been recently invalidated
+			if (ServerTrackingLoop.lastInvalidatedCache.plus(2, ChronoUnit.MINUTES).isBefore(Instant.now()))
+			{
+				int newServerCount = 0;
 
-			serverCount = newServerCount;
+				for (int i : ServerTrackingLoop.serverActiveServices.values())
+					newServerCount += i;
+
+				serverCount = newServerCount;
+			}
 
 			if (showingAltText || altPlayingText.equals(""))
 			{

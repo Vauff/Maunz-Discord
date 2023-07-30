@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -107,6 +108,7 @@ public class ServerRequestThread implements Runnable
 							if (downtimeTimer >= 10080)
 							{
 								Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
+								ServerTrackingLoop.lastInvalidatedCache = Instant.now();
 								ServerTrackingLoop.serverActiveServices.remove(id);
 							}
 

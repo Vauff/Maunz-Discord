@@ -123,7 +123,7 @@ public class Main
 			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> MainListener.onGuildDelete(event))).subscribe();
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapImageTimer.timer, 0, 1, TimeUnit.HOURS);
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(PresenceTimer.timer, 1, 5, TimeUnit.MINUTES);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(PresenceTimer.timer, 2, 5, TimeUnit.MINUTES);
 
 			// Initialize the server tracking main loop
 			new ServerTrackingLoop().start();

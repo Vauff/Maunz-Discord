@@ -3,10 +3,10 @@ package com.vauff.maunzdiscord.servertracking;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Guild;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +28,11 @@ public class ServerTrackingLoop implements Runnable
 	 * How many active services a server ID has attached
 	 */
 	public static HashMap<ObjectId, Integer> serverActiveServices = new HashMap<>();
+
+	/**
+	 * Last time serverActiveServices cache was invalidated
+	 */
+	public static Instant lastInvalidatedCache = Instant.ofEpochMilli(0L);
 
 	private Thread thread;
 
@@ -74,8 +79,6 @@ public class ServerTrackingLoop implements Runnable
 
 						if (Objects.isNull(serviceDocs))
 							serviceDocs = Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)).into(new ArrayList<>());
-
-						serverActiveServices.put(id, 0);
 
 						for (Document serviceDoc : serviceDocs)
 						{
