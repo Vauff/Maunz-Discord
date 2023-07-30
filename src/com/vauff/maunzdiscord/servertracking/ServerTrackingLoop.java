@@ -66,11 +66,16 @@ public class ServerTrackingLoop implements Runnable
 
 				List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
 				List<Document> serviceDocs = null;
+				long startTime = System.currentTimeMillis();
+				long targetSleepTime = 60000 / serverDocs.size();
+				int iterCount = 0;
 
 				for (Document doc : serverDocs)
 				{
 					ObjectId id = doc.getObjectId("_id");
 					String ipPort = doc.getString("ip") + ":" + doc.getInteger("port");
+
+					iterCount++;
 
 					// Store how many services are actively tracking this server
 					if (!serverActiveServices.containsKey(id))
@@ -107,8 +112,15 @@ public class ServerTrackingLoop implements Runnable
 						thread.start();
 					}
 
-					// TODO: dynamic sleep
+					// Determine how long we would need to sleep to stay on schedule for this iteration
+					long sleepTime = (System.currentTimeMillis() - (startTime + (targetSleepTime * iterCount))) * -1;
+
+					// Sleep only if we're ahead of schedule
+					if (sleepTime > 0)
+						Thread.sleep(sleepTime);
 				}
+
+				Logger.log.debug("Finished server tracking loop in " + (System.currentTimeMillis() - startTime) + " ms");
 			}
 			catch (Exception e)
 			{
