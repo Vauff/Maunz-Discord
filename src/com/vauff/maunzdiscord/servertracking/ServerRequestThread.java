@@ -4,15 +4,19 @@ import com.github.koraktor.steamcondenser.servers.GameServer;
 import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
+import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Guild;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 public class ServerRequestThread implements Runnable
@@ -102,9 +106,13 @@ public class ServerRequestThread implements Runnable
 							Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", downtimeTimer)));
 
 							if (downtimeTimer >= 10080)
+							{
 								Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("enabled", false)));
+								ServerTrackingLoop.lastInvalidatedCache = Instant.now();
+								ServerTrackingLoop.serverActiveServices.remove(id);
+							}
 
-							cleanup(true);
+							runServiceThreads();
 							return;
 						}
 						else
@@ -136,7 +144,6 @@ public class ServerRequestThread implements Runnable
 			else
 			{
 				Logger.log.warn("Null mapname received for server " + ipPort + ", automatically retrying in 1 minute");
-				cleanup(false);
 				return;
 			}
 
@@ -209,47 +216,46 @@ public class ServerRequestThread implements Runnable
 			if (doc.getInteger("downtimeTimer") != 0)
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", 0)));
 
-			cleanup(true);
+			runServiceThreads();
 		}
 		catch (Exception e)
 		{
 			Logger.log.error("", e);
-			cleanup(false);
 		}
 		finally
 		{
-			ServerTimer.threadRunning.put(id, false);
+			ServerTrackingLoop.threadRunning.put(id, false);
 		}
 	}
 
-	private void cleanup(boolean success)
+	private void runServiceThreads() throws Exception
 	{
-		List<ServiceProcessThread> processThreads = new ArrayList<>(ServerTimer.waitingProcessThreads.get(id));
+		Document doc = Main.mongoDatabase.getCollection("servers").find(eq("_id", id)).first();
+		List<Document> serviceDocs = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("serverID", id))).into(new ArrayList<>());
 
-		if (success)
+		for (Document serviceDoc : serviceDocs)
 		{
-			for (ServiceProcessThread processThread : processThreads)
-			{
-				processThread.start();
+			ObjectId serviceId = serviceDoc.getObjectId("_id");
+			Snowflake guildId = Snowflake.of(serviceDoc.getLong("guildID"));
+			Guild guild;
 
-				// TODO: replace this awful workaround with a new scheduler
-				// only start ~10 threads per second
-				try
-				{
-					Thread.sleep(100);
-				}
-				catch (InterruptedException e)
-				{
-					Logger.log.error("", e);
-				}
+			if (Main.guildCache.containsKey(guildId))
+				guild = Main.guildCache.get(guildId);
+			else
+				continue;
+
+			ServerTrackingLoop.threadRunning.putIfAbsent(serviceId, false);
+
+			if (!ServerTrackingLoop.threadRunning.get(serviceId))
+			{
+				ServiceProcessThread thread = new ServiceProcessThread(serviceDoc, doc, guild);
+
+				ServerTrackingLoop.threadRunning.put(serviceId, true);
+				thread.start();
+
+				// only start ~20 threads per second
+				Thread.sleep(50);
 			}
 		}
-		else
-		{
-			for (ServiceProcessThread processThread : processThreads)
-				ServerTimer.threadRunning.put(processThread.id, false);
-		}
-
-		ServerTimer.waitingProcessThreads.get(id).clear();
 	}
 }

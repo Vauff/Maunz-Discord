@@ -4,6 +4,7 @@ import com.github.koraktor.steamcondenser.servers.SourceServer;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
+import com.vauff.maunzdiscord.servertracking.ServerTrackingLoop;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -24,6 +25,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -126,6 +128,8 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 			.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
 
 		Main.mongoDatabase.getCollection("services").insertOne(service);
+		ServerTrackingLoop.lastInvalidatedCache = Instant.now();
+		ServerTrackingLoop.serverActiveServices.remove(serverId);
 
 		Util.editReply(event, "Successfully added server tracking on " + ip + ":" + port + " in " + channel.getMention() + "!");
 	}
@@ -175,6 +179,8 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 		}
 
 		Main.mongoDatabase.getCollection("services").deleteOne(eq("_id", service.getObjectId("_id")));
+		ServerTrackingLoop.lastInvalidatedCache = Instant.now();
+		ServerTrackingLoop.serverActiveServices.remove(service.getObjectId("serverID"));
 
 		Channel serviceChannel;
 		Document server = Main.mongoDatabase.getCollection("servers").find(eq("_id", service.getObjectId("serverID"))).projection(new Document("ip", 1).append("port", 1)).first();

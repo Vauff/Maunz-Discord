@@ -5,7 +5,7 @@ import com.mongodb.client.MongoDatabase;
 import com.vauff.maunzdiscord.commands.*;
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.servertracking.MapImageTimer;
-import com.vauff.maunzdiscord.servertracking.ServerTimer;
+import com.vauff.maunzdiscord.servertracking.ServerTrackingLoop;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -123,8 +123,10 @@ public class Main
 			gateway.on(GuildDeleteEvent.class, event -> Mono.fromRunnable(() -> MainListener.onGuildDelete(event))).subscribe();
 
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(MapImageTimer.timer, 0, 1, TimeUnit.HOURS);
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(PresenceTimer.timer, 1, 5, TimeUnit.MINUTES);
-			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(ServerTimer.timer, 10, 60, TimeUnit.SECONDS);
+			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(PresenceTimer.timer, 2, 5, TimeUnit.MINUTES);
+
+			// Initialize the server tracking main loop
+			new ServerTrackingLoop().start();
 
 			// Keep app alive by waiting for disconnect
 			gateway.onDisconnect().block();
