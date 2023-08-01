@@ -4,7 +4,7 @@
     <groupId>com.vauff.maunz-discord</groupId>
     <artifactId>maunz-discord</artifactId>
     <name>Maunz</name>
-    <description>Maunz is a Discord bot created by Vauff</description>
+    <description>A multi-purpose Discord bot with a focus on Source server tracking</description>
     <url>https://github.com/Vauff/Maunz-Discord</url>
     <build>
         <finalName>Maunz</finalName>

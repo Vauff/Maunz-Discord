@@ -32,7 +32,7 @@ public class About extends AbstractCommand<ChatInputInteractionEvent>
 			.color(Color.of(141, 99, 68))
 			.thumbnail("https://i.imgur.com/Fzw48O4.jpg")
 			.title("Maunz")
-			.description("Maunz is a multi-purpose bot with a focus on Source server tracking, it is developed by Vauff using the Discord4J library.")
+			.description("Maunz is a multi-purpose bot with a focus on Source server tracking, developed by Vauff using the Discord4J library.")
 			.addField("Version", Main.version, true)
 			.addField("Java Version", System.getProperty("java.version"), true)
 			.addField("Discord4J Version", GitProperties.getProperties().getProperty(GitProperties.APPLICATION_VERSION, "3"), true)
