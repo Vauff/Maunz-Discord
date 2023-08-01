@@ -5,9 +5,10 @@
     <artifactId>maunz-discord</artifactId>
     <name>Maunz</name>
     <description>A multi-purpose Discord bot with a focus on Source server tracking</description>
+    <version>r55</version>
     <url>https://github.com/Vauff/Maunz-Discord</url>
     <build>
-        <finalName>Maunz</finalName>
+        <finalName>Maunz-Discord</finalName>
         <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
@@ -15,6 +16,28 @@
                 <version>3.11.0</version>
                 <configuration>
                     <release>17</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.vauff.maunzdiscord.core.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
         </plugins>
@@ -72,5 +95,4 @@
             <version>4.10.2</version>
         </dependency>
     </dependencies>
-    <version>r55</version>
 </project>
