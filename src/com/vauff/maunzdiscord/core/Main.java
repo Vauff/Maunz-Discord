@@ -16,15 +16,10 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
-import discord4j.gateway.GatewayReactorResources;
-import discord4j.gateway.intent.Intent;
-import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.RestClient;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.resources.ConnectionProvider;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -97,13 +92,6 @@ public class Main
 			}
 
 			gateway = DiscordClient.create(cfg.getToken()).gateway()
-				.setEnabledIntents(IntentSet.nonPrivileged().andNot(IntentSet.of(Intent.MESSAGE_CONTENT)))
-				.setGatewayReactorResources(resources -> GatewayReactorResources.builder(resources)
-					.httpClient(HttpClient.create(ConnectionProvider.newConnection())
-						.compress(true)
-						.followRedirect(true)
-						.secure())
-					.build())
 				.withEventDispatcher(eventDispatcher ->
 				{
 					var event1 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
