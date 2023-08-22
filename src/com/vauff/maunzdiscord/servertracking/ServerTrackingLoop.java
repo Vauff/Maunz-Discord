@@ -64,6 +64,34 @@ public class ServerTrackingLoop implements Runnable
 					continue;
 				}
 
+				// Check if a shutdown is queued
+				if (Main.shutdownState == Main.ShutdownState.SHUTDOWN_QUEUED)
+				{
+					while (true)
+					{
+						boolean noThreadsRunning = true;
+
+						// Wait until no threads are running
+						for (Boolean value : threadRunning.values())
+						{
+							if (value)
+							{
+								noThreadsRunning = false;
+								break;
+							}
+						}
+
+						if (noThreadsRunning)
+							break;
+						else
+							Thread.sleep(1000);
+					}
+
+					// Stop, and mark the bot safe to shutdown
+					Main.shutdownState = Main.ShutdownState.SHUTDOWN_SAFE;
+					break;
+				}
+
 				List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
 				List<Document> serviceDocs = null;
 				long startTime = System.currentTimeMillis();

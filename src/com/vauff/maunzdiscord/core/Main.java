@@ -51,6 +51,22 @@ public class Main
 	 */
 	public static HashMap<Snowflake, Guild> guildCache = new HashMap<>();
 
+	/**
+	 * Current shutdown state of the bot
+	 *
+	 * NONE - Bot is not shutting down
+	 * SHUTDOWN_QUEUED - A bot shutdown is queued, waiting for server tracking loop & active threads to finish
+	 * SHUTDOWN_SAFE - Server tracking has fully finished, bot is now shutting down
+	 */
+	public enum ShutdownState
+	{
+		NONE,
+		SHUTDOWN_QUEUED,
+		SHUTDOWN_SAFE
+	}
+
+	public static ShutdownState shutdownState = ShutdownState.NONE;
+
 	public static void main(String[] args)
 	{
 		try

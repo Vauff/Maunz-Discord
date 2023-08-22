@@ -2,6 +2,7 @@ package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
 import com.vauff.maunzdiscord.core.Logger;
+import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.User;
@@ -13,8 +14,15 @@ public class Stop extends AbstractCommand<ChatInputInteractionEvent>
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
-		Util.editReply(event, "Maunz is stopping...");
-		Logger.log.info("Maunz is stopping...");
+		Main.shutdownState = Main.ShutdownState.SHUTDOWN_QUEUED;
+		Logger.log.info("Bot shutdown has been queued, please wait...");
+		Util.editReply(event, "Bot shutdown has been queued, please wait...");
+
+		while (Main.shutdownState != Main.ShutdownState.SHUTDOWN_SAFE)
+			Thread.sleep(1000);
+
+		Logger.log.info("Maunz is shutting down...");
+		Util.editReply(event, "Maunz is shutting down...");
 		System.exit(0);
 	}
 
