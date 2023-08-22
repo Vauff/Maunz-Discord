@@ -106,11 +106,13 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
 			connection.setRequestMethod("GET");
+			connection.setRequestProperty("User-Agent", Util.getUserAgent());
 			connection.setRequestProperty("Accept", "application/vnd.github+json");
 			connection.setRequestProperty("Authorization", "Bearer " + Main.cfg.getGitHubToken());
 			connection.connect();
 
-			if (connection.getResponseCode() != 200)
+			// 2XX HTTP status codes
+			if (connection.getResponseCode() / 100 != 2)
 				return "";
 
 			String jsonString = "";

@@ -1,6 +1,7 @@
 package com.vauff.maunzdiscord.commands;
 
 import com.vauff.maunzdiscord.commands.templates.AbstractCommand;
+import com.vauff.maunzdiscord.core.Logger;
 import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -9,12 +10,14 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
-import org.jsoup.Jsoup;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.net.URL;
 
 /**
  * Created by Ramon on 03-Apr-17.
@@ -79,7 +82,21 @@ public class IsItDown extends AbstractCommand<ChatInputInteractionEvent>
 
 			if (port == 80 || port == 443)
 			{
-				Jsoup.connect((port == 80 ? "http" : "https") + "://" + uri).userAgent(Main.cfg.getUserAgent()).get();
+				URL url = new URL((port == 80 ? "http" : "https") + "://" + uri);
+				HttpURLConnection connection = (port == 80 ? (HttpURLConnection) url.openConnection() : (HttpsURLConnection) url.openConnection());
+
+				connection.setRequestMethod("GET");
+				connection.setRequestProperty("User-Agent", Main.cfg.getFakeUserAgent());
+				connection.connect();
+
+				int divCode = connection.getResponseCode() / 100;
+				Logger.log.info(connection.getResponseCode());
+
+				// 2xx or 3xx HTTP status codes
+				if (divCode == 2 || divCode == 3)
+					return true;
+				else
+					return false;
 			}
 
 			return true;

@@ -245,7 +245,7 @@ public class Util
 		try
 		{
 			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-			connection.setRequestProperty("User-Agent", Main.cfg.getUserAgent());
+			connection.setRequestProperty("User-Agent", Main.cfg.getFakeUserAgent());
 			connection.setConnectTimeout(5000);
 			connection.setReadTimeout(5000);
 			image = ImageIO.read(connection.getInputStream());
@@ -318,5 +318,15 @@ public class Util
 
 		editReply(event, ":exclamation:  |  **An error has occured!**" + System.lineSeparator() + System.lineSeparator() + "If this was an unexpected error, please report it to Vauff in the #bugreports channel at http://discord.gg/MDx3sMz with the error code " + code);
 		Logger.log.error(code, e);
+	}
+
+	/**
+	 * Gets the bots real user agent
+	 *
+	 * @return The user agent
+	 */
+	public static String getUserAgent()
+	{
+		return "Maunz-Discord " + Main.version;
 	}
 }

@@ -29,7 +29,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 
 		try
 		{
-			searchDoc = Jsoup.connect("https://www.passmark.com/search/zoomsearch.php?zoom_query=" + query + "&zoom_cat=5").get();
+			searchDoc = Jsoup.connect("https://www.passmark.com/search/zoomsearch.php?zoom_query=" + query + "&zoom_cat=5").userAgent(Util.getUserAgent()).get();
 		}
 		catch (SocketException e)
 		{
@@ -57,7 +57,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 
 			try
 			{
-				benchDoc = Jsoup.connect(link).get();
+				benchDoc = Jsoup.connect(link).userAgent(Util.getUserAgent()).get();
 			}
 			catch (SocketException e)
 			{

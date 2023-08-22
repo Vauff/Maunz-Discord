@@ -101,15 +101,21 @@ public class Minecraft extends AbstractCommand<ChatInputInteractionEvent>
 			HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
 
 			connection.setRequestMethod("GET");
+			connection.setRequestProperty("User-Agent", Util.getUserAgent());
 			connection.connect();
 
+			int divCode = connection.getResponseCode() / 100;
 			String jsonString = "";
 			Scanner scanner;
 
-			if (connection.getResponseCode() == 200)
+			// 2xx HTTP status codes
+			if (divCode == 2)
 				scanner = new Scanner(connection.getInputStream());
-			else
+			// 4xx or 5xx HTTP status codes
+			else if (divCode == 4 || divCode == 5)
 				scanner = new Scanner(connection.getErrorStream());
+			else
+				return new JSONObject();
 
 			while (scanner.hasNext())
 				jsonString += scanner.nextLine();

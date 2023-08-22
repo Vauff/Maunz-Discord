@@ -22,7 +22,7 @@ public class Steam extends AbstractCommand<ChatInputInteractionEvent>
 		{
 			String argument = event.getInteraction().getCommandInteraction().get().getOption("steamid").get().getValue().get().asString();
 			String url = "https://steamid.xyz/" + argument.replace("\n", "").replace("\r", "");
-			Document site = Jsoup.connect(url).get();
+			Document site = Jsoup.connect(url).userAgent(Util.getUserAgent()).get();
 			String siteHtml = site.html();
 			String siteText = site.text();
 
