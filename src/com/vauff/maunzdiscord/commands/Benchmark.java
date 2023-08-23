@@ -108,7 +108,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(embedColor)
-					.thumbnail("https://i.imgur.com/nAe3jfd.jpg")
+					.thumbnail("https://i.imgur.com/AMBjEMd.jpg")
 					.title(name)
 					.url(link)
 					.footer("Powered by PassMark", "")
@@ -192,7 +192,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(embedColor)
-					.thumbnail("https://i.imgur.com/iKLrQQN.jpg")
+					.thumbnail("https://i.imgur.com/vFykcuw.jpg")
 					.title(name)
 					.url(link)
 					.footer("Powered by PassMark", "")
