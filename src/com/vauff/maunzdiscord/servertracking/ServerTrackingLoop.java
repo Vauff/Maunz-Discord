@@ -35,6 +35,7 @@ public class ServerTrackingLoop implements Runnable
 	public static Instant lastInvalidatedCache = Instant.ofEpochMilli(0L);
 
 	private Thread thread;
+	private final long LOOP_TIME = 60000;
 
 	public void start() throws Exception
 	{
@@ -59,8 +60,8 @@ public class ServerTrackingLoop implements Runnable
 			{
 				if (!Main.gateway.getGatewayClient(0).get().isConnected().block())
 				{
-					// Back off for 60 seconds and try again
-					Thread.sleep(60000);
+					// Back off for a full loop duration and try again
+					Thread.sleep(LOOP_TIME);
 					continue;
 				}
 
@@ -95,7 +96,7 @@ public class ServerTrackingLoop implements Runnable
 				List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
 				List<Document> serviceDocs = null;
 				long startTime = System.currentTimeMillis();
-				long targetSleepTime = 60000 / serverDocs.size();
+				long targetSleepTime = LOOP_TIME / serverDocs.size();
 				int iterCount = 0;
 
 				for (Document doc : serverDocs)
@@ -147,6 +148,12 @@ public class ServerTrackingLoop implements Runnable
 					if (sleepTime > 0)
 						Thread.sleep(sleepTime);
 				}
+
+				// Might still be ahead of schedule if last servers had no active services
+				long elapsedTime = System.currentTimeMillis() - startTime;
+
+				if (elapsedTime < LOOP_TIME)
+					Thread.sleep(LOOP_TIME - elapsedTime);
 
 				Logger.log.debug("Finished server tracking loop in " + (System.currentTimeMillis() - startTime) + " ms");
 			}
