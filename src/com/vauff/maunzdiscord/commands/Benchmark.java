@@ -126,28 +126,48 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 			{
 				date = fullDesc.split("CPU First Seen on Charts:</strong> ")[1].split("<")[0];
 				price = fullDesc.split("Last Price Change:</strong> ")[1].split("<")[0];
-				cores = fullDesc.split("Cores:</strong> ")[1].split("<")[0];
 				rank = fullDesc.split("Overall Rank:</strong> ")[1].split("<")[0];
 				ratio = fullDesc.split("CPUmark/\\$Price:</strong> ")[1].split("<")[0];
 
-				if (cores.contains(" physical modules)"))
+				// New cores format, Intel 12-13th gen & beyond
+				if (fullDesc.contains("Total Cores:</strong> "))
 				{
-					threads = cores.split(" \\(in ")[0];
-					cores = cores.split(" \\(in ")[1].split(" physical modules\\)")[0];
+					String totalCores = fullDesc.split("Total Cores:</strong> ")[1].split("<")[0];
+					cores = totalCores.split(" ")[0];
+					threads = totalCores.split(" Cores, ")[1].split(" Threads")[0];
+
+					String perfCores = fullDesc.split("Performance Cores:</strong> ")[1].split("<")[0];
+
+					if (perfCores.contains("Base"))
+						clockSpeed = perfCores.split(" Threads, ")[1].split(" Base, ")[0];
+
+					if (perfCores.contains("Turbo"))
+						turboSpeed = perfCores.split(" Base, ")[1].split(" Turbo")[0];
 				}
+				// Standard cores format
 				else
 				{
-					threads = fullDesc.split("Threads:</strong> ")[1].split("<")[0];
-				}
+					cores = fullDesc.split("Cores:</strong> ")[1].split("<")[0];
 
-				if (fullDesc.contains("Clockspeed:</strong> "))
-					clockSpeed = fullDesc.split("Clockspeed:</strong> ")[1].split("<")[0];
+					if (cores.contains(" physical modules)"))
+					{
+						threads = cores.split(" \\(in ")[0];
+						cores = cores.split(" \\(in ")[1].split(" physical modules\\)")[0];
+					}
+					else
+					{
+						threads = fullDesc.split("Threads:</strong> ")[1].split("<")[0];
+					}
+
+					if (fullDesc.contains("Clockspeed:</strong> "))
+						clockSpeed = fullDesc.split("Clockspeed:</strong> ")[1].split("<")[0];
+
+					if (fullDesc.contains("Turbo Speed:</strong> "))
+						turboSpeed = fullDesc.split("Turbo Speed:</strong> ")[1].split("<")[0];
+				}
 
 				if (fullDesc.contains("Single Thread Rating:</strong> "))
 					singleThread = fullDesc.split("Single Thread Rating:</strong> ")[1].split("<")[0].replace("\n", "");
-
-				if (fullDesc.contains("Turbo Speed:</strong> "))
-					turboSpeed = fullDesc.split("Turbo Speed:</strong> ")[1].split("<")[0];
 
 				if (fullDesc.contains("Typical TDP:</strong> "))
 					tdp = fullDesc.split("Typical TDP:</strong> ")[1].split("<")[0];
