@@ -27,8 +27,8 @@ import java.util.Scanner;
 
 public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 {
-	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
-	private static HashMap<Snowflake, String> listVersions = new HashMap<>();
+	private static final HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static final HashMap<Snowflake, String> listVersions = new HashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
@@ -111,7 +111,7 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 			connection.setRequestProperty("Authorization", "Bearer " + Main.cfg.getGitHubToken());
 			connection.connect();
 
-			// 2XX HTTP status codes
+			// Not a 2xx HTTP status code
 			if (connection.getResponseCode() / 100 != 2)
 				return "";
 

@@ -35,8 +35,8 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	/**
 	 * Button names used for buildPage
 	 */
-	public final String SELECTION_BTN_SUFFIX = "-selection";
-	public final String NOTIFY_BTN_SUFFIX = "-notify";
+	private final String SELECTION_BTN_SUFFIX = "-selection";
+	private final String NOTIFY_BTN_SUFFIX = "-notify";
 
 	private final static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 	private final static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
@@ -104,35 +104,14 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 
 		Document doc = Main.mongoDatabase.getCollection("services").find(eq("_id", selectedServices.get(user.getId()))).first();
 
-		if (buttonId.startsWith(NEXT_BTN))
+		if (buttonId.startsWith(NEXT_BTN) || buttonId.startsWith(PREV_BTN))
 		{
-			int page = listPages.get(user.getId());
+			int page = listPages.get(user.getId()) + (buttonId.startsWith(NEXT_BTN) ? 1 : -1);
 
 			if (buttonId.endsWith(SELECTION_BTN_SUFFIX))
-			{
-				runSelection(event, user, page + 1);
-				return;
-			}
-			if (buttonId.endsWith(NOTIFY_BTN_SUFFIX))
-			{
-				runNotificationList(event, user, doc, page + 1);
-				return;
-			}
-		}
-		else if (buttonId.startsWith(PREV_BTN))
-		{
-			int page = listPages.get(user.getId());
-
-			if (buttonId.endsWith(SELECTION_BTN_SUFFIX))
-			{
-				runSelection(event, user, page - 1);
-				return;
-			}
-			if (buttonId.endsWith(NOTIFY_BTN_SUFFIX))
-			{
-				runNotificationList(event, user, doc, page - 1);
-				return;
-			}
+				runSelection(event, user, page);
+			else if (buttonId.endsWith(NOTIFY_BTN_SUFFIX))
+				runNotificationList(event, user, doc, page);
 		}
 		else if (buttonId.startsWith("confirm-"))
 		{
@@ -152,8 +131,6 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 					Util.editReply(event, "Successfully wiped all of your map notifications!");
 					break;
 				}
-
-				return;
 			}
 			else
 			{

@@ -89,9 +89,7 @@ public class Main
 			}
 
 			if (exit)
-			{
 				System.exit(1);
-			}
 
 			Logger.log.info("Starting Maunz-Discord " + version + "...");
 			Logger.log.info("Connecting to MongoDB (" + cfg.getMongoConnectionString() + ")");

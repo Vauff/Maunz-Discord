@@ -158,7 +158,7 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 		}
 	}
 
-	private static void refreshAccessToken()
+	private void refreshAccessToken()
 	{
 		try
 		{

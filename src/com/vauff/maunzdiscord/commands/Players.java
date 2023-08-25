@@ -87,15 +87,9 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 		int page = selectionPages.get(user.getId());
 
 		if (buttonId.equals(NEXT_BTN))
-		{
 			runSelection(event, user, page + 1);
-			return;
-		}
 		else if (buttonId.equals(PREV_BTN))
-		{
 			runSelection(event, user, page - 1);
-			return;
-		}
 	}
 
 	private void runCmd(DeferrableInteractionEvent event, User user, Document doc)

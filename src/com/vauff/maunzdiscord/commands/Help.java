@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Help extends AbstractCommand<ChatInputInteractionEvent>
 {
-	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static final HashMap<Snowflake, Integer> listPages = new HashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception

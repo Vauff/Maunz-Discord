@@ -37,8 +37,8 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 {
-	private static HashMap<Snowflake, List<Document>> listServices = new HashMap<>();
-	private static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static final HashMap<Snowflake, List<Document>> listServices = new HashMap<>();
+	private static final HashMap<Snowflake, Integer> listPages = new HashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception

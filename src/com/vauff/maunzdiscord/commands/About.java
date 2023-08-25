@@ -70,7 +70,7 @@ public class About extends AbstractCommand<ChatInputInteractionEvent>
 	 *
 	 * @return The uptime of the bot formatted as the 2 top most values
 	 */
-	private static String getUptime()
+	private String getUptime()
 	{
 		Main.uptime.split();
 

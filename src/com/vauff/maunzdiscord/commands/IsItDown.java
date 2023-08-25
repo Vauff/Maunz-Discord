@@ -70,9 +70,9 @@ public class IsItDown extends AbstractCommand<ChatInputInteractionEvent>
 	 *
 	 * @param host The host to ping
 	 * @param port The port to ping the host at
-	 * @return true if the connection was successful, false otherwise (aka the socket could not connect to the host/port after timeout amount of milliseconds
+	 * @return true if the connection was successful, false otherwise (aka the socket could not connect to the host/port after timeout amount of milliseconds)
 	 */
-	private static boolean pingHost(String host, int port, String uri) throws Exception
+	private boolean pingHost(String host, int port, String uri) throws Exception
 	{
 		Socket socket = new Socket();
 

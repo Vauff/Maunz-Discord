@@ -23,6 +23,7 @@ public class Config extends JSONObject
 			put("devGuilds", new JSONArray());
 			put("discordToken", "");
 			put("gitHubToken", "");
+			put("steamApiKey", "");
 			put("userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
 			put("mongoDatabase", new JSONObject());
 			getJSONObject("mongoDatabase").put("connectionString", "");
@@ -57,6 +58,11 @@ public class Config extends JSONObject
 	public String getGitHubToken()
 	{
 		return getString("gitHubToken");
+	}
+
+	public String getSteamApiKey()
+	{
+		return getString("steamApiKey");
 	}
 
 	public String getFakeUserAgent()
