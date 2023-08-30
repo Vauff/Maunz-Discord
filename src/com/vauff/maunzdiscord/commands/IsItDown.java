@@ -90,7 +90,6 @@ public class IsItDown extends AbstractCommand<ChatInputInteractionEvent>
 				connection.connect();
 
 				int divCode = connection.getResponseCode() / 100;
-				Logger.log.info(connection.getResponseCode());
 
 				// 2xx or 3xx HTTP status codes
 				if (divCode == 2 || divCode == 3)
