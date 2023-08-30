@@ -14,6 +14,12 @@ public class Stop extends AbstractCommand<ChatInputInteractionEvent>
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
+		if (Main.shutdownState != Main.ShutdownState.NONE)
+		{
+			Util.editReply(event, "A bot shutdown is already queued!");
+			return;
+		}
+
 		Main.shutdownState = Main.ShutdownState.SHUTDOWN_QUEUED;
 		Logger.log.info("Bot shutdown has been queued, please wait...");
 		Util.editReply(event, "Bot shutdown has been queued, please wait...");
