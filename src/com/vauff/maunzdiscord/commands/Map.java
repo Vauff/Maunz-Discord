@@ -121,7 +121,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				return;
 			}
 
-			String url = MapImages.getMapImageURL(doc.getString("lastMap"), serverDoc.getInteger("appId"));
+			String url = MapImages.getMapImageURL(doc.getString("lastMap"), serverDoc.getString("appId"));
 			String ipPort = serverDoc.getString("ip") + ":" + serverDoc.getInteger("port");
 
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
@@ -195,7 +195,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 
 			if (!formattedMap.equals(""))
 			{
-				String url = MapImages.getMapImageURL(formattedMap, serverDoc.getInteger("appId"));
+				String url = MapImages.getMapImageURL(formattedMap, serverDoc.getString("appId"));
 				String lastPlayed = "";
 				String firstPlayed = "";
 

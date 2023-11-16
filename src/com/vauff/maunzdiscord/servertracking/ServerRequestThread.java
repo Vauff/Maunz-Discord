@@ -77,10 +77,11 @@ public class ServerRequestThread implements Runnable
 						serverInfoSuccess = true;
 					}
 
+					// TODO: Remove this eventually when most CS:GO servers die, issue is not present in CS2 and isn't worth keeping for a few servers
 					// CS:GO servers by default use host_info_show 1 which uses a game-specific A2S_INFO implementation, only host_info_show 2 uses SteamWorks
 					// Unfortunately this implementation is incapable of providing a correct player count during a map change (returns 0), so we work around this by double-checking "empty" CS:GO servers are actually empty a little while after
 					// See https://github.com/perilouswithadollarsign/cstrike15_src/blob/master/engine/baseserver.cpp#L1261, GetNumPlayers() uses m_pUserInfoTable which is emptied during a map change
-					if (doc.getInteger("appId") == 730 && server.getServerInfo().containsKey("numberOfPlayers") && !Objects.isNull(server.getServerInfo().get("numberOfPlayers")) && ((Byte) server.getServerInfo().get("numberOfPlayers")).intValue() == 0 && !retriedForCsgoPlayerCount)
+					if (doc.getString("appId").equals("730_csgo") && server.getServerInfo().containsKey("numberOfPlayers") && !Objects.isNull(server.getServerInfo().get("numberOfPlayers")) && ((Byte) server.getServerInfo().get("numberOfPlayers")).intValue() == 0 && !retriedForCsgoPlayerCount)
 					{
 						Thread.sleep(5000);
 						serverInfoSuccess = false;
@@ -131,7 +132,7 @@ public class ServerRequestThread implements Runnable
 
 			HashMap<String, Object> serverInfo = server.getServerInfo();
 			long timestamp = 0;
-			int appId = 0;
+			String appId = "0";
 			String map = "";
 			String name = "N/A";
 			int currentPlayers = 0;
@@ -149,11 +150,31 @@ public class ServerRequestThread implements Runnable
 
 			// 24-bit app id within 64-bit game id, may not be available
 			if (serverInfo.containsKey("gameId") && !Objects.isNull(serverInfo.get("gameId")))
-				appId = (int) (((long) serverInfo.get("gameId")) & (1L << 24) - 1L);
-
+				appId = String.valueOf((int) (((long) serverInfo.get("gameId")) & (1L << 24) - 1L));
 			// 16-bit app id, possibly truncated but (theoretically) always available
 			else if (serverInfo.containsKey("appId") && !Objects.isNull(serverInfo.get("appId")))
-				appId = (short) serverInfo.get("appId");
+				appId = String.valueOf((short) serverInfo.get("appId"));
+
+			// Special handling for CS:GO/CS2, thanks for two games on the same app id, Valve!
+			if (appId.equals("730"))
+			{
+				if (serverInfo.containsKey("gameVersion") && !Objects.isNull(serverInfo.get("gameVersion")))
+				{
+					String version = serverInfo.get("gameVersion").toString();
+
+					// Strip periods, take first three numbers only e.g. "1.38.8.1" > 138
+					int majorVersion = Integer.parseInt(version.replace(".", "").substring(0, 3));
+
+					if (majorVersion >= 139)
+						appId = "730_cs2";
+					else if (majorVersion <= 138)
+						appId = "730_csgo";
+				}
+				else
+				{
+					appId = "0";
+				}
+			}
 
 			if (serverInfo.containsKey("serverName") && !Objects.isNull(serverInfo.get("serverName")))
 				name = serverInfo.get("serverName").toString();
@@ -201,7 +222,7 @@ public class ServerRequestThread implements Runnable
 				}
 			}
 
-			if (appId != 0 && appId != doc.getInteger("appId"))
+			if (!appId.equals("0") && !appId.equals(doc.getString("appId")))
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("appId", appId)));
 
 			if (!playerCount.equals("") && !playerCount.equals(doc.getString("playerCount")))

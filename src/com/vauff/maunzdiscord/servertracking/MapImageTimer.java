@@ -64,16 +64,15 @@ public class MapImageTimer
 
 			Logger.log.debug("Map image API updated, rebuilding image list and clearing caches");
 
-			for (String key : response.keySet())
+			for (String appId : response.keySet())
 			{
-				if (!NumberUtils.isCreatable(key))
+				if (appId.equals("lastUpdated"))
 					continue;
 
 				ArrayList<String> maps = new ArrayList<>();
-				int appId = Integer.parseInt(key);
 
-				for (int i = 0; i < response.getJSONArray(key).length(); i++)
-					maps.add(response.getJSONArray(key).getString(i));
+				for (int i = 0; i < response.getJSONArray(appId).length(); i++)
+					maps.add(response.getJSONArray(appId).getString(i));
 
 				MapImages.mapImages.put(appId, maps);
 				MapImages.mapImageLookupCache.put(appId, new HashMap<>());

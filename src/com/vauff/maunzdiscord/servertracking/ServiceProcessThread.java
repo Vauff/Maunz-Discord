@@ -96,7 +96,7 @@ public class ServiceProcessThread implements Runnable
 
 			if (!map.equals("") && !doc.getString("lastMap").equalsIgnoreCase(map))
 			{
-				String url = MapImages.getMapImageURL(map, serverDoc.getInteger("appId"));
+				String url = MapImages.getMapImageURL(map, serverDoc.getString("appId"));
 				String ipPort = serverDoc.getString("ip") + ":" + serverDoc.getInteger("port");
 
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()

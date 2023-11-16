@@ -5,7 +5,7 @@
     <artifactId>maunz-discord</artifactId>
     <name>Maunz</name>
     <description>A multi-purpose Discord bot with a focus on Source server tracking</description>
-    <version>r56</version>
+    <version>r57</version>
     <url>https://github.com/Vauff/Maunz-Discord</url>
     <build>
         <finalName>Maunz-Discord</finalName>
