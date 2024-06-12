@@ -6,9 +6,11 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
@@ -16,8 +18,11 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
+import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -25,6 +30,8 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
@@ -39,6 +46,9 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	private final String NOTIFY_BTN_SUFFIX = "-notify";
 
 	private final static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private final Map<String, String> cachedMaps = new LinkedHashMap<>();
+	private long lastCached = -1;
+	private final static long CACHE_INVALIDATED = 60 * 10 * 1000;
 	private final static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
 	private final static HashMap<Snowflake, ObjectId> selectedServices = new HashMap<>();
 	private final static HashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new HashMap<>();
@@ -417,6 +427,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 					.name("mapname")
 					.description("Name of the map to add/remove, wildcard characters (*) are also supported here")
 					.type(ApplicationCommandOption.Type.STRING.getValue())
+					.autocomplete(true)
 					.required(true)
 					.build())
 				.build())
@@ -448,5 +459,54 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	public BotPermission getPermissionLevel()
 	{
 		return BotPermission.EVERYONE;
+	}
+
+	@Override
+	public List<ApplicationCommandOptionChoiceData> autoComplete(ChatInputAutoCompleteEvent event, ApplicationCommandInteractionOption option, String currentText){
+		final List<ApplicationCommandOptionChoiceData> choices = new ArrayList<>();
+		if (!option.getName().equals("mapname"))
+			return choices;
+
+		final long now = System.currentTimeMillis();
+		if (lastCached == -1 || (now - lastCached) > CACHE_INVALIDATED){
+			lastCached = now;
+			final FindIterable<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find();
+			cachedMaps.clear();
+			for(Document doc : serverDocs){
+				for (int i = 0; i < doc.getList("mapDatabase", Document.class).size(); i++) {
+					final String mapName = doc.getList("mapDatabase", Document.class).get(i).getString("map");
+					final String key = mapName.replace('_', ' ');
+					cachedMaps.put(key, mapName);
+				}
+			}
+
+		}
+		if (currentText.isEmpty()){
+			for (String map : cachedMaps.values()) {
+				choices.add(ApplicationCommandOptionChoiceData.builder()
+						.name(map)
+						.value(map)
+						.build()
+				);
+				if (choices.size() >= 25)
+					break;
+			}
+			return choices;
+		}
+
+		final String current = currentText.replace("_", " ");
+		List<ExtractedResult> matched = FuzzySearch.extractTop(
+				current, cachedMaps.keySet(), FuzzySearch::tokenSetPartialRatio, 25, 50
+		);
+		for(ExtractedResult mapMatch: matched){
+			String key = mapMatch.getString();
+			String map = cachedMaps.get(key);
+			choices.add(ApplicationCommandOptionChoiceData.builder()
+					.name(map)
+					.value(map)
+					.build()
+			);
+		}
+		return choices;
 	}
 }
