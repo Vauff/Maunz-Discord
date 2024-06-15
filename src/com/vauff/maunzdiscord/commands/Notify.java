@@ -29,6 +29,7 @@ import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.LinkedHashMap;
@@ -47,8 +48,9 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 
 	private final static HashMap<Snowflake, Integer> listPages = new HashMap<>();
 	private final Map<String, String> cachedMaps = new LinkedHashMap<>();
+	private final Map<String, Long> cachedPlayedMaps = new HashMap<>();
 	private long lastCached = -1;
-	private final static long CACHE_INVALIDATED = 60 * 10 * 1000;
+	private long oldestMapPlayed = System.currentTimeMillis();
 	private final static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
 	private final static HashMap<Snowflake, ObjectId> selectedServices = new HashMap<>();
 	private final static HashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new HashMap<>();
@@ -467,46 +469,56 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 		if (!option.getName().equals("mapname"))
 			return choices;
 
+		final String cleanText = currentText.trim().replace("_", " ").toLowerCase();
 		final long now = System.currentTimeMillis();
-		if (lastCached == -1 || (now - lastCached) > CACHE_INVALIDATED){
+		if (lastCached == -1 || (now - lastCached) > Util.MAP_AUTOCOMPLETE_CACHE_INVALIDATED){
 			lastCached = now;
 			final FindIterable<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find();
 			cachedMaps.clear();
+			cachedPlayedMaps.clear();
+			final List<String> mapFound = new ArrayList<>();
 			for(Document doc : serverDocs){
 				for (int i = 0; i < doc.getList("mapDatabase", Document.class).size(); i++) {
-					final String mapName = doc.getList("mapDatabase", Document.class).get(i).getString("map");
-					final String key = mapName.replace('_', ' ');
-					cachedMaps.put(key, mapName);
+					final Document map = doc.getList("mapDatabase", Document.class).get(i);
+					final String mapName = map.getString("map");
+					final long lastPlayed = map.getLong("lastPlayed");
+
+					mapFound.add(mapName);
+					cachedPlayedMaps.put(Util.getMapKey(mapName), lastPlayed);
+					oldestMapPlayed = Math.min(lastPlayed, oldestMapPlayed);
 				}
 			}
+			mapFound.sort(Collections.reverseOrder(
+					Comparator.comparing(map -> cachedPlayedMaps.get(Util.getMapKey(map)))
+			));
+			for(String map : mapFound)
+				cachedMaps.put(Util.getMapKey(map), map);
 
 		}
-		if (currentText.isEmpty()){
+		if (cleanText.isEmpty()){
 			for (String map : cachedMaps.values()) {
-				choices.add(ApplicationCommandOptionChoiceData.builder()
-						.name(map)
-						.value(map)
-						.build()
-				);
+				choices.add(Util.mapChoice(map));
 				if (choices.size() >= 25)
 					break;
 			}
 			return choices;
 		}
 
-		final String current = currentText.replace("_", " ");
 		List<ExtractedResult> matched = FuzzySearch.extractTop(
-				current, cachedMaps.keySet(), FuzzySearch::tokenSetPartialRatio, 25, 50
+				cleanText, cachedMaps.keySet(), this::mapWeightRatio, 25, Util.FUZZY_LIMIT_CUTOFF
 		);
 		for(ExtractedResult mapMatch: matched){
 			String key = mapMatch.getString();
 			String map = cachedMaps.get(key);
-			choices.add(ApplicationCommandOptionChoiceData.builder()
-					.name(map)
-					.value(map)
-					.build()
-			);
+			choices.add(Util.mapChoice(map));
 		}
 		return choices;
+	}
+	private int mapWeightRatio(String target, String mapMatching){
+		final long mapLatest = cachedPlayedMaps.get(mapMatching);
+		final long now = System.currentTimeMillis();
+		final int similarity = FuzzySearch.tokenSortPartialRatio(target, mapMatching);
+		final float played = (float) (now - mapLatest) / (now - oldestMapPlayed);
+		return (int) Math.round((((similarity / 100.0) * .8) + (played * 0.2)) * 100);
 	}
 }
