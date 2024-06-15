@@ -6,9 +6,11 @@ import com.vauff.maunzdiscord.core.Main;
 import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
@@ -16,15 +18,21 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
+import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
@@ -39,6 +47,10 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	private final String NOTIFY_BTN_SUFFIX = "-notify";
 
 	private final static HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private final Map<String, String> cachedMaps = new LinkedHashMap<>();
+	private final Map<String, Long> cachedPlayedMaps = new HashMap<>();
+	private long lastCached = -1;
+	private long oldestMapPlayed = System.currentTimeMillis();
 	private final static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
 	private final static HashMap<Snowflake, ObjectId> selectedServices = new HashMap<>();
 	private final static HashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new HashMap<>();
@@ -417,6 +429,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 					.name("mapname")
 					.description("Name of the map to add/remove, wildcard characters (*) are also supported here")
 					.type(ApplicationCommandOption.Type.STRING.getValue())
+					.autocomplete(true)
 					.required(true)
 					.build())
 				.build())
@@ -448,5 +461,64 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	public BotPermission getPermissionLevel()
 	{
 		return BotPermission.EVERYONE;
+	}
+
+	@Override
+	public List<ApplicationCommandOptionChoiceData> autoComplete(ChatInputAutoCompleteEvent event, ApplicationCommandInteractionOption option, String currentText){
+		final List<ApplicationCommandOptionChoiceData> choices = new ArrayList<>();
+		if (!option.getName().equals("mapname"))
+			return choices;
+
+		final String cleanText = currentText.trim().replace("_", " ").toLowerCase();
+		final long now = System.currentTimeMillis();
+		if (lastCached == -1 || (now - lastCached) > Util.MAP_AUTOCOMPLETE_CACHE_INVALIDATED){
+			lastCached = now;
+			final FindIterable<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find();
+			cachedMaps.clear();
+			cachedPlayedMaps.clear();
+			final List<String> mapFound = new ArrayList<>();
+			for(Document doc : serverDocs){
+				for (int i = 0; i < doc.getList("mapDatabase", Document.class).size(); i++) {
+					final Document map = doc.getList("mapDatabase", Document.class).get(i);
+					final String mapName = map.getString("map");
+					final long lastPlayed = map.getLong("lastPlayed");
+
+					mapFound.add(mapName);
+					cachedPlayedMaps.put(Util.getMapKey(mapName), lastPlayed);
+					oldestMapPlayed = Math.min(lastPlayed, oldestMapPlayed);
+				}
+			}
+			mapFound.sort(Collections.reverseOrder(
+					Comparator.comparing(map -> cachedPlayedMaps.get(Util.getMapKey(map)))
+			));
+			for(String map : mapFound)
+				cachedMaps.put(Util.getMapKey(map), map);
+
+		}
+		if (cleanText.isEmpty()){
+			for (String map : cachedMaps.values()) {
+				choices.add(Util.mapChoice(map));
+				if (choices.size() >= 25)
+					break;
+			}
+			return choices;
+		}
+
+		List<ExtractedResult> matched = FuzzySearch.extractTop(
+				cleanText, cachedMaps.keySet(), this::mapWeightRatio, 25, Util.FUZZY_LIMIT_CUTOFF
+		);
+		for(ExtractedResult mapMatch: matched){
+			String key = mapMatch.getString();
+			String map = cachedMaps.get(key);
+			choices.add(Util.mapChoice(map));
+		}
+		return choices;
+	}
+	private int mapWeightRatio(String target, String mapMatching){
+		final long mapLatest = cachedPlayedMaps.get(mapMatching);
+		final long now = System.currentTimeMillis();
+		final int similarity = FuzzySearch.tokenSetRatio(target, mapMatching);
+		final float played = (float) (mapLatest - oldestMapPlayed) / (now - oldestMapPlayed);
+		return (int) Math.round((((similarity / 100.0) * .8) + (played * 0.2)) * 100);
 	}
 }

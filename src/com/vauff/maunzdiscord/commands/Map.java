@@ -7,9 +7,11 @@ import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.servertracking.MapImages;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteraction;
+import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
@@ -17,15 +19,20 @@ import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
@@ -37,6 +44,8 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 	private final static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
 	private final static HashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new HashMap<>();
 
+	private final java.util.Map<String, String> cachedMaps = new LinkedHashMap<>();
+	private long lastCached = -1;
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
@@ -265,6 +274,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				.name("mapname")
 				.description("Name of a map to see stats for")
 				.type(ApplicationCommandOption.Type.STRING.getValue())
+				.autocomplete(true)
 				.build())
 			.build();
 	}
@@ -279,5 +289,59 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 	public BotPermission getPermissionLevel()
 	{
 		return BotPermission.EVERYONE;
+	}
+
+	@Override
+	public List<ApplicationCommandOptionChoiceData> autoComplete(ChatInputAutoCompleteEvent event, ApplicationCommandInteractionOption option, String currentText){
+		final List<ApplicationCommandOptionChoiceData> choices = new ArrayList<>();
+		if (!option.getName().equals("mapname"))
+			return choices;
+
+		final String cleanText = currentText.trim().replace("_", " ").toLowerCase();
+		final long now = System.currentTimeMillis();
+		if (lastCached == -1 || (now - lastCached) > Util.MAP_AUTOCOMPLETE_CACHE_INVALIDATED){
+			lastCached = now;
+			final FindIterable<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find();
+			cachedMaps.clear();
+			final java.util.Map<String, Long> cachedPlayedMaps = new HashMap<>();
+			final List<String> mapFound = new ArrayList<>();
+			for(Document doc : serverDocs){
+				for (int i = 0; i < doc.getList("mapDatabase", Document.class).size(); i++) {
+					final Document map = doc.getList("mapDatabase", Document.class).get(i);
+					final String mapName = map.getString("map");
+					final long lastPlayed = map.getLong("lastPlayed");
+
+					mapFound.add(mapName);
+					cachedPlayedMaps.put(Util.getMapKey(mapName), lastPlayed);
+				}
+			}
+			mapFound.sort(Collections.reverseOrder(
+					Comparator.comparing(map -> cachedPlayedMaps.get(Util.getMapKey(map)))
+			));
+			for(String map : mapFound)
+				cachedMaps.put(Util.getMapKey(map), map);
+
+		}
+		if (cleanText.isEmpty()){
+			for (String map : cachedMaps.values()) {
+				choices.add(Util.mapChoice(map));
+				if (choices.size() >= 25)
+					break;
+			}
+			return choices;
+		}
+
+		List<ExtractedResult> matched = FuzzySearch.extractTop(
+				cleanText, cachedMaps.keySet(), this::mapWeightRatio, 25, Util.FUZZY_LIMIT_CUTOFF
+		);
+		for(ExtractedResult mapMatch: matched){
+			String key = mapMatch.getString();
+			String map = cachedMaps.get(key);
+			choices.add(Util.mapChoice(map));
+		}
+		return choices;
+	}
+	private int mapWeightRatio(String target, String mapMatching){
+		return FuzzySearch.tokenSortPartialRatio(target, mapMatching);
 	}
 }

@@ -5,14 +5,18 @@ import com.vauff.maunzdiscord.core.Util;
 import com.vauff.maunzdiscord.objects.Await;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
+import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
 import discord4j.core.object.component.LayoutComponent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandData;
+import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
+import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import java.util.ArrayList;
@@ -211,5 +215,44 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 			buttonRows.add(ActionRow.of(pageButtons));
 
 		Util.editReply(event, formattedTitle + elementsString, null, buttonRows);
+	}
+	private static boolean exhaustAutocompleteOptions(ApplicationCommandOptionData option){
+		if (option.options().isAbsent()){
+			if(!option.autocomplete().isAbsent()){
+				return option.autocomplete().get();
+			}
+			return false;
+		}
+		for (ApplicationCommandOptionData opt : option.options().get()){
+			boolean hasAutocomplete = false;
+			if (!opt.options().isAbsent())
+				hasAutocomplete = exhaustAutocompleteOptions(opt);
+			else if (!opt.autocomplete().isAbsent())
+				hasAutocomplete = opt.autocomplete().get();
+			if (hasAutocomplete)
+				return true;
+		}
+
+		return false;
+	}
+	private Boolean autocomplete = null;
+	public final boolean hasAutocomplete(){
+		if (autocomplete == null)
+			autocomplete = containAutocomplete();
+
+		return autocomplete;
+	}
+	public boolean containAutocomplete(){
+		if (getCommandRequest().options().isAbsent())
+			return false;
+
+		for (ApplicationCommandOptionData option : getCommandRequest().options().get()){
+			if (exhaustAutocompleteOptions(option))
+				return true;
+		}
+		return false;
+	}
+	public List<ApplicationCommandOptionChoiceData> autoComplete(ChatInputAutoCompleteEvent event, ApplicationCommandInteractionOption option, String currentText){
+		return new ArrayList<>();
 	}
 }
