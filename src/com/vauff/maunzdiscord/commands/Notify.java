@@ -517,8 +517,8 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	private int mapWeightRatio(String target, String mapMatching){
 		final long mapLatest = cachedPlayedMaps.get(mapMatching);
 		final long now = System.currentTimeMillis();
-		final int similarity = FuzzySearch.tokenSortPartialRatio(target, mapMatching);
-		final float played = (float) (now - mapLatest) / (now - oldestMapPlayed);
+		final int similarity = FuzzySearch.tokenSetRatio(target, mapMatching);
+		final float played = (float) (mapLatest - oldestMapPlayed) / (now - oldestMapPlayed);
 		return (int) Math.round((((similarity / 100.0) * .8) + (played * 0.2)) * 100);
 	}
 }
