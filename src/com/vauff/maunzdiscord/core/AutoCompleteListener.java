@@ -13,9 +13,9 @@ import java.util.List;
 public class AutoCompleteListener {
     public static Mono<Void> process(ChatInputAutoCompleteEvent event){
         AbstractCommand<ChatInputInteractionEvent> command = Main.commands.get(event.getCommandName());
-        if (command == null){
+        if (command == null)
             return null;
-        }
+
         if (!command.hasAutocomplete())
             return null;
 

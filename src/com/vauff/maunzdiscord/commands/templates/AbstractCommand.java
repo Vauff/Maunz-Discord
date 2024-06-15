@@ -217,24 +217,37 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 		Util.editReply(event, formattedTitle + elementsString, null, buttonRows);
 	}
 	private static boolean exhaustAutocompleteOptions(ApplicationCommandOptionData option){
+		if (option.options().isAbsent()){
+			if(!option.autocomplete().isAbsent()){
+				return option.autocomplete().get();
+			}
+			return false;
+		}
 		for (ApplicationCommandOptionData opt : option.options().get()){
 			boolean hasAutocomplete = false;
 			if (!opt.options().isAbsent())
 				hasAutocomplete = exhaustAutocompleteOptions(opt);
-			if (!opt.autocomplete().isAbsent())
-				hasAutocomplete |= opt.autocomplete().get();
+			else if (!opt.autocomplete().isAbsent())
+				hasAutocomplete = opt.autocomplete().get();
 			if (hasAutocomplete)
 				return true;
 		}
 
 		return false;
 	}
-	public boolean hasAutocomplete(){
+	private Boolean autocomplete = null;
+	public final boolean hasAutocomplete(){
+		if (autocomplete == null)
+			autocomplete = containAutocomplete();
+
+		return autocomplete;
+	}
+	public boolean containAutocomplete(){
 		if (getCommandRequest().options().isAbsent())
 			return false;
 
 		for (ApplicationCommandOptionData option : getCommandRequest().options().get()){
-			if (!exhaustAutocompleteOptions(option))
+			if (exhaustAutocompleteOptions(option))
 				return true;
 		}
 		return false;
