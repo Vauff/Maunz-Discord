@@ -94,5 +94,10 @@
             <artifactId>mongodb-driver-sync</artifactId>
             <version>5.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>me.xdrop</groupId>
+            <artifactId>fuzzywuzzy</artifactId>
+            <version>1.3.0</version>
+        </dependency>
     </dependencies>
 </project>

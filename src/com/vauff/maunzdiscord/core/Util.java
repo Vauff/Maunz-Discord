@@ -10,6 +10,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateMono;
+import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.rest.http.client.ClientException;
 import discord4j.rest.util.AllowedMentions;
 import discord4j.rest.util.Color;
@@ -329,4 +330,17 @@ public class Util
 	{
 		return "Maunz-Discord " + Main.version;
 	}
+
+	public static final long MAP_AUTOCOMPLETE_CACHE_INVALIDATED = 60 * 10 * 1000;
+	public static final int FUZZY_LIMIT_CUTOFF = 75;
+	public static String getMapKey(String mapName){
+		return mapName.replace('_', ' ');
+	}
+	public static ApplicationCommandOptionChoiceData mapChoice(final String map){
+		return ApplicationCommandOptionChoiceData.builder()
+				.name(map)
+				.value(map)
+				.build();
+	}
+
 }
