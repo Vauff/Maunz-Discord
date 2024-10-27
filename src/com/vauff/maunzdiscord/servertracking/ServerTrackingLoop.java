@@ -96,7 +96,7 @@ public class ServerTrackingLoop implements Runnable
 				List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
 				List<Document> serviceDocs = null;
 				long startTime = System.currentTimeMillis();
-				long targetSleepTime = LOOP_TIME / serverDocs.size();
+				long targetSleepTime = LOOP_TIME / Math.max(serverDocs.size(), 1);
 				int iterCount = 0;
 
 				for (Document doc : serverDocs)
