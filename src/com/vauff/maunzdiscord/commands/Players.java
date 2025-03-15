@@ -107,7 +107,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (numberOfPlayers < 2 && serverDoc.getString("appId").equals("730_cs2"))
 		{
-			Util.editReply(event, "Players Online: **" + serverDoc.getString("playerCount") + "**\n\n**Note:** Counter-Strike 2 servers do not currently support querying player information");
+			Util.editReply(event, "Players Online: **" + serverDoc.getString("playerCount") + "**\n\n**Note:** Counter-Strike 2 servers only support querying player information if [ServerListPlayersFix](<https://github.com/Source2ZE/ServerListPlayersFix>) is installed");
 			return;
 		}
 
