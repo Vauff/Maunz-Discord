@@ -136,7 +136,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 			EmbedCreateSpec embed = EmbedCreateSpec.builder()
 				.color(MapImages.getMapImageColour(url))
 				.timestamp(Instant.ofEpochMilli(serverDoc.getLong("timestamp")))
-				.description("Currently Playing: **" + doc.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + serverDoc.getString("playerCount") + "**\nQuick Join: **[" + ipPort + "](https://vauff.com/connect.php?ip=" + ipPort + ")**")
+				.description("Currently Playing: **" + doc.getString("lastMap").replace("_", "\\_") + "**\nPlayers Online: **" + serverDoc.getInteger("playerCount") + "/" + serverDoc.getInteger("maxPlayers") + "**\nQuick Join: **[" + ipPort + "](https://vauff.com/connect.php?ip=" + ipPort + ")**")
 				.build();
 
 			if (!url.equals(""))

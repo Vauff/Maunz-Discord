@@ -103,29 +103,31 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 			return;
 		}
 
-		int numberOfPlayers = serverDoc.getList("players", String.class).size();
+		// This can often differ from playerCount as it won't include players in the process of joining
+		int playersSize = serverDoc.getList("players", String.class).size();
 
-		if (numberOfPlayers < 2 && serverDoc.getString("appId").equals("730_cs2"))
+		// We can identify these servers because they respond with an "empty" A2S_PLAYER response, always 1 player named as empty string if anyone ingame
+		if (playersSize == 1 && serverDoc.getList("players", String.class).get(0).equals("") && serverDoc.getString("appId").equals("730_cs2"))
 		{
-			Util.editReply(event, "Players Online: **" + serverDoc.getString("playerCount") + "**\n\n**Note:** Counter-Strike 2 servers only support querying player information if [ServerListPlayersFix](<https://github.com/Source2ZE/ServerListPlayersFix>) is installed");
+			Util.editReply(event, "Players Online: **" + serverDoc.getInteger("playerCount") + "/" + serverDoc.getInteger("maxPlayers") + "**\n\n**Note:** Counter-Strike 2 servers only support querying player information if [ServerListPlayersFix](<https://github.com/Source2ZE/ServerListPlayersFix>) is installed");
 			return;
 		}
 
-		if (numberOfPlayers == 0)
+		if (playersSize == 0)
 		{
 			Util.editReply(event, "There are currently no players online!");
 			return;
 		}
 
-		if (numberOfPlayers == 1 && serverDoc.getList("players", String.class).get(0).equals("SERVER_UPDATEPLAYERS_FAILED"))
+		if (playersSize == 1 && serverDoc.getList("players", String.class).get(0).equals("SERVER_UPDATEPLAYERS_FAILED"))
 		{
 			Util.editReply(event, "The server failed to return player information, please try again later");
 			return;
 		}
 
-		boolean sizeIsSmall = numberOfPlayers <= 8;
+		boolean sizeIsSmall = playersSize <= 8;
 
-		playersList.append("```-- Players Online: " + serverDoc.getString("playerCount") + " --" + System.lineSeparator() + System.lineSeparator());
+		playersList.append("```-- Players Online: " + serverDoc.getInteger("playerCount") + "/" + serverDoc.getInteger("maxPlayers") + " --" + System.lineSeparator() + System.lineSeparator());
 
 		for (String player : serverDoc.getList("players", String.class))
 		{

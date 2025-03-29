@@ -92,7 +92,8 @@ public class ServiceProcessThread implements Runnable
 			long timestamp = serverDoc.getLong("timestamp");
 			String map = serverDoc.getString("map");
 			String name = serverDoc.getString("name");
-			String playerCount = serverDoc.getString("playerCount");
+			int playerCount = serverDoc.getInteger("playerCount");
+			int maxPlayers = serverDoc.getInteger("maxPlayers");
 
 			if (!map.equals("") && !doc.getString("lastMap").equalsIgnoreCase(map))
 			{
@@ -102,7 +103,7 @@ public class ServiceProcessThread implements Runnable
 				EmbedCreateSpec embed = EmbedCreateSpec.builder()
 					.color(MapImages.getMapImageColour(url))
 					.timestamp(Instant.ofEpochMilli(timestamp))
-					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "**\nQuick Join: **[" + ipPort + "](https://vauff.com/connect.php?ip=" + ipPort + ")**")
+					.description("Now Playing: **" + map.replace("_", "\\_") + "**\nPlayers Online: **" + playerCount + "/" + maxPlayers + "**\nQuick Join: **[" + ipPort + "](https://vauff.com/connect.php?ip=" + ipPort + ")**")
 					.build();
 
 				if (!url.equals(""))

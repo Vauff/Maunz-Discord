@@ -28,9 +28,9 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -289,8 +289,8 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 			return id;
 		}
 
-		Document server = new Document("enabled", true).append("ip", ip).append("port", port).append("appId", "0").append("name", "N/A").append("map", "N/A").append("timestamp", 0L).append("playerCount", "0/0").append("players", new ArrayList())
-			.append("downtimeTimer", 0).append("failedConnectionsThreshold", 3).append("mapDatabase", new ArrayList());
+		Document server = new Document("enabled", true).append("ip", ip).append("port", port).append("appId", "0").append("name", "N/A").append("map", "N/A").append("timestamp", 0L).append("playerCount", 0).append("maxPlayers", 0)
+			.append("players", new ArrayList()).append("downtimeTimer", 0).append("failedConnectionsThreshold", 3).append("mapDatabase", new ArrayList());
 
 		return Main.mongoDatabase.getCollection("servers").insertOne(server).getInsertedId().asObjectId().getValue();
 	}

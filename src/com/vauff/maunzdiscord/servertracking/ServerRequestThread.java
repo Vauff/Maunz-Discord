@@ -125,7 +125,7 @@ public class ServerRequestThread implements Runnable
 			String appId = "0";
 			String map = "";
 			String name = "N/A";
-			int currentPlayers = 0;
+			int playerCount = 0;
 			int maxPlayers = 0;
 
 			if (serverInfo.containsKey("mapName") && !Objects.isNull(serverInfo.get("mapName")))
@@ -170,15 +170,13 @@ public class ServerRequestThread implements Runnable
 				name = serverInfo.get("serverName").toString();
 
 			if (serverInfo.containsKey("numberOfPlayers") && !Objects.isNull(serverInfo.get("numberOfPlayers")))
-				currentPlayers = ((Byte) serverInfo.get("numberOfPlayers")).intValue();
+				playerCount = ((Byte) serverInfo.get("numberOfPlayers")).intValue();
 
 			if (serverInfo.containsKey("maxPlayers") && !Objects.isNull(serverInfo.get("maxPlayers")))
 				maxPlayers = ((Byte) serverInfo.get("maxPlayers")).intValue();
 
-			if (currentPlayers > maxPlayers && maxPlayers >= 0)
-				currentPlayers = maxPlayers;
-
-			String playerCount = currentPlayers + "/" + maxPlayers;
+			if (playerCount > maxPlayers && maxPlayers >= 0)
+				playerCount = maxPlayers;
 
 			if (!map.equals("") && !map.equalsIgnoreCase(doc.getString("map")))
 			{
@@ -215,8 +213,11 @@ public class ServerRequestThread implements Runnable
 			if (!appId.equals("0") && !appId.equals(doc.getString("appId")))
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("appId", appId)));
 
-			if (!playerCount.equals("") && !playerCount.equals(doc.getString("playerCount")))
+			if (playerCount != doc.getInteger("playerCount"))
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("playerCount", playerCount)));
+
+			if (maxPlayers != doc.getInteger("maxPlayers"))
+				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("maxPlayers", maxPlayers)));
 
 			if (timestamp != 0)
 				Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("timestamp", timestamp)));
