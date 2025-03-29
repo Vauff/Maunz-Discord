@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
@@ -40,11 +40,11 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Map extends AbstractCommand<ChatInputInteractionEvent>
 {
-	private final static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
-	private final static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
-	private final static HashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new HashMap<>();
+	private final static ConcurrentHashMap<Snowflake, List<Document>> selectionServices = new ConcurrentHashMap<>();
+	private final static ConcurrentHashMap<Snowflake, Integer> selectionPages = new ConcurrentHashMap<>();
+	private final static ConcurrentHashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new ConcurrentHashMap<>();
 
-	private final java.util.Map<String, String> cachedMaps = new LinkedHashMap<>();
+	private final ConcurrentHashMap<String, String> cachedMaps = new ConcurrentHashMap<>();
 	private long lastCached = -1;
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
@@ -303,7 +303,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 			lastCached = now;
 			final FindIterable<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find();
 			cachedMaps.clear();
-			final java.util.Map<String, Long> cachedPlayedMaps = new HashMap<>();
+			final HashMap<String, Long> cachedPlayedMaps = new HashMap<>();
 			final List<String> mapFound = new ArrayList<>();
 			for(Document doc : serverDocs){
 				for (int i = 0; i < doc.getList("mapDatabase", Document.class).size(); i++) {

@@ -21,6 +21,7 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +51,7 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 	 * Holds messages as keys which await a button press by a specific user.
 	 * The values hold an instance of {@link Await}
 	 */
-	public static final HashMap<Snowflake, Await<AbstractCommand>> AWAITED = new HashMap<>();
+	public static final ConcurrentHashMap<Snowflake, Await<AbstractCommand>> AWAITED = new ConcurrentHashMap<>();
 
 	/**
 	 * Holds this commands ApplicationCommandData:

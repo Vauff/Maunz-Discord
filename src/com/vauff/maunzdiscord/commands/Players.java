@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
@@ -27,8 +27,8 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Players extends AbstractCommand<ChatInputInteractionEvent>
 {
-	private final static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
-	private final static HashMap<Snowflake, Integer> selectionPages = new HashMap<>();
+	private final static ConcurrentHashMap<Snowflake, List<Document>> selectionServices = new ConcurrentHashMap<>();
+	private final static ConcurrentHashMap<Snowflake, Integer> selectionPages = new ConcurrentHashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception

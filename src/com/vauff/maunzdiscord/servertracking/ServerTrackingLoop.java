@@ -8,7 +8,7 @@ import org.bson.types.ObjectId;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,12 +22,12 @@ public class ServerTrackingLoop implements Runnable
 	/**
 	 * Holds the boolean status of whether each server/service currently has a thread running or not
 	 */
-	public static HashMap<ObjectId, Boolean> threadRunning = new HashMap<>();
+	public static ConcurrentHashMap<ObjectId, Boolean> threadRunning = new ConcurrentHashMap<>();
 
 	/**
 	 * How many active services a server ID has attached
 	 */
-	public static HashMap<ObjectId, Integer> serverActiveServices = new HashMap<>();
+	public static ConcurrentHashMap<ObjectId, Integer> serverActiveServices = new ConcurrentHashMap<>();
 
 	/**
 	 * Last time serverActiveServices cache was invalidated

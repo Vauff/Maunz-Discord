@@ -30,9 +30,7 @@ import org.bson.types.ObjectId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.and;
@@ -46,14 +44,14 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	private final String SELECTION_BTN_SUFFIX = "-selection";
 	private final String NOTIFY_BTN_SUFFIX = "-notify";
 
-	private final static HashMap<Snowflake, Integer> listPages = new HashMap<>();
-	private final Map<String, String> cachedMaps = new LinkedHashMap<>();
-	private final Map<String, Long> cachedPlayedMaps = new HashMap<>();
+	private final static ConcurrentHashMap<Snowflake, Integer> listPages = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, String> cachedMaps = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, Long> cachedPlayedMaps = new ConcurrentHashMap<>();
 	private long lastCached = -1;
 	private long oldestMapPlayed = System.currentTimeMillis();
-	private final static HashMap<Snowflake, List<Document>> selectionServices = new HashMap<>();
-	private final static HashMap<Snowflake, ObjectId> selectedServices = new HashMap<>();
-	private final static HashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new HashMap<>();
+	private final static ConcurrentHashMap<Snowflake, List<Document>> selectionServices = new ConcurrentHashMap<>();
+	private final static ConcurrentHashMap<Snowflake, ObjectId> selectedServices = new ConcurrentHashMap<>();
+	private final static ConcurrentHashMap<Snowflake, ApplicationCommandInteraction> cmdInteractions = new ConcurrentHashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception

@@ -6,24 +6,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MapImages
 {
 	/**
 	 * Holds the latest image lists pulled from vauff.com
 	 */
-	public static HashMap<String, ArrayList<String>> mapImages = new HashMap<>();
+	public static ConcurrentHashMap<String, ArrayList<String>> mapImages = new ConcurrentHashMap<>();
 
 	/**
 	 * Cached lookup results from Util#getMapImageURL
 	 */
-	public static HashMap<String, HashMap<String, String>> mapImageLookupCache = new HashMap<>();
+	public static ConcurrentHashMap<String, ConcurrentHashMap<String, String>> mapImageLookupCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Cached colour results from Util#averageColourFromURL
 	 */
-	public static HashMap<String, Color> mapImageColourCache = new HashMap<>();
+	public static ConcurrentHashMap<String, Color> mapImageColourCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Unix timestamp of when the currently stored map images API data was last updated
@@ -44,9 +44,9 @@ public class MapImages
 		String mapLower = map.toLowerCase();
 
 		if (!mapImageLookupCache.containsKey(appId))
-			mapImageLookupCache.put(appId, new HashMap<>());
+			mapImageLookupCache.put(appId, new ConcurrentHashMap<>());
 
-		HashMap<String, String> gameCache = mapImageLookupCache.get(appId);
+		ConcurrentHashMap<String, String> gameCache = mapImageLookupCache.get(appId);
 
 		if (gameCache.containsKey(mapLower))
 			return gameCache.get(mapLower);

@@ -22,13 +22,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Scanner;
 
 public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 {
-	private static final HashMap<Snowflake, Integer> listPages = new HashMap<>();
-	private static final HashMap<Snowflake, String> listVersions = new HashMap<>();
+	private static final ConcurrentHashMap<Snowflake, Integer> listPages = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<Snowflake, String> listVersions = new ConcurrentHashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception

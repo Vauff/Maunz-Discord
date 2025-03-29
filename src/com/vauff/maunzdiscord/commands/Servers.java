@@ -28,7 +28,7 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,8 +37,8 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 {
-	private static final HashMap<Snowflake, List<Document>> listServices = new HashMap<>();
-	private static final HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static final ConcurrentHashMap<Snowflake, List<Document>> listServices = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<Snowflake, Integer> listPages = new ConcurrentHashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception

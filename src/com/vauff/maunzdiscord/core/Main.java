@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -50,7 +51,7 @@ public class Main
 	/**
 	 * Cached Guild objects, to avoid constant getGuildById calls to Discord API
 	 */
-	public static HashMap<Snowflake, Guild> guildCache = new HashMap<>();
+	public static ConcurrentHashMap<Snowflake, Guild> guildCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Current shutdown state of the bot

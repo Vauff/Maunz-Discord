@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +25,7 @@ public class ServerRequestThread implements Runnable
 	/**
 	 * Cached InetAddress objects, because it's *very* expensive to constantly run InetAddress.getByName
 	 */
-	private static HashMap<String, InetAddress> serverAddresses = new HashMap<>();
+	private static ConcurrentHashMap<String, InetAddress> serverAddresses = new ConcurrentHashMap<>();
 	private Thread thread;
 	private ObjectId id;
 	private String ipPort;

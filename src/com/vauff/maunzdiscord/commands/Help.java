@@ -16,12 +16,12 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
 public class Help extends AbstractCommand<ChatInputInteractionEvent>
 {
-	private static final HashMap<Snowflake, Integer> listPages = new HashMap<>();
+	private static final ConcurrentHashMap<Snowflake, Integer> listPages = new ConcurrentHashMap<>();
 
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception

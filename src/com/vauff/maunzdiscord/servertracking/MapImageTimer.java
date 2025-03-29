@@ -9,7 +9,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Scanner;
 
 /**
@@ -75,7 +75,7 @@ public class MapImageTimer
 					maps.add(response.getJSONArray(appId).getString(i));
 
 				MapImages.mapImages.put(appId, maps);
-				MapImages.mapImageLookupCache.put(appId, new HashMap<>());
+				MapImages.mapImageLookupCache.put(appId, new ConcurrentHashMap<>());
 				MapImages.mapImageColourCache.clear();
 			}
 
