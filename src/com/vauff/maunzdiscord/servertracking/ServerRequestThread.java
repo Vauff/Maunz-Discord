@@ -11,6 +11,7 @@ import org.bson.types.ObjectId;
 
 import java.net.InetAddress;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +27,7 @@ public class ServerRequestThread implements Runnable
 	 * Cached InetAddress objects, because it's *very* expensive to constantly run InetAddress.getByName
 	 */
 	private static ConcurrentHashMap<String, InetAddress> serverAddresses = new ConcurrentHashMap<>();
+	private static Instant serverAddressesCreated = Instant.ofEpochMilli(0);
 	private Thread thread;
 	private ObjectId id;
 	private String ipPort;
@@ -266,5 +268,18 @@ public class ServerRequestThread implements Runnable
 				Thread.sleep(50);
 			}
 		}
+	}
+
+	/**
+	 * Wipes cached server addresses once they're older than a day
+	 * This is to allow for potential DNS updates
+	 */
+	public static void checkServerAddresses()
+	{
+		if (serverAddressesCreated.plus(1, ChronoUnit.DAYS).isAfter(Instant.now()))
+			return;
+
+		serverAddresses.clear();
+		serverAddressesCreated = Instant.now();
 	}
 }

@@ -58,13 +58,6 @@ public class ServerTrackingLoop implements Runnable
 		{
 			try
 			{
-				if (!Main.gateway.getGatewayClient(0).get().isConnected().block())
-				{
-					// Back off for a full loop duration and try again
-					Thread.sleep(LOOP_TIME);
-					continue;
-				}
-
 				// Check if a shutdown is queued
 				if (Main.shutdownState == Main.ShutdownState.SHUTDOWN_QUEUED)
 				{
@@ -92,6 +85,15 @@ public class ServerTrackingLoop implements Runnable
 					Main.shutdownState = Main.ShutdownState.SHUTDOWN_SAFE;
 					break;
 				}
+
+				if (!Main.gateway.getGatewayClient(0).get().isConnected().block())
+				{
+					// Back off for a full loop duration and try again
+					Thread.sleep(LOOP_TIME);
+					continue;
+				}
+
+				ServerRequestThread.checkServerAddresses();
 
 				List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
 				List<Document> serviceDocs = null;
