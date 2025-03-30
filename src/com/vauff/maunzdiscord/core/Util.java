@@ -331,16 +331,32 @@ public class Util
 		return "Maunz-Discord " + Main.version;
 	}
 
+	/**
+	 * Adds escape characters to all characters Discord uses for Markdown formatting
+	 *
+	 * @param text The original string
+	 * @return The escaped string
+	 */
+	public static String escapeString(String text)
+	{
+		return text.replace("_", "\\_").replace("*", "\\*").replace("`", "\\`").replace("-", "\\-").replace(">", "\\>")
+			.replace("#", "\\#").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)");
+	}
+
 	public static final long MAP_AUTOCOMPLETE_CACHE_INVALIDATED = 60 * 10 * 1000;
 	public static final int FUZZY_LIMIT_CUTOFF = 75;
-	public static String getMapKey(String mapName){
+
+	public static String getMapKey(String mapName)
+	{
 		return mapName.replace('_', ' ');
 	}
-	public static ApplicationCommandOptionChoiceData mapChoice(final String map){
+
+	public static ApplicationCommandOptionChoiceData mapChoice(final String map)
+	{
 		return ApplicationCommandOptionChoiceData.builder()
-				.name(map)
-				.value(map)
-				.build();
+			.name(map)
+			.value(map)
+			.build();
 	}
 
 }

@@ -321,7 +321,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 						buttons.add(Button.success("confirm-" + mapArg, StringUtils.substring("Add " + mapArg, 0, 80)));
 						buttons.add(Button.danger("cancel-notify", "Cancel"));
 
-						Util.editReply(event, "The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database, are you sure you'd like to add it?", ActionRow.of(buttons));
+						Util.editReply(event, "The map **" + Util.escapeString(mapArg) + "** is not in my maps database, are you sure you'd like to add it?", ActionRow.of(buttons));
 						waitForButtonPress(event.getReply().block().getId(), user.getId());
 					}
 					else
@@ -329,7 +329,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 						buttons.add(Button.primary("confirm-" + mapSuggestion, StringUtils.substring(mapSuggestion, 0, 80)));
 						buttons.add(Button.primary("confirm-" + mapArg, StringUtils.substring(mapArg, 0, 80)));
 
-						Util.editReply(event, "The map **" + mapArg.replace("_", "\\_") + "** is not in my maps database (did you maybe mean **" + mapSuggestion.replace("_", "\\_") + "** instead?), please select which map you would like to choose", ActionRow.of(buttons));
+						Util.editReply(event, "The map **" + Util.escapeString(mapArg) + "** is not in my maps database (did you maybe mean **" + Util.escapeString(mapSuggestion) + "** instead?), please select which map you would like to choose", ActionRow.of(buttons));
 						waitForButtonPress(event.getReply().block().getId(), user.getId());
 					}
 				}
@@ -375,7 +375,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		List<Document> notificationDocs = doc.getList("notifications", Document.class);
 
-		Util.editReply(event, "Adding **" + notification.replace("_", "\\_") + "** to your map notifications!");
+		Util.editReply(event, "Adding **" + Util.escapeString(notification) + "** to your map notifications!");
 
 		for (int i = 0; i < notificationDocs.size(); i++)
 		{
@@ -400,7 +400,7 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 	{
 		List<Document> notificationDocs = doc.getList("notifications", Document.class);
 
-		Util.editReply(event, "Removing **" + notification.replace("_", "\\_") + "** from your map notifications!");
+		Util.editReply(event, "Removing **" + Util.escapeString(notification) + "** from your map notifications!");
 
 		for (int i = 0; i < notificationDocs.size(); i++)
 		{
