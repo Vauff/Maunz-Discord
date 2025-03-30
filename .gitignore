@@ -12,6 +12,6 @@
 /target/maven-archiver/
 /target/maven-status/
 /target/test-classes/
-/target/Maunz.jar
+/target/*.jar
 /out/
 *.kotlin_module

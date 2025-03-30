@@ -14,9 +14,11 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -243,11 +245,27 @@ public class ServerRequestThread implements Runnable
 	private void runServiceThreads() throws Exception
 	{
 		Document doc = Main.mongoDatabase.getCollection("servers").find(eq("_id", id)).first();
+		ArrayList<ObjectId> runningThreads = new ArrayList<>();
+
+		// Snapshot currently running threads
+		for (Entry<ObjectId, Boolean> entry : ServerTrackingLoop.threadRunning.entrySet())
+		{
+			if (entry.getValue())
+				runningThreads.add(entry.getKey());
+		}
+
 		List<Document> serviceDocs = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("serverID", id))).into(new ArrayList<>());
+		Iterator<Document> iter = serviceDocs.iterator();
+
+		// Remove from serviceDocs now, doing the check later could cause stale data to be used (old thread finishes running after we pulled service data)
+		while (iter.hasNext())
+		{
+			if (runningThreads.contains(iter.next().getObjectId("_id")))
+				iter.remove();
+		}
 
 		for (Document serviceDoc : serviceDocs)
 		{
-			ObjectId serviceId = serviceDoc.getObjectId("_id");
 			Snowflake guildId = Snowflake.of(serviceDoc.getLong("guildID"));
 			Guild guild;
 
@@ -256,18 +274,13 @@ public class ServerRequestThread implements Runnable
 			else
 				continue;
 
-			ServerTrackingLoop.threadRunning.putIfAbsent(serviceId, false);
+			ServiceProcessThread thread = new ServiceProcessThread(serviceDoc, doc, guild);
 
-			if (!ServerTrackingLoop.threadRunning.get(serviceId))
-			{
-				ServiceProcessThread thread = new ServiceProcessThread(serviceDoc, doc, guild);
+			ServerTrackingLoop.threadRunning.put(serviceDoc.getObjectId("_id"), true);
+			thread.start();
 
-				ServerTrackingLoop.threadRunning.put(serviceId, true);
-				thread.start();
-
-				// only start ~20 threads per second
-				Thread.sleep(50);
-			}
+			// only start ~20 threads per second
+			Thread.sleep(50);
 		}
 	}
 
