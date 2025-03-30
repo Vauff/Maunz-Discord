@@ -247,7 +247,7 @@ public class ServerRequestThread implements Runnable
 		Document doc = Main.mongoDatabase.getCollection("servers").find(eq("_id", id)).first();
 		ArrayList<ObjectId> runningThreads = new ArrayList<>();
 
-		// Snapshot currently running threads
+		// Snapshot currently running threads now, checking threadRunning later could cause stale data to be used (old thread finishes running after we pulled service data)
 		for (Entry<ObjectId, Boolean> entry : ServerTrackingLoop.threadRunning.entrySet())
 		{
 			if (entry.getValue())
@@ -255,17 +255,10 @@ public class ServerRequestThread implements Runnable
 		}
 
 		List<Document> serviceDocs = Main.mongoDatabase.getCollection("services").find(and(eq("enabled", true), eq("serverID", id))).into(new ArrayList<>());
-		Iterator<Document> iter = serviceDocs.iterator();
-
-		// Remove from serviceDocs now, doing the check later could cause stale data to be used (old thread finishes running after we pulled service data)
-		while (iter.hasNext())
-		{
-			if (runningThreads.contains(iter.next().getObjectId("_id")))
-				iter.remove();
-		}
 
 		for (Document serviceDoc : serviceDocs)
 		{
+			ObjectId serviceId = serviceDoc.getObjectId("_id");
 			Snowflake guildId = Snowflake.of(serviceDoc.getLong("guildID"));
 			Guild guild;
 
@@ -274,9 +267,12 @@ public class ServerRequestThread implements Runnable
 			else
 				continue;
 
+			if (runningThreads.contains(serviceId))
+				continue;
+
 			ServiceProcessThread thread = new ServiceProcessThread(serviceDoc, doc, guild);
 
-			ServerTrackingLoop.threadRunning.put(serviceDoc.getObjectId("_id"), true);
+			ServerTrackingLoop.threadRunning.put(serviceId, true);
 			thread.start();
 
 			// only start ~20 threads per second
