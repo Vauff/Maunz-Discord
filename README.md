@@ -10,7 +10,7 @@ Join the official [Maunz Hub](https://discord.gg/v55fW9b) Discord server if you'
 
 # Running the Bot
 
-If you choose to self-host your own instance of the bot, the only requirements are Java 17 and MongoDB. You can download the latest .jar [here](https://github.com/Vauff/Maunz-Discord/releases/latest), running it with the following parameters is recommended:
+If you choose to self-host your own instance of the bot, the only requirements are Java 21 and MongoDB. You can download the latest .jar [here](https://github.com/Vauff/Maunz-Discord/releases/latest), running it with the following parameters is recommended:
 ```
 java -XX:-OmitStackTraceInFastThrow -Djava.net.preferIPv4Stack=true -jar Maunz-Discord.jar
 ```
