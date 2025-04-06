@@ -12,8 +12,15 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.rest.util.Color;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.net.SocketException;
+
+/**
+ * This code dates back to 2016, its never been rewritten and is quite bad
+ * A rewrite also isn't very practical, because there's no API that can replace the HTML scraping
+ * So, it can't be high quality code regardless, here be dragons
+ */
 
 public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 {
@@ -68,7 +75,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 			Color embedColor;
 			String fullDesc = benchDoc.select("div[class=ov-scroll]").html().replace("<a href=\"#history\">", "");
 			String name = benchDoc.select("span[class=cpuname]").text();
-			String score = benchDoc.select("span[style=font-family: Arial, Helvetica, sans-serif;font-size: 44px;	font-weight: bold; color: #F48A18;]").text();
+			String score;
 			String rank;
 			String samples = benchDoc.select("div[class=right-desc]").text().split("Samples: ")[1].split("\\*")[0];
 			String ratio;
@@ -77,7 +84,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 			String clockSpeed = "N/A";
 			String tdp = "N/A";
 			String socket = "N/A";
-			String price;
+			String price = "N/A";
 			String date;
 			String cores;
 			String threads;
@@ -99,6 +106,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 				price = fullDesc.split("Last Price Change:</strong>&nbsp;&nbsp;")[1].split(" \\(")[0].split("<")[0];
 				ratio = fullDesc.split("G3DMark/Price: </strong>")[1].split("<")[0];
 				rank = fullDesc.split("Overall Rank:</strong>&nbsp;&nbsp;")[1].split("<")[0];
+				score = benchDoc.select("span[style=font-family: Arial, Helvetica, sans-serif;font-size: 44px;	font-weight: bold; color: #F48A18;]").text();
 
 				if (price.equals("NA"))
 					price = "N/A";
@@ -124,10 +132,12 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 			}
 			else if (link.contains("cpu.php"))
 			{
+				Elements scores = benchDoc.select("div[style=font-family: Arial, Helvetica, sans-serif;font-size: 44px;font-weight: bold; color: #F48A18;]");
+
 				date = fullDesc.split("CPU First Seen on Charts:</strong> ")[1].split("<")[0];
-				price = fullDesc.split("Last Price Change:</strong> ")[1].split("<")[0];
-				rank = fullDesc.split("Overall Rank:</strong> ")[1].split("<")[0];
+				rank = fullDesc.split("Overall Rank:</strong>")[1].split("<br>")[3].split(" fastest")[0].replaceAll("[^\\d.]", "");
 				ratio = fullDesc.split("CPUmark/\\$Price:</strong> ")[1].split("<")[0];
+				score = scores.first().text();
 
 				// New cores format, Intel 12-13th gen & beyond
 				if (fullDesc.contains("Total Cores:</strong> "))
@@ -166,8 +176,8 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 						turboSpeed = fullDesc.split("Turbo Speed:</strong> ")[1].split("<")[0];
 				}
 
-				if (fullDesc.contains("Single Thread Rating:</strong> "))
-					singleThread = fullDesc.split("Single Thread Rating:</strong> ")[1].split("<")[0].replace("\n", "");
+				if (scores.size() > 1)
+					singleThread = scores.last().text();
 
 				if (fullDesc.contains("Typical TDP:</strong> "))
 					tdp = fullDesc.split("Typical TDP:</strong> ")[1].split("<")[0];
@@ -181,8 +191,8 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 						socket = verify;
 				}
 
-				if (price.equals("NA"))
-					price = "N/A";
+				if (fullDesc.contains("Last Price Change:</strong> <a href=\"#price-history\">"))
+					price = fullDesc.split("Last Price Change:</strong> <a href=\"#price-history\">")[1].split("<")[0];
 
 				if (ratio.equals("NA"))
 					ratio = "N/A";
