@@ -143,7 +143,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				embed = embed.withThumbnail(url);
 
 			if (includeName)
-				Util.editReply(event, "", embed.withTitle(serverDoc.getString("name")));
+				Util.editReply(event, "", embed.withTitle(Util.escapeString(serverDoc.getString("name"))));
 			else
 				Util.editReply(event, "", embed);
 		}

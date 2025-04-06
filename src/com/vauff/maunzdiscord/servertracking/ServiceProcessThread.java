@@ -60,7 +60,7 @@ public class ServiceProcessThread implements Runnable
 			String msgServerName = "The server";
 
 			if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
-				msgServerName = "**" + serverDoc.getString("name") + "**";
+				msgServerName = "**" + Util.escapeString(serverDoc.getString("name")) + "**";
 
 			if (serverDoc.getInteger("downtimeTimer") >= serverDoc.getInteger("failedConnectionsThreshold") && doc.getBoolean("online"))
 			{
@@ -109,7 +109,7 @@ public class ServiceProcessThread implements Runnable
 				if (!url.equals(""))
 					embed = embed.withThumbnail(url);
 
-				EmbedCreateSpec titledEmbed = embed.withTitle(name);
+				EmbedCreateSpec titledEmbed = embed.withTitle(Util.escapeString(name));
 
 				if (channelExists(doc.getLong("channelID")))
 				{
