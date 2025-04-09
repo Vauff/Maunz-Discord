@@ -21,9 +21,9 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 {
@@ -217,43 +217,59 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 
 		Util.editReply(event, formattedTitle + elementsString, null, buttonRows);
 	}
-	private static boolean exhaustAutocompleteOptions(ApplicationCommandOptionData option){
-		if (option.options().isAbsent()){
-			if(!option.autocomplete().isAbsent()){
+
+	private static boolean exhaustAutocompleteOptions(ApplicationCommandOptionData option)
+	{
+		if (option.options().isAbsent())
+		{
+			if (!option.autocomplete().isAbsent())
 				return option.autocomplete().get();
-			}
+
 			return false;
 		}
-		for (ApplicationCommandOptionData opt : option.options().get()){
+
+		for (ApplicationCommandOptionData opt : option.options().get())
+		{
 			boolean hasAutocomplete = false;
+
 			if (!opt.options().isAbsent())
 				hasAutocomplete = exhaustAutocompleteOptions(opt);
 			else if (!opt.autocomplete().isAbsent())
 				hasAutocomplete = opt.autocomplete().get();
+
 			if (hasAutocomplete)
 				return true;
 		}
 
 		return false;
 	}
+
 	private Boolean autocomplete = null;
-	public final boolean hasAutocomplete(){
+
+	public final boolean hasAutocomplete()
+	{
 		if (autocomplete == null)
 			autocomplete = containAutocomplete();
 
 		return autocomplete;
 	}
-	public boolean containAutocomplete(){
+
+	public boolean containAutocomplete()
+	{
 		if (getCommandRequest().options().isAbsent())
 			return false;
 
-		for (ApplicationCommandOptionData option : getCommandRequest().options().get()){
+		for (ApplicationCommandOptionData option : getCommandRequest().options().get())
+		{
 			if (exhaustAutocompleteOptions(option))
 				return true;
 		}
+
 		return false;
 	}
-	public List<ApplicationCommandOptionChoiceData> autoComplete(ChatInputAutoCompleteEvent event, ApplicationCommandInteractionOption option, String currentText){
+
+	public List<ApplicationCommandOptionChoiceData> autoComplete(ChatInputAutoCompleteEvent event, ApplicationCommandInteractionOption option, String currentText)
+	{
 		return new ArrayList<>();
 	}
 }

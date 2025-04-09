@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -46,6 +46,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 
 	private final ConcurrentHashMap<String, String> cachedMaps = new ConcurrentHashMap<>();
 	private long lastCached = -1;
+
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
@@ -292,21 +293,28 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 	}
 
 	@Override
-	public List<ApplicationCommandOptionChoiceData> autoComplete(ChatInputAutoCompleteEvent event, ApplicationCommandInteractionOption option, String currentText){
+	public List<ApplicationCommandOptionChoiceData> autoComplete(ChatInputAutoCompleteEvent event, ApplicationCommandInteractionOption option, String currentText)
+	{
 		final List<ApplicationCommandOptionChoiceData> choices = new ArrayList<>();
+
 		if (!option.getName().equals("mapname"))
 			return choices;
 
 		final String cleanText = currentText.trim().replace("_", " ").toLowerCase();
 		final long now = System.currentTimeMillis();
-		if (lastCached == -1 || (now - lastCached) > Util.MAP_AUTOCOMPLETE_CACHE_INVALIDATED){
+
+		if (lastCached == -1 || (now - lastCached) > Util.MAP_AUTOCOMPLETE_CACHE_INVALIDATED)
+		{
 			lastCached = now;
 			final FindIterable<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find();
 			cachedMaps.clear();
 			final HashMap<String, Long> cachedPlayedMaps = new HashMap<>();
 			final List<String> mapFound = new ArrayList<>();
-			for(Document doc : serverDocs){
-				for (int i = 0; i < doc.getList("mapDatabase", Document.class).size(); i++) {
+
+			for (Document doc : serverDocs)
+			{
+				for (int i = 0; i < doc.getList("mapDatabase", Document.class).size(); i++)
+				{
 					final Document map = doc.getList("mapDatabase", Document.class).get(i);
 					final String mapName = map.getString("map");
 					final long lastPlayed = map.getLong("lastPlayed");
@@ -315,33 +323,44 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 					cachedPlayedMaps.put(Util.getMapKey(mapName), lastPlayed);
 				}
 			}
-			mapFound.sort(Collections.reverseOrder(
-					Comparator.comparing(map -> cachedPlayedMaps.get(Util.getMapKey(map)))
-			));
-			for(String map : mapFound)
-				cachedMaps.put(Util.getMapKey(map), map);
 
+			mapFound.sort(Collections.reverseOrder(
+				Comparator.comparing(map -> cachedPlayedMaps.get(Util.getMapKey(map)))
+			));
+
+			for (String map : mapFound)
+				cachedMaps.put(Util.getMapKey(map), map);
 		}
-		if (cleanText.isEmpty()){
-			for (String map : cachedMaps.values()) {
+
+		if (cleanText.isEmpty())
+		{
+			for (String map : cachedMaps.values())
+			{
 				choices.add(Util.mapChoice(map));
+
 				if (choices.size() >= 25)
 					break;
 			}
+
 			return choices;
 		}
 
 		List<ExtractedResult> matched = FuzzySearch.extractTop(
-				cleanText, cachedMaps.keySet(), this::mapWeightRatio, 25, Util.FUZZY_LIMIT_CUTOFF
+			cleanText, cachedMaps.keySet(), this::mapWeightRatio, 25, Util.FUZZY_LIMIT_CUTOFF
 		);
-		for(ExtractedResult mapMatch: matched){
+
+		for (ExtractedResult mapMatch : matched)
+		{
 			String key = mapMatch.getString();
 			String map = cachedMaps.get(key);
 			choices.add(Util.mapChoice(map));
 		}
+
 		return choices;
 	}
-	private int mapWeightRatio(String target, String mapMatching){
+
+	private int mapWeightRatio(String target, String mapMatching)
+	{
 		return FuzzySearch.tokenSortPartialRatio(target, mapMatching);
 	}
 }

@@ -16,8 +16,8 @@ import discord4j.discordjson.json.ApplicationCommandRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Help extends AbstractCommand<ChatInputInteractionEvent>
 {

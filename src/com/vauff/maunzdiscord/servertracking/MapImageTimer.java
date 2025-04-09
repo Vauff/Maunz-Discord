@@ -1,7 +1,6 @@
 package com.vauff.maunzdiscord.servertracking;
 
 import com.vauff.maunzdiscord.core.Logger;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -9,8 +8,8 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Holds a timer to update map images
