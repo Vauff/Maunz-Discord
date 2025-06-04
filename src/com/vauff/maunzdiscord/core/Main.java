@@ -17,6 +17,7 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
+import discord4j.discordjson.json.UserData;
 import discord4j.rest.RestClient;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
@@ -37,6 +38,7 @@ public class Main
 	public static MongoDatabase mongoDatabase;
 	public static String version = "r57";
 	public static Config cfg;
+	public static UserData botUserData;
 
 	/**
 	 * A watch to keep track of the uptime of the bot
@@ -118,6 +120,7 @@ public class Main
 
 			uptime.start();
 			setupCommands();
+			botUserData = Main.gateway.getRestClient().getSelf().block();
 
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onChatInputInteraction(event))).subscribe();
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onButtonInteraction(event))).subscribe();

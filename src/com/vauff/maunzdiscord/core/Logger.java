@@ -91,8 +91,8 @@ public class Logger
 
 	public static void logMessage(MessageChannel channel, String messageID, String message, Iterable<EmbedCreateSpec> embeds, Iterable<LayoutComponent> components)
 	{
-		String userName = Main.gateway.getRestClient().getSelf().block().username();
-		String userId = Main.gateway.getRestClient().getSelf().block().id().asString();
+		String userName = Main.botUserData.username();
+		String userId = Main.botUserData.id().asString();
 		String channelId = channel.getId().asString();
 		String logMsg;
 
