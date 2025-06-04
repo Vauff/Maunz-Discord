@@ -11,7 +11,7 @@ import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.component.ActionRow;
 import discord4j.core.object.component.Button;
-import discord4j.core.object.component.LayoutComponent;
+import discord4j.core.object.component.TopLevelMessageComponent;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.ApplicationCommandData;
@@ -163,7 +163,7 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 		int firstElementIndex = (int) (elements.size() - ((rawPages - (pageNumber - 1)) * pageSize));
 		int lastElementIndex = firstElementIndex + pageSize;
 		String elementsString = "";
-		List<LayoutComponent> buttonRows = new ArrayList<>();
+		List<TopLevelMessageComponent> buttonRows = new ArrayList<>();
 		List<Button> buttons = new ArrayList<>();
 
 		if (codeBlock && !buttonElements)

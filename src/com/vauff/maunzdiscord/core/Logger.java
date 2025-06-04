@@ -5,7 +5,7 @@ import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
-import discord4j.core.object.component.LayoutComponent;
+import discord4j.core.object.component.TopLevelMessageComponent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.GuildChannel;
@@ -89,7 +89,7 @@ public class Logger
 		}
 	}
 
-	public static void logMessage(MessageChannel channel, String messageID, String message, Iterable<EmbedCreateSpec> embeds, Iterable<LayoutComponent> components)
+	public static void logMessage(MessageChannel channel, String messageID, String message, Iterable<EmbedCreateSpec> embeds, Iterable<TopLevelMessageComponent> components)
 	{
 		String userName = Main.botUserData.username();
 		String userId = Main.botUserData.id().asString();
@@ -132,7 +132,7 @@ public class Logger
 
 		if (components != null)
 		{
-			for (LayoutComponent component : components)
+			for (TopLevelMessageComponent component : components)
 				logMsg += " [" + component.getType().name() + " Component]";
 		}
 

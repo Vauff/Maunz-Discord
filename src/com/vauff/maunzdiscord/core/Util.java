@@ -1,7 +1,7 @@
 package com.vauff.maunzdiscord.core;
 
 import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
-import discord4j.core.object.component.LayoutComponent;
+import discord4j.core.object.component.TopLevelMessageComponent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
@@ -116,7 +116,7 @@ public class Util
 	 * @param components LayoutComponents the reply should contain
 	 * @return The message object
 	 */
-	public static void editReply(DeferrableInteractionEvent event, String message, Iterable<EmbedCreateSpec> embeds, Iterable<LayoutComponent> components)
+	public static void editReply(DeferrableInteractionEvent event, String message, Iterable<EmbedCreateSpec> embeds, Iterable<TopLevelMessageComponent> components)
 	{
 		event.editReply(message).withEmbedsOrNull(embeds).withComponentsOrNull(components).block();
 		Logger.logMessage(event.getInteraction().getChannel().block(), event.getReply().block().getId().asString(), message, embeds, components);
@@ -140,10 +140,10 @@ public class Util
 	 *
 	 * @param event      The event that should have its reply edited
 	 * @param message    String content of the reply
-	 * @param components LayoutComponents the reply should contain
+	 * @param components TopLevelMessageComponents the reply should contain
 	 * @return The message object
 	 */
-	public static void editReply(DeferrableInteractionEvent event, String message, LayoutComponent... components)
+	public static void editReply(DeferrableInteractionEvent event, String message, TopLevelMessageComponent... components)
 	{
 		editReply(event, message, null, Arrays.asList(components));
 	}
