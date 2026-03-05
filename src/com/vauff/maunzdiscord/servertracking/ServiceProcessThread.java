@@ -6,6 +6,7 @@ import com.vauff.maunzdiscord.core.Util;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.retriever.EntityRetrievalStrategy;
 import discord4j.core.retriever.RestEntityRetriever;
@@ -16,6 +17,8 @@ import org.bson.types.ObjectId;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,10 +116,16 @@ public class ServiceProcessThread implements Runnable
 
 				if (channelExists(doc.getLong("channelID")))
 				{
-					if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName"))
-						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, titledEmbed);
-					else
-						Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, embed);
+					if (Util.isMultiTrackingChannel(doc.getLong("guildID"), doc.getLong("channelID")) || doc.getBoolean("alwaysShowName")) {
+                        Message sentMsg = Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, titledEmbed);
+                        if (sentMsg != null) {
+                            scheduleEmbedUpdate(sentMsg, serverDoc);
+                        }
+                    }
+
+					else {
+                        Util.msg((MessageChannel) Main.gateway.getChannelById(Snowflake.of(doc.getLong("channelID"))).block(), true, embed);
+                    }
 				}
 
 				parentLoop:
@@ -157,6 +166,38 @@ public class ServiceProcessThread implements Runnable
 			ServerTrackingLoop.threadRunning.put(id, false);
 		}
 	}
+
+    private void scheduleEmbedUpdate(Message message, Document serverDoc) {
+        CompletableFuture.delayedExecutor(5, TimeUnit.MINUTES).execute(() -> {
+            try {
+
+                // 5 minute delay or
+                Document latestServer = Main.mongoDatabase.getCollection("servers")
+                        .find(eq("_id", serverDoc.getObjectId("_id"))).first();
+
+                if (latestServer == null) return;
+
+                // get new values
+                int newPlayerCount = latestServer.getInteger("playerCount");
+                int maxPlayers = latestServer.getInteger("maxPlayers");
+                String map = latestServer.getString("map");
+                String name = latestServer.getString("name");
+                String ipPort = latestServer.getString("ip") + ":" + latestServer.getInteger("port");
+
+                // new embed
+                message.edit(editSpec -> editSpec.addEmbed(embed -> {
+                    embed.setTitle(Util.escapeString(name));
+                    embed.setDescription(
+                        "Now Playing: **" + Util.escapeString(map) + "**\n" +
+                        "Players Online: **" + newPlayerCount + "/" + maxPlayers + "**\n" +
+                        "Quick Join: **[" + ipPort + "](https://vauff.com/connect.php?ip=" + ipPort + ")**");
+                })).block();
+
+            } catch (Exception e) {
+                Logger.log.error("failed to update embed, you suck: " + e.getMessage());
+            }
+        });
+    }
 
 	private boolean channelExists(long channelID)
 	{
