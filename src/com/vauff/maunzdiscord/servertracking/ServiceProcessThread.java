@@ -167,24 +167,30 @@ public class ServiceProcessThread implements Runnable
 		}
 	}
 
-    private void scheduleEmbedUpdate(Message message, Document serverDoc) {
+    /**
+     * scheduled embed player count update with minutes after map update
+     * @param message original message object
+     * @param serverDoc server object
+     */
+    private void scheduleEmbedUpdate(Message message, Document serverDoc)
+    {
+        // 5 minute delay or sum
         CompletableFuture.delayedExecutor(5, TimeUnit.MINUTES).execute(() -> {
             try {
 
-                // 5 minute delay or
                 Document latestServer = Main.mongoDatabase.getCollection("servers")
                         .find(eq("_id", serverDoc.getObjectId("_id"))).first();
 
                 if (latestServer == null) return;
 
-                // get new values
+                // new values
                 int newPlayerCount = latestServer.getInteger("playerCount");
                 int maxPlayers = latestServer.getInteger("maxPlayers");
                 String map = latestServer.getString("map");
                 String name = latestServer.getString("name");
                 String ipPort = latestServer.getString("ip") + ":" + latestServer.getInteger("port");
 
-                // new embed
+                // build new embed
                 message.edit(editSpec -> editSpec.addEmbed(embed -> {
                     embed.setTitle(Util.escapeString(name));
                     embed.setDescription(
@@ -194,7 +200,7 @@ public class ServiceProcessThread implements Runnable
                 })).block();
 
             } catch (Exception e) {
-                Logger.log.error("failed to update embed, you suck: " + e.getMessage());
+                Logger.log.error("failed to update embed, this code sucks: " + e.getMessage());
             }
         });
     }
