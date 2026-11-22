@@ -7,8 +7,8 @@ import discord4j.common.util.Snowflake;
  */
 public class Await<M>
 {
-	private Snowflake id;
-	private M command;
+	private final Snowflake id;
+	private final M command;
 
 	/**
 	 * @param id      The ID of a user who triggered the command

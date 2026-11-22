@@ -17,8 +17,7 @@ import java.util.Arrays;
 public class Say extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
-	{
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) {
 		ApplicationCommandInteraction interaction = event.getInteraction().getCommandInteraction().get();
 		String message = interaction.getOption("message").get().getValue().get().asString();
 

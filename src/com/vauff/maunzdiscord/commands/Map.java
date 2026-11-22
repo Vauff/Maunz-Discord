@@ -74,7 +74,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 		}
 		else if (services.size() == 1)
 		{
-			runCmd(event, user, services.get(0), services.get(0).getBoolean("alwaysShowName"));
+			runCmd(event, user, services.getFirst(), services.getFirst().getBoolean("alwaysShowName"));
 		}
 		else
 		{
@@ -140,7 +140,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				.description("Currently Playing: **" + Util.escapeString(doc.getString("lastMap")) + "**\nPlayers Online: **" + serverDoc.getInteger("playerCount") + "/" + serverDoc.getInteger("maxPlayers") + "**\nQuick Join: **[" + ipPort + "](https://vauff.com/connect.php?ip=" + ipPort + ")**")
 				.build();
 
-			if (!url.equals(""))
+			if (!url.isEmpty())
 				embed = embed.withThumbnail(url);
 
 			if (includeName)
@@ -167,7 +167,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				}
 			}
 
-			if (formattedMap.equals(""))
+			if (formattedMap.isEmpty())
 			{
 				ArrayList<Long> mapDatabaseTimestamps = new ArrayList<>();
 				ArrayList<String> mapDatabase = new ArrayList<>();
@@ -178,32 +178,24 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 				Collections.sort(mapDatabaseTimestamps);
 				Collections.reverse(mapDatabaseTimestamps);
 
-				for (int i = 0; i < mapDatabaseTimestamps.size(); i++)
-				{
-					long timestamp = mapDatabaseTimestamps.get(i);
+                for (long timestamp : mapDatabaseTimestamps) {
+                    for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++) {
+                        Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(j);
 
-					for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++)
-					{
-						Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(j);
+                        if (databaseEntry.getLong("lastPlayed") == timestamp)
+                            mapDatabase.add(databaseEntry.getString("map"));
+                    }
+                }
 
-						if (databaseEntry.getLong("lastPlayed") == timestamp)
-							mapDatabase.add(databaseEntry.getString("map"));
-					}
-				}
-
-				for (int i = 0; i < mapDatabase.size(); i++)
-				{
-					String map = mapDatabase.get(i);
-
-					if (StringUtils.containsIgnoreCase(map, mapArg))
-					{
-						formattedMap = map;
-						break;
-					}
-				}
+                for (String map : mapDatabase) {
+                    if (StringUtils.containsIgnoreCase(map, mapArg)) {
+                        formattedMap = map;
+                        break;
+                    }
+                }
 			}
 
-			if (!formattedMap.equals(""))
+			if (!formattedMap.isEmpty())
 			{
 				String url = MapImages.getMapImageURL(formattedMap, serverDoc.getString("appId"));
 				String lastPlayed = "";
@@ -236,7 +228,7 @@ public class Map extends AbstractCommand<ChatInputInteractionEvent>
 					.addField("First Played", firstPlayed, false)
 					.build();
 
-				if (!url.equals(""))
+				if (!url.isEmpty())
 					embed = embed.withThumbnail(url);
 
 				Util.editReply(event, "", embed);

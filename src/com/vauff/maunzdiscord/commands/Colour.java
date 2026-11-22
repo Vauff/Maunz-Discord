@@ -43,7 +43,7 @@ public class Colour extends AbstractCommand<ChatInputInteractionEvent>
 			return;
 		}
 
-		if (!url.equals(""))
+		if (!url.isEmpty())
 		{
 			Color colour;
 

@@ -24,6 +24,7 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Random;
 
@@ -184,7 +185,7 @@ public class Util
 				msg = msg.withEmbeds(embed);
 
 			Message sentMsg = msg.withAllowedMentions(AllowedMentions.suppressAll()).block();
-			Logger.logMessage(channel, sentMsg.getId().asString(), message, Arrays.asList(embed), null);
+			Logger.logMessage(channel, sentMsg.getId().asString(), message, Collections.singletonList(embed), null);
 
 			return sentMsg;
 		}
@@ -194,7 +195,7 @@ public class Util
 			{
 				if (!(channel instanceof PrivateChannel))
 				{
-					Logger.log.warn("Missing permissions to send message to channel #" + ((GuildChannel) channel).getName() + " (" + channel.getId().asString() + ") in guild " + ((GuildChannel) channel).getGuild().block().getName() + " (" + ((GuildChannel) channel).getGuild().block().getId().asString() + ")");
+                    Logger.log.warn("Missing permissions to send message to channel #{} ({}) in guild {} ({})", ((GuildChannel) channel).getName(), channel.getId().asString(), ((GuildChannel) channel).getGuild().block().getName(), ((GuildChannel) channel).getGuild().block().getId().asString());
 				}
 
 				return null;

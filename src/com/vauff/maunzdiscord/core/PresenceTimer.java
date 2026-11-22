@@ -25,7 +25,7 @@ public class PresenceTimer
 	/**
 	 * Updates the bot's activity text to switch between showing the amount of servers the bot is tracking and the alt text configured in config.json
 	 */
-	public static Runnable timer = () ->
+	public static final Runnable timer = () ->
 	{
 		try
 		{
@@ -46,7 +46,7 @@ public class PresenceTimer
 				serverCount = newServerCount;
 			}
 
-			if (showingAltText || altPlayingText.equals(""))
+			if (showingAltText || altPlayingText.isEmpty())
 			{
 				if (serverCount == 0)
 					return;

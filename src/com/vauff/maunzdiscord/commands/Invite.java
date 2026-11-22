@@ -16,8 +16,7 @@ import java.util.List;
 public class Invite extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
-	{
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) {
 		List<ActionComponent> components = new ArrayList<>();
 		components.add(Button.link("https://discord.com/api/oauth2/authorize?client_id=230780946142593025&permissions=517647752257&scope=bot%20applications.commands", "Bot invite"));
 		components.add(Button.link("https://discord.gg/v55fW9b", "Maunz Hub server invite"));

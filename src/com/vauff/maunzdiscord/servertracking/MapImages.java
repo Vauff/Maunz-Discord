@@ -13,17 +13,17 @@ public class MapImages
 	/**
 	 * Holds the latest image lists pulled from vauff.com
 	 */
-	public static ConcurrentHashMap<String, ArrayList<String>> mapImages = new ConcurrentHashMap<>();
+	public static final ConcurrentHashMap<String, ArrayList<String>> mapImages = new ConcurrentHashMap<>();
 
 	/**
 	 * Cached lookup results from Util#getMapImageURL
 	 */
-	public static ConcurrentHashMap<String, ConcurrentHashMap<String, String>> mapImageLookupCache = new ConcurrentHashMap<>();
+	public static final ConcurrentHashMap<String, ConcurrentHashMap<String, String>> mapImageLookupCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Cached colour results from Util#averageColourFromURL
 	 */
-	public static ConcurrentHashMap<String, Color> mapImageColourCache = new ConcurrentHashMap<>();
+	public static final ConcurrentHashMap<String, Color> mapImageColourCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Unix timestamp of when the currently stored map images API data was last updated

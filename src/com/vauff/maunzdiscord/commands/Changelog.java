@@ -33,7 +33,7 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
-		if (Main.cfg.getGitHubToken().equals(""))
+		if (Main.cfg.getGitHubToken().isEmpty())
 		{
 			Util.editReply(event, "This command is disabled because the bot does not have a GitHub token configured!");
 			return;
@@ -83,7 +83,7 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 		String version = listVersions.get(user.getId());
 		String changelogRaw = getReleaseDescription(version);
 
-		if (changelogRaw.equals(""))
+		if (changelogRaw.isEmpty())
 		{
 			Util.editReply(event, "That version either doesn't exist, or the connection to GitHub failed");
 			return;
@@ -115,15 +115,15 @@ public class Changelog extends AbstractCommand<ChatInputInteractionEvent>
 			if (connection.getResponseCode() / 100 != 2)
 				return "";
 
-			String jsonString = "";
+			StringBuilder jsonString = new StringBuilder();
 			Scanner scanner = new Scanner(connection.getInputStream());
 
 			while (scanner.hasNext())
-				jsonString += scanner.nextLine();
+				jsonString.append(scanner.nextLine());
 
 			scanner.close();
 
-			return new JSONObject(jsonString).getString("body");
+			return new JSONObject(jsonString.toString()).getString("body");
 		}
 		catch (IOException e)
 		{

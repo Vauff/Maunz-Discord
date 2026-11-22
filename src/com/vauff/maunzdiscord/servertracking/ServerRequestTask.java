@@ -92,7 +92,7 @@ public class ServerRequestTask implements Runnable {
                             return;
                         }
 
-                        Logger.log.warn("Failed to retrieve player information from " + ipPort + ", automatically retrying in 1 minute");
+                        Logger.log.warn("Failed to retrieve player information from {}, automatically retrying in 1 minute", ipPort);
                         update.append("players", List.of("SERVER_UPDATEPLAYERS_FAILED"));
                         break;
                     }
@@ -107,7 +107,7 @@ public class ServerRequestTask implements Runnable {
             int maxPlayers = 0;
 
             if (Objects.isNull(serverInfo.get("mapName"))) {
-                Logger.log.warn("Null mapname received for server " + ipPort + ", automatically retrying in 1 minute");
+                Logger.log.warn("Null mapname received for server {}, automatically retrying in 1 minute", ipPort);
                 Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", update));
                 return;
             }
@@ -186,7 +186,7 @@ public class ServerRequestTask implements Runnable {
             Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), changes);
             runServiceTasks();
         } catch (InterruptedException e) {
-            Logger.log.warn("Request to " + ipPort + " was interrupted");
+            Logger.log.warn("Request to {} was interrupted", ipPort);
         } catch (Exception e) {
             Logger.log.error("", e);
         } finally {

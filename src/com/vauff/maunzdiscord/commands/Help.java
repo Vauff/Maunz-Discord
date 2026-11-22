@@ -45,13 +45,13 @@ public class Help extends AbstractCommand<ChatInputInteractionEvent>
 				if (cleanArg.equalsIgnoreCase(command.getName()))
 				{
 					List<String> helpEntries = getHelp(command, event);
-					String response = "";
+					StringBuilder response = new StringBuilder();
 
 					for (String entry : helpEntries)
-						response += entry + System.lineSeparator();
+						response.append(entry).append(System.lineSeparator());
 
-					response = StringUtils.removeEnd(response, System.lineSeparator());
-					Util.editReply(event, response);
+					response = new StringBuilder(StringUtils.removeEnd(response.toString(), System.lineSeparator()));
+					Util.editReply(event, response.toString());
 					return;
 				}
 			}

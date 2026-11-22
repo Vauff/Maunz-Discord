@@ -103,7 +103,7 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 			cmdData = cmdDatas.get(event.getInteraction().getGuild().block().getId().asLong());
 
 		// Format fix when arguments are present
-		if (!args.equals(""))
+		if (!args.isEmpty())
 			args = " " + args;
 
 		return "</" + getName() + args + ":" + cmdData.id().asString() + ">";
@@ -131,7 +131,7 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 	 */
 	public final void waitForButtonPress(Snowflake messageID, Snowflake userID)
 	{
-		AWAITED.put(messageID, new Await(userID, this));
+		AWAITED.put(messageID, new Await<>(userID, this));
 	}
 
 	/**
@@ -159,15 +159,15 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 			return;
 		}
 
-		boolean buttonElements = elements.get(0) instanceof Button;
+		boolean buttonElements = elements.getFirst() instanceof Button;
 		int firstElementIndex = (int) (elements.size() - ((rawPages - (pageNumber - 1)) * pageSize));
 		int lastElementIndex = firstElementIndex + pageSize;
-		String elementsString = "";
+		StringBuilder elementsString = new StringBuilder();
 		List<TopLevelMessageComponent> buttonRows = new ArrayList<>();
 		List<Button> buttons = new ArrayList<>();
 
 		if (codeBlock && !buttonElements)
-			elementsString += "```" + System.lineSeparator();
+			elementsString.append("```").append(System.lineSeparator());
 
 		for (int i = firstElementIndex; i < lastElementIndex; i++)
 		{
@@ -188,15 +188,15 @@ public abstract class AbstractCommand<M extends ChatInputInteractionEvent>
 			{
 				switch (numberStyle)
 				{
-					case 0 -> elementsString += elements.get(i) + System.lineSeparator();
-					case 1 -> elementsString += "`[" + (i + 1) + "]` | " + elements.get(i) + System.lineSeparator();
+					case 0 -> elementsString.append(elements.get(i)).append(System.lineSeparator());
+					case 1 -> elementsString.append("`[").append(i + 1).append("]` | ").append(elements.get(i)).append(System.lineSeparator());
 					default -> throw new Exception("Bad numberStyle " + numberStyle + " passed into buildPage");
 				}
 			}
 		}
 
 		if (codeBlock && !buttonElements)
-			elementsString += "```";
+			elementsString.append("```");
 
 		String formattedTitle = "**--- " + title + " ---**" + System.lineSeparator();
 		List<Button> pageButtons = new ArrayList<>();

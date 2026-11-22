@@ -21,7 +21,7 @@ public class MapImageTimer {
     /**
      * Updates the mapImages hashmap with the latest available map images from vauff.com and clears related caches
      */
-    public static Runnable timer = () ->
+    public static final Runnable timer = () ->
     {
         try {
             Logger.log.debug("Starting a map image timer run...");

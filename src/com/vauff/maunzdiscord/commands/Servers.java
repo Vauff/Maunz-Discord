@@ -125,7 +125,7 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 
 		ObjectId serverId = getOrCreateServer(ip, port);
 		Document service = new Document("enabled", true).append("online", true).append("mapCharacterLimit", false).append("lastMap", "N/A").append("serverID", serverId).append("guildID", guild.getId().asLong())
-			.append("channelID", channelID).append("notifications", new ArrayList()).append("alwaysShowName", false);
+			.append("channelID", channelID).append("notifications", new ArrayList<>()).append("alwaysShowName", false);
 
 		Main.mongoDatabase.getCollection("services").insertOne(service);
 		ServerTrackingLoop.lastInvalidatedCache = Instant.now();
@@ -283,14 +283,14 @@ public class Servers extends AbstractCommand<ChatInputInteractionEvent>
 
 		if (servers.size() > 0)
 		{
-			ObjectId id = servers.get(0).getObjectId("_id");
+			ObjectId id = servers.getFirst().getObjectId("_id");
 
 			Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("enabled", true).append("downtimeTimer", 0)));
 			return id;
 		}
 
 		Document server = new Document("enabled", true).append("ip", ip).append("port", port).append("appId", "0").append("name", "N/A").append("map", "N/A").append("timestamp", 0L).append("playerCount", 0).append("maxPlayers", 0)
-			.append("players", new ArrayList()).append("downtimeTimer", 0).append("failedConnectionsThreshold", 3).append("mapDatabase", new ArrayList());
+			.append("players", new ArrayList<>()).append("downtimeTimer", 0).append("failedConnectionsThreshold", 3).append("mapDatabase", new ArrayList<>());
 
 		return Main.mongoDatabase.getCollection("servers").insertOne(server).getInsertedId().asObjectId().getValue();
 	}

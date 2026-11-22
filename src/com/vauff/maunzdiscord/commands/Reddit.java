@@ -39,7 +39,7 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
-		if (Main.cfg.getRedditId().equals("") || Main.cfg.getRedditSecret().equals(""))
+		if (Main.cfg.getRedditId().isEmpty() || Main.cfg.getRedditSecret().isEmpty())
 		{
 			Util.editReply(event, "This command is disabled because the bot does not have Reddit API credentials configured!");
 			return;
@@ -93,7 +93,7 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 		if (!data.isNull("header_img"))
 			headerImg = data.getString("header_img");
 
-		String imgUrl = data.getString("icon_img").equals("") ? headerImg : data.getString("icon_img");
+		String imgUrl = data.getString("icon_img").isEmpty() ? headerImg : data.getString("icon_img");
 
 		EmbedCreateSpec embed = EmbedCreateSpec.builder()
 			.color(Util.averageColourFromURL(imgUrl, true))
@@ -111,10 +111,10 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 
 	private JSONObject getSubredditAbout(String subreddit)
 	{
-		if (accessToken.equals("") || Instant.now().isAfter(accessTokenExpires))
+		if (accessToken.isEmpty() || Instant.now().isAfter(accessTokenExpires))
 			refreshAccessToken();
 
-		if (accessToken.equals(""))
+		if (accessToken.isEmpty())
 			return new JSONObject();
 
 		try
@@ -128,7 +128,7 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 			connection.connect();
 
 			int divCode = connection.getResponseCode() / 100;
-			String jsonString = "";
+			StringBuilder jsonString = new StringBuilder();
 			Scanner scanner;
 
 			// 2xx HTTP status codes
@@ -141,11 +141,11 @@ public class Reddit extends AbstractCommand<ChatInputInteractionEvent>
 				return new JSONObject();
 
 			while (scanner.hasNext())
-				jsonString += scanner.nextLine();
+				jsonString.append(scanner.nextLine());
 
 			scanner.close();
 
-			return new JSONObject(jsonString);
+			return new JSONObject(jsonString.toString());
 		}
 		catch (JSONException e)
 		{

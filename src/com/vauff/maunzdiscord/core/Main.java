@@ -36,24 +36,24 @@ public class Main
 {
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
-	public static String version = "r57";
+	public static final String version = "r57";
 	public static Config cfg;
 	public static UserData botUserData;
 
 	/**
 	 * A watch to keep track of the uptime of the bot
 	 */
-	public static StopWatch uptime = new StopWatch();
+	public static final StopWatch uptime = new StopWatch();
 
 	/**
 	 * List that holds all commands
 	 */
-	public static HashMap<String, AbstractCommand<ChatInputInteractionEvent>> commands = new HashMap<>();
+	public static final HashMap<String, AbstractCommand<ChatInputInteractionEvent>> commands = new HashMap<>();
 
 	/**
 	 * Cached Guild objects, to avoid constant getGuildById calls to Discord API
 	 */
-	public static ConcurrentHashMap<Snowflake, Guild> guildCache = new ConcurrentHashMap<>();
+	public static final ConcurrentHashMap<Snowflake, Guild> guildCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Current shutdown state of the bot
@@ -80,13 +80,13 @@ public class Main
 			Logger.log = LogManager.getLogger(Main.class);
 			cfg = new Config();
 
-			if (cfg.getToken().equals(""))
+			if (cfg.getToken().isEmpty())
 			{
 				Logger.log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discord.com/developers/applications to the discordToken option in config.json");
 				exit = true;
 			}
 
-			if (cfg.getMongoConnectionString().equals("") || cfg.getMongoDatabase().equals(""))
+			if (cfg.getMongoConnectionString().isEmpty() || cfg.getMongoDatabase().isEmpty())
 			{
 				Logger.log.fatal("You need to fill in all values of the mongoDatabase section of config.json to run Maunz");
 				exit = true;
@@ -95,8 +95,8 @@ public class Main
 			if (exit)
 				System.exit(1);
 
-			Logger.log.info("Starting Maunz-Discord " + version + "...");
-			Logger.log.info("Connecting to MongoDB (" + cfg.getMongoConnectionString() + ")");
+            Logger.log.info("Starting Maunz-Discord {}...", version);
+            Logger.log.info("Connecting to MongoDB ({})", cfg.getMongoConnectionString());
 
 			try
 			{
@@ -198,7 +198,7 @@ public class Main
 
 		List<ApplicationCommandData> cmdDatas = restClient.getApplicationService().bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).collectList().block();
 
-		if (cmdRequests.size() > 0)
+		if (!cmdRequests.isEmpty())
 			mapCommandDataToCommands(cmdDatas, 0L);
 	}
 

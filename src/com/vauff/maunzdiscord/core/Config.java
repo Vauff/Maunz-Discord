@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Config extends JSONObject
 {
-	private File file = new File(Util.getJarLocation() + "config.json");
+	private final File file = new File(Util.getJarLocation() + "config.json");
 
 	public Config() throws Exception
 	{

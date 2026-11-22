@@ -21,7 +21,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class ServerTrackingLoop {
 
-    public static ConcurrentHashMap<ObjectId, Integer> serverActiveServices = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<ObjectId, Integer> serverActiveServices = new ConcurrentHashMap<>();
 
 
     public static Instant lastInvalidatedCache = Instant.ofEpochMilli(0L);

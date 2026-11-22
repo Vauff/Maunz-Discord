@@ -57,7 +57,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 			}
 		}
 
-		if (!link.equals(""))
+		if (!link.isEmpty())
 		{
 			link = link.split("\"")[1].replace("amp;", "");
 			Document benchDoc;
@@ -187,7 +187,7 @@ public class Benchmark extends AbstractCommand<ChatInputInteractionEvent>
 					// this heading is sometimes present with no value??
 					String verify = fullDesc.split("Socket:</strong> ")[1].split("<")[0];
 
-					if (!verify.equals(""))
+					if (!verify.isEmpty())
 						socket = verify;
 				}
 

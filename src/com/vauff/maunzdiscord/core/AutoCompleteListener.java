@@ -35,7 +35,7 @@ public class AutoCompleteListener
 		}
 		catch (Exception e)
 		{
-			Logger.log.error("AutocompleteError: " + e.getMessage());
+            Logger.log.error("AutocompleteError: {}", e.getMessage());
 		}
 
 		return null;
