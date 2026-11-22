@@ -16,17 +16,10 @@ import org.bson.types.ObjectId;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.mongodb.client.model.Filters.eq;
 
 public class ServiceProcessTask implements Runnable {
-    /**
-     * Regex pattern to check for wildcards
-     */
-    private static final Pattern WILDCARD_PATTERN = Pattern.compile("(?i)[^*]+|(\\*)");
-
     private static final Duration TIMEOUT = Duration.ofSeconds(10);
 
     private final ObjectId id;
@@ -161,22 +154,35 @@ public class ServiceProcessTask implements Runnable {
      * @return Whether the text matches the pattern
      */
     private static boolean wildcardMatches(String pattern, String text) {
-        final Matcher matcher = WILDCARD_PATTERN.matcher(pattern);
-        final StringBuilder buffer = new StringBuilder();
+        int patternIndex = 0;
+        int textIndex = 0;
+        int starIndex = -1;
+        int starTextIndex = 0;
 
-        buffer.append("(?i)");
-        while (matcher.find()) {
-            if (matcher.group(1) != null) {
-                matcher.appendReplacement(buffer, ".*");
+        while (textIndex < text.length()) {
+            if (patternIndex < pattern.length() && pattern.charAt(patternIndex) == '*') {
+                starIndex = patternIndex;
+                starTextIndex = textIndex;
+                patternIndex++;
+            } else if (patternIndex < pattern.length() && charsMatch(pattern.charAt(patternIndex), text.charAt(textIndex))) {
+                patternIndex++;
+                textIndex++;
+            } else if (starIndex != -1) {
+                patternIndex = starIndex + 1;
+                starTextIndex++;
+                textIndex = starTextIndex;
             } else {
-                String replacement = "\\Q" + matcher.group(0) + "\\E";
-                matcher.appendReplacement(buffer, Matcher.quoteReplacement(replacement));
+                return false;
             }
         }
 
-        matcher.appendTail(buffer);
-        final String replaced = buffer.toString();
+        while (patternIndex < pattern.length() && pattern.charAt(patternIndex) == '*')
+            patternIndex++;
 
-        return text.matches(replaced);
+        return patternIndex == pattern.length();
+    }
+
+    private static boolean charsMatch(char a, char b) {
+        return a == b || Character.toUpperCase(a) == Character.toUpperCase(b) || Character.toLowerCase(a) == Character.toLowerCase(b);
     }
 }
