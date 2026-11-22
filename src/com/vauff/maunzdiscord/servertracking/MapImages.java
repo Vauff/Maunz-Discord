@@ -55,7 +55,7 @@ public class MapImages
 		String gtName = appIdToGameTrackerName(appId);
 
 		// If we didn't find a high quality map image at vauff.com, try to fall back to GameTracker
-		if (url.equals("") && !gtName.equals(""))
+		if (url.isEmpty() && !gtName.isEmpty())
 			url = "https://image.gametracker.com/images/maps/160x120/" + gtName + "/" + mapLower.replace(" ", "%20") + ".jpg";
 
 		mapImageLookupCache.get(appId).put(mapLower, url);
@@ -111,7 +111,7 @@ public class MapImages
 			}
 		}
 
-		if (bestMatch.equals(""))
+		if (bestMatch.isEmpty())
 			return "";
 		else
 			return "https://vauff.com/mapimgs/" + appId + "/" + bestMatch.replace(" ", "%20") + ".jpg";

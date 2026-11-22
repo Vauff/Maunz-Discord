@@ -6,163 +6,137 @@ import discord4j.common.util.Snowflake;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.mongodb.client.model.Filters.eq;
 
-/**
- * Main class for running server tracking
- */
-public class ServerTrackingLoop implements Runnable
-{
-	/**
-	 * Holds the boolean status of whether each server/service currently has a thread running or not
-	 */
-	public static ConcurrentHashMap<ObjectId, Boolean> threadRunning = new ConcurrentHashMap<>();
+public class ServerTrackingLoop {
 
-	/**
-	 * How many active services a server ID has attached
-	 */
-	public static ConcurrentHashMap<ObjectId, Integer> serverActiveServices = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<ObjectId, Integer> serverActiveServices = new ConcurrentHashMap<>();
 
-	/**
-	 * Last time serverActiveServices cache was invalidated
-	 */
-	public static Instant lastInvalidatedCache = Instant.ofEpochMilli(0L);
 
-	private Thread thread;
-	private final long LOOP_TIME = 60000;
+    public static Instant lastInvalidatedCache = Instant.ofEpochMilli(0L);
 
-	public void start() throws Exception
-	{
-		if (thread == null)
-		{
-			// Initial 10 second delay to allow map images to fully initialize
-			Thread.sleep(10000);
+    static final int MAX_DOWNTIME = 10080;
 
-			thread = new Thread(this, "servertracking-mainloop");
-			thread.start();
-		}
-	}
+    private static final long LOOP_TIME = 60000;
+    private static final long TASK_TIMEOUT = 120000;
 
-	/**
-	 * The server tracking main loop
-	 */
-	public void run()
-	{
-		while (true)
-		{
-			try
-			{
-				// Check if a shutdown is queued
-				if (Main.shutdownState == Main.ShutdownState.SHUTDOWN_QUEUED)
-				{
-					while (true)
-					{
-						boolean noThreadsRunning = true;
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "servertracking-scheduler"));
 
-						// Wait until no threads are running
-						for (Boolean value : threadRunning.values())
-						{
-							if (value)
-							{
-								noThreadsRunning = false;
-								break;
-							}
-						}
+    private static final ConcurrentHashMap<ObjectId, Thread> threads = new ConcurrentHashMap<>();
 
-						if (noThreadsRunning)
-							break;
-						else
-							Thread.sleep(1000);
-					}
 
-					// Stop, and mark the bot safe to shutdown
-					Main.shutdownState = Main.ShutdownState.SHUTDOWN_SAFE;
-					break;
-				}
+    private static final ConcurrentHashMap<ObjectId, Long> lastActive = new ConcurrentHashMap<>();
 
-				if (!Main.gateway.getGatewayClient(0).get().isConnected().block())
-				{
-					// Back off for a full loop duration and try again
-					Thread.sleep(LOOP_TIME);
-					continue;
-				}
+    public static void start() {
+        // Initial 10 second delay to allow map images to fully initialize
+        scheduler.scheduleAtFixedRate(ServerTrackingLoop::run, 10000, LOOP_TIME, TimeUnit.MILLISECONDS);
+        scheduler.scheduleWithFixedDelay(ServerTrackingLoop::checkThreads, 1, 1, TimeUnit.SECONDS);
+    }
 
-				ServerRequestThread.checkServerAddresses();
+    static void submit(ObjectId id, Runnable task) {
+        if (Main.shutdownState != Main.ShutdownState.NONE)
+            return;
 
-				List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
-				List<Document> serviceDocs = null;
-				long startTime = System.currentTimeMillis();
-				long targetSleepTime = LOOP_TIME / Math.max(serverDocs.size(), 1);
-				int iterCount = 0;
+        if (!Objects.isNull(lastActive.putIfAbsent(id, System.currentTimeMillis())))
+            return;
 
-				for (Document doc : serverDocs)
-				{
-					ObjectId id = doc.getObjectId("_id");
-					String ipPort = doc.getString("ip") + ":" + doc.getInteger("port");
+        Thread thread = Thread.ofVirtual().name("servertracking-" + id).unstarted(() ->
+        {
+            try {
+                task.run();
+            } finally {
+                threads.remove(id);
+                lastActive.remove(id);
+            }
+        });
 
-					iterCount++;
+        threads.put(id, thread);
+        thread.start();
+    }
 
-					// Store how many services are actively tracking this server
-					if (!serverActiveServices.containsKey(id))
-					{
-						int serviceCount = 0;
+    static void keepAlive(ObjectId id) {
+        lastActive.replace(id, System.currentTimeMillis());
+    }
 
-						if (Objects.isNull(serviceDocs))
-							serviceDocs = Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)).into(new ArrayList<>());
+    private static void checkThreads() {
+        if (Main.shutdownState == Main.ShutdownState.SHUTDOWN_QUEUED && lastActive.isEmpty()) {
+            Main.shutdownState = Main.ShutdownState.SHUTDOWN_SAFE;
+            return;
+        }
 
-						for (Document serviceDoc : serviceDocs)
-						{
-							ObjectId serverID = serviceDoc.getObjectId("serverID");
-							Snowflake guildId = Snowflake.of(serviceDoc.getLong("guildID"));
+        for (Entry<ObjectId, Thread> entry : threads.entrySet()) {
+            Long time = lastActive.get(entry.getKey());
 
-							if (id.equals(serverID) && Main.guildCache.containsKey(guildId))
-								serviceCount++;
+            if (Objects.isNull(time) || System.currentTimeMillis() - time < TASK_TIMEOUT)
+                continue;
 
-						}
+            Logger.log.warn("Server tracking thread {} has been stuck for " + (TASK_TIMEOUT / 1000) + " seconds, interrupting it", entry.getValue().getName());
+            entry.getValue().interrupt();
+            keepAlive(entry.getKey());
+        }
+    }
 
-						serverActiveServices.put(id, serviceCount);
-					}
+    private static void run() {
+        try {
+            if (Main.shutdownState != Main.ShutdownState.NONE)
+                return;
 
-					// Check if this server needs to be tracked
-					if (serverActiveServices.get(id) == 0)
-						continue;
+            if (Boolean.FALSE.equals(Main.gateway.getGatewayClient(0).get().isConnected().block(Duration.ofSeconds(10))))
+                return;
 
-					threadRunning.putIfAbsent(id, false);
+            ServerRequestTask.checkServerAddresses();
 
-					if (!threadRunning.get(id))
-					{
-						ServerRequestThread thread = new ServerRequestThread(id, ipPort);
+            List<Document> serverDocs = Main.mongoDatabase.getCollection("servers").find(eq("enabled", true)).projection(new Document("ip", 1).append("port", 1)).into(new ArrayList<>());
+            List<Document> serviceDocs = null;
+            List<Document> trackedServers = new ArrayList<>();
 
-						threadRunning.put(id, true);
-						thread.start();
-					}
+            for (Document doc : serverDocs) {
+                ObjectId id = doc.getObjectId("_id");
 
-					// Determine how long we would need to sleep to stay on schedule for this iteration
-					long sleepTime = (System.currentTimeMillis() - (startTime + (targetSleepTime * iterCount))) * -1;
+                if (!serverActiveServices.containsKey(id)) {
+                    int serviceCount = 0;
 
-					// Sleep only if we're ahead of schedule
-					if (sleepTime > 0)
-						Thread.sleep(sleepTime);
-				}
+                    if (Objects.isNull(serviceDocs))
+                        serviceDocs = Main.mongoDatabase.getCollection("services").find(eq("enabled", true)).projection(new Document("serverID", 1).append("guildID", 1)).into(new ArrayList<>());
 
-				// Might still be ahead of schedule if last servers had no active services
-				long elapsedTime = System.currentTimeMillis() - startTime;
+                    for (Document serviceDoc : serviceDocs) {
+                        ObjectId serverID = serviceDoc.getObjectId("serverID");
+                        Snowflake guildId = Snowflake.of(serviceDoc.getLong("guildID"));
 
-				if (elapsedTime < LOOP_TIME)
-					Thread.sleep(LOOP_TIME - elapsedTime);
+                        if (id.equals(serverID) && Main.guildCache.containsKey(guildId))
+                            serviceCount++;
+                    }
 
-				Logger.log.debug("Finished server tracking loop in " + (System.currentTimeMillis() - startTime) + " ms");
-			}
-			catch (Exception e)
-			{
-				Logger.log.error("", e);
-			}
-		}
-	}
+                    serverActiveServices.put(id, serviceCount);
+                }
+
+                if (serverActiveServices.get(id) > 0)
+                    trackedServers.add(doc);
+            }
+
+            long spacing = LOOP_TIME / Math.max(trackedServers.size(), 1);
+
+            for (int i = 0; i < trackedServers.size(); i++) {
+                ObjectId id = trackedServers.get(i).getObjectId("_id");
+                String ipPort = trackedServers.get(i).getString("ip") + ":" + trackedServers.get(i).getInteger("port");
+
+                scheduler.schedule(() -> submit(id, new ServerRequestTask(id, ipPort)), i * spacing, TimeUnit.MILLISECONDS);
+            }
+
+            Logger.log.debug("Started server tracking loop for {} servers", trackedServers.size());
+        } catch (Exception e) {
+            Logger.log.error("", e);
+        }
+    }
 }

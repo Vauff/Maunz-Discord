@@ -69,7 +69,7 @@ public class Main
 		SHUTDOWN_SAFE
 	}
 
-	public static ShutdownState shutdownState = ShutdownState.NONE;
+	public static volatile ShutdownState shutdownState = ShutdownState.NONE;
 
 	public static void main(String[] args)
 	{
@@ -134,7 +134,7 @@ public class Main
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(PresenceTimer.timer, 2, 5, TimeUnit.MINUTES);
 
 			// Initialize the server tracking main loop
-			new ServerTrackingLoop().start();
+			ServerTrackingLoop.start();
 
 			// Keep app alive by waiting for disconnect
 			gateway.onDisconnect().block();
