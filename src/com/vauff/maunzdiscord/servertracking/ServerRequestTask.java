@@ -79,7 +79,7 @@ public class ServerRequestTask implements Runnable {
                         if (!serverInfoSuccess) {
                             int downtimeTimer = doc.getInteger("downtimeTimer") + 1;
 
-                            Logger.log.warn("Failed to connect to the server " + ipPort + ", automatically retrying in 1 minute");
+                            Logger.log.warn("Failed to connect to the server {}, automatically retrying in 1 minute", ipPort);
                             Main.mongoDatabase.getCollection("servers").updateOne(eq("_id", id), new Document("$set", new Document("downtimeTimer", downtimeTimer)));
 
                             if (downtimeTimer >= ServerTrackingLoop.MAX_DOWNTIME) {

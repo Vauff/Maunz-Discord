@@ -162,7 +162,7 @@ public class ServiceProcessTask implements Runnable {
      */
     private static boolean wildcardMatches(String pattern, String text) {
         final Matcher matcher = WILDCARD_PATTERN.matcher(pattern);
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("(?i)");
         while (matcher.find()) {
