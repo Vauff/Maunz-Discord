@@ -19,15 +19,14 @@ import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.discordjson.json.UserData;
 import discord4j.rest.RestClient;
+import discord4j.rest.service.ApplicationService;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +47,7 @@ public class Main
 	/**
 	 * List that holds all commands
 	 */
-	public static final HashMap<String, AbstractCommand<ChatInputInteractionEvent>> commands = new HashMap<>();
+	public static final TreeMap<String, AbstractCommand<ChatInputInteractionEvent>> commands = new TreeMap<>();
 
 	/**
 	 * Cached Guild objects, to avoid constant getGuildById calls to Discord API
@@ -150,53 +149,51 @@ public class Main
 	 */
 	private static void setupCommands()
 	{
-		LinkedList<AbstractCommand<ChatInputInteractionEvent>> commandsArray = new LinkedList<>();
+		List<AbstractCommand<ChatInputInteractionEvent>> commandsList = List.of(
+			new About(),
+			new Benchmark(),
+			new Changelog(),
+			new Colour(),
+			new Help(),
+			new Invite(),
+			new IsItDown(),
+			new Map(),
+			new Minecraft(),
+			new Notify(),
+			new Ping(),
+			new Players(),
+			new Reddit(),
+			new Say(),
+			new Servers(),
+			new Steam(),
+			new Stop()
+		);
 
-		commandsArray.add(new About());
-		commandsArray.add(new Benchmark());
-		commandsArray.add(new Changelog());
-		commandsArray.add(new Colour());
-		commandsArray.add(new Help());
-		commandsArray.add(new Invite());
-		commandsArray.add(new IsItDown());
-		commandsArray.add(new Map());
-		commandsArray.add(new Minecraft());
-		commandsArray.add(new Notify());
-		commandsArray.add(new Ping());
-		commandsArray.add(new Players());
-		commandsArray.add(new Reddit());
-		commandsArray.add(new Say());
-		commandsArray.add(new Servers());
-		commandsArray.add(new Steam());
-		commandsArray.add(new Stop());
-		commandsArray.sort(Comparator.comparing(AbstractCommand::getName));
-
-		for (AbstractCommand<ChatInputInteractionEvent> cmd : commandsArray)
+		for (AbstractCommand<ChatInputInteractionEvent> cmd : commandsList)
 			commands.put(cmd.getName(), cmd);
 
 		RestClient restClient = gateway.getRestClient();
+		ApplicationService applicationService = restClient.getApplicationService();
 		long appID = restClient.getApplicationId().block();
-		ArrayList<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
+		List<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
 
 		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands.values())
 			cmdRequests.add(cmd.getCommandRequest());
 
 		if (cfg.getDevGuilds().length > 0)
 		{
-			for (int i = 0; i < cfg.getDevGuilds().length; i++)
+			for (long guildId : cfg.getDevGuilds())
 			{
-				long guildId = cfg.getDevGuilds()[i];
-				List<ApplicationCommandData> cmdDatas = restClient.getApplicationService().bulkOverwriteGuildApplicationCommand(appID, guildId, cmdRequests).collectList().block();
+				List<ApplicationCommandData> cmdDatas = applicationService.bulkOverwriteGuildApplicationCommand(appID, guildId, cmdRequests).collectList().block();
 
 				mapCommandDataToCommands(cmdDatas, guildId);
 			}
 
 			// Remove all global commands while in dev mode
-			cmdRequests = new ArrayList<>();
+			cmdRequests = List.of();
 		}
 
-
-		List<ApplicationCommandData> cmdDatas = restClient.getApplicationService().bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).collectList().block();
+		List<ApplicationCommandData> cmdDatas = applicationService.bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).collectList().block();
 
 		if (!cmdRequests.isEmpty())
 			mapCommandDataToCommands(cmdDatas, 0L);
