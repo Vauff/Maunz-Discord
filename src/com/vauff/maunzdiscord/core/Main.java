@@ -19,15 +19,14 @@ import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.discordjson.json.UserData;
 import discord4j.rest.RestClient;
+import discord4j.rest.service.ApplicationService;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -36,24 +35,24 @@ public class Main
 {
 	public static GatewayDiscordClient gateway;
 	public static MongoDatabase mongoDatabase;
-	public static String version = "r57";
+	public static final String version = "r57";
 	public static Config cfg;
 	public static UserData botUserData;
 
 	/**
 	 * A watch to keep track of the uptime of the bot
 	 */
-	public static StopWatch uptime = new StopWatch();
+	public static final StopWatch uptime = new StopWatch();
 
 	/**
 	 * List that holds all commands
 	 */
-	public static HashMap<String, AbstractCommand<ChatInputInteractionEvent>> commands = new HashMap<>();
+	public static final TreeMap<String, AbstractCommand<ChatInputInteractionEvent>> commands = new TreeMap<>();
 
 	/**
 	 * Cached Guild objects, to avoid constant getGuildById calls to Discord API
 	 */
-	public static ConcurrentHashMap<Snowflake, Guild> guildCache = new ConcurrentHashMap<>();
+	public static final ConcurrentHashMap<Snowflake, Guild> guildCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Current shutdown state of the bot
@@ -69,7 +68,7 @@ public class Main
 		SHUTDOWN_SAFE
 	}
 
-	public static ShutdownState shutdownState = ShutdownState.NONE;
+	public static volatile ShutdownState shutdownState = ShutdownState.NONE;
 
 	public static void main(String[] args)
 	{
@@ -80,13 +79,13 @@ public class Main
 			Logger.log = LogManager.getLogger(Main.class);
 			cfg = new Config();
 
-			if (cfg.getToken().equals(""))
+			if (cfg.getToken().isEmpty())
 			{
 				Logger.log.fatal("You need to provide a bot token to run Maunz, please add one obtained from https://discord.com/developers/applications to the discordToken option in config.json");
 				exit = true;
 			}
 
-			if (cfg.getMongoConnectionString().equals("") || cfg.getMongoDatabase().equals(""))
+			if (cfg.getMongoConnectionString().isEmpty() || cfg.getMongoDatabase().isEmpty())
 			{
 				Logger.log.fatal("You need to fill in all values of the mongoDatabase section of config.json to run Maunz");
 				exit = true;
@@ -95,8 +94,8 @@ public class Main
 			if (exit)
 				System.exit(1);
 
-			Logger.log.info("Starting Maunz-Discord " + version + "...");
-			Logger.log.info("Connecting to MongoDB (" + cfg.getMongoConnectionString() + ")");
+			Logger.log.info("Starting Maunz-Discord {}...", version);
+			Logger.log.info("Connecting to MongoDB ({})", cfg.getMongoConnectionString());
 
 			try
 			{
@@ -105,22 +104,22 @@ public class Main
 			catch (Exception e)
 			{
 				Logger.log.error("", e);
-				Logger.log.fatal("An error occured while connecting to the MongoDB database");
+				Logger.log.fatal("An error occurred while connecting to the MongoDB database");
 				System.exit(1);
 			}
 
 			gateway = DiscordClient.create(cfg.getToken()).gateway()
 				.withEventDispatcher(eventDispatcher ->
 				{
-					var event1 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
-					var event2 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
-					return Mono.when(event1, event2);
+					var guildCreateListener = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
+					var guildCreateLogger = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
+					return Mono.when(guildCreateListener, guildCreateLogger);
 				})
 				.login().block();
 
 			uptime.start();
 			setupCommands();
-			botUserData = Main.gateway.getRestClient().getSelf().block();
+			botUserData = gateway.getRestClient().getSelf().block();
 
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onChatInputInteraction(event))).subscribe();
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onButtonInteraction(event))).subscribe();
@@ -134,7 +133,7 @@ public class Main
 			Executors.newScheduledThreadPool(1).scheduleWithFixedDelay(PresenceTimer.timer, 2, 5, TimeUnit.MINUTES);
 
 			// Initialize the server tracking main loop
-			new ServerTrackingLoop().start();
+			ServerTrackingLoop.start();
 
 			// Keep app alive by waiting for disconnect
 			gateway.onDisconnect().block();
@@ -150,55 +149,53 @@ public class Main
 	 */
 	private static void setupCommands()
 	{
-		LinkedList<AbstractCommand<ChatInputInteractionEvent>> commandsArray = new LinkedList<>();
+		List<AbstractCommand<ChatInputInteractionEvent>> commandsList = List.of(
+			new About(),
+			new Benchmark(),
+			new Changelog(),
+			new Colour(),
+			new Help(),
+			new Invite(),
+			new IsItDown(),
+			new Map(),
+			new Minecraft(),
+			new Notify(),
+			new Ping(),
+			new Players(),
+			new Reddit(),
+			new Say(),
+			new Servers(),
+			new Steam(),
+			new Stop()
+		);
 
-		commandsArray.add(new About());
-		commandsArray.add(new Benchmark());
-		commandsArray.add(new Changelog());
-		commandsArray.add(new Colour());
-		commandsArray.add(new Help());
-		commandsArray.add(new Invite());
-		commandsArray.add(new IsItDown());
-		commandsArray.add(new Map());
-		commandsArray.add(new Minecraft());
-		commandsArray.add(new Notify());
-		commandsArray.add(new Ping());
-		commandsArray.add(new Players());
-		commandsArray.add(new Reddit());
-		commandsArray.add(new Say());
-		commandsArray.add(new Servers());
-		commandsArray.add(new Steam());
-		commandsArray.add(new Stop());
-		commandsArray.sort(Comparator.comparing(AbstractCommand::getName));
-
-		for (AbstractCommand<ChatInputInteractionEvent> cmd : commandsArray)
+		for (AbstractCommand<ChatInputInteractionEvent> cmd : commandsList)
 			commands.put(cmd.getName(), cmd);
 
 		RestClient restClient = gateway.getRestClient();
+		ApplicationService applicationService = restClient.getApplicationService();
 		long appID = restClient.getApplicationId().block();
-		ArrayList<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
+		List<ApplicationCommandRequest> cmdRequests = new ArrayList<>();
 
 		for (AbstractCommand<ChatInputInteractionEvent> cmd : commands.values())
 			cmdRequests.add(cmd.getCommandRequest());
 
 		if (cfg.getDevGuilds().length > 0)
 		{
-			for (int i = 0; i < cfg.getDevGuilds().length; i++)
+			for (long guildId : cfg.getDevGuilds())
 			{
-				long guildId = cfg.getDevGuilds()[i];
-				List<ApplicationCommandData> cmdDatas = restClient.getApplicationService().bulkOverwriteGuildApplicationCommand(appID, guildId, cmdRequests).collectList().block();
+				List<ApplicationCommandData> cmdDatas = applicationService.bulkOverwriteGuildApplicationCommand(appID, guildId, cmdRequests).collectList().block();
 
 				mapCommandDataToCommands(cmdDatas, guildId);
 			}
 
 			// Remove all global commands while in dev mode
-			cmdRequests = new ArrayList<>();
+			cmdRequests = List.of();
 		}
 
+		List<ApplicationCommandData> cmdDatas = applicationService.bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).collectList().block();
 
-		List<ApplicationCommandData> cmdDatas = restClient.getApplicationService().bulkOverwriteGlobalApplicationCommand(appID, cmdRequests).collectList().block();
-
-		if (cmdRequests.size() > 0)
+		if (!cmdRequests.isEmpty())
 			mapCommandDataToCommands(cmdDatas, 0L);
 	}
 

@@ -8,9 +8,9 @@ import discord4j.core.object.entity.User;
 
 public class ButtonInteractionThread implements Runnable
 {
-	private ButtonInteractionEvent event;
+	private final ButtonInteractionEvent event;
 	private Thread thread;
-	private String name;
+	private final String name;
 
 	public ButtonInteractionThread(ButtonInteractionEvent passedEvent, String passedName)
 	{

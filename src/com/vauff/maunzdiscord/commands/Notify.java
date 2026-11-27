@@ -80,8 +80,8 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 		}
 		else if (services.size() == 1)
 		{
-			selectedServices.put(user.getId(), services.get(0).getObjectId("_id"));
-			runCmd(event, user, services.get(0));
+			selectedServices.put(user.getId(), services.getFirst().getObjectId("_id"));
+			runCmd(event, user, services.getFirst());
 		}
 		else
 		{
@@ -148,23 +148,20 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 				boolean mapSet = false;
 				int index = 0;
 
-				for (int i = 0; i < notificationDocs.size(); i++)
-				{
-					if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
-						continue;
+                for (Document notificationDoc : notificationDocs) {
+                    if (notificationDoc.getLong("userID") != user.getId().asLong())
+                        continue;
 
-					List<String> notifications = notificationDocs.get(i).getList("notifications", String.class);
+                    List<String> notifications = notificationDoc.getList("notifications", String.class);
 
-					for (int j = 0; j < notifications.size(); j++)
-					{
-						if (notifications.get(j).equalsIgnoreCase(map))
-						{
-							mapSet = true;
-							index = j;
-							break;
-						}
-					}
-				}
+                    for (int j = 0; j < notifications.size(); j++) {
+                        if (notifications.get(j).equalsIgnoreCase(map)) {
+                            mapSet = true;
+                            index = j;
+                            break;
+                        }
+                    }
+                }
 
 				if (!mapSet)
 					addNotification(event, user, doc, map);
@@ -190,14 +187,13 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 
 		boolean hasNotifications = false;
 
-		for (int i = 0; i < notificationDocs.size(); i++)
-		{
-			if (notificationDocs.get(i).getLong("userID") != user.getId().asLong() || notificationDocs.get(i).getList("notifications", String.class).size() == 0)
-				continue;
+        for (Document document : notificationDocs) {
+            if (document.getLong("userID") != user.getId().asLong() || document.getList("notifications", String.class).size() == 0)
+                continue;
 
-			hasNotifications = true;
-			break;
-		}
+            hasNotifications = true;
+            break;
+        }
 
 		if (interaction.getOption("list").isPresent())
 		{
@@ -237,25 +233,22 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 			if (doc.getBoolean("mapCharacterLimit"))
 				mapArg = StringUtils.substring(mapArg, 0, 31);
 
-			for (int i = 0; i < notificationDocs.size(); i++)
-			{
-				if (notificationDocs.get(i).getLong("userID") != user.getId().asLong())
-					continue;
+            for (Document notificationDoc : notificationDocs) {
+                if (notificationDoc.getLong("userID") != user.getId().asLong())
+                    continue;
 
-				List<String> notifications = notificationDocs.get(i).getList("notifications", String.class);
+                List<String> notifications = notificationDoc.getList("notifications", String.class);
 
-				for (int j = 0; j < notifications.size(); j++)
-				{
-					String notification = notifications.get(j);
+                for (int j = 0; j < notifications.size(); j++) {
+                    String notification = notifications.get(j);
 
-					if (notification.equalsIgnoreCase(mapArg))
-					{
-						mapSet = true;
-						index = j;
-						break;
-					}
-				}
-			}
+                    if (notification.equalsIgnoreCase(mapArg)) {
+                        mapSet = true;
+                        index = j;
+                        break;
+                    }
+                }
+            }
 
 			for (int i = 0; i < serverDoc.getList("mapDatabase", Document.class).size(); i++)
 			{
@@ -290,33 +283,25 @@ public class Notify extends AbstractCommand<ChatInputInteractionEvent>
 					Collections.sort(mapDatabaseTimestamps);
 					Collections.reverse(mapDatabaseTimestamps);
 
-					for (int i = 0; i < mapDatabaseTimestamps.size(); i++)
-					{
-						long timestamp = mapDatabaseTimestamps.get(i);
+                    for (long timestamp : mapDatabaseTimestamps) {
+                        for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++) {
+                            Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(j);
 
-						for (int j = 0; j < serverDoc.getList("mapDatabase", Document.class).size(); j++)
-						{
-							Document databaseEntry = serverDoc.getList("mapDatabase", Document.class).get(j);
+                            if (databaseEntry.getLong("lastPlayed") == timestamp)
+                                mapDatabase.add(databaseEntry.getString("map"));
+                        }
+                    }
 
-							if (databaseEntry.getLong("lastPlayed") == timestamp)
-								mapDatabase.add(databaseEntry.getString("map"));
-						}
-					}
-
-					for (int i = 0; i < mapDatabase.size(); i++)
-					{
-						String map = mapDatabase.get(i);
-
-						if (StringUtils.containsIgnoreCase(map, mapArg))
-						{
-							mapSuggestion = map;
-							break;
-						}
-					}
+                    for (String map : mapDatabase) {
+                        if (StringUtils.containsIgnoreCase(map, mapArg)) {
+                            mapSuggestion = map;
+                            break;
+                        }
+                    }
 
 					List<Button> buttons = new ArrayList<>();
 
-					if (mapSuggestion.equals(""))
+					if (mapSuggestion.isEmpty())
 					{
 						buttons.add(Button.success("confirm-" + mapArg, StringUtils.substring("Add " + mapArg, 0, 80)));
 						buttons.add(Button.danger("cancel-notify", "Cancel"));

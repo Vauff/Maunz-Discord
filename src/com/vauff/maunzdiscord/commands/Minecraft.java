@@ -105,7 +105,7 @@ public class Minecraft extends AbstractCommand<ChatInputInteractionEvent>
 			connection.connect();
 
 			int divCode = connection.getResponseCode() / 100;
-			String jsonString = "";
+			StringBuilder jsonString = new StringBuilder();
 			Scanner scanner;
 
 			// 2xx HTTP status codes
@@ -118,11 +118,11 @@ public class Minecraft extends AbstractCommand<ChatInputInteractionEvent>
 				return new JSONObject();
 
 			while (scanner.hasNext())
-				jsonString += scanner.nextLine();
+				jsonString.append(scanner.nextLine());
 
 			scanner.close();
 
-			return new JSONObject(jsonString);
+			return new JSONObject(jsonString.toString());
 		}
 		catch (IOException e)
 		{

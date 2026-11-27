@@ -28,7 +28,7 @@ public class Steam extends AbstractCommand<ChatInputInteractionEvent>
 	@Override
 	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
 	{
-		if (Main.cfg.getSteamApiKey().equals(""))
+		if (Main.cfg.getSteamApiKey().isEmpty())
 		{
 			Util.editReply(event, "This command is disabled because the bot does not have a Steam API key configured!");
 			return;
@@ -229,15 +229,15 @@ public class Steam extends AbstractCommand<ChatInputInteractionEvent>
 			if (connection.getResponseCode() / 100 != 2)
 				return null;
 
-			String jsonString = "";
+			StringBuilder jsonString = new StringBuilder();
 			Scanner scanner = new Scanner(connection.getInputStream());
 
 			while (scanner.hasNext())
-				jsonString += scanner.nextLine();
+				jsonString.append(scanner.nextLine());
 
 			scanner.close();
 
-			return new JSONObject(jsonString);
+			return new JSONObject(jsonString.toString());
 		}
 		catch (IOException e)
 		{

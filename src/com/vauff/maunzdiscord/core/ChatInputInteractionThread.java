@@ -7,9 +7,9 @@ import discord4j.core.object.entity.channel.MessageChannel;
 
 public class ChatInputInteractionThread implements Runnable
 {
-	private ChatInputInteractionEvent event;
+	private final ChatInputInteractionEvent event;
 	private Thread thread;
-	private String name;
+	private final String name;
 
 	public ChatInputInteractionThread(ChatInputInteractionEvent passedEvent, String passedName)
 	{

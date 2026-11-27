@@ -13,17 +13,17 @@ public class MapImages
 	/**
 	 * Holds the latest image lists pulled from vauff.com
 	 */
-	public static ConcurrentHashMap<String, ArrayList<String>> mapImages = new ConcurrentHashMap<>();
+	public static final ConcurrentHashMap<String, ArrayList<String>> mapImages = new ConcurrentHashMap<>();
 
 	/**
 	 * Cached lookup results from Util#getMapImageURL
 	 */
-	public static ConcurrentHashMap<String, ConcurrentHashMap<String, String>> mapImageLookupCache = new ConcurrentHashMap<>();
+	public static final ConcurrentHashMap<String, ConcurrentHashMap<String, String>> mapImageLookupCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Cached colour results from Util#averageColourFromURL
 	 */
-	public static ConcurrentHashMap<String, Color> mapImageColourCache = new ConcurrentHashMap<>();
+	public static final ConcurrentHashMap<String, Color> mapImageColourCache = new ConcurrentHashMap<>();
 
 	/**
 	 * Unix timestamp of when the currently stored map images API data was last updated
@@ -55,7 +55,7 @@ public class MapImages
 		String gtName = appIdToGameTrackerName(appId);
 
 		// If we didn't find a high quality map image at vauff.com, try to fall back to GameTracker
-		if (url.equals("") && !gtName.equals(""))
+		if (url.isEmpty() && !gtName.isEmpty())
 			url = "https://image.gametracker.com/images/maps/160x120/" + gtName + "/" + mapLower.replace(" ", "%20") + ".jpg";
 
 		mapImageLookupCache.get(appId).put(mapLower, url);
@@ -102,7 +102,7 @@ public class MapImages
 		{
 			// Keep both parameters lower case for an accurate levenshtein distance
 			String arrayMapLower = arrayMap.toLowerCase();
-			int distance = new LevenshteinDistance().apply(trimmedMap, arrayMapLower);
+			int distance = LevenshteinDistance.getDefaultInstance().apply(trimmedMap, arrayMapLower);
 
 			if (distance < bmLevenshteinDist && trimmedMap.startsWith(arrayMapLower))
 			{
@@ -111,7 +111,7 @@ public class MapImages
 			}
 		}
 
-		if (bestMatch.equals(""))
+		if (bestMatch.isEmpty())
 			return "";
 		else
 			return "https://vauff.com/mapimgs/" + appId + "/" + bestMatch.replace(" ", "%20") + ".jpg";

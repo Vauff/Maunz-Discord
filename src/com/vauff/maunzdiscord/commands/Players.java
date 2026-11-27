@@ -48,13 +48,13 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 		for (Document doc : servicesIterable)
 			services.add(doc);
 
-		if (services.size() == 0)
+		if (services.isEmpty())
 		{
 			Util.editReply(event, "Server tracking is not enabled in this guild yet! Please have a guild administrator use " + Main.commands.get("servers").getCommandMention(event, "add") + " to set one up");
 		}
 		else if (services.size() == 1)
 		{
-			runCmd(event, user, services.get(0));
+			runCmd(event, user, services.getFirst());
 		}
 		else
 		{
@@ -107,7 +107,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 		int playersSize = serverDoc.getList("players", String.class).size();
 
 		// We can identify these servers because they respond with an "empty" A2S_PLAYER response, always 1 player named as empty string if anyone ingame
-		if (playersSize == 1 && serverDoc.getList("players", String.class).get(0).equals("") && serverDoc.getString("appId").equals("730_cs2"))
+		if (playersSize == 1 && serverDoc.getList("players", String.class).getFirst().isEmpty() && serverDoc.getString("appId").equals("730_cs2"))
 		{
 			Util.editReply(event, "Players Online: **" + serverDoc.getInteger("playerCount") + "/" + serverDoc.getInteger("maxPlayers") + "**\n\n**Note:** Counter-Strike 2 servers only support querying player information if [ServerListPlayersFix](<https://github.com/Source2ZE/ServerListPlayersFix>) is installed");
 			return;
@@ -119,7 +119,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 			return;
 		}
 
-		if (playersSize == 1 && serverDoc.getList("players", String.class).get(0).equals("SERVER_UPDATEPLAYERS_FAILED"))
+		if (playersSize == 1 && serverDoc.getList("players", String.class).getFirst().equals("SERVER_UPDATEPLAYERS_FAILED"))
 		{
 			Util.editReply(event, "The server failed to return player information, please try again later");
 			return;
@@ -127,12 +127,12 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 
 		boolean sizeIsSmall = playersSize <= 8;
 
-		playersList.append("```-- Players Online: " + serverDoc.getInteger("playerCount") + "/" + serverDoc.getInteger("maxPlayers") + " --" + System.lineSeparator() + System.lineSeparator());
+		playersList.append("```-- Players Online: ").append(serverDoc.getInteger("playerCount")).append("/").append(serverDoc.getInteger("maxPlayers")).append(" --").append(System.lineSeparator()).append(System.lineSeparator());
 
 		for (String player : serverDoc.getList("players", String.class))
 		{
-			if (!player.equals(""))
-				playersList.append("- " + player + System.lineSeparator());
+			if (!player.isEmpty())
+				playersList.append("- ").append(player).append(System.lineSeparator());
 		}
 
 		playersList.append("```");

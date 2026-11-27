@@ -4,85 +4,73 @@ import com.vauff.maunzdiscord.core.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Holds a timer to update map images
  */
-public class MapImageTimer
-{
-	/**
-	 * Updates the mapImages hashmap with the latest available map images from vauff.com and clears related caches
-	 */
-	public static Runnable timer = () ->
-	{
-		try
-		{
-			Logger.log.debug("Starting a map image timer run...");
+public class MapImageTimer {
+    private static final String LIST_URL = "https://vauff.com/mapimgs/list.php";
 
-			JSONObject response;
+    /**
+     * Updates the mapImages hashmap with the latest available map images from vauff.com and clears related caches
+     */
+    public static final Runnable timer = () ->
+    {
+        try {
+            Logger.log.debug("Starting a map image timer run...");
 
-			while (true)
-			{
-				try
-				{
-					URL url = new URL("https://vauff.com/mapimgs/list.php");
-					HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            JSONObject response = fetchList();
 
-					connection.setRequestMethod("GET");
-					connection.connect();
+            if (response.getLong("lastUpdated") <= MapImages.lastUpdated)
+                return;
 
-					if (connection.getResponseCode() != 200)
-						throw new IOException();
+            Logger.log.debug("Map image API updated, rebuilding image list and clearing caches");
 
-					String jsonString = "";
-					Scanner scanner = new Scanner(url.openStream());
+            for (String appId : response.keySet()) {
+                if (appId.equals("lastUpdated"))
+                    continue;
 
-					while (scanner.hasNext())
-						jsonString += scanner.nextLine();
+                ArrayList<String> maps = new ArrayList<>();
 
-					scanner.close();
-					response = new JSONObject(jsonString);
+                for (int i = 0; i < response.getJSONArray(appId).length(); i++)
+                    maps.add(response.getJSONArray(appId).getString(i));
 
-					break;
-				}
-				catch (IOException | JSONException e)
-				{
-					Logger.log.error("Failed to connect to the map images API, automatically retrying in 1 minute");
-					Thread.sleep(60000);
-				}
-			}
+                MapImages.mapImages.put(appId, maps);
+                MapImages.mapImageLookupCache.put(appId, new ConcurrentHashMap<>());
+            }
 
-			if (response.getLong("lastUpdated") <= MapImages.lastUpdated)
-				return;
+            MapImages.mapImageColourCache.clear();
+            MapImages.lastUpdated = response.getLong("lastUpdated");
+        } catch (Exception e) {
+            Logger.log.error("", e);
+        }
+    };
 
-			Logger.log.debug("Map image API updated, rebuilding image list and clearing caches");
+    private static JSONObject fetchList() throws InterruptedException {
+        while (true) {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) URI.create(LIST_URL).toURL().openConnection();
 
-			for (String appId : response.keySet())
-			{
-				if (appId.equals("lastUpdated"))
-					continue;
+                connection.setConnectTimeout(10000);
+                connection.setReadTimeout(10000);
 
-				ArrayList<String> maps = new ArrayList<>();
+                if (connection.getResponseCode() != 200)
+                    throw new IOException("HTTP " + connection.getResponseCode());
 
-				for (int i = 0; i < response.getJSONArray(appId).length(); i++)
-					maps.add(response.getJSONArray(appId).getString(i));
-
-				MapImages.mapImages.put(appId, maps);
-				MapImages.mapImageLookupCache.put(appId, new ConcurrentHashMap<>());
-				MapImages.mapImageColourCache.clear();
-			}
-
-			MapImages.lastUpdated = response.getLong("lastUpdated");
-		}
-		catch (Exception e)
-		{
-			Logger.log.error("", e);
-		}
-	};
+                try (InputStream stream = connection.getInputStream()) {
+                    return new JSONObject(new String(stream.readAllBytes(), StandardCharsets.UTF_8));
+                }
+            } catch (IOException | JSONException e) {
+                Logger.log.error("Failed to connect to the map images API, automatically retrying in 1 minute");
+                Thread.sleep(60000);
+            }
+        }
+    }
 }

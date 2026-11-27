@@ -35,11 +35,11 @@ public class Logger
 				String guildName = event.getInteraction().getGuild().block().getName();
 				String guildId = event.getInteraction().getGuild().block().getId().asString();
 
-				Logger.log.debug(userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
+                Logger.log.debug("{} ({}) | {} ({}) | #{} ({}) | used /{}{}", userName, userId, guildName, guildId, channelName, channelId, cmdName, getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
 			}
 			else
 			{
-				Logger.log.debug(userName + " (" + userId + ") | PM (" + channelId + ") | used /" + cmdName + getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
+                Logger.log.debug("{} ({}) | PM ({}) | used /{}{}", userName, userId, channelId, cmdName, getArguments(event.getInteraction().getCommandInteraction().get().getOptions()));
 			}
 		}
 		catch (Exception e)
@@ -54,7 +54,7 @@ public class Logger
 		{
 			User user = event.getInteraction().getUser();
 
-			Logger.log.debug(user.getUsername() + " (" + user.getId().asString() + ") pressed the button " + event.getCustomId() + " on message ID " + event.getMessageId().asString());
+            Logger.log.debug("{} ({}) pressed the button {} on message ID {}", user.getUsername(), user.getId().asString(), event.getCustomId(), event.getMessageId().asString());
 		}
 		catch (Exception e)
 		{
@@ -66,7 +66,7 @@ public class Logger
 	{
 		try
 		{
-			Logger.log.debug("Joined guild " + event.getGuild().getName() + " (" + event.getGuild().getId().asString() + ")");
+            Logger.log.debug("Joined guild {} ({})", event.getGuild().getName(), event.getGuild().getId().asString());
 		}
 		catch (Exception e)
 		{
@@ -80,7 +80,7 @@ public class Logger
 		{
 			if (!event.isUnavailable())
 			{
-				Logger.log.debug("Left guild " + event.getGuild().get().getName() + " (" + event.getGuildId().asString() + ")");
+                Logger.log.debug("Left guild {} ({})", event.getGuild().get().getName(), event.getGuildId().asString());
 			}
 		}
 		catch (Exception e)
@@ -94,49 +94,48 @@ public class Logger
 		String userName = Main.botUserData.username();
 		String userId = Main.botUserData.id().asString();
 		String channelId = channel.getId().asString();
-		String logMsg;
+		StringBuilder logMsg;
 
-		if (!(channel instanceof PrivateChannel))
+		if (!(channel instanceof PrivateChannel privChannel))
 		{
 			Guild guild = ((GuildChannel) channel).getGuild().block();
 			String channelName = ((GuildChannel) channel).getName();
 			String guildName = guild.getName();
 			String guildId = guild.getId().asString();
 
-			logMsg = messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") |";
+			logMsg = new StringBuilder(messageID + " | " + userName + " (" + userId + ") | " + guildName + " (" + guildId + ") | #" + channelName + " (" + channelId + ") |");
 		}
 		else
 		{
-			PrivateChannel privChannel = (PrivateChannel) channel;
-			String recipientName = privChannel.getRecipients().iterator().next().getUsername();
+            String recipientName = privChannel.getRecipients().iterator().next().getUsername();
 			String recipientId = privChannel.getRecipients().iterator().next().getId().asString();
 
 			if (recipientId.equals(userId))
 			{
-				logMsg = messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") |";
+				logMsg = new StringBuilder(messageID + " | " + userName + " (" + userId + ") | PM (" + channelId + ") |");
 			}
 			else
 			{
-				logMsg = messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") |";
+				logMsg = new StringBuilder(messageID + " | " + userName + " (" + userId + ") | " + recipientName + " (" + recipientId + ") | PM (" + channelId + ") |");
 			}
 		}
 
 		if (message != null && !message.isEmpty())
-			logMsg += " " + message;
+			logMsg.append(" ").append(message);
 
 		if (embeds != null)
 		{
 			for (EmbedCreateSpec embed : embeds)
-				logMsg += " [Embed]";
+				logMsg.append(" [Embed]");
 		}
 
 		if (components != null)
 		{
 			for (TopLevelMessageComponent component : components)
-				logMsg += " [" + component.getType().name() + " Component]";
+				logMsg.append(" [").append(component.getType().name()).append(" Component]");
 		}
 
-		Logger.log.debug(logMsg);
+		Logger.log.debug(logMsg.toString());
 	}
 
 	/**
@@ -147,7 +146,7 @@ public class Logger
 	 */
 	private static String getArguments(List<ApplicationCommandInteractionOption> options)
 	{
-		String arguments = "";
+		StringBuilder arguments = new StringBuilder();
 
 		for (ApplicationCommandInteractionOption option : options)
 		{
@@ -156,25 +155,25 @@ public class Logger
 				switch (option.getType())
 				{
 					case BOOLEAN:
-						arguments += " " + option.getValue().get().asBoolean();
+						arguments.append(" ").append(option.getValue().get().asBoolean());
 						break;
 					case CHANNEL:
-						arguments += " #" + ((GuildChannel) option.getValue().get().asChannel().block()).getName();
+						arguments.append(" #").append(((GuildChannel) option.getValue().get().asChannel().block()).getName());
 						break;
 					case INTEGER:
-						arguments += " " + option.getValue().get().asLong();
+						arguments.append(" ").append(option.getValue().get().asLong());
 						break;
 					case NUMBER:
-						arguments += " " + option.getValue().get().asDouble();
+						arguments.append(" ").append(option.getValue().get().asDouble());
 						break;
 					case ROLE:
-						arguments += " @" + option.getValue().get().asRole().block().getName();
+						arguments.append(" @").append(option.getValue().get().asRole().block().getName());
 						break;
 					case STRING:
-						arguments += " " + option.getValue().get().asString();
+						arguments.append(" ").append(option.getValue().get().asString());
 						break;
 					case USER:
-						arguments += " @" + option.getValue().get().asUser().block().getTag();
+						arguments.append(" @").append(option.getValue().get().asUser().block().getTag());
 						break;
 					default:
 						Logger.log.error("New command option type needs implementing in Logger#getArguments()");
@@ -182,12 +181,12 @@ public class Logger
 			}
 			else
 			{
-				arguments += " " + option.getName();
+				arguments.append(" ").append(option.getName());
 			}
 
-			arguments += getArguments(option.getOptions());
+			arguments.append(getArguments(option.getOptions()));
 		}
 
-		return arguments;
+		return arguments.toString();
 	}
 }

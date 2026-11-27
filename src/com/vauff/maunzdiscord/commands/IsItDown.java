@@ -25,8 +25,7 @@ import java.net.URL;
 public class IsItDown extends AbstractCommand<ChatInputInteractionEvent>
 {
 	@Override
-	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) throws Exception
-	{
+	public void exe(ChatInputInteractionEvent event, MessageChannel channel, User user) {
 		String hostname = event.getInteraction().getCommandInteraction().get().getOption("hostname").get().getValue().get().asString();
 		boolean isUp;
 		String cleanedUri = hostname.replaceAll("(^\\w+:|^)\\/\\/", "").split("/")[0];
@@ -73,40 +72,28 @@ public class IsItDown extends AbstractCommand<ChatInputInteractionEvent>
 	 */
 	private boolean pingHost(String host, int port, String uri) throws Exception
 	{
-		Socket socket = new Socket();
 
-		try
-		{
-			socket.connect(new InetSocketAddress(host, port), 4000);
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(host, port), 4000);
 
-			if (port == 80 || port == 443)
-			{
-				URL url = new URL((port == 80 ? "http" : "https") + "://" + uri);
-				HttpURLConnection connection = (port == 80 ? (HttpURLConnection) url.openConnection() : (HttpsURLConnection) url.openConnection());
+            if (port == 80 || port == 443) {
+                URL url = new URL((port == 80 ? "http" : "https") + "://" + uri);
+                HttpURLConnection connection = (port == 80 ? (HttpURLConnection) url.openConnection() : (HttpsURLConnection) url.openConnection());
 
-				connection.setRequestMethod("GET");
-				connection.setRequestProperty("User-Agent", Main.cfg.getFakeUserAgent());
-				connection.connect();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("User-Agent", Main.cfg.getFakeUserAgent());
+                connection.connect();
 
-				int divCode = connection.getResponseCode() / 100;
+                int divCode = connection.getResponseCode() / 100;
 
-				// 2xx or 3xx HTTP status codes
-				if (divCode == 2 || divCode == 3)
-					return true;
-				else
-					return false;
-			}
+                // 2xx or 3xx HTTP status codes
+                return divCode == 2 || divCode == 3;
+            }
 
-			return true;
-		}
-		catch (IOException e)
-		{
-			return false; // Either timeout, unreachable, failed DNS lookup, or bad HTTP status code.
-		}
-		finally
-		{
-			socket.close();
-		}
+            return true;
+        } catch (IOException e) {
+            return false; // Either timeout, unreachable, failed DNS lookup, or bad HTTP status code.
+        }
 	}
 
 	/**
