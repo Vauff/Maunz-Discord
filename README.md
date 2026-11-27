@@ -14,7 +14,17 @@ If you choose to self-host your own instance of the bot, the only requirements a
 ```
 java -XX:-OmitStackTraceInFastThrow -Djava.net.preferIPv4Stack=true -jar Maunz-Discord.jar
 ```
-The bot will auto-create a `config.json` file on first start, and prompt you to supply a token from an app created in the [Discord Developer Portal](https://discord.com/developers/applications). You will also be prompted to supply a MongoDB connection string and database name, see [this MongoDB manual page](https://www.mongodb.com/docs/manual/reference/connection-string/) on how to format a connection string.
+The bot will auto-create a `config.json` file next to the .jar on first start, and exit until the required values are filled in. You need to supply a token (`discordToken`) from an app created in the [Discord Developer Portal](https://discord.com/developers/applications), as well as a MongoDB connection string and database name (the `mongoDatabase` section), see [this MongoDB manual page](https://www.mongodb.com/docs/manual/reference/connection-string/) on how to format a connection string.
+
+The remaining options are optional, but some commands won't work without them:
+
+- `botOwners` - Discord user IDs allowed to use bot admin commands such as `/stop`
+- `devGuilds` - Guild IDs to register commands in directly, global commands are removed while any are set
+- `altPlayingText` - Custom text to show in the bot's presence
+- `steamApiKey` - A [Steam Web API key](https://steamcommunity.com/dev/apikey), required for `/steam`
+- `gitHubToken` - A GitHub token, required for `/changelog`
+- `reddit` - A Reddit app `id` and `secret`, required for `/reddit`
+- `userAgent` - The user agent used for some web requests, the default value should be fine
 
 If you make your own edits and run them on a Discord bot accessible to other users, you **must** open source your changes to remain compliant with Maunz's AGPLv3 license.
 
@@ -74,7 +84,13 @@ If you make your own edits and run them on a Discord bot accessible to other use
 
 `/servers list [page]` - List current servers
 
+`/servers info <id>` - View full info about a specific server
+
 `/servers delete <id>` - Delete a server
+
+`/servers edit <id> [ip] [channel]` - Edit a server value (only pick what you're changing)
+
+`/servers toggle <id> <option> <value>` - Toggle a server value (Enabled, Map Character Limit, or Always Show Server Name)
 
 ### Bot Admin
 
