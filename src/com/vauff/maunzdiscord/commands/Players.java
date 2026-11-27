@@ -48,7 +48,7 @@ public class Players extends AbstractCommand<ChatInputInteractionEvent>
 		for (Document doc : servicesIterable)
 			services.add(doc);
 
-		if (services.size() == 0)
+		if (services.isEmpty())
 		{
 			Util.editReply(event, "Server tracking is not enabled in this guild yet! Please have a guild administrator use " + Main.commands.get("servers").getCommandMention(event, "add") + " to set one up");
 		}

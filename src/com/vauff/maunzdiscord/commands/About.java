@@ -66,62 +66,40 @@ public class About extends AbstractCommand<ChatInputInteractionEvent>
 	}
 
 	/**
-	 * Formats the uptime of the bot as a string
+	 * Formats the bot's uptime using its two largest time units.
 	 *
-	 * @return The uptime of the bot formatted as the 2 top most values
+	 * @return the formatted uptime
 	 */
-	private String getUptime()
-	{
-		Main.uptime.split();
+	private String getUptime() {
+		String[] parts = Main.uptime.toSplitString().split("\\.")[0].split(":");
 
-		String uptimeRaw = Main.uptime.toSplitString().split("\\.")[0];
-		String secondText = "seconds";
-		String minuteText = "minutes";
-		String hourText = "hours";
-		String dayText = "days";
-		int seconds = Integer.parseInt(uptimeRaw.split(":")[2]);
-		int minutes = Integer.parseInt(uptimeRaw.split(":")[1]);
-		int hours = Integer.parseInt(uptimeRaw.split(":")[0]) % 24;
-		int days = (Integer.parseInt(uptimeRaw.split(":")[0]) / 24);
+		long totalHours = Long.parseLong(parts[0]);
+		int minutes = Integer.parseInt(parts[1]);
+		int seconds = Integer.parseInt(parts[2]);
 
-		if (seconds == 1)
-		{
-			secondText = "second";
-		}
+		long days = totalHours / 24;
+		int hours = (int) (totalHours % 24);
 
-		if (minutes == 1)
+		if (days > 0)
 		{
-			minuteText = "minute";
+			return days + " " + unit(days, "day") + ", "
+					+ hours + " " + unit(hours, "hour");
 		}
+		if (hours > 0)
+		{
+			return hours + " " + unit(hours, "hour") + ", "
+					+ minutes + " " + unit(minutes, "minute");
+		}
+		if (minutes > 0)
+		{
+			return minutes + " " + unit(minutes, "minute") + ", "
+					+ seconds + " " + unit(seconds, "second");
+		}
+		return seconds + " " + unit(seconds, "second");
+	}
 
-		if (hours == 1)
-		{
-			hourText = "hour";
-		}
-
-		if (days == 1)
-		{
-			dayText = "day";
-		}
-
-		if (days >= 1)
-		{
-			return days + " " + dayText + ", " + hours + " " + hourText;
-		}
-
-		else if (hours >= 1)
-		{
-			return hours + " " + hourText + ", " + minutes + " " + minuteText;
-		}
-
-		else if (minutes >= 1)
-		{
-			return minutes + " " + minuteText + ", " + seconds + " " + secondText;
-		}
-		else
-		{
-			return seconds + " " + secondText;
-		}
+	private String unit(long value, String name) {
+		return value == 1 ? name : name + "s";
 	}
 
 	@Override
