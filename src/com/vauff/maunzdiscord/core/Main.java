@@ -95,8 +95,8 @@ public class Main
 			if (exit)
 				System.exit(1);
 
-            Logger.log.info("Starting Maunz-Discord {}...", version);
-            Logger.log.info("Connecting to MongoDB ({})", cfg.getMongoConnectionString());
+			Logger.log.info("Starting Maunz-Discord {}...", version);
+			Logger.log.info("Connecting to MongoDB ({})", cfg.getMongoConnectionString());
 
 			try
 			{
@@ -105,22 +105,22 @@ public class Main
 			catch (Exception e)
 			{
 				Logger.log.error("", e);
-				Logger.log.fatal("An error occured while connecting to the MongoDB database");
+				Logger.log.fatal("An error occurred while connecting to the MongoDB database");
 				System.exit(1);
 			}
 
 			gateway = DiscordClient.create(cfg.getToken()).gateway()
 				.withEventDispatcher(eventDispatcher ->
 				{
-					var event1 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
-					var event2 = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
-					return Mono.when(event1, event2);
+					var guildCreateListener = eventDispatcher.on(GuildCreateEvent.class).doOnNext(MainListener::onGuildCreate);
+					var guildCreateLogger = eventDispatcher.on(GuildCreateEvent.class).doOnNext(Logger::onGuildCreate);
+					return Mono.when(guildCreateListener, guildCreateLogger);
 				})
 				.login().block();
 
 			uptime.start();
 			setupCommands();
-			botUserData = Main.gateway.getRestClient().getSelf().block();
+			botUserData = gateway.getRestClient().getSelf().block();
 
 			gateway.on(ChatInputInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onChatInputInteraction(event))).subscribe();
 			gateway.on(ButtonInteractionEvent.class, event -> Mono.fromRunnable(() -> Logger.onButtonInteraction(event))).subscribe();
