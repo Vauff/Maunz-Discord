@@ -102,7 +102,7 @@ public class MapImages
 		{
 			// Keep both parameters lower case for an accurate levenshtein distance
 			String arrayMapLower = arrayMap.toLowerCase();
-			int distance = new LevenshteinDistance().apply(trimmedMap, arrayMapLower);
+			int distance = LevenshteinDistance.getDefaultInstance().apply(trimmedMap, arrayMapLower);
 
 			if (distance < bmLevenshteinDist && trimmedMap.startsWith(arrayMapLower))
 			{
